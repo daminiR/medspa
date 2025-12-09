@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WHO WINS: Mango Mint vs Luke's Medical Spa</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            color: #1e3c72;
+            margin-bottom: 10px;
+            font-size: 32px;
+        }
+
+        .vs-banner {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 20px;
+            align-items: center;
+            margin-top: 20px;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            color: white;
+        }
+
+        .competitor {
+            text-align: center;
+        }
+
+        .competitor-name {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .competitor-score {
+            font-size: 48px;
+            font-weight: bold;
+        }
+
+        .vs-text {
+            font-size: 36px;
+            font-weight: bold;
+            opacity: 0.8;
+        }
+
+        .summary-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .stat-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #1e3c72;
+        }
+
+        .stat-card h3 {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .stat-card p {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .comparison-card {
+            background: white;
+            padding: 25px;
+            margin-bottom: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .comparison-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .comparison-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 15px;
+        }
+
+        .feature-title {
+            font-size: 22px;
+            font-weight: 600;
+            color: #333;
+            flex: 1;
+        }
+
+        .winner-badge {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 14px;
+            margin-left: 15px;
+        }
+
+        .winner-mangomint {
+            background: #dc3545;
+            color: white;
+        }
+
+        .winner-luke {
+            background: #28a745;
+            color: white;
+        }
+
+        .scores {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 15px 0;
+        }
+
+        .score-box {
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .score-box.mangomint {
+            background: #fee;
+            border: 2px solid #dc3545;
+        }
+
+        .score-box.luke {
+            background: #e8f5e9;
+            border: 2px solid #28a745;
+        }
+
+        .score-label {
+            font-size: 12px;
+            text-transform: uppercase;
+            font-weight: 600;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .score-value {
+            font-size: 36px;
+            font-weight: bold;
+        }
+
+        .score-box.mangomint .score-value {
+            color: #dc3545;
+        }
+
+        .score-box.luke .score-value {
+            color: #28a745;
+        }
+
+        .reasoning {
+            background: #fff9e6;
+            padding: 15px;
+            border-left: 4px solid #ffc107;
+            border-radius: 4px;
+            margin: 15px 0;
+            font-style: italic;
+        }
+
+        .details {
+            display: none;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 2px solid #e9ecef;
+        }
+
+        .comparison-card.expanded .details {
+            display: block;
+        }
+
+        .detail-section {
+            margin-bottom: 20px;
+        }
+
+        .detail-section h4 {
+            color: #1e3c72;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .detail-section ul {
+            margin-left: 20px;
+        }
+
+        .detail-section li {
+            margin-bottom: 8px;
+            line-height: 1.6;
+            color: #555;
+        }
+
+        .how-to-beat {
+            background: #e8f5e9;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #28a745;
+        }
+
+        .how-to-beat h4 {
+            color: #28a745;
+            margin-bottom: 10px;
+        }
+
+        .workflow-comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .workflow-box {
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .workflow-box.mangomint {
+            background: #fee;
+        }
+
+        .workflow-box.luke {
+            background: #f8f9fa;
+        }
+
+        .workflow-box h5 {
+            font-size: 14px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .workflow-box ol {
+            margin-left: 20px;
+            font-size: 13px;
+        }
+
+        .workflow-box li {
+            margin-bottom: 6px;
+        }
+
+        @media print {
+            body {
+                background: white;
+            }
+            .details {
+                display: block !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🥊 WHO WINS: Workflow Comparison</h1>
+            <p style="color: #666; margin-top: 10px;">Mango Mint vs Luke's Medical Spa - Feature-by-Feature Battle</p>
+
+            <div class="vs-banner">
+                <div class="competitor">
+                    <div class="competitor-name">Mango Mint</div>
+                    <div class="competitor-score">8/10</div>
+                    <div style="font-size: 14px; margin-top: 5px;">Avg Score</div>
+                </div>
+                <div class="vs-text">VS</div>
+                <div class="competitor">
+                    <div class="competitor-name">Luke's Platform</div>
+                    <div class="competitor-score" style="color: #ff6b6b;">0/10</div>
+                    <div style="font-size: 14px; margin-top: 5px;">Avg Score</div>
+                </div>
+            </div>
+
+            <div class="summary-stats">
+                <div class="stat-card">
+                    <h3>Features Compared</h3>
+                    <p>8</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Mango Mint Wins</h3>
+                    <p style="color: #dc3545;">8</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Luke's Wins</h3>
+                    <p style="color: #28a745;">0</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Category</h3>
+                    <p style="font-size: 16px;">Calendar & Appointments</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Comparison 1: Create Time Block -->
+        <div class="comparison-card" onclick="this.classList.toggle('expanded')">
+            <div class="comparison-header">
+                <div class="feature-title">1. Create Time Block</div>
+                <div class="winner-badge winner-mangomint">🏆 Mango Mint Wins</div>
+            </div>
+
+            <div class="scores">
+                <div class="score-box mangomint">
+                    <div class="score-label">Mango Mint</div>
+                    <div class="score-value">8/10</div>
+                </div>
+                <div class="score-box luke">
+                    <div class="score-label">Luke's Platform</div>
+                    <div class="score-value">0/10</div>
+                </div>
+            </div>
+
+            <div class="reasoning">
+                <strong>Why Mango Mint Wins:</strong> Mango Mint provides a complete, user-friendly time block creation feature with intuitive calendar interaction and visual feedback, while Luke's implementation lacks this functionality entirely.
+            </div>
+
+            <div class="details">
+                <div class="detail-section">
+                    <h4>🎯 Key Differentiators (Why They Win)</h4>
+                    <ul>
+                        <li>Direct calendar click-to-create eliminates form navigation friction</li>
+                        <li>Visual duration selector with drag/resize provides intuitive control</li>
+                        <li>Immediate visual feedback shows blocked time on calendar</li>
+                        <li>Solves critical business need for staff availability management</li>
+                        <li>Prevents overbooking during breaks and administrative tasks</li>
+                    </ul>
+                </div>
+
+                <div class="workflow-comparison">
+                    <div class="workflow-box mangomint">
+                        <h5>Mango Mint Workflow</h5>
+                        <ol>
+                            <li>Select desired time slot directly on calendar</li>
+                            <li>Choose 'Create time block' from context menu</li>
+                            <li>Specify duration using visual duration selector</li>
+                            <li>Click 'Create Time Block' to confirm</li>
+                            <li>Time block appears on calendar with visual indicator</li>
+                        </ol>
+                    </div>
+                    <div class="workflow-box luke">
+                        <h5>Luke's Platform Workflow</h5>
+                        <ol>
+                            <li>❌ No create time block functionality found</li>
+                            <li>Only appointment scheduling available</li>
+                            <li>Waitlist management components present</li>
+                        </ol>
+                    </div>
+                </div>
+
+                <div class="how-to-beat">
+                    <h4>💡 How to Beat Them</h4>
+                    <ul>
+                        <li>Implement basic time block creation functionality first</li>
+                        <li>Add one-click calendar time blocking with visual indicators</li>
+                        <li>Create drag-and-drop time block duration adjustment</li>
+                        <li>Integrate time blocks with existing appointment drag-and-drop system</li>
+                        <li>Add bulk time blocking for recurring breaks/meetings</li>
+                        <li>Include time block templates for common scenarios (lunch, meetings, etc.)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Comparison 2: Repeating Time Block -->
+        <div class="comparison-card" onclick="this.classList.toggle('expanded')">
+            <div class="comparison-header">
+                <div class="feature-title">2. Repeating Time Block</div>
+                <div class="winner-badge winner-mangomint">🏆 Mango Mint Wins</div>
+            </div>
+
+            <div class="scores">
+                <div class="score-box mangomint">
+                    <div class="score-label">Mango Mint</div>
+                    <div class="score-value">8/10</div>
+                </div>
+                <div class="score-box luke">
+                    <div class="score-label">Luke's Platform</div>
+                    <div class="score-value">0/10</div>
+                </div>
+            </div>
+
+            <div class="reasoning">
+                <strong>Why Mango Mint Wins:</strong> Mango Mint has a fully implemented repeating time block feature with intuitive workflow and visual preview, while Luke's platform has no recurring appointment functionality at all.
+            </div>
+
+            <div class="details">
+                <div class="detail-section">
+                    <h4>🎯 Key Differentiators</h4>
+                    <ul>
+                        <li>Complete recurring appointment system vs. no functionality</li>
+                        <li>One-year visual preview shows users exactly what they're creating</li>
+                        <li>Toggle-based activation makes it simple to convert existing blocks</li>
+                        <li>Built-in frequency options (daily, weekly, etc.) cover common use cases</li>
+                        <li>Prevents infinite blocks with one-year constraint</li>
+                    </ul>
+                </div>
+
+                <div class="how-to-beat">
+                    <h4>💡 How to Beat Them</h4>
+                    <ul>
+                        <li>Implement basic recurring appointment functionality immediately</li>
+                        <li>Add smart conflict detection for recurring appointments</li>
+                        <li>Create flexible recurrence patterns (every 2 weeks, monthly, custom intervals)</li>
+                        <li>Build bulk editing capabilities for entire recurring series</li>
+                        <li>Add exception handling for holidays/closures in recurring patterns</li>
+                        <li>Include recurring appointment analytics and optimization suggestions</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Comparison 3: Group Booking from Calendar -->
+        <div class="comparison-card" onclick="this.classList.toggle('expanded')">
+            <div class="comparison-header">
+                <div class="feature-title">3. Group Booking from Calendar</div>
+                <div class="winner-badge winner-mangomint">🏆 Mango Mint Wins</div>
+            </div>
+
+            <div class="scores">
+                <div class="score-box mangomint">
+                    <div class="score-label">Mango Mint</div>
+                    <div class="score-value">8/10</div>
+                </div>
+                <div class="score-box luke">
+                    <div class="score-label">Luke's Platform</div>
+                    <div class="score-value">0/10</div>
+                </div>
+            </div>
+
+            <div class="reasoning">
+                <strong>Why Mango Mint Wins:</strong> Mango Mint wins by default as they have a complete group booking implementation while Luke's platform has no group booking functionality at all.
+            </div>
+
+            <div class="details">
+                <div class="how-to-beat">
+                    <h4>💡 How to Beat Them</h4>
+                    <ul>
+                        <li>Implement comprehensive group booking workflow starting with group creation interface</li>
+                        <li>Add batch appointment selection and management capabilities</li>
+                        <li>Create primary contact designation and switching functionality</li>
+                        <li>Build group preview system showing all appointments before confirmation</li>
+                        <li>Add visual indicators for group appointments on calendar view</li>
+                        <li>Implement group-level communication and coordination features</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Comparison 4: Group Booking Check-in/Check-out -->
+        <div class="comparison-card" onclick="this.classList.toggle('expanded')">
+            <div class="comparison-header">
+                <div class="feature-title">4. Group Booking Check-in/Check-out</div>
+                <div class="winner-badge winner-mangomint">🏆 Mango Mint Wins</div>
+            </div>
+
+            <div class="scores">
+                <div class="score-box mangomint">
+                    <div class="score-label">Mango Mint</div>
+                    <div class="score-value">8/10</div>
+                </div>
+                <div class="score-box luke">
+                    <div class="score-label">Luke's Platform</div>
+                    <div class="score-value">0/10</div>
+                </div>
+            </div>
+
+            <div class="reasoning">
+                <strong>Why Mango Mint Wins:</strong> Luke's platform lacks any group booking functionality, making this feature completely unavailable rather than a competitive comparison.
+            </div>
+
+            <div class="details">
+                <div class="how-to-beat">
+                    <h4>💡 How to Beat Them</h4>
+                    <ul>
+                        <li>Build comprehensive group booking creation interface with multi-patient selection</li>
+                        <li>Implement group check-in/out workflows that allow bulk operations</li>
+                        <li>Add payment splitting functionality with options for individual payments or single payer</li>
+                        <li>Create visual group indicators and management tools in calendar interface</li>
+                        <li>Develop group-specific status management that coordinates multiple appointments</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Comparison 5: Group Booking from Online Booking -->
+        <div class="comparison-card" onclick="this.classList.toggle('expanded')">
+            <div class="comparison-header">
+                <div class="feature-title">5. Group Booking from Online Booking</div>
+                <div class="winner-badge winner-mangomint">🏆 Mango Mint Wins</div>
+            </div>
+
+            <div class="scores">
+                <div class="score-box mangomint">
+                    <div class="score-label">Mango Mint</div>
+                    <div class="score-value">9/10</div>
+                </div>
+                <div class="score-box luke">
+                    <div class="score-label">Luke's Platform</div>
+                    <div class="score-value">0/10</div>
+                </div>
+            </div>
+
+            <div class="reasoning">
+                <strong>Why Mango Mint Wins:</strong> Mango Mint wins decisively as they have a complete, well-thought-out group booking system while Luke's platform has no group booking functionality at all. This is a critical feature gap for medical spas that offer group services.
+            </div>
+
+            <div class="details">
+                <div class="detail-section">
+                    <h4>🎯 Key Differentiators</h4>
+                    <ul>
+                        <li>Complete group booking workflow with upfront guest selection</li>
+                        <li>Individual service customization within group context</li>
+                        <li>Sophisticated group payment handling with combined deposits</li>
+                        <li>Primary contact designation for group management</li>
+                        <li>Group-specific confirmation and communication system</li>
+                    </ul>
+                </div>
+
+                <div class="how-to-beat">
+                    <h4>💡 How to Beat Them</h4>
+                    <ul>
+                        <li>Implement basic group booking functionality with guest selection</li>
+                        <li>Add group payment processing and deposit handling</li>
+                        <li>Create group session calendar management and capacity controls</li>
+                        <li>Build primary contact/organizer role with group management permissions</li>
+                        <li>Develop group-specific pricing and package options</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Comparison 6: Group Booking from Existing Appointments -->
+        <div class="comparison-card" onclick="this.classList.toggle('expanded')">
+            <div class="comparison-header">
+                <div class="feature-title">6. Group Booking from Existing Appointments</div>
+                <div class="winner-badge winner-mangomint">🏆 Mango Mint Wins</div>
+            </div>
+
+            <div class="scores">
+                <div class="score-box mangomint">
+                    <div class="score-label">Mango Mint</div>
+                    <div class="score-value">8/10</div>
+                </div>
+                <div class="score-box luke">
+                    <div class="score-label">Luke's Platform</div>
+                    <div class="score-value">0/10</div>
+                </div>
+            </div>
+
+            <div class="reasoning">
+                <strong>Why Mango Mint Wins:</strong> Luke's platform has no implementation of group booking from existing appointments functionality, while Mango Mint provides a complete workflow for converting individual bookings into coordinated group appointments.
+            </div>
+
+            <div class="details">
+                <div class="how-to-beat">
+                    <h4>💡 How to Beat Them</h4>
+                    <ul>
+                        <li>Implement multi-select functionality for existing appointments in calendar view</li>
+                        <li>Add 'Convert to Group' or 'Add to Group' options in appointment context menus</li>
+                        <li>Create group appointment management interface for linking existing bookings</li>
+                        <li>Develop notification system to inform clients when their appointment becomes part of a group</li>
+                        <li>Add visual indicators in calendar to show group appointment relationships</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Comparison 7: Enable Group Booking Configuration -->
+        <div class="comparison-card" onclick="this.classList.toggle('expanded')">
+            <div class="comparison-header">
+                <div class="feature-title">7. Enable Group Booking Configuration</div>
+                <div class="winner-badge winner-mangomint">🏆 Mango Mint Wins</div>
+            </div>
+
+            <div class="scores">
+                <div class="score-box mangomint">
+                    <div class="score-label">Mango Mint</div>
+                    <div class="score-value">8/10</div>
+                </div>
+                <div class="score-box luke">
+                    <div class="score-label">Luke's Platform</div>
+                    <div class="score-value">0/10</div>
+                </div>
+            </div>
+
+            <div class="reasoning">
+                <strong>Why Mango Mint Wins:</strong> Mango Mint provides a complete, well-architected group booking configuration system with granular controls, while Luke's platform has no group booking functionality whatsoever.
+            </div>
+
+            <div class="details">
+                <div class="how-to-beat">
+                    <h4>💡 How to Beat Them</h4>
+                    <ul>
+                        <li>Build comprehensive group booking system from ground up</li>
+                        <li>Implement advanced group coordination features like automatic conflict resolution</li>
+                        <li>Add group-specific pricing tiers and discount structures</li>
+                        <li>Create group communication tools and notifications</li>
+                        <li>Develop waitlist management for group bookings</li>
+                        <li>Add group booking analytics and reporting dashboard</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Comparison 8: Update Existing Group Booking -->
+        <div class="comparison-card" onclick="this.classList.toggle('expanded')">
+            <div class="comparison-header">
+                <div class="feature-title">8. Update Existing Group Booking</div>
+                <div class="winner-badge winner-mangomint">🏆 Mango Mint Wins</div>
+            </div>
+
+            <div class="scores">
+                <div class="score-box mangomint">
+                    <div class="score-label">Mango Mint</div>
+                    <div class="score-value">9/10</div>
+                </div>
+                <div class="score-box luke">
+                    <div class="score-label">Luke's Platform</div>
+                    <div class="score-value">0/10</div>
+                </div>
+            </div>
+
+            <div class="reasoning">
+                <strong>Why Mango Mint Wins:</strong> Luke's platform has no visible group booking update functionality, while Mango Mint provides a comprehensive system for managing group booking modifications with multiple update options and automatic coordination.
+            </div>
+
+            <div class="details">
+                <div class="detail-section">
+                    <h4>🎯 Key Differentiators</h4>
+                    <ul>
+                        <li>Unified group management interface from single calendar selection</li>
+                        <li>Multiple update types (reschedule, add/remove, contact changes) in one workflow</li>
+                        <li>Drag-drop rescheduling that maintains group integrity</li>
+                        <li>Flexible add/remove capabilities without rebuilding entire groups</li>
+                        <li>Automatic notification management for all group changes</li>
+                    </ul>
+                </div>
+
+                <div class="how-to-beat">
+                    <h4>💡 How to Beat Them</h4>
+                    <ul>
+                        <li>Implement group booking identification and linking system</li>
+                        <li>Create bulk edit capabilities for related appointments</li>
+                        <li>Add group-specific update interface with multiple modification options</li>
+                        <li>Develop drag-drop rescheduling for entire groups</li>
+                        <li>Build automatic notification system for group changes</li>
+                        <li>Create add/remove functionality that maintains group relationships</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div style="background: white; padding: 20px; border-radius: 12px; text-align: center; color: #666; margin-top: 20px;">
+            <p>Analysis Date: October 17, 2025</p>
+            <p style="margin-top: 10px;">Category: Calendar & Appointments</p>
+            <p style="margin-top: 10px; font-size: 14px;">
+                📁 Full data: <code>/docs/competitor_analysis/workflow_comparisons/calendar_workflow_comparison.json</code>
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // Click anywhere on card to expand
+        document.querySelectorAll('.comparison-card').forEach(card => {
+            card.style.userSelect = 'none';
+        });
+
+        // Print friendly
+        window.addEventListener('beforeprint', () => {
+            document.querySelectorAll('.comparison-card').forEach(card => {
+                card.classList.add('expanded');
+            });
+        });
+    </script>
+</body>
+</html>

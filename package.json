@@ -1,0 +1,26 @@
+{
+  "name": "medical-spa-platform",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "turbo dev",
+    "dev:web": "turbo dev --filter=@medical-spa/web",
+    "dev:admin": "turbo dev --filter=@medical-spa/admin",
+    "dev:api": "turbo dev --filter=@medical-spa/api",
+    "dev:ai": "cd apps/ai-service && uvicorn main:app --reload",
+    "build": "turbo build",
+    "start": "turbo start",
+    "lint": "turbo lint",
+    "docker:up": "docker-compose -f infrastructure/docker/docker-compose.yml up",
+    "docker:down": "docker-compose -f infrastructure/docker/docker-compose.yml down"
+  },
+  "devDependencies": {
+    "turbo": "latest"
+  },
+  "dependencies": {
+    "recharts": "^3.1.2"
+  }
+}

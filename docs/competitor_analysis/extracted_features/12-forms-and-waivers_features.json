@@ -1,0 +1,398 @@
+{
+  "category": "12-forms-and-waivers",
+  "features": [
+    {
+      "feature_name": "Forms App",
+      "description": "Comprehensive form creation and management system for custom forms and information collection",
+      "capabilities": [
+        "Create custom forms",
+        "Collect information from clients and staff members",
+        "Store information in client profiles",
+        "Create client forms (intake forms, consent forms, waivers)",
+        "Create staff member forms (SOAP notes, charting, treatment summaries)",
+        "Create external forms for public sharing"
+      ],
+      "user_benefits": [
+        "Centralized form management",
+        "Automated data collection",
+        "Improved client information management",
+        "Enhanced staff documentation capabilities"
+      ],
+      "complexity": "intermediate",
+      "integrations": [
+        "Forms & Charting add-on"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "forms",
+        "custom forms",
+        "intake forms",
+        "waivers",
+        "consent forms"
+      ]
+    },
+    {
+      "feature_name": "Form Template Creation",
+      "description": "Tool for building and customizing form templates with various field types and settings",
+      "capabilities": [
+        "Build form templates with Details, Form Fields, Preview, and Advanced tabs",
+        "Specify who fills out forms (clients, staff, external users)",
+        "Set form frequency requirements",
+        "Assign forms to specific appointments or services",
+        "Pre-fill fields with client information",
+        "Enable/disable field connections to client profiles",
+        "Add custom confirmation messages",
+        "Duplicate existing form templates"
+      ],
+      "user_benefits": [
+        "Streamlined form creation process",
+        "Consistent data collection",
+        "Reduced manual data entry",
+        "Customizable client experience"
+      ],
+      "complexity": "intermediate",
+      "integrations": [],
+      "screenshots_available": true,
+      "keywords": [
+        "form templates",
+        "custom fields",
+        "form builder",
+        "template creation"
+      ]
+    },
+    {
+      "feature_name": "Image Markup",
+      "description": "Visual annotation tool for marking up client photos and image templates on forms",
+      "capabilities": [
+        "Draw on images to emphasize specific areas",
+        "Add shapes like arrows or rectangles",
+        "Write notes and comments on images",
+        "Use pre-built face and body chart templates",
+        "Support for multiple images per form",
+        "Client self-markup capability",
+        "Staff markup for documentation",
+        "Document injectable service units"
+      ],
+      "user_benefits": [
+        "Enhanced visual documentation",
+        "Improved client consultation records",
+        "Better treatment planning",
+        "Professional service documentation"
+      ],
+      "complexity": "intermediate",
+      "integrations": [
+        "Med Spa services",
+        "Massage Therapy services"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "image markup",
+        "visual annotation",
+        "body charts",
+        "face charts",
+        "photo markup"
+      ]
+    },
+    {
+      "feature_name": "Form Submission Management",
+      "description": "System for viewing, tracking, and managing completed form submissions",
+      "capabilities": [
+        "View form submissions from multiple locations (Forms app, appointment details, client timeline)",
+        "Delete and resubmit forms",
+        "Resend notifications to clients",
+        "Send manual form requests",
+        "Track form completion status",
+        "Permission-based access control"
+      ],
+      "user_benefits": [
+        "Complete form submission visibility",
+        "Error correction capabilities",
+        "Flexible form delivery options",
+        "Secure access management"
+      ],
+      "complexity": "basic",
+      "integrations": [],
+      "screenshots_available": true,
+      "keywords": [
+        "form submissions",
+        "form management",
+        "resubmit forms",
+        "form tracking"
+      ]
+    },
+    {
+      "feature_name": "Form Approval Workflow",
+      "description": "Review and approval system for forms requiring professional sign-off",
+      "capabilities": [
+        "Set forms to require review and approval",
+        "Assign specific staff members as approvers",
+        "Support review-only or review with signature requirements",
+        "Multi-location approver assignment",
+        "Status tracking (Needs Review, Completed)",
+        "Digital signature capture"
+      ],
+      "user_benefits": [
+        "Professional oversight compliance",
+        "Quality control for medical services",
+        "Clear approval workflows",
+        "Documentation of professional review"
+      ],
+      "complexity": "advanced",
+      "integrations": [
+        "Med Spa compliance requirements"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "form approval",
+        "review workflow",
+        "digital signatures",
+        "compliance",
+        "medical director approval"
+      ]
+    },
+    {
+      "feature_name": "Progress Saving",
+      "description": "Capability to save partial form completion and resume later",
+      "capabilities": [
+        "Save progress on partially completed forms",
+        "Resume forms at later time",
+        "Multiple staff member collaboration on same form",
+        "Track last modification time",
+        "Discard unsaved changes option",
+        "In Progress status tracking"
+      ],
+      "user_benefits": [
+        "Flexible form completion timing",
+        "Enhanced collaboration capabilities",
+        "Reduced data loss risk",
+        "Improved workflow efficiency"
+      ],
+      "complexity": "intermediate",
+      "integrations": [],
+      "screenshots_available": true,
+      "keywords": [
+        "save progress",
+        "partial completion",
+        "form collaboration",
+        "draft forms"
+      ]
+    },
+    {
+      "feature_name": "External Forms",
+      "description": "Public forms that can be shared via links for external use",
+      "capabilities": [
+        "Create forms accessible via public links",
+        "Embed forms on websites",
+        "Collect information from non-clients",
+        "Support appointment request forms",
+        "No login required for form completion"
+      ],
+      "user_benefits": [
+        "Extended reach beyond existing clients",
+        "Website integration capabilities",
+        "Lead generation support",
+        "Streamlined new client onboarding"
+      ],
+      "complexity": "basic",
+      "integrations": [
+        "Website embedding"
+      ],
+      "screenshots_available": false,
+      "keywords": [
+        "external forms",
+        "public forms",
+        "website forms",
+        "appointment requests"
+      ]
+    },
+    {
+      "feature_name": "Form Field Types",
+      "description": "Various input field types for comprehensive data collection",
+      "capabilities": [
+        "First/Last Name fields with auto-population",
+        "Email and phone number fields with client profile sync",
+        "Birthday fields with profile integration",
+        "Pronoun collection capability",
+        "Image markup fields",
+        "Signature fields",
+        "Custom field options",
+        "Required field enforcement"
+      ],
+      "user_benefits": [
+        "Comprehensive data collection options",
+        "Automatic profile updates",
+        "Inclusive client information capture",
+        "Data consistency maintenance"
+      ],
+      "complexity": "basic",
+      "integrations": [
+        "Client profile system"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "form fields",
+        "field types",
+        "client data",
+        "profile sync",
+        "pronouns"
+      ]
+    },
+    {
+      "feature_name": "WaiverForever Integration",
+      "description": "Third-party integration for advanced waiver creation and management",
+      "capabilities": [
+        "Create forms in WaiverForever platform",
+        "Automatic PDF storage in client timelines",
+        "API key integration setup",
+        "Connected waiver template management",
+        "Auto-processing and approval setup",
+        "Email/phone matching for client sync"
+      ],
+      "user_benefits": [
+        "Advanced waiver capabilities",
+        "Seamless third-party integration",
+        "Professional liability documentation",
+        "Automated workflow processing"
+      ],
+      "complexity": "advanced",
+      "integrations": [
+        "WaiverForever (separate subscription required)"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "WaiverForever",
+        "waiver integration",
+        "liability waivers",
+        "third-party integration"
+      ]
+    },
+    {
+      "feature_name": "Form Templates Library",
+      "description": "Access to pre-built form templates and examples for various business types",
+      "capabilities": [
+        "Salon and spa intake form templates",
+        "Medical spa consent form templates",
+        "Tattoo intake form templates",
+        "Face and body chart templates",
+        "Downloadable template resources",
+        "Industry-specific form examples"
+      ],
+      "user_benefits": [
+        "Quick setup with professional templates",
+        "Industry best practices included",
+        "Time-saving implementation",
+        "Professional appearance"
+      ],
+      "complexity": "basic",
+      "integrations": [
+        "Mangomint blog resources"
+      ],
+      "screenshots_available": false,
+      "keywords": [
+        "form templates",
+        "intake forms",
+        "consent forms",
+        "template library",
+        "industry templates"
+      ]
+    }
+  ],
+  "key_workflows": [
+    {
+      "workflow_name": "Client Form Collection",
+      "steps": [
+        "Create form template for specific services",
+        "Enable automatic form assignment to appointments",
+        "Client receives notification with form link",
+        "Client completes form (including image markup if needed)",
+        "Form submission automatically syncs to client profile",
+        "Staff can view completed forms in multiple locations"
+      ],
+      "features_involved": [
+        "Forms App",
+        "Form Template Creation",
+        "Image Markup",
+        "Form Submission Management"
+      ]
+    },
+    {
+      "workflow_name": "Staff Documentation Workflow",
+      "steps": [
+        "Create staff member form template (SOAP notes, treatment summary)",
+        "Staff member begins form during appointment",
+        "Save progress and continue later if needed",
+        "Complete form with image markup and notes",
+        "Submit for approval if required",
+        "Approved form stored in client timeline"
+      ],
+      "features_involved": [
+        "Forms App",
+        "Progress Saving",
+        "Image Markup",
+        "Form Approval Workflow"
+      ]
+    },
+    {
+      "workflow_name": "Medical Spa Compliance Workflow",
+      "steps": [
+        "Create consent form with approval requirement",
+        "Assign medical director as approver",
+        "Client completes consent form with image markup",
+        "Form requires medical director review and signature",
+        "Medical director approves with digital signature",
+        "Approved form stored as compliance documentation"
+      ],
+      "features_involved": [
+        "Form Template Creation",
+        "Image Markup",
+        "Form Approval Workflow",
+        "Form Submission Management"
+      ]
+    },
+    {
+      "workflow_name": "WaiverForever Integration Setup",
+      "steps": [
+        "Create account in WaiverForever",
+        "Generate API key in WaiverForever",
+        "Configure integration in Mangomint",
+        "Create waiver templates in WaiverForever",
+        "Enable auto-processing and approval",
+        "Connect specific templates for automatic sync"
+      ],
+      "features_involved": [
+        "WaiverForever Integration",
+        "Form Submission Management"
+      ]
+    }
+  ],
+  "integrations": [
+    {
+      "name": "WaiverForever",
+      "purpose": "Advanced waiver creation and liability management with automatic PDF storage in client timelines"
+    },
+    {
+      "name": "Forms & Charting Add-on",
+      "purpose": "Subscription add-on required to access full Forms app functionality"
+    },
+    {
+      "name": "Client Profile System",
+      "purpose": "Automatic synchronization of form data with client profiles for seamless information management"
+    },
+    {
+      "name": "Appointment System",
+      "purpose": "Automatic form assignment based on appointment services and integration with appointment details"
+    }
+  ],
+  "competitive_advantages": [
+    "Comprehensive image markup capabilities with pre-built body and face chart templates",
+    "Advanced approval workflows with digital signature support for medical spa compliance",
+    "Progress saving functionality allowing collaborative form completion",
+    "Multiple form access points (Forms app, appointment details, client timeline)",
+    "External forms capability for website integration and lead generation",
+    "Automatic client profile synchronization with form submissions",
+    "Industry-specific form templates for salons, spas, med spas, and tattoo shops",
+    "Flexible form assignment based on specific services or appointment types",
+    "Built-in form duplication and template management",
+    "Permission-based access control for form management and viewing"
+  ]
+}

@@ -1,0 +1,81 @@
+{
+  "total_categories": 19,
+  "categories": [
+    {
+      "name": "01-getting-started",
+      "article_count": 23
+    },
+    {
+      "name": "02-calendar-and-appointments",
+      "article_count": 51
+    },
+    {
+      "name": "03-sales-and-checkout",
+      "article_count": 33
+    },
+    {
+      "name": "04-clients",
+      "article_count": 37
+    },
+    {
+      "name": "05-memberships",
+      "article_count": 14
+    },
+    {
+      "name": "06-gift-cards-and-packages",
+      "article_count": 21
+    },
+    {
+      "name": "07-products-and-inventory",
+      "article_count": 12
+    },
+    {
+      "name": "08-services",
+      "article_count": 14
+    },
+    {
+      "name": "09-staff-and-payroll",
+      "article_count": 38
+    },
+    {
+      "name": "10-email-marketing",
+      "article_count": 7
+    },
+    {
+      "name": "11-automated-flows-and-messages",
+      "article_count": 19
+    },
+    {
+      "name": "12-forms-and-waivers",
+      "article_count": 13
+    },
+    {
+      "name": "13-online-booking",
+      "article_count": 18
+    },
+    {
+      "name": "14-business-setup",
+      "article_count": 10
+    },
+    {
+      "name": "15-offers",
+      "article_count": 5
+    },
+    {
+      "name": "16-reports",
+      "article_count": 6
+    },
+    {
+      "name": "17-integrations",
+      "article_count": 4
+    },
+    {
+      "name": "18-payments",
+      "article_count": 31
+    },
+    {
+      "name": "19-account-management",
+      "article_count": 3
+    }
+  ]
+}

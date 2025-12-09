@@ -1,0 +1,600 @@
+{
+  "category": "06-gift-cards-and-packages",
+  "features": [
+    {
+      "feature_name": "Gift Card Management",
+      "description": "Comprehensive gift card system allowing businesses to sell, track, and manage gift cards both in-store and online",
+      "capabilities": [
+        "Sell gift cards in-store and online",
+        "Digital and physical gift card support",
+        "Custom gift card artwork and branding",
+        "Automatic gift card number generation",
+        "Gift card balance tracking",
+        "Gift card usage history",
+        "Manual gift card adjustment",
+        "Gift card refund processing"
+      ],
+      "user_benefits": [
+        "Increase revenue through gift card sales",
+        "Automated gift card management",
+        "Professional branded gift cards",
+        "Detailed tracking and reporting"
+      ],
+      "complexity": "intermediate",
+      "integrations": [
+        "Gift Up! third-party integration",
+        "Website integration",
+        "Online booking integration"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "gift cards",
+        "digital gifts",
+        "physical cards",
+        "balance tracking",
+        "online sales"
+      ]
+    },
+    {
+      "feature_name": "Gift Card Online Sales",
+      "description": "Enable clients to purchase gift cards directly through website or online booking system",
+      "capabilities": [
+        "Online gift card purchasing",
+        "Shareable gift card links",
+        "Direct website integration",
+        "Online booking integration",
+        "Automated email delivery",
+        "Billing address verification",
+        "Multi-location support",
+        "Custom price ranges ($25-$1000)"
+      ],
+      "user_benefits": [
+        "24/7 gift card sales",
+        "Reduced staff workload",
+        "Expanded customer reach",
+        "Automated delivery system"
+      ],
+      "complexity": "intermediate",
+      "integrations": [
+        "Website script integration",
+        "Online booking system"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "online sales",
+        "website integration",
+        "automated delivery",
+        "digital commerce"
+      ]
+    },
+    {
+      "feature_name": "Gift Card Promotions",
+      "description": "Create and manage promotional gift card campaigns with discounted pricing",
+      "capabilities": [
+        "Create promotional campaigns",
+        "Set discounted sale prices",
+        "Schedule promotion start/end dates",
+        "Custom promotion descriptions",
+        "Automatic campaign activation",
+        "Reusable promotion templates",
+        "Black Friday and seasonal promotions"
+      ],
+      "user_benefits": [
+        "Drive seasonal sales",
+        "Increase gift card volume",
+        "Automated promotion management",
+        "Marketing campaign support"
+      ],
+      "complexity": "intermediate",
+      "integrations": [
+        "Online booking",
+        "Website integration"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "promotions",
+        "discounts",
+        "campaigns",
+        "seasonal sales",
+        "marketing"
+      ]
+    },
+    {
+      "feature_name": "Gift Card Reporting",
+      "description": "Comprehensive reporting suite for gift card sales, usage, and outstanding balances",
+      "capabilities": [
+        "Gift Card Usage Report",
+        "Gift Card Balances Report",
+        "Gift Card Sales Report",
+        "Excel export functionality",
+        "Real-time balance updates",
+        "Historical usage tracking",
+        "Sales performance metrics"
+      ],
+      "user_benefits": [
+        "Financial oversight and control",
+        "Performance tracking",
+        "Data-driven decisions",
+        "Liability management"
+      ],
+      "complexity": "basic",
+      "integrations": [
+        "Reports app"
+      ],
+      "screenshots_available": false,
+      "keywords": [
+        "reporting",
+        "analytics",
+        "usage tracking",
+        "sales metrics",
+        "balances"
+      ]
+    },
+    {
+      "feature_name": "Gift Up! Integration",
+      "description": "Third-party integration with Gift Up! for enhanced gift card functionality",
+      "capabilities": [
+        "Automatic synchronization",
+        "External gift card sales tracking",
+        "Balance updates across platforms",
+        "API key integration",
+        "Website checkout overlay"
+      ],
+      "user_benefits": [
+        "Enhanced gift card features",
+        "Professional gift card presentation",
+        "Expanded functionality"
+      ],
+      "complexity": "advanced",
+      "integrations": [
+        "Gift Up! platform",
+        "GoDaddy",
+        "Squarespace",
+        "Shopify",
+        "Weebly",
+        "Wix",
+        "WordPress"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "third-party integration",
+        "Gift Up!",
+        "API integration",
+        "external platform"
+      ]
+    },
+    {
+      "feature_name": "Package Management",
+      "description": "Create and manage service packages with bundled offerings and quantity tracking",
+      "capabilities": [
+        "Create custom service packages",
+        "Bundle multiple services",
+        "Set package pricing and discounts",
+        "Track remaining quantities",
+        "Manual quantity adjustments",
+        "Package expiration dates",
+        "Usage history tracking"
+      ],
+      "user_benefits": [
+        "Increase average transaction value",
+        "Encourage client retention",
+        "Simplified service bundling",
+        "Automated quantity management"
+      ],
+      "complexity": "intermediate",
+      "integrations": [
+        "Sales app",
+        "Services app"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "packages",
+        "bundles",
+        "service packages",
+        "quantity tracking",
+        "discounts"
+      ]
+    },
+    {
+      "feature_name": "Package Online Sales",
+      "description": "Enable online package sales through website and booking system",
+      "capabilities": [
+        "Online package purchasing",
+        "Package descriptions and details",
+        "Direct purchase links",
+        "Website integration",
+        "Online booking integration",
+        "Package agreements and signatures",
+        "Automated confirmation emails"
+      ],
+      "user_benefits": [
+        "24/7 package sales",
+        "Reduced administrative work",
+        "Professional package presentation",
+        "Legal agreement management"
+      ],
+      "complexity": "intermediate",
+      "integrations": [
+        "Website integration",
+        "Online booking system"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "online sales",
+        "package sales",
+        "agreements",
+        "digital commerce",
+        "automation"
+      ]
+    },
+    {
+      "feature_name": "Package Reporting",
+      "description": "Detailed reporting for package sales, usage, and outstanding credits",
+      "capabilities": [
+        "Package Usage Report",
+        "Outstanding Packages Report",
+        "Package Sales Report",
+        "Package Sales Details Report",
+        "Excel export functionality",
+        "Client contact information",
+        "Performance metrics"
+      ],
+      "user_benefits": [
+        "Track package performance",
+        "Monitor outstanding liabilities",
+        "Analyze sales trends",
+        "Client management insights"
+      ],
+      "complexity": "basic",
+      "integrations": [
+        "Reports app"
+      ],
+      "screenshots_available": false,
+      "keywords": [
+        "reporting",
+        "package analytics",
+        "sales tracking",
+        "liability management"
+      ]
+    },
+    {
+      "feature_name": "In-Store Gift Card Sales",
+      "description": "Point of sale gift card functionality for in-person transactions",
+      "capabilities": [
+        "POS gift card sales",
+        "Barcode scanning support",
+        "Custom gift card values",
+        "Discount application",
+        "Receipt generation",
+        "Client assignment",
+        "Immediate activation"
+      ],
+      "user_benefits": [
+        "Streamlined checkout process",
+        "Professional transaction handling",
+        "Instant gift card activation",
+        "Integrated payment processing"
+      ],
+      "complexity": "basic",
+      "integrations": [
+        "Sales app",
+        "POS system"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "point of sale",
+        "in-store sales",
+        "barcode scanning",
+        "checkout"
+      ]
+    },
+    {
+      "feature_name": "In-Store Package Sales",
+      "description": "Point of sale package functionality for in-person transactions",
+      "capabilities": [
+        "POS package sales",
+        "Package selection interface",
+        "Immediate package activation",
+        "Client assignment",
+        "Same-day sale and redemption",
+        "Manual package addition"
+      ],
+      "user_benefits": [
+        "Flexible package sales",
+        "Immediate service availability",
+        "Streamlined transactions",
+        "Staff efficiency"
+      ],
+      "complexity": "basic",
+      "integrations": [
+        "Sales app",
+        "Packages app"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "point of sale",
+        "package sales",
+        "in-store",
+        "immediate activation"
+      ]
+    },
+    {
+      "feature_name": "Gift Card Redemption",
+      "description": "System for redeeming gift cards during service checkout",
+      "capabilities": [
+        "Gift card scanning/entry",
+        "Balance verification",
+        "Partial redemption support",
+        "Automatic balance updates",
+        "Receipt integration",
+        "Multiple payment methods"
+      ],
+      "user_benefits": [
+        "Smooth checkout experience",
+        "Accurate balance tracking",
+        "Flexible payment options",
+        "Automated processing"
+      ],
+      "complexity": "basic",
+      "integrations": [
+        "Checkout system",
+        "Payment processing"
+      ],
+      "screenshots_available": false,
+      "keywords": [
+        "redemption",
+        "checkout",
+        "balance tracking",
+        "payment processing"
+      ]
+    },
+    {
+      "feature_name": "Package Redemption",
+      "description": "System for using package credits during service appointments",
+      "capabilities": [
+        "Package credit application",
+        "Service matching",
+        "Quantity deduction",
+        "Balance tracking",
+        "Usage history",
+        "Expiration monitoring"
+      ],
+      "user_benefits": [
+        "Automated package management",
+        "Accurate credit tracking",
+        "Service value optimization",
+        "Client satisfaction"
+      ],
+      "complexity": "basic",
+      "integrations": [
+        "Checkout system",
+        "Appointments"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "package redemption",
+        "credits",
+        "service application",
+        "usage tracking"
+      ]
+    },
+    {
+      "feature_name": "Automated Messaging",
+      "description": "Automated email communications for gift cards and packages",
+      "capabilities": [
+        "Gift card delivery emails",
+        "Package confirmation emails",
+        "Purchase receipts",
+        "Internal notifications",
+        "Custom message templates",
+        "Fraud risk alerts"
+      ],
+      "user_benefits": [
+        "Professional communication",
+        "Automated customer service",
+        "Fraud protection",
+        "Consistent messaging"
+      ],
+      "complexity": "intermediate",
+      "integrations": [
+        "Email system",
+        "Automated Messages"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "automated messaging",
+        "email notifications",
+        "customer communication",
+        "fraud alerts"
+      ]
+    },
+    {
+      "feature_name": "Physical Gift Card Support",
+      "description": "Support for physical gift card ordering and management",
+      "capabilities": [
+        "Physical card ordering",
+        "Custom artwork support",
+        "Barcode integration",
+        "Inventory management",
+        "Card activation"
+      ],
+      "user_benefits": [
+        "Professional branded cards",
+        "Tangible gift options",
+        "Brand visibility",
+        "Customer preference accommodation"
+      ],
+      "complexity": "intermediate",
+      "integrations": [
+        "Physical card vendors"
+      ],
+      "screenshots_available": false,
+      "keywords": [
+        "physical cards",
+        "branding",
+        "barcode",
+        "inventory",
+        "custom artwork"
+      ]
+    },
+    {
+      "feature_name": "Tip Assignment for Gift Cards/Packages",
+      "description": "Handle tip assignment when selling gift cards or packages only",
+      "capabilities": [
+        "Unassigned tip detection",
+        "Service addition for tip assignment",
+        "Staff member tip allocation",
+        "Sale reopening functionality",
+        "Zero-dollar service creation"
+      ],
+      "user_benefits": [
+        "Proper tip distribution",
+        "Staff compensation accuracy",
+        "Transaction completion",
+        "Administrative flexibility"
+      ],
+      "complexity": "advanced",
+      "integrations": [
+        "Sales app",
+        "Services app",
+        "Staff management"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "tip assignment",
+        "staff compensation",
+        "transaction management",
+        "sales completion"
+      ]
+    }
+  ],
+  "key_workflows": [
+    {
+      "workflow_name": "Gift Card Sale and Delivery",
+      "steps": [
+        "Create gift card in Sales app",
+        "Set value and apply discounts if needed",
+        "Process payment",
+        "Automatically send digital copy via email",
+        "Track gift card in system"
+      ],
+      "features_involved": [
+        "Gift Card Management",
+        "In-Store Gift Card Sales",
+        "Automated Messaging"
+      ]
+    },
+    {
+      "workflow_name": "Online Gift Card Purchase",
+      "steps": [
+        "Customer visits website or online booking",
+        "Selects Buy a Gift Card option",
+        "Enters recipient and payment details",
+        "System processes payment and sends confirmation",
+        "Digital gift card delivered to recipient"
+      ],
+      "features_involved": [
+        "Gift Card Online Sales",
+        "Automated Messaging",
+        "Gift Card Management"
+      ]
+    },
+    {
+      "workflow_name": "Package Creation and Sale",
+      "steps": [
+        "Create package with bundled services",
+        "Set pricing and terms",
+        "Enable for online sales if desired",
+        "Sell package in-store or online",
+        "Track usage and remaining credits"
+      ],
+      "features_involved": [
+        "Package Management",
+        "Package Online Sales",
+        "In-Store Package Sales"
+      ]
+    },
+    {
+      "workflow_name": "Gift Card Redemption Process",
+      "steps": [
+        "Scan or enter gift card number during checkout",
+        "System verifies balance and validity",
+        "Apply gift card payment to transaction",
+        "Update remaining balance",
+        "Complete checkout process"
+      ],
+      "features_involved": [
+        "Gift Card Redemption",
+        "Gift Card Management"
+      ]
+    },
+    {
+      "workflow_name": "Package Usage at Appointment",
+      "steps": [
+        "Select Apply a Package during checkout",
+        "Choose which package to use",
+        "System applies package credit to services",
+        "Deduct used quantities from package",
+        "Complete appointment checkout"
+      ],
+      "features_involved": [
+        "Package Redemption",
+        "Package Management"
+      ]
+    },
+    {
+      "workflow_name": "Gift Card Promotion Setup",
+      "steps": [
+        "Create promotion in Gift Cards settings",
+        "Set promotion value and sale price",
+        "Configure start and end dates",
+        "Add promotion description",
+        "System automatically activates on schedule"
+      ],
+      "features_involved": [
+        "Gift Card Promotions",
+        "Gift Card Online Sales"
+      ]
+    }
+  ],
+  "integrations": [
+    {
+      "name": "Gift Up!",
+      "purpose": "Third-party gift card platform integration for enhanced gift card features and website checkout overlays"
+    },
+    {
+      "name": "Website Platforms",
+      "purpose": "Integration with GoDaddy, Squarespace, Shopify, Weebly, Wix, and WordPress for online gift card and package sales"
+    },
+    {
+      "name": "Online Booking System",
+      "purpose": "Native integration allowing gift card and package purchases through the booking interface"
+    },
+    {
+      "name": "Payment Processing",
+      "purpose": "Integrated payment processing for gift card and package transactions both online and in-store"
+    },
+    {
+      "name": "Email System",
+      "purpose": "Automated email delivery for digital gift cards, confirmations, and notifications"
+    },
+    {
+      "name": "Reports System",
+      "purpose": "Comprehensive reporting integration for gift card and package analytics and tracking"
+    }
+  ],
+  "competitive_advantages": [
+    "Comprehensive gift card and package solution with both digital and physical support",
+    "Native online sales integration without requiring third-party plugins",
+    "Advanced promotion system with automated scheduling and activation",
+    "Detailed reporting and analytics for gift cards and packages",
+    "Seamless integration between in-store and online sales channels",
+    "Automated email delivery and customer communication",
+    "Support for complex package structures with quantity tracking and expiration management",
+    "Professional branded gift cards with custom artwork capabilities",
+    "Fraud protection features including billing address verification",
+    "Flexible redemption system supporting partial usage and multiple payment methods",
+    "Staff tip assignment capabilities for gift card and package-only sales",
+    "Multi-location support for businesses with multiple venues"
+  ]
+}

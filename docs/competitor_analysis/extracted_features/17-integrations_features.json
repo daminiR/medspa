@@ -1,0 +1,624 @@
+{
+  "category": "17-integrations",
+  "features": [
+    {
+      "feature_name": "Webhooks Integration",
+      "description": "Send event data from Mangomint to third-party applications when key events occur",
+      "capabilities": [
+        "Send appointment booked, updated, or canceled events",
+        "Send sale completed events",
+        "Send form submitted events",
+        "Custom webhook setup based on endpoint URLs",
+        "Real-time event notifications to external systems"
+      ],
+      "user_benefits": [
+        "Flexible integrations with external systems",
+        "Automated data synchronization",
+        "Real-time notifications for business events",
+        "Custom integration possibilities"
+      ],
+      "complexity": "advanced",
+      "integrations": [
+        "Third-party applications via webhook endpoints"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "webhooks",
+        "integration",
+        "events",
+        "notifications",
+        "third-party",
+        "automation"
+      ]
+    },
+    {
+      "feature_name": "Shopify Integration",
+      "description": "Sync product inventory seamlessly between Mangomint and Shopify online store",
+      "capabilities": [
+        "Product inventory synchronization",
+        "SKU-based product matching",
+        "Automatic inventory updates from Mangomint to Shopify",
+        "Inventory reduction on Shopify orders",
+        "Manual inventory change tracking",
+        "Order reference tracking"
+      ],
+      "user_benefits": [
+        "Unified inventory management",
+        "Automatic inventory synchronization",
+        "Reduced manual data entry",
+        "Consistent stock levels across platforms"
+      ],
+      "complexity": "intermediate",
+      "integrations": [
+        "Shopify"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "shopify",
+        "ecommerce",
+        "inventory",
+        "sync",
+        "SKU",
+        "products",
+        "online store"
+      ]
+    },
+    {
+      "feature_name": "Mailchimp Integration",
+      "description": "Sync client details from Mangomint to Mailchimp for email marketing campaigns",
+      "capabilities": [
+        "Client data synchronization",
+        "Email address and phone number sync",
+        "Campaign creation and management via Mailchimp"
+      ],
+      "user_benefits": [
+        "Streamlined email marketing",
+        "Automated client data transfer",
+        "Enhanced marketing capabilities"
+      ],
+      "complexity": "basic",
+      "integrations": [
+        "Mailchimp"
+      ],
+      "screenshots_available": false,
+      "keywords": [
+        "mailchimp",
+        "email marketing",
+        "client sync",
+        "campaigns"
+      ]
+    },
+    {
+      "feature_name": "WaiverForever Integration",
+      "description": "Store completed WaiverForever forms on client timelines in Mangomint",
+      "capabilities": [
+        "Form storage on client timelines",
+        "Completed waiver tracking",
+        "Client record integration"
+      ],
+      "user_benefits": [
+        "Centralized client documentation",
+        "Streamlined waiver management",
+        "Improved client record keeping"
+      ],
+      "complexity": "basic",
+      "integrations": [
+        "WaiverForever"
+      ],
+      "screenshots_available": false,
+      "keywords": [
+        "waiverforever",
+        "forms",
+        "waivers",
+        "client timeline",
+        "documentation"
+      ]
+    },
+    {
+      "feature_name": "Gift Up! Integration",
+      "description": "Automatically add gift cards sold in Gift Up! to Mangomint",
+      "capabilities": [
+        "Automatic gift card import",
+        "Gift card sales tracking",
+        "Cross-platform gift card management"
+      ],
+      "user_benefits": [
+        "Automated gift card synchronization",
+        "Unified gift card management",
+        "Reduced manual data entry"
+      ],
+      "complexity": "basic",
+      "integrations": [
+        "Gift Up!"
+      ],
+      "screenshots_available": false,
+      "keywords": [
+        "gift up",
+        "gift cards",
+        "sales tracking",
+        "automation"
+      ]
+    },
+    {
+      "feature_name": "App Management",
+      "description": "Enable and disable different apps and integrations within Mangomint",
+      "capabilities": [
+        "Enable/disable apps",
+        "Integration management",
+        "Customizable platform configuration",
+        "Admin-level controls"
+      ],
+      "user_benefits": [
+        "Platform customization",
+        "Selective feature activation",
+        "Streamlined user experience",
+        "Cost optimization"
+      ],
+      "complexity": "basic",
+      "integrations": [
+        "Internal app ecosystem"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "app management",
+        "customization",
+        "admin",
+        "configuration"
+      ]
+    },
+    {
+      "feature_name": "Offers",
+      "description": "Create flexible discounts and promo codes for client rewards and bookings",
+      "capabilities": [
+        "Flexible discount creation",
+        "Promo code generation",
+        "Client loyalty rewards",
+        "Booking incentives"
+      ],
+      "user_benefits": [
+        "Increased client retention",
+        "Revenue optimization",
+        "Marketing flexibility",
+        "Client acquisition"
+      ],
+      "complexity": "intermediate",
+      "integrations": [],
+      "screenshots_available": false,
+      "keywords": [
+        "offers",
+        "discounts",
+        "promo codes",
+        "rewards",
+        "loyalty"
+      ]
+    },
+    {
+      "feature_name": "Payroll Processing",
+      "description": "Process payroll for employees, contractors, and multiple compensation types",
+      "capabilities": [
+        "Employee payroll processing",
+        "Contractor payment management",
+        "Multiple compensation types",
+        "Deductions handling",
+        "Tax payments and calculations",
+        "Regulatory filings"
+      ],
+      "user_benefits": [
+        "Automated payroll management",
+        "Compliance assurance",
+        "Time savings",
+        "Accurate calculations"
+      ],
+      "complexity": "advanced",
+      "integrations": [],
+      "screenshots_available": false,
+      "keywords": [
+        "payroll",
+        "employees",
+        "contractors",
+        "taxes",
+        "deductions",
+        "compensation"
+      ]
+    },
+    {
+      "feature_name": "Gift Cards",
+      "description": "Sell digital and physical gift cards with promotions",
+      "capabilities": [
+        "Digital gift card sales",
+        "Physical gift card sales",
+        "Website integration",
+        "Online booking integration",
+        "Gift card promotions"
+      ],
+      "user_benefits": [
+        "Revenue generation",
+        "Customer acquisition",
+        "Brand promotion",
+        "Flexible sales channels"
+      ],
+      "complexity": "intermediate",
+      "integrations": [],
+      "screenshots_available": false,
+      "keywords": [
+        "gift cards",
+        "digital",
+        "physical",
+        "promotions",
+        "online booking"
+      ]
+    },
+    {
+      "feature_name": "Packages",
+      "description": "Sell bundled services at discounted prices with tracking capabilities",
+      "capabilities": [
+        "Service bundling",
+        "Discounted pricing",
+        "Package sales tracking",
+        "Client usage monitoring",
+        "Purchase date tracking",
+        "Remaining service quantities",
+        "Usage history"
+      ],
+      "user_benefits": [
+        "Increased average transaction value",
+        "Client retention",
+        "Service promotion",
+        "Comprehensive tracking"
+      ],
+      "complexity": "intermediate",
+      "integrations": [],
+      "screenshots_available": false,
+      "keywords": [
+        "packages",
+        "bundles",
+        "discounts",
+        "tracking",
+        "services"
+      ]
+    },
+    {
+      "feature_name": "Memberships",
+      "description": "Create and sell custom recurring membership plans with automatic billing",
+      "capabilities": [
+        "Custom membership plan creation",
+        "Recurring billing",
+        "Automatic client charging",
+        "Membership sales tracking",
+        "Plan customization"
+      ],
+      "user_benefits": [
+        "Reliable cash flow",
+        "Client retention boost",
+        "Predictable revenue",
+        "Automated billing"
+      ],
+      "complexity": "advanced",
+      "integrations": [],
+      "screenshots_available": false,
+      "keywords": [
+        "memberships",
+        "recurring",
+        "billing",
+        "cash flow",
+        "retention"
+      ]
+    },
+    {
+      "feature_name": "Intelligent Waitlist",
+      "description": "Automatically manage client waitlists with instant opening notifications",
+      "capabilities": [
+        "Automatic waitlist tracking",
+        "Instant opening notifications",
+        "Provider-specific waitlisting",
+        "Time-specific waitlisting",
+        "Waitlist entry management"
+      ],
+      "user_benefits": [
+        "Optimized booking efficiency",
+        "Reduced no-shows impact",
+        "Improved client satisfaction",
+        "Automatic management"
+      ],
+      "complexity": "intermediate",
+      "integrations": [],
+      "screenshots_available": false,
+      "keywords": [
+        "waitlist",
+        "intelligent",
+        "notifications",
+        "bookings",
+        "optimization"
+      ]
+    },
+    {
+      "feature_name": "Forms",
+      "description": "Create and collect custom forms with automated client distribution",
+      "capabilities": [
+        "Custom form templates",
+        "Client-facing forms",
+        "External forms",
+        "Internal forms (SOAP notes)",
+        "Automatic form sending",
+        "Form submission tracking"
+      ],
+      "user_benefits": [
+        "Streamlined data collection",
+        "Automated client communication",
+        "Comprehensive documentation",
+        "Customizable templates"
+      ],
+      "complexity": "intermediate",
+      "integrations": [],
+      "screenshots_available": false,
+      "keywords": [
+        "forms",
+        "templates",
+        "SOAP notes",
+        "submissions",
+        "automation"
+      ]
+    },
+    {
+      "feature_name": "Resources",
+      "description": "Assign and manage limited resources like rooms or equipment for services",
+      "capabilities": [
+        "Resource assignment to services",
+        "Capacity management",
+        "Calendar availability viewing",
+        "Resource scheduling",
+        "Equipment tracking"
+      ],
+      "user_benefits": [
+        "Optimized resource utilization",
+        "Conflict prevention",
+        "Improved scheduling",
+        "Resource visibility"
+      ],
+      "complexity": "intermediate",
+      "integrations": [],
+      "screenshots_available": false,
+      "keywords": [
+        "resources",
+        "rooms",
+        "equipment",
+        "capacity",
+        "scheduling"
+      ]
+    },
+    {
+      "feature_name": "Service Customizations",
+      "description": "Deliver personalized experiences with service add-ons and pricing adjustments",
+      "capabilities": [
+        "Service add-ons",
+        "Pricing adjustments",
+        "Duration modifications",
+        "Customization options",
+        "Personalized experiences"
+      ],
+      "user_benefits": [
+        "Increased revenue",
+        "Enhanced client experience",
+        "Service differentiation",
+        "Flexible pricing"
+      ],
+      "complexity": "intermediate",
+      "integrations": [],
+      "screenshots_available": false,
+      "keywords": [
+        "customizations",
+        "add-ons",
+        "pricing",
+        "personalization",
+        "revenue"
+      ]
+    },
+    {
+      "feature_name": "Flows",
+      "description": "Create automated sequences for sending texts and emails based on triggers",
+      "capabilities": [
+        "Automated text sequences",
+        "Automated email sequences",
+        "Trigger-based actions",
+        "Client criteria targeting",
+        "Staff communications"
+      ],
+      "user_benefits": [
+        "Marketing automation",
+        "Improved client engagement",
+        "Time savings",
+        "Targeted communications"
+      ],
+      "complexity": "advanced",
+      "integrations": [],
+      "screenshots_available": false,
+      "keywords": [
+        "flows",
+        "automation",
+        "sequences",
+        "triggers",
+        "communications"
+      ]
+    },
+    {
+      "feature_name": "Email Campaigns",
+      "description": "Create marketing campaigns with intuitive email builder and templates",
+      "capabilities": [
+        "Email campaign creation",
+        "Intuitive email builder",
+        "Ready-to-use templates",
+        "Promotions and announcements",
+        "Newsletter creation"
+      ],
+      "user_benefits": [
+        "Professional marketing materials",
+        "Time-saving templates",
+        "Easy campaign creation",
+        "Enhanced client communication"
+      ],
+      "complexity": "intermediate",
+      "integrations": [],
+      "screenshots_available": false,
+      "keywords": [
+        "email campaigns",
+        "templates",
+        "promotions",
+        "newsletters",
+        "marketing"
+      ]
+    },
+    {
+      "feature_name": "Time Clock",
+      "description": "Track staff working hours and manage time cards with PIN-based access",
+      "capabilities": [
+        "Staff hours tracking",
+        "Time spent on tasks",
+        "Paid and unpaid task tracking",
+        "Unique PIN numbers",
+        "Time card management",
+        "Time Clock reports"
+      ],
+      "user_benefits": [
+        "Accurate time tracking",
+        "Payroll accuracy",
+        "Staff accountability",
+        "Comprehensive reporting"
+      ],
+      "complexity": "intermediate",
+      "integrations": [],
+      "screenshots_available": false,
+      "keywords": [
+        "time clock",
+        "tracking",
+        "PIN",
+        "time cards",
+        "reports",
+        "payroll"
+      ]
+    },
+    {
+      "feature_name": "Cash Drawer",
+      "description": "Manage cash sales, pay-ins, pay-outs, and daily closeouts",
+      "capabilities": [
+        "Cash sales management",
+        "Pay-ins and pay-outs",
+        "Daily cash counts",
+        "Daily closeouts",
+        "Staff tip payments",
+        "Cash tracking"
+      ],
+      "user_benefits": [
+        "Cash flow management",
+        "Daily reconciliation",
+        "Staff tip distribution",
+        "Financial accuracy"
+      ],
+      "complexity": "basic",
+      "integrations": [],
+      "screenshots_available": false,
+      "keywords": [
+        "cash drawer",
+        "cash sales",
+        "closeouts",
+        "tips",
+        "reconciliation"
+      ]
+    },
+    {
+      "feature_name": "Purchase Orders",
+      "description": "Create supplier orders based on inventory preferences and stock levels",
+      "capabilities": [
+        "Product order lists",
+        "Supplier management",
+        "Preset inventory preferences",
+        "Stock level checking",
+        "Quantity optimization",
+        "Inventory planning"
+      ],
+      "user_benefits": [
+        "Optimized ordering",
+        "Inventory control",
+        "Cost management",
+        "Supplier organization"
+      ],
+      "complexity": "intermediate",
+      "integrations": [],
+      "screenshots_available": false,
+      "keywords": [
+        "purchase orders",
+        "inventory",
+        "suppliers",
+        "stock levels",
+        "ordering"
+      ]
+    }
+  ],
+  "key_workflows": [
+    {
+      "workflow_name": "Shopify Inventory Sync Setup",
+      "steps": [
+        "Add identical SKUs to both Mangomint and Shopify",
+        "Contact support to complete integration",
+        "Monitor automatic inventory synchronization"
+      ],
+      "features_involved": [
+        "Shopify Integration",
+        "App Management"
+      ]
+    },
+    {
+      "workflow_name": "Webhook Event Configuration",
+      "steps": [
+        "Contact chat support with webhook requirements",
+        "Provide endpoint URLs for custom webhooks",
+        "Configure event triggers (appointments, sales, forms)"
+      ],
+      "features_involved": [
+        "Webhooks Integration"
+      ]
+    },
+    {
+      "workflow_name": "App and Integration Management",
+      "steps": [
+        "Navigate to Apps > Manage apps",
+        "Enable or disable desired apps and integrations",
+        "Configure individual app settings"
+      ],
+      "features_involved": [
+        "App Management"
+      ]
+    }
+  ],
+  "integrations": [
+    {
+      "name": "Shopify",
+      "purpose": "Sync product inventory between Mangomint and Shopify online store"
+    },
+    {
+      "name": "Webhooks",
+      "purpose": "Send event data to third-party applications for custom integrations"
+    },
+    {
+      "name": "Mailchimp",
+      "purpose": "Sync client details for email marketing campaigns"
+    },
+    {
+      "name": "WaiverForever",
+      "purpose": "Store completed waiver forms on client timelines"
+    },
+    {
+      "name": "Gift Up!",
+      "purpose": "Automatically import gift cards sold through Gift Up! platform"
+    }
+  ],
+  "competitive_advantages": [
+    "Comprehensive app ecosystem with 20+ integrated features",
+    "Advanced webhook system for custom third-party integrations",
+    "Native alternatives to popular third-party services (Forms vs WaiverForever, Gift Cards vs Gift Up!, Campaigns vs Mailchimp)",
+    "Intelligent Waitlist with automatic opening notifications",
+    "Unified inventory management across online and in-store sales",
+    "Automated flows with trigger-based client and staff communications",
+    "Integrated payroll processing with tax handling and compliance",
+    "Resource management for rooms and equipment scheduling"
+  ]
+}

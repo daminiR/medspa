@@ -1,0 +1,3246 @@
+[
+  {
+    "category": "01-getting-started",
+    "name": "Platform Introduction & Overview",
+    "description": "Comprehensive introduction to Mangomint platform with video tours, live demos, and free trial options",
+    "complexity": "basic",
+    "keywords": [
+      "introduction",
+      "overview",
+      "demo",
+      "trial",
+      "video tour"
+    ]
+  },
+  {
+    "category": "01-getting-started",
+    "name": "HIPAA Compliance",
+    "description": "HIPAA compliant software that supports privacy and security needs of medical spas and related businesses",
+    "complexity": "advanced",
+    "keywords": [
+      "HIPAA",
+      "compliance",
+      "medical spa",
+      "PHI",
+      "BAA"
+    ]
+  },
+  {
+    "category": "01-getting-started",
+    "name": "Booth Renter Model Support",
+    "description": "Comprehensive support for businesses with booth rental or hybrid models including independent payment accounts",
+    "complexity": "advanced",
+    "keywords": [
+      "booth renter",
+      "hybrid model",
+      "merchant account",
+      "independent contractor"
+    ]
+  },
+  {
+    "category": "01-getting-started",
+    "name": "Onboarding Process",
+    "description": "Dedicated onboarding manager and structured setup process for new users",
+    "complexity": "basic",
+    "keywords": [
+      "onboarding",
+      "setup",
+      "data import",
+      "migration"
+    ]
+  },
+  {
+    "category": "01-getting-started",
+    "name": "Data Import & Migration",
+    "description": "Professional data import service from previous scheduling software",
+    "complexity": "intermediate",
+    "keywords": [
+      "data import",
+      "migration",
+      "client data",
+      "inventory"
+    ]
+  },
+  {
+    "category": "01-getting-started",
+    "name": "Playground Mode",
+    "description": "Test environment with sample data for learning and experimentation",
+    "complexity": "basic",
+    "keywords": [
+      "playground",
+      "demo",
+      "sample data",
+      "testing"
+    ]
+  },
+  {
+    "category": "01-getting-started",
+    "name": "User Role Management",
+    "description": "Different user types and permissions including Admin and Normal users",
+    "complexity": "intermediate",
+    "keywords": [
+      "user roles",
+      "permissions",
+      "admin",
+      "staff management"
+    ]
+  },
+  {
+    "category": "01-getting-started",
+    "name": "Get Started Page",
+    "description": "Centralized setup guide with helpful videos and setup checklist",
+    "complexity": "basic",
+    "keywords": [
+      "get started",
+      "setup guide",
+      "onboarding"
+    ]
+  },
+  {
+    "category": "01-getting-started",
+    "name": "Video Library",
+    "description": "On-demand video content covering different Mangomint features",
+    "complexity": "basic",
+    "keywords": [
+      "video library",
+      "training",
+      "tutorials",
+      "learning"
+    ]
+  },
+  {
+    "category": "01-getting-started",
+    "name": "Platform Updates",
+    "description": "Easy access to new features and improvements with notifications",
+    "complexity": "basic",
+    "keywords": [
+      "platform updates",
+      "new features",
+      "notifications"
+    ]
+  },
+  {
+    "category": "01-getting-started",
+    "name": "Multi-Platform Access",
+    "description": "Access via web browser and mobile app",
+    "complexity": "basic",
+    "keywords": [
+      "mobile app",
+      "web access",
+      "cross-platform"
+    ]
+  },
+  {
+    "category": "01-getting-started",
+    "name": "Chat Support",
+    "description": "Real-time chat support with human representatives",
+    "complexity": "basic",
+    "keywords": [
+      "chat support",
+      "help",
+      "customer service"
+    ]
+  },
+  {
+    "category": "01-getting-started",
+    "name": "Notes System",
+    "description": "Comprehensive note-taking system for clients, appointments, and sales",
+    "complexity": "intermediate",
+    "keywords": [
+      "notes",
+      "client notes",
+      "timeline",
+      "record keeping"
+    ]
+  },
+  {
+    "category": "01-getting-started",
+    "name": "Cash Payment Processing",
+    "description": "Cash payment handling with change calculation",
+    "complexity": "basic",
+    "keywords": [
+      "cash payments",
+      "change calculator",
+      "cash drawer"
+    ]
+  },
+  {
+    "category": "01-getting-started",
+    "name": "Sale Void Recovery",
+    "description": "Process to fix accidentally voided sales",
+    "complexity": "intermediate",
+    "keywords": [
+      "voided sales",
+      "sale correction",
+      "error fix"
+    ]
+  },
+  {
+    "category": "01-getting-started",
+    "name": "Tip Management",
+    "description": "Comprehensive tip handling including unassigned tip resolution",
+    "complexity": "intermediate",
+    "keywords": [
+      "tips",
+      "gratuity",
+      "tip assignment",
+      "staff compensation"
+    ]
+  },
+  {
+    "category": "01-getting-started",
+    "name": "Remaining Balance Resolution",
+    "description": "System to resolve remaining balances after refunds",
+    "complexity": "advanced",
+    "keywords": [
+      "remaining balance",
+      "refunds",
+      "balance resolution"
+    ]
+  },
+  {
+    "category": "01-getting-started",
+    "name": "Staff Schedule Management",
+    "description": "Flexible staff scheduling including bi-weekly alternating schedules",
+    "complexity": "intermediate",
+    "keywords": [
+      "staff schedules",
+      "bi-weekly",
+      "alternating hours",
+      "time blocks"
+    ]
+  },
+  {
+    "category": "01-getting-started",
+    "name": "Cash Drawer Management",
+    "description": "Complete cash drawer tracking and management",
+    "complexity": "intermediate",
+    "keywords": [
+      "cash drawer",
+      "cash management",
+      "counts",
+      "closeouts"
+    ]
+  },
+  {
+    "category": "01-getting-started",
+    "name": "Combined Appointment Checkout",
+    "description": "Ability to check out multiple appointments together",
+    "complexity": "intermediate",
+    "keywords": [
+      "combined checkout",
+      "multiple appointments",
+      "shared services"
+    ]
+  },
+  {
+    "category": "01-getting-started",
+    "name": "Automated Marketing",
+    "description": "Built-in marketing automation with flows and campaigns",
+    "complexity": "advanced",
+    "keywords": [
+      "marketing",
+      "automation",
+      "flows",
+      "campaigns",
+      "email marketing"
+    ]
+  },
+  {
+    "category": "01-getting-started",
+    "name": "Platform Navigation",
+    "description": "App-based navigation system for different platform features",
+    "complexity": "basic",
+    "keywords": [
+      "navigation",
+      "apps",
+      "interface",
+      "menu"
+    ]
+  },
+  {
+    "category": "01-getting-started",
+    "name": "Client Switching Notification",
+    "description": "Tools to notify clients about switching to Mangomint",
+    "complexity": "basic",
+    "keywords": [
+      "client notification",
+      "switching",
+      "templates",
+      "communication"
+    ]
+  },
+  {
+    "category": "02-calendar-and-appointments",
+    "name": "Time Blocks",
+    "description": "Allows staff to block out time on calendar to override regular work hours and prevent online booking during specific periods",
+    "complexity": "basic",
+    "keywords": [
+      "time blocks",
+      "scheduling",
+      "availability",
+      "calendar management"
+    ]
+  },
+  {
+    "category": "02-calendar-and-appointments",
+    "name": "Group Booking",
+    "description": "Comprehensive system for booking and managing multiple clients together for events like weddings, parties, or group services",
+    "complexity": "advanced",
+    "keywords": [
+      "group booking",
+      "wedding parties",
+      "events",
+      "group appointments",
+      "party booking"
+    ]
+  },
+  {
+    "category": "02-calendar-and-appointments",
+    "name": "Virtual Waiting Room",
+    "description": "Digital waiting room system that allows clients to check in and wait to be called for their appointments",
+    "complexity": "intermediate",
+    "keywords": [
+      "waiting room",
+      "check-in",
+      "queue management",
+      "virtual waiting",
+      "client flow"
+    ]
+  },
+  {
+    "category": "02-calendar-and-appointments",
+    "name": "Client Self Check-In",
+    "description": "Allows clients to check themselves into the waiting room using automated text messages sent before appointments",
+    "complexity": "intermediate",
+    "keywords": [
+      "self check-in",
+      "automated check-in",
+      "contactless",
+      "client convenience"
+    ]
+  },
+  {
+    "category": "02-calendar-and-appointments",
+    "name": "Client Self Checkout",
+    "description": "Enables clients to complete payment process directly on their mobile devices via text message links",
+    "complexity": "intermediate",
+    "keywords": [
+      "self checkout",
+      "mobile payment",
+      "contactless payment",
+      "tips",
+      "receipts"
+    ]
+  },
+  {
+    "category": "02-calendar-and-appointments",
+    "name": "Appointment Management",
+    "description": "Core appointment creation, editing, and management system with comprehensive scheduling capabilities",
+    "complexity": "basic",
+    "keywords": [
+      "appointments",
+      "scheduling",
+      "calendar",
+      "booking",
+      "drag and drop"
+    ]
+  },
+  {
+    "category": "02-calendar-and-appointments",
+    "name": "Appointment Cancellation and Deletion",
+    "description": "Comprehensive system for managing appointment cancellations with policy enforcement and various cancellation types",
+    "complexity": "intermediate",
+    "keywords": [
+      "cancellation",
+      "no-show",
+      "appointment deletion",
+      "policy enforcement"
+    ]
+  },
+  {
+    "category": "02-calendar-and-appointments",
+    "name": "Repeating Appointments",
+    "description": "System for creating and managing recurring appointments with flexible frequency options and update capabilities",
+    "complexity": "intermediate",
+    "keywords": [
+      "recurring appointments",
+      "repeating",
+      "series",
+      "regular bookings"
+    ]
+  },
+  {
+    "category": "02-calendar-and-appointments",
+    "name": "Express Booking\u2122",
+    "description": "Streamlined booking process that sends clients text links to complete appointment details and payments",
+    "complexity": "advanced",
+    "keywords": [
+      "express booking",
+      "text booking",
+      "streamlined booking",
+      "payment collection"
+    ]
+  },
+  {
+    "category": "02-calendar-and-appointments",
+    "name": "Resources Management",
+    "description": "Comprehensive system for managing rooms, equipment, and limited resources with booking requirements and availability controls",
+    "complexity": "advanced",
+    "keywords": [
+      "resources",
+      "rooms",
+      "equipment",
+      "capacity management",
+      "resource scheduling"
+    ]
+  },
+  {
+    "category": "02-calendar-and-appointments",
+    "name": "Intelligent Waitlist",
+    "description": "Smart waitlist system that automatically identifies appointment openings and facilitates rebooking from waitlist entries",
+    "complexity": "advanced",
+    "keywords": [
+      "waitlist",
+      "cancellation fill",
+      "rebooking",
+      "availability matching"
+    ]
+  },
+  {
+    "category": "02-calendar-and-appointments",
+    "name": "Processing, Finishing, and Buffer Times",
+    "description": "Advanced service timing system that allows for complex service workflows with different time phases",
+    "complexity": "advanced",
+    "keywords": [
+      "processing time",
+      "buffer time",
+      "service timing",
+      "workflow management"
+    ]
+  },
+  {
+    "category": "02-calendar-and-appointments",
+    "name": "Cancellation Policy Enforcement",
+    "description": "System for enforcing cancellation policies through fees and payment collection",
+    "complexity": "intermediate",
+    "keywords": [
+      "cancellation policy",
+      "fees",
+      "no-show charges",
+      "policy enforcement"
+    ]
+  },
+  {
+    "category": "02-calendar-and-appointments",
+    "name": "Appointment Printing",
+    "description": "Print functionality for appointment details and client appointment lists",
+    "complexity": "basic",
+    "keywords": [
+      "printing",
+      "appointment details",
+      "client records",
+      "documentation"
+    ]
+  },
+  {
+    "category": "02-calendar-and-appointments",
+    "name": "Form Integration",
+    "description": "Integration system for adding and managing forms within appointments",
+    "complexity": "intermediate",
+    "keywords": [
+      "forms",
+      "intake",
+      "client information",
+      "documentation"
+    ]
+  },
+  {
+    "category": "03-sales-and-checkout",
+    "name": "Manual Discount Application",
+    "description": "Apply discounts during checkout including price discounts, percentage discounts, or combination of both",
+    "complexity": "basic",
+    "keywords": [
+      "discount",
+      "checkout",
+      "pricing",
+      "manual"
+    ]
+  },
+  {
+    "category": "03-sales-and-checkout",
+    "name": "Product Returns - Non-Credit Card",
+    "description": "Complete product returns for items purchased with cash, gift cards, or other non-credit card methods",
+    "complexity": "intermediate",
+    "keywords": [
+      "returns",
+      "refunds",
+      "inventory",
+      "commission"
+    ]
+  },
+  {
+    "category": "03-sales-and-checkout",
+    "name": "Cash Tip Payout",
+    "description": "Pay out staff member tips in cash from the cash drawer",
+    "complexity": "intermediate",
+    "keywords": [
+      "tips",
+      "cash",
+      "payout",
+      "staff"
+    ]
+  },
+  {
+    "category": "03-sales-and-checkout",
+    "name": "Barcode Scanner Integration",
+    "description": "Use Bluetooth or USB barcode scanners to scan products during checkout",
+    "complexity": "basic",
+    "keywords": [
+      "barcode",
+      "scanner",
+      "products",
+      "checkout"
+    ]
+  },
+  {
+    "category": "03-sales-and-checkout",
+    "name": "Product Returns - Credit Card",
+    "description": "Complete product returns for items purchased with credit cards including voiding or updating sales",
+    "complexity": "advanced",
+    "keywords": [
+      "credit card",
+      "returns",
+      "voiding",
+      "refunds"
+    ]
+  },
+  {
+    "category": "03-sales-and-checkout",
+    "name": "Sales App Navigation",
+    "description": "Navigate, filter, and export sales data with comprehensive reporting options",
+    "complexity": "intermediate",
+    "keywords": [
+      "sales",
+      "reporting",
+      "export",
+      "filtering"
+    ]
+  },
+  {
+    "category": "03-sales-and-checkout",
+    "name": "Receipt Management",
+    "description": "Send receipts via email or print receipts after completing sales",
+    "complexity": "basic",
+    "keywords": [
+      "receipt",
+      "email",
+      "print",
+      "customer"
+    ]
+  },
+  {
+    "category": "03-sales-and-checkout",
+    "name": "Sales Reports",
+    "description": "Comprehensive sales reporting including summary, service sales, product sales, and time period reports",
+    "complexity": "intermediate",
+    "keywords": [
+      "reports",
+      "analytics",
+      "sales",
+      "tracking"
+    ]
+  },
+  {
+    "category": "03-sales-and-checkout",
+    "name": "Gift Card Sales",
+    "description": "Sell gift cards during appointment checkout with automatic number generation",
+    "complexity": "basic",
+    "keywords": [
+      "gift cards",
+      "sales",
+      "digital",
+      "barcode"
+    ]
+  },
+  {
+    "category": "03-sales-and-checkout",
+    "name": "Single Payment Refunds",
+    "description": "Refund individual payments within sales that have multiple payment methods",
+    "complexity": "intermediate",
+    "keywords": [
+      "refunds",
+      "payments",
+      "partial",
+      "flexible"
+    ]
+  },
+  {
+    "category": "03-sales-and-checkout",
+    "name": "Credit Card Refunds",
+    "description": "Complete credit card refunds with two-step process: payment refund and sale adjustment",
+    "complexity": "advanced",
+    "keywords": [
+      "credit card",
+      "refunds",
+      "processing",
+      "sales"
+    ]
+  },
+  {
+    "category": "03-sales-and-checkout",
+    "name": "Advanced Payment Settings",
+    "description": "Customize payment and checkout settings including tips, signatures, and payment methods",
+    "complexity": "advanced",
+    "keywords": [
+      "payments",
+      "settings",
+      "customization",
+      "checkout"
+    ]
+  },
+  {
+    "category": "03-sales-and-checkout",
+    "name": "Tip Management",
+    "description": "Add and split tips between staff members with automatic or custom allocation",
+    "complexity": "intermediate",
+    "keywords": [
+      "tips",
+      "splitting",
+      "staff",
+      "gratuity"
+    ]
+  },
+  {
+    "category": "03-sales-and-checkout",
+    "name": "Split Service Checkouts",
+    "description": "Split services into separate checkouts when staff have different payment accounts",
+    "complexity": "intermediate",
+    "keywords": [
+      "split",
+      "services",
+      "payments",
+      "accounts"
+    ]
+  },
+  {
+    "category": "03-sales-and-checkout",
+    "name": "Automatic Surcharges",
+    "description": "Automatically add surcharges or fees to every checkout using products",
+    "complexity": "intermediate",
+    "keywords": [
+      "surcharge",
+      "fees",
+      "automatic",
+      "products"
+    ]
+  },
+  {
+    "category": "03-sales-and-checkout",
+    "name": "Deposit Refunds",
+    "description": "Refund deposits to client account balance for future use",
+    "complexity": "intermediate",
+    "keywords": [
+      "deposit",
+      "refund",
+      "account balance",
+      "credit"
+    ]
+  },
+  {
+    "category": "03-sales-and-checkout",
+    "name": "Membership Redemption",
+    "description": "Redeem service-based memberships during checkout with price adjustments",
+    "complexity": "intermediate",
+    "keywords": [
+      "membership",
+      "redemption",
+      "services",
+      "checkout"
+    ]
+  },
+  {
+    "category": "03-sales-and-checkout",
+    "name": "Product Exchanges",
+    "description": "Complete product exchanges with commission adjustment and inventory management",
+    "complexity": "advanced",
+    "keywords": [
+      "exchange",
+      "products",
+      "commission",
+      "inventory"
+    ]
+  },
+  {
+    "category": "03-sales-and-checkout",
+    "name": "Zero-Balance Tip Collection",
+    "description": "Collect tips on sales with zero balance using credit card or self checkout",
+    "complexity": "intermediate",
+    "keywords": [
+      "tips",
+      "zero balance",
+      "credit card",
+      "self checkout"
+    ]
+  },
+  {
+    "category": "03-sales-and-checkout",
+    "name": "Checkout Discard",
+    "description": "Discard existing checkouts that haven't been paid to make changes or start over",
+    "complexity": "basic",
+    "keywords": [
+      "discard",
+      "checkout",
+      "cancel",
+      "modify"
+    ]
+  },
+  {
+    "category": "03-sales-and-checkout",
+    "name": "Sale Voiding",
+    "description": "Void entire sales with automatic payment refunding and reporting accuracy",
+    "complexity": "advanced",
+    "keywords": [
+      "void",
+      "sales",
+      "refund",
+      "reverse"
+    ]
+  },
+  {
+    "category": "03-sales-and-checkout",
+    "name": "Package Redemption",
+    "description": "Redeem service packages during checkout with price adjustment capabilities",
+    "complexity": "intermediate",
+    "keywords": [
+      "package",
+      "redemption",
+      "services",
+      "pricing"
+    ]
+  },
+  {
+    "category": "03-sales-and-checkout",
+    "name": "Walk-in Checkout",
+    "description": "Start checkout without appointment for product sales, packages, or services",
+    "complexity": "basic",
+    "keywords": [
+      "walk-in",
+      "checkout",
+      "no appointment",
+      "sales"
+    ]
+  },
+  {
+    "category": "03-sales-and-checkout",
+    "name": "Streamlined Refund Process",
+    "description": "Complete all refund steps in one workflow including commission and inventory adjustments",
+    "complexity": "advanced",
+    "keywords": [
+      "refund",
+      "streamlined",
+      "commission",
+      "inventory"
+    ]
+  },
+  {
+    "category": "03-sales-and-checkout",
+    "name": "Gift Card Redemption",
+    "description": "Redeem gift cards during checkout with barcode scanning and balance tracking",
+    "complexity": "basic",
+    "keywords": [
+      "gift card",
+      "redemption",
+      "barcode",
+      "balance"
+    ]
+  },
+  {
+    "category": "03-sales-and-checkout",
+    "name": "Payment Reversals",
+    "description": "Reverse individual payments with status tracking and reporting accuracy",
+    "complexity": "intermediate",
+    "keywords": [
+      "reverse",
+      "payments",
+      "void",
+      "balance"
+    ]
+  },
+  {
+    "category": "03-sales-and-checkout",
+    "name": "Assistant Tip Assignment",
+    "description": "Assign portions of tips to assistants or staff for resource-only services",
+    "complexity": "intermediate",
+    "keywords": [
+      "assistant",
+      "tips",
+      "assignment",
+      "splitting"
+    ]
+  },
+  {
+    "category": "03-sales-and-checkout",
+    "name": "Account Balance Returns",
+    "description": "Complete product returns with refund to client account balance for future use",
+    "complexity": "intermediate",
+    "keywords": [
+      "account balance",
+      "returns",
+      "credit",
+      "future use"
+    ]
+  },
+  {
+    "category": "03-sales-and-checkout",
+    "name": "Saved Checkouts",
+    "description": "Save checkout progress for later completion when interrupted or switching tasks",
+    "complexity": "basic",
+    "keywords": [
+      "save",
+      "checkout",
+      "later",
+      "progress"
+    ]
+  },
+  {
+    "category": "04-clients",
+    "name": "Client Portal",
+    "description": "Self-service portal allowing clients to manage appointments, memberships, and packages online",
+    "complexity": "intermediate",
+    "keywords": [
+      "client portal",
+      "self-service",
+      "online management",
+      "appointments",
+      "memberships"
+    ]
+  },
+  {
+    "category": "04-clients",
+    "name": "Client List Management",
+    "description": "Comprehensive client database with search, filter, and management capabilities",
+    "complexity": "basic",
+    "keywords": [
+      "client list",
+      "search",
+      "filter",
+      "export",
+      "merge",
+      "database"
+    ]
+  },
+  {
+    "category": "04-clients",
+    "name": "Client Details & Profile Management",
+    "description": "Detailed client profiles with comprehensive information storage",
+    "complexity": "basic",
+    "keywords": [
+      "client profile",
+      "details",
+      "contact information",
+      "notes",
+      "preferences"
+    ]
+  },
+  {
+    "category": "04-clients",
+    "name": "Client Timeline",
+    "description": "Automatic chronological record of all client interactions and activities",
+    "complexity": "basic",
+    "keywords": [
+      "timeline",
+      "history",
+      "appointments",
+      "sales",
+      "forms",
+      "tracking"
+    ]
+  },
+  {
+    "category": "04-clients",
+    "name": "Client Account Balances",
+    "description": "Account balance system allowing clients to prepay and use credits as payment",
+    "complexity": "advanced",
+    "keywords": [
+      "account balance",
+      "prepaid",
+      "credits",
+      "payment method",
+      "deposits"
+    ]
+  },
+  {
+    "category": "04-clients",
+    "name": "Client Membership Management",
+    "description": "Comprehensive membership lifecycle management for clients",
+    "complexity": "advanced",
+    "keywords": [
+      "memberships",
+      "billing",
+      "pause",
+      "resume",
+      "cancel",
+      "services"
+    ]
+  },
+  {
+    "category": "04-clients",
+    "name": "Waiver Collection Integration",
+    "description": "Integration with WaiverForever for digital waiver collection",
+    "complexity": "intermediate",
+    "keywords": [
+      "waivers",
+      "WaiverForever",
+      "digital",
+      "automated",
+      "compliance"
+    ]
+  },
+  {
+    "category": "04-clients",
+    "name": "Client Forms Management",
+    "description": "Digital form system for client intake and information collection",
+    "complexity": "intermediate",
+    "keywords": [
+      "forms",
+      "intake",
+      "digital",
+      "completion",
+      "reminders"
+    ]
+  },
+  {
+    "category": "04-clients",
+    "name": "Client Marketing & Campaigns",
+    "description": "Advanced client segmentation and marketing campaign tools",
+    "complexity": "advanced",
+    "keywords": [
+      "marketing",
+      "campaigns",
+      "filters",
+      "segmentation",
+      "email",
+      "targeting"
+    ]
+  },
+  {
+    "category": "04-clients",
+    "name": "Online Booking Client Experience",
+    "description": "Client-facing online booking system with comprehensive features",
+    "complexity": "advanced",
+    "keywords": [
+      "online booking",
+      "self-service",
+      "convenience",
+      "customization",
+      "waitlist"
+    ]
+  },
+  {
+    "category": "04-clients",
+    "name": "Client Ownership System",
+    "description": "Staff-based client assignment system for booth renters and team management",
+    "complexity": "intermediate",
+    "keywords": [
+      "ownership",
+      "staff",
+      "booth rental",
+      "assignment",
+      "privacy"
+    ]
+  },
+  {
+    "category": "04-clients",
+    "name": "Package Transfer System",
+    "description": "Ability to transfer service packages between clients",
+    "complexity": "intermediate",
+    "keywords": [
+      "packages",
+      "transfer",
+      "sharing",
+      "flexibility",
+      "ownership"
+    ]
+  },
+  {
+    "category": "04-clients",
+    "name": "Client Appointment Self-Management",
+    "description": "Client portal features for appointment rescheduling and cancellation",
+    "complexity": "intermediate",
+    "keywords": [
+      "self-service",
+      "reschedule",
+      "cancel",
+      "appointments",
+      "flexibility"
+    ]
+  },
+  {
+    "category": "04-clients",
+    "name": "Client Reporting & Analytics",
+    "description": "Comprehensive reporting system for client account balances and usage",
+    "complexity": "intermediate",
+    "keywords": [
+      "reports",
+      "analytics",
+      "usage",
+      "deposits",
+      "balances",
+      "tracking"
+    ]
+  },
+  {
+    "category": "05-memberships",
+    "name": "Service-Based Membership Plans",
+    "description": "Create membership plans that include redeemable services with flexible service groups and billing intervals",
+    "complexity": "intermediate",
+    "keywords": [
+      "service-based",
+      "membership plans",
+      "billing intervals",
+      "service groups",
+      "redemption"
+    ]
+  },
+  {
+    "category": "05-memberships",
+    "name": "Account Balance Membership Plans",
+    "description": "Membership plans that add money to client account balance instead of providing specific services",
+    "complexity": "basic",
+    "keywords": [
+      "account balance",
+      "credit",
+      "flexible payments",
+      "recurring revenue"
+    ]
+  },
+  {
+    "category": "05-memberships",
+    "name": "Membership Agreements",
+    "description": "Digital agreements that clients must sign before starting memberships",
+    "complexity": "intermediate",
+    "keywords": [
+      "agreements",
+      "digital signature",
+      "legal protection",
+      "client expectations"
+    ]
+  },
+  {
+    "category": "05-memberships",
+    "name": "Online Membership Sales",
+    "description": "Sell memberships directly through online booking and website integration",
+    "complexity": "intermediate",
+    "keywords": [
+      "online sales",
+      "website integration",
+      "direct links",
+      "24/7 availability"
+    ]
+  },
+  {
+    "category": "05-memberships",
+    "name": "Member Discounts",
+    "description": "Exclusive discounts for members on products and additional services",
+    "complexity": "basic",
+    "keywords": [
+      "member discounts",
+      "exclusive offers",
+      "automatic discounts",
+      "loyalty"
+    ]
+  },
+  {
+    "category": "05-memberships",
+    "name": "Membership Settings and Configuration",
+    "description": "Comprehensive settings for managing membership billing, locations, and client permissions",
+    "complexity": "basic",
+    "keywords": [
+      "settings",
+      "multi-location",
+      "billing configuration",
+      "client permissions"
+    ]
+  },
+  {
+    "category": "05-memberships",
+    "name": "Client Membership Management",
+    "description": "Tools for managing individual client memberships and their lifecycle",
+    "complexity": "intermediate",
+    "keywords": [
+      "client management",
+      "membership status",
+      "lifecycle management",
+      "payment handling"
+    ]
+  },
+  {
+    "category": "05-memberships",
+    "name": "Membership Version Control",
+    "description": "System to manage different versions of membership plans and client upgrades",
+    "complexity": "advanced",
+    "keywords": [
+      "version control",
+      "plan upgrades",
+      "change management",
+      "notifications"
+    ]
+  },
+  {
+    "category": "05-memberships",
+    "name": "Membership Checkout Integration",
+    "description": "Seamless integration of membership services and discounts during checkout",
+    "complexity": "intermediate",
+    "keywords": [
+      "checkout integration",
+      "service redemption",
+      "discount application",
+      "POS"
+    ]
+  },
+  {
+    "category": "05-memberships",
+    "name": "Membership Reports and Analytics",
+    "description": "Comprehensive reporting on membership performance, payments, and usage",
+    "complexity": "intermediate",
+    "keywords": [
+      "reports",
+      "analytics",
+      "payments",
+      "usage tracking",
+      "revenue"
+    ]
+  },
+  {
+    "category": "05-memberships",
+    "name": "Automated Membership Messaging",
+    "description": "Automated email and text communications for membership lifecycle events",
+    "complexity": "intermediate",
+    "keywords": [
+      "automated messaging",
+      "notifications",
+      "lifecycle communications",
+      "fraud alerts"
+    ]
+  },
+  {
+    "category": "05-memberships",
+    "name": "Membership Plan Ordering",
+    "description": "Drag-and-drop reordering of membership plans for sales presentation",
+    "complexity": "basic",
+    "keywords": [
+      "plan ordering",
+      "drag-and-drop",
+      "sales presentation",
+      "prioritization"
+    ]
+  },
+  {
+    "category": "06-gift-cards-and-packages",
+    "name": "Gift Card Management",
+    "description": "Comprehensive gift card system allowing businesses to sell, track, and manage gift cards both in-store and online",
+    "complexity": "intermediate",
+    "keywords": [
+      "gift cards",
+      "digital gifts",
+      "physical cards",
+      "balance tracking",
+      "online sales"
+    ]
+  },
+  {
+    "category": "06-gift-cards-and-packages",
+    "name": "Gift Card Online Sales",
+    "description": "Enable clients to purchase gift cards directly through website or online booking system",
+    "complexity": "intermediate",
+    "keywords": [
+      "online sales",
+      "website integration",
+      "automated delivery",
+      "digital commerce"
+    ]
+  },
+  {
+    "category": "06-gift-cards-and-packages",
+    "name": "Gift Card Promotions",
+    "description": "Create and manage promotional gift card campaigns with discounted pricing",
+    "complexity": "intermediate",
+    "keywords": [
+      "promotions",
+      "discounts",
+      "campaigns",
+      "seasonal sales",
+      "marketing"
+    ]
+  },
+  {
+    "category": "06-gift-cards-and-packages",
+    "name": "Gift Card Reporting",
+    "description": "Comprehensive reporting suite for gift card sales, usage, and outstanding balances",
+    "complexity": "basic",
+    "keywords": [
+      "reporting",
+      "analytics",
+      "usage tracking",
+      "sales metrics",
+      "balances"
+    ]
+  },
+  {
+    "category": "06-gift-cards-and-packages",
+    "name": "Gift Up! Integration",
+    "description": "Third-party integration with Gift Up! for enhanced gift card functionality",
+    "complexity": "advanced",
+    "keywords": [
+      "third-party integration",
+      "Gift Up!",
+      "API integration",
+      "external platform"
+    ]
+  },
+  {
+    "category": "06-gift-cards-and-packages",
+    "name": "Package Management",
+    "description": "Create and manage service packages with bundled offerings and quantity tracking",
+    "complexity": "intermediate",
+    "keywords": [
+      "packages",
+      "bundles",
+      "service packages",
+      "quantity tracking",
+      "discounts"
+    ]
+  },
+  {
+    "category": "06-gift-cards-and-packages",
+    "name": "Package Online Sales",
+    "description": "Enable online package sales through website and booking system",
+    "complexity": "intermediate",
+    "keywords": [
+      "online sales",
+      "package sales",
+      "agreements",
+      "digital commerce",
+      "automation"
+    ]
+  },
+  {
+    "category": "06-gift-cards-and-packages",
+    "name": "Package Reporting",
+    "description": "Detailed reporting for package sales, usage, and outstanding credits",
+    "complexity": "basic",
+    "keywords": [
+      "reporting",
+      "package analytics",
+      "sales tracking",
+      "liability management"
+    ]
+  },
+  {
+    "category": "06-gift-cards-and-packages",
+    "name": "In-Store Gift Card Sales",
+    "description": "Point of sale gift card functionality for in-person transactions",
+    "complexity": "basic",
+    "keywords": [
+      "point of sale",
+      "in-store sales",
+      "barcode scanning",
+      "checkout"
+    ]
+  },
+  {
+    "category": "06-gift-cards-and-packages",
+    "name": "In-Store Package Sales",
+    "description": "Point of sale package functionality for in-person transactions",
+    "complexity": "basic",
+    "keywords": [
+      "point of sale",
+      "package sales",
+      "in-store",
+      "immediate activation"
+    ]
+  },
+  {
+    "category": "06-gift-cards-and-packages",
+    "name": "Gift Card Redemption",
+    "description": "System for redeeming gift cards during service checkout",
+    "complexity": "basic",
+    "keywords": [
+      "redemption",
+      "checkout",
+      "balance tracking",
+      "payment processing"
+    ]
+  },
+  {
+    "category": "06-gift-cards-and-packages",
+    "name": "Package Redemption",
+    "description": "System for using package credits during service appointments",
+    "complexity": "basic",
+    "keywords": [
+      "package redemption",
+      "credits",
+      "service application",
+      "usage tracking"
+    ]
+  },
+  {
+    "category": "06-gift-cards-and-packages",
+    "name": "Automated Messaging",
+    "description": "Automated email communications for gift cards and packages",
+    "complexity": "intermediate",
+    "keywords": [
+      "automated messaging",
+      "email notifications",
+      "customer communication",
+      "fraud alerts"
+    ]
+  },
+  {
+    "category": "06-gift-cards-and-packages",
+    "name": "Physical Gift Card Support",
+    "description": "Support for physical gift card ordering and management",
+    "complexity": "intermediate",
+    "keywords": [
+      "physical cards",
+      "branding",
+      "barcode",
+      "inventory",
+      "custom artwork"
+    ]
+  },
+  {
+    "category": "06-gift-cards-and-packages",
+    "name": "Tip Assignment for Gift Cards/Packages",
+    "description": "Handle tip assignment when selling gift cards or packages only",
+    "complexity": "advanced",
+    "keywords": [
+      "tip assignment",
+      "staff compensation",
+      "transaction management",
+      "sales completion"
+    ]
+  },
+  {
+    "category": "07-products-and-inventory",
+    "name": "Product Management",
+    "description": "Comprehensive system for creating and managing product catalog with detailed product information",
+    "complexity": "intermediate",
+    "keywords": [
+      "products",
+      "catalog",
+      "pricing",
+      "SKU",
+      "barcode",
+      "categories",
+      "brands"
+    ]
+  },
+  {
+    "category": "07-products-and-inventory",
+    "name": "Product Categories Management",
+    "description": "System for organizing products into hierarchical categories with special handling for professional-use items",
+    "complexity": "basic",
+    "keywords": [
+      "categories",
+      "non-retail",
+      "backbar",
+      "professional",
+      "organization"
+    ]
+  },
+  {
+    "category": "07-products-and-inventory",
+    "name": "Inventory Tracking",
+    "description": "Real-time inventory management system that automatically updates stock levels based on sales and manual adjustments",
+    "complexity": "intermediate",
+    "keywords": [
+      "inventory",
+      "stock",
+      "tracking",
+      "recount",
+      "adjustments",
+      "professional use"
+    ]
+  },
+  {
+    "category": "07-products-and-inventory",
+    "name": "Purchase Order Management",
+    "description": "Complete system for creating, managing, and fulfilling purchase orders with supplier integration",
+    "complexity": "advanced",
+    "keywords": [
+      "purchase orders",
+      "PO",
+      "suppliers",
+      "ordering",
+      "procurement",
+      "automatic calculations"
+    ]
+  },
+  {
+    "category": "07-products-and-inventory",
+    "name": "Supplier Management",
+    "description": "System for managing product suppliers and their relationships with inventory items",
+    "complexity": "basic",
+    "keywords": [
+      "suppliers",
+      "vendors",
+      "procurement",
+      "relationships"
+    ]
+  },
+  {
+    "category": "07-products-and-inventory",
+    "name": "Product Search and Filtering",
+    "description": "Advanced search capabilities for quickly finding products using multiple criteria",
+    "complexity": "basic",
+    "keywords": [
+      "search",
+      "filter",
+      "SKU",
+      "barcode",
+      "sorting",
+      "product lookup"
+    ]
+  },
+  {
+    "category": "07-products-and-inventory",
+    "name": "Inventory Reporting",
+    "description": "Comprehensive reporting suite for inventory analysis, costs, and usage tracking",
+    "complexity": "intermediate",
+    "keywords": [
+      "reports",
+      "cost of goods",
+      "inventory analysis",
+      "usage",
+      "profit",
+      "analytics"
+    ]
+  },
+  {
+    "category": "07-products-and-inventory",
+    "name": "Product Commission System",
+    "description": "Flexible commission structure for staff members on product sales with multiple calculation methods",
+    "complexity": "advanced",
+    "keywords": [
+      "commission",
+      "compensation",
+      "sales incentives",
+      "sliding scale",
+      "staff earnings"
+    ]
+  },
+  {
+    "category": "07-products-and-inventory",
+    "name": "Barcode Integration",
+    "description": "Support for barcode scanning and management throughout the product and sales process",
+    "complexity": "intermediate",
+    "keywords": [
+      "barcode",
+      "scanning",
+      "checkout",
+      "accuracy",
+      "automation"
+    ]
+  },
+  {
+    "category": "07-products-and-inventory",
+    "name": "Tax Management",
+    "description": "Product-level tax configuration system for compliance and accurate pricing",
+    "complexity": "basic",
+    "keywords": [
+      "tax",
+      "compliance",
+      "pricing",
+      "sales tax",
+      "configuration"
+    ]
+  },
+  {
+    "category": "08-services",
+    "name": "Groupon Integration",
+    "description": "Track and redeem services sold through Groupon or other promotional websites",
+    "complexity": "intermediate",
+    "keywords": [
+      "groupon",
+      "promotion",
+      "tracking",
+      "pre-paid",
+      "commission"
+    ]
+  },
+  {
+    "category": "08-services",
+    "name": "Service Provider Management",
+    "description": "Change staff members assigned to services on closed sales",
+    "complexity": "basic",
+    "keywords": [
+      "staff",
+      "provider",
+      "assignment",
+      "closed sale",
+      "reopen"
+    ]
+  },
+  {
+    "category": "08-services",
+    "name": "Couples Services",
+    "description": "Services requiring two staff members working simultaneously",
+    "complexity": "intermediate",
+    "keywords": [
+      "couples",
+      "two staff",
+      "commission split",
+      "massage",
+      "simultaneous"
+    ]
+  },
+  {
+    "category": "08-services",
+    "name": "Online Booking for Services",
+    "description": "Enable services to be booked through online booking platform",
+    "complexity": "advanced",
+    "keywords": [
+      "online booking",
+      "payment",
+      "deposit",
+      "credit card",
+      "minimum price"
+    ]
+  },
+  {
+    "category": "08-services",
+    "name": "Service Deletion Management",
+    "description": "Delete services and categories while preserving existing appointments",
+    "complexity": "basic",
+    "keywords": [
+      "delete",
+      "remove",
+      "categories",
+      "appointments",
+      "multi-location"
+    ]
+  },
+  {
+    "category": "08-services",
+    "name": "Service Customizations",
+    "description": "Flexible add-ons and modifications for services to create personalized experiences",
+    "complexity": "advanced",
+    "keywords": [
+      "customizations",
+      "add-ons",
+      "options",
+      "personalized",
+      "flexible"
+    ]
+  },
+  {
+    "category": "08-services",
+    "name": "Service Creation and Management",
+    "description": "Create and organize service categories and individual services",
+    "complexity": "intermediate",
+    "keywords": [
+      "create",
+      "categories",
+      "duration",
+      "pricing",
+      "organization"
+    ]
+  },
+  {
+    "category": "08-services",
+    "name": "Staff-Service Assignment",
+    "description": "Link services to staff members with individual customizations",
+    "complexity": "intermediate",
+    "keywords": [
+      "staff assignment",
+      "individual pricing",
+      "commission",
+      "online booking"
+    ]
+  },
+  {
+    "category": "08-services",
+    "name": "Service Customization During Booking",
+    "description": "Apply service customizations at the time of booking from calendar or online",
+    "complexity": "basic",
+    "keywords": [
+      "booking",
+      "customization",
+      "calendar",
+      "checkout",
+      "real-time"
+    ]
+  },
+  {
+    "category": "08-services",
+    "name": "Base Price Display for Customizations",
+    "description": "Show combined service and option prices as base prices in online booking",
+    "complexity": "intermediate",
+    "keywords": [
+      "base price",
+      "online booking",
+      "transparent",
+      "pricing"
+    ]
+  },
+  {
+    "category": "08-services",
+    "name": "Service Tax Management",
+    "description": "Enable or disable taxes on individual services",
+    "complexity": "basic",
+    "keywords": [
+      "taxes",
+      "enable",
+      "disable",
+      "compliance"
+    ]
+  },
+  {
+    "category": "08-services",
+    "name": "Resource-Only Services",
+    "description": "Services that require only resources without staff members",
+    "complexity": "intermediate",
+    "keywords": [
+      "resources",
+      "no staff",
+      "equipment",
+      "facility"
+    ]
+  },
+  {
+    "category": "08-services",
+    "name": "Commission Deductions",
+    "description": "Apply pre and post-commission deductions to services",
+    "complexity": "intermediate",
+    "keywords": [
+      "commission",
+      "deductions",
+      "backbar",
+      "fees"
+    ]
+  },
+  {
+    "category": "09-staff-and-payroll",
+    "name": "Staff Member Management",
+    "description": "Comprehensive system for adding, managing, and organizing staff members with profile management, permissions, and work assignments",
+    "complexity": "intermediate",
+    "keywords": [
+      "staff",
+      "members",
+      "profile",
+      "permissions",
+      "add",
+      "invite",
+      "archive"
+    ]
+  },
+  {
+    "category": "09-staff-and-payroll",
+    "name": "Staff Permissions System",
+    "description": "Granular permission control system allowing detailed access management across all system functionality",
+    "complexity": "advanced",
+    "keywords": [
+      "permissions",
+      "access",
+      "control",
+      "security",
+      "roles",
+      "admin"
+    ]
+  },
+  {
+    "category": "09-staff-and-payroll",
+    "name": "Staff Work Hours and Scheduling",
+    "description": "Complete work hour management system with schedule creation, alternating schedules, and days off management",
+    "complexity": "intermediate",
+    "keywords": [
+      "schedule",
+      "hours",
+      "availability",
+      "days off",
+      "work",
+      "calendar"
+    ]
+  },
+  {
+    "category": "09-staff-and-payroll",
+    "name": "Time Clock System",
+    "description": "Digital time tracking system with PIN-based clock in/out, task type tracking, and administrative management",
+    "complexity": "intermediate",
+    "keywords": [
+      "time clock",
+      "PIN",
+      "clock in",
+      "clock out",
+      "tasks",
+      "hours"
+    ]
+  },
+  {
+    "category": "09-staff-and-payroll",
+    "name": "Staff Compensation Management",
+    "description": "Comprehensive compensation system supporting multiple payment methods and commission structures",
+    "complexity": "advanced",
+    "keywords": [
+      "compensation",
+      "commission",
+      "salary",
+      "hourly",
+      "pay"
+    ]
+  },
+  {
+    "category": "09-staff-and-payroll",
+    "name": "Full Payroll Processing",
+    "description": "Complete payroll solution with tax calculation, filing, direct deposit, and compliance management",
+    "complexity": "advanced",
+    "keywords": [
+      "payroll",
+      "taxes",
+      "direct deposit",
+      "W2",
+      "1099",
+      "compliance"
+    ]
+  },
+  {
+    "category": "09-staff-and-payroll",
+    "name": "Payroll Reporting",
+    "description": "Comprehensive payroll reporting system with detailed compensation breakdowns and adjustments",
+    "complexity": "intermediate",
+    "keywords": [
+      "payroll report",
+      "compensation",
+      "adjustments",
+      "export",
+      "analysis"
+    ]
+  },
+  {
+    "category": "09-staff-and-payroll",
+    "name": "Multiple Payroll Accounts",
+    "description": "Support for multiple legal entities with separate payroll accounts and location assignments",
+    "complexity": "advanced",
+    "keywords": [
+      "multiple accounts",
+      "EIN",
+      "entities",
+      "locations",
+      "separate"
+    ]
+  },
+  {
+    "category": "09-staff-and-payroll",
+    "name": "Staff Payment Accounts",
+    "description": "Individual payment processing accounts for independent contractors and booth renters",
+    "complexity": "advanced",
+    "keywords": [
+      "payment accounts",
+      "contractors",
+      "booth rental",
+      "independent",
+      "payments"
+    ]
+  },
+  {
+    "category": "09-staff-and-payroll",
+    "name": "Online Booking Staff Selection",
+    "description": "Customer-facing staff selection options with gender preferences and flexible assignment rules",
+    "complexity": "intermediate",
+    "keywords": [
+      "online booking",
+      "staff selection",
+      "gender",
+      "anyone",
+      "customer choice"
+    ]
+  },
+  {
+    "category": "09-staff-and-payroll",
+    "name": "Staff Notifications",
+    "description": "Multi-channel notification system for staff with customizable preferences and event triggers",
+    "complexity": "intermediate",
+    "keywords": [
+      "notifications",
+      "SMS",
+      "email",
+      "push",
+      "alerts",
+      "messages"
+    ]
+  },
+  {
+    "category": "09-staff-and-payroll",
+    "name": "Password Management",
+    "description": "Secure password management system for staff accounts with reset and invitation capabilities",
+    "complexity": "basic",
+    "keywords": [
+      "password",
+      "reset",
+      "security",
+      "login",
+      "authentication"
+    ]
+  },
+  {
+    "category": "10-email-marketing",
+    "name": "Custom Email Address Setup",
+    "description": "Send email campaigns and flow emails from a branded custom email address instead of the default mangomint-email.com domain",
+    "complexity": "intermediate",
+    "keywords": [
+      "custom",
+      "domain",
+      "email",
+      "branding",
+      "DNS",
+      "sender"
+    ]
+  },
+  {
+    "category": "10-email-marketing",
+    "name": "Mailchimp Integration",
+    "description": "Sync client details from Mangomint to Mailchimp for external email marketing campaigns",
+    "complexity": "intermediate",
+    "keywords": [
+      "mailchimp",
+      "integration",
+      "sync",
+      "audience",
+      "API"
+    ]
+  },
+  {
+    "category": "10-email-marketing",
+    "name": "Email Campaign Management",
+    "description": "Create, send, and manage email marketing campaigns directly within Mangomint",
+    "complexity": "basic",
+    "keywords": [
+      "campaigns",
+      "email",
+      "marketing",
+      "draft",
+      "schedule"
+    ]
+  },
+  {
+    "category": "10-email-marketing",
+    "name": "Campaign Performance Analytics",
+    "description": "Track and analyze email campaign performance with detailed metrics and reporting",
+    "complexity": "basic",
+    "keywords": [
+      "analytics",
+      "performance",
+      "tracking",
+      "metrics",
+      "reporting"
+    ]
+  },
+  {
+    "category": "10-email-marketing",
+    "name": "Client Data Synchronization",
+    "description": "Automatically sync comprehensive client information for targeted email marketing",
+    "complexity": "intermediate",
+    "keywords": [
+      "sync",
+      "client",
+      "data",
+      "targeting",
+      "segmentation"
+    ]
+  },
+  {
+    "category": "10-email-marketing",
+    "name": "Flow Emails",
+    "description": "Automated email sequences that can be sent from custom email addresses",
+    "complexity": "intermediate",
+    "keywords": [
+      "flows",
+      "automation",
+      "sequences",
+      "triggers"
+    ]
+  },
+  {
+    "category": "10-email-marketing",
+    "name": "DNS Configuration Support",
+    "description": "Guided DNS record setup for custom email domains with provider-specific instructions",
+    "complexity": "advanced",
+    "keywords": [
+      "DNS",
+      "configuration",
+      "setup",
+      "verification",
+      "technical"
+    ]
+  },
+  {
+    "category": "10-email-marketing",
+    "name": "Marketing Eligibility Management",
+    "description": "Track and manage client preferences for email and text marketing communications",
+    "complexity": "basic",
+    "keywords": [
+      "eligibility",
+      "preferences",
+      "opt-in",
+      "compliance"
+    ]
+  },
+  {
+    "category": "11-automated-flows-and-messages",
+    "name": "Web Chat",
+    "description": "Real-time live chat functionality for website visitors to communicate directly with salon/spa staff",
+    "complexity": "intermediate",
+    "keywords": [
+      "web chat",
+      "live chat",
+      "website visitors",
+      "real-time communication",
+      "customer engagement"
+    ]
+  },
+  {
+    "category": "11-automated-flows-and-messages",
+    "name": "Automated Messages",
+    "description": "System for sending automated email and text notifications for appointments, bookings, and business events",
+    "complexity": "basic",
+    "keywords": [
+      "automated messages",
+      "appointment reminders",
+      "booking confirmations",
+      "text messages",
+      "email notifications"
+    ]
+  },
+  {
+    "category": "11-automated-flows-and-messages",
+    "name": "Automated Flows",
+    "description": "Advanced automation system for creating personalized, triggered email and text message sequences based on client behavior and events",
+    "complexity": "advanced",
+    "keywords": [
+      "automated flows",
+      "triggers",
+      "personalization",
+      "marketing automation",
+      "client journey",
+      "rebooking",
+      "cross-sell",
+      "upsell"
+    ]
+  },
+  {
+    "category": "11-automated-flows-and-messages",
+    "name": "Flow Message Types",
+    "description": "System for categorizing and managing different types of messages within automated flows",
+    "complexity": "intermediate",
+    "keywords": [
+      "message types",
+      "marketing messages",
+      "non-marketing",
+      "merge tags",
+      "personalization",
+      "compliance"
+    ]
+  },
+  {
+    "category": "11-automated-flows-and-messages",
+    "name": "Form Response Integration",
+    "description": "Capability to use form submissions and responses to trigger and customize automated flows",
+    "complexity": "intermediate",
+    "keywords": [
+      "forms",
+      "form responses",
+      "triggers",
+      "personalization",
+      "client feedback",
+      "automation"
+    ]
+  },
+  {
+    "category": "11-automated-flows-and-messages",
+    "name": "Flow Message Pricing",
+    "description": "Credit-based pricing system for sending emails and text messages through automated flows",
+    "complexity": "basic",
+    "keywords": [
+      "pricing",
+      "marketing credits",
+      "text segments",
+      "message cost",
+      "billing"
+    ]
+  },
+  {
+    "category": "11-automated-flows-and-messages",
+    "name": "Advanced Message Settings",
+    "description": "Advanced configuration options for automated messaging behavior",
+    "complexity": "basic",
+    "keywords": [
+      "advanced settings",
+      "auto-response",
+      "staff names",
+      "conversation management"
+    ]
+  },
+  {
+    "category": "11-automated-flows-and-messages",
+    "name": "Flow Statistics and Analytics",
+    "description": "Comprehensive reporting and analytics system for tracking automated flow performance",
+    "complexity": "intermediate",
+    "keywords": [
+      "analytics",
+      "statistics",
+      "flow performance",
+      "tracking",
+      "reporting",
+      "ROI"
+    ]
+  },
+  {
+    "category": "12-forms-and-waivers",
+    "name": "Forms App",
+    "description": "Comprehensive form creation and management system for custom forms and information collection",
+    "complexity": "intermediate",
+    "keywords": [
+      "forms",
+      "custom forms",
+      "intake forms",
+      "waivers",
+      "consent forms"
+    ]
+  },
+  {
+    "category": "12-forms-and-waivers",
+    "name": "Form Template Creation",
+    "description": "Tool for building and customizing form templates with various field types and settings",
+    "complexity": "intermediate",
+    "keywords": [
+      "form templates",
+      "custom fields",
+      "form builder",
+      "template creation"
+    ]
+  },
+  {
+    "category": "12-forms-and-waivers",
+    "name": "Image Markup",
+    "description": "Visual annotation tool for marking up client photos and image templates on forms",
+    "complexity": "intermediate",
+    "keywords": [
+      "image markup",
+      "visual annotation",
+      "body charts",
+      "face charts",
+      "photo markup"
+    ]
+  },
+  {
+    "category": "12-forms-and-waivers",
+    "name": "Form Submission Management",
+    "description": "System for viewing, tracking, and managing completed form submissions",
+    "complexity": "basic",
+    "keywords": [
+      "form submissions",
+      "form management",
+      "resubmit forms",
+      "form tracking"
+    ]
+  },
+  {
+    "category": "12-forms-and-waivers",
+    "name": "Form Approval Workflow",
+    "description": "Review and approval system for forms requiring professional sign-off",
+    "complexity": "advanced",
+    "keywords": [
+      "form approval",
+      "review workflow",
+      "digital signatures",
+      "compliance",
+      "medical director approval"
+    ]
+  },
+  {
+    "category": "12-forms-and-waivers",
+    "name": "Progress Saving",
+    "description": "Capability to save partial form completion and resume later",
+    "complexity": "intermediate",
+    "keywords": [
+      "save progress",
+      "partial completion",
+      "form collaboration",
+      "draft forms"
+    ]
+  },
+  {
+    "category": "12-forms-and-waivers",
+    "name": "External Forms",
+    "description": "Public forms that can be shared via links for external use",
+    "complexity": "basic",
+    "keywords": [
+      "external forms",
+      "public forms",
+      "website forms",
+      "appointment requests"
+    ]
+  },
+  {
+    "category": "12-forms-and-waivers",
+    "name": "Form Field Types",
+    "description": "Various input field types for comprehensive data collection",
+    "complexity": "basic",
+    "keywords": [
+      "form fields",
+      "field types",
+      "client data",
+      "profile sync",
+      "pronouns"
+    ]
+  },
+  {
+    "category": "12-forms-and-waivers",
+    "name": "WaiverForever Integration",
+    "description": "Third-party integration for advanced waiver creation and management",
+    "complexity": "advanced",
+    "keywords": [
+      "WaiverForever",
+      "waiver integration",
+      "liability waivers",
+      "third-party integration"
+    ]
+  },
+  {
+    "category": "12-forms-and-waivers",
+    "name": "Form Templates Library",
+    "description": "Access to pre-built form templates and examples for various business types",
+    "complexity": "basic",
+    "keywords": [
+      "form templates",
+      "intake forms",
+      "consent forms",
+      "template library",
+      "industry templates"
+    ]
+  },
+  {
+    "category": "13-online-booking",
+    "name": "Online Booking System",
+    "description": "Allows clients to book appointments online through website or shared links without creating accounts",
+    "complexity": "basic",
+    "keywords": [
+      "online booking",
+      "client booking",
+      "appointment scheduling",
+      "website integration"
+    ]
+  },
+  {
+    "category": "13-online-booking",
+    "name": "Website Integration",
+    "description": "Embed online booking directly into websites using script tags and booking links",
+    "complexity": "intermediate",
+    "keywords": [
+      "website integration",
+      "script tag",
+      "embedding",
+      "overlay widget"
+    ]
+  },
+  {
+    "category": "13-online-booking",
+    "name": "Platform-Specific Setup Guides",
+    "description": "Detailed integration instructions for popular website builders",
+    "complexity": "intermediate",
+    "keywords": [
+      "setup guide",
+      "website builders",
+      "integration tutorial"
+    ]
+  },
+  {
+    "category": "13-online-booking",
+    "name": "Payment Requirements",
+    "description": "Require full payment or partial deposits for online bookings",
+    "complexity": "intermediate",
+    "keywords": [
+      "deposits",
+      "prepayment",
+      "payment collection",
+      "revenue protection"
+    ]
+  },
+  {
+    "category": "13-online-booking",
+    "name": "Credit Card Requirements",
+    "description": "Require credit cards for specific services or staff members in online booking",
+    "complexity": "intermediate",
+    "keywords": [
+      "credit card",
+      "card on file",
+      "payment security",
+      "cancellation policy"
+    ]
+  },
+  {
+    "category": "13-online-booking",
+    "name": "Direct Booking Links",
+    "description": "Generate specific booking links for individual staff, services, or categories",
+    "complexity": "basic",
+    "keywords": [
+      "direct links",
+      "targeted booking",
+      "marketing links",
+      "specific services"
+    ]
+  },
+  {
+    "category": "13-online-booking",
+    "name": "Booking Preferences Configuration",
+    "description": "Comprehensive settings to control online booking behavior and restrictions",
+    "complexity": "advanced",
+    "keywords": [
+      "preferences",
+      "booking rules",
+      "restrictions",
+      "customization"
+    ]
+  },
+  {
+    "category": "13-online-booking",
+    "name": "Google Business Profile Integration",
+    "description": "Add booking links directly to Google Business Profile for search visibility",
+    "complexity": "basic",
+    "keywords": [
+      "Google Business",
+      "search integration",
+      "online visibility",
+      "local search"
+    ]
+  },
+  {
+    "category": "13-online-booking",
+    "name": "DNS Records Management",
+    "description": "Setup DNS records for custom email addresses across various domain providers",
+    "complexity": "advanced",
+    "keywords": [
+      "DNS records",
+      "custom email",
+      "domain configuration",
+      "email setup"
+    ]
+  },
+  {
+    "category": "13-online-booking",
+    "name": "Service and Staff Management",
+    "description": "Control which services and staff members are available for online booking",
+    "complexity": "intermediate",
+    "keywords": [
+      "service management",
+      "staff control",
+      "availability",
+      "service descriptions"
+    ]
+  },
+  {
+    "category": "13-online-booking",
+    "name": "Client Waitlist Integration",
+    "description": "Allow clients to join waitlists through online booking when appointments aren't available",
+    "complexity": "intermediate",
+    "keywords": [
+      "waitlist",
+      "booking alternatives",
+      "appointment availability",
+      "client retention"
+    ]
+  },
+  {
+    "category": "14-business-setup",
+    "name": "Multiple Phone Numbers Management",
+    "description": "Allows businesses to manage multiple phone numbers for different locations or purposes, with separate numbers for automated messages and marketing campaigns",
+    "complexity": "intermediate",
+    "keywords": [
+      "phone numbers",
+      "multiple locations",
+      "messaging",
+      "staff permissions",
+      "conversations"
+    ]
+  },
+  {
+    "category": "14-business-setup",
+    "name": "Logo and Branding Customization",
+    "description": "Comprehensive branding system allowing businesses to customize their visual identity across all customer touchpoints",
+    "complexity": "basic",
+    "keywords": [
+      "branding",
+      "logo",
+      "colors",
+      "customization",
+      "client portal",
+      "online booking"
+    ]
+  },
+  {
+    "category": "14-business-setup",
+    "name": "Location Management",
+    "description": "Multi-location business management system supporting both physical and virtual locations with individual configuration options",
+    "complexity": "intermediate",
+    "keywords": [
+      "locations",
+      "multi-location",
+      "physical",
+      "virtual",
+      "tax rates",
+      "staff assignment",
+      "services"
+    ]
+  },
+  {
+    "category": "14-business-setup",
+    "name": "Phone Number Addition and Management",
+    "description": "System for adding, changing, and configuring different types of phone numbers for various business communication needs",
+    "complexity": "intermediate",
+    "keywords": [
+      "phone numbers",
+      "toll-free",
+      "local numbers",
+      "marketing",
+      "two-way texting",
+      "registration"
+    ]
+  },
+  {
+    "category": "14-business-setup",
+    "name": "Business Details Configuration",
+    "description": "Central management of core business information displayed across all customer-facing communications and documentation",
+    "complexity": "basic",
+    "keywords": [
+      "business details",
+      "company name",
+      "website",
+      "currency",
+      "country settings"
+    ]
+  },
+  {
+    "category": "14-business-setup",
+    "name": "iPad Kiosk Mode Setup",
+    "description": "Comprehensive system for setting up iPads as dedicated Front Desk Display terminals with restricted access and automatic functionality",
+    "complexity": "intermediate",
+    "keywords": [
+      "kiosk mode",
+      "iPad",
+      "front desk",
+      "guided access",
+      "security",
+      "display"
+    ]
+  },
+  {
+    "category": "14-business-setup",
+    "name": "Mobile App Updates",
+    "description": "Process for updating the Mangomint mobile app on Front Desk Display iPads while maintaining kiosk functionality",
+    "complexity": "basic",
+    "keywords": [
+      "app updates",
+      "mobile app",
+      "front desk display",
+      "maintenance",
+      "app store"
+    ]
+  },
+  {
+    "category": "14-business-setup",
+    "name": "Desktop Notifications",
+    "description": "Cross-platform notification system for receiving real-time alerts about web chat messages on desktop computers",
+    "complexity": "intermediate",
+    "keywords": [
+      "desktop notifications",
+      "web chat",
+      "alerts",
+      "messaging",
+      "staff notifications",
+      "real-time"
+    ]
+  },
+  {
+    "category": "15-offers",
+    "name": "Offer Creation and Management",
+    "description": "Create and manage comprehensive offers with service, product, or sale-level discounts that can be applied during checkout",
+    "complexity": "intermediate",
+    "keywords": [
+      "offers",
+      "discounts",
+      "promotions",
+      "create",
+      "manage",
+      "enable"
+    ]
+  },
+  {
+    "category": "15-offers",
+    "name": "Multiple Offer Application Methods",
+    "description": "Apply offers through staff manual selection, client offer codes, or automatic application based on conditions",
+    "complexity": "basic",
+    "keywords": [
+      "apply",
+      "offer codes",
+      "promo codes",
+      "automatic",
+      "manual",
+      "checkout"
+    ]
+  },
+  {
+    "category": "15-offers",
+    "name": "Advanced Offer Targeting",
+    "description": "Target specific client segments and conditions with sophisticated offer rules and restrictions",
+    "complexity": "advanced",
+    "keywords": [
+      "targeting",
+      "restrictions",
+      "new clients",
+      "membership",
+      "minimum amount",
+      "service providers"
+    ]
+  },
+  {
+    "category": "15-offers",
+    "name": "Multi-Type Discount System",
+    "description": "Support for service discounts, product discounts, and entire sale discounts with flexible configuration options",
+    "complexity": "intermediate",
+    "keywords": [
+      "service discounts",
+      "product discounts",
+      "sale discounts",
+      "percentage",
+      "fixed amount",
+      "free gifts"
+    ]
+  },
+  {
+    "category": "15-offers",
+    "name": "Commission Management for Offers",
+    "description": "Configure staff commission calculations based on regular price or discounted price for offer transactions",
+    "complexity": "intermediate",
+    "keywords": [
+      "commission",
+      "staff compensation",
+      "regular price",
+      "discounted price"
+    ]
+  },
+  {
+    "category": "15-offers",
+    "name": "Smart Offer Optimization",
+    "description": "Automatically apply the best available discount when multiple offers are eligible for the same transaction",
+    "complexity": "advanced",
+    "keywords": [
+      "optimization",
+      "multiple offers",
+      "best discount",
+      "automatic selection"
+    ]
+  },
+  {
+    "category": "15-offers",
+    "name": "Offer Details and Transparency",
+    "description": "View detailed information about applied offers during checkout and transaction processing",
+    "complexity": "basic",
+    "keywords": [
+      "details",
+      "transparency",
+      "discount amount",
+      "receipt",
+      "status"
+    ]
+  },
+  {
+    "category": "15-offers",
+    "name": "Comprehensive Offers Reporting",
+    "description": "Track and analyze offer usage, performance, and financial impact through detailed reporting",
+    "complexity": "intermediate",
+    "keywords": [
+      "reports",
+      "analytics",
+      "usage",
+      "tracking",
+      "performance",
+      "ROI"
+    ]
+  },
+  {
+    "category": "16-reports",
+    "name": "Staff Reports",
+    "description": "Comprehensive reporting on staff performance, payroll, time tracking, and schedules",
+    "complexity": "intermediate",
+    "keywords": [
+      "staff",
+      "payroll",
+      "time clock",
+      "days off",
+      "performance"
+    ]
+  },
+  {
+    "category": "16-reports",
+    "name": "Sales Reports",
+    "description": "Detailed sales analytics for services and products with time-based grouping",
+    "complexity": "basic",
+    "keywords": [
+      "sales",
+      "revenue",
+      "services",
+      "products",
+      "summary"
+    ]
+  },
+  {
+    "category": "16-reports",
+    "name": "Payment Reports",
+    "description": "Comprehensive payment tracking including multiple payment methods, deposits, and cash drawer activity",
+    "complexity": "intermediate",
+    "keywords": [
+      "payments",
+      "cash drawer",
+      "deposits",
+      "refunds",
+      "credit card"
+    ]
+  },
+  {
+    "category": "16-reports",
+    "name": "Business Intelligence Reports",
+    "description": "Advanced analytics providing insights into appointments, sales metrics, forecasting, and client retention",
+    "complexity": "advanced",
+    "keywords": [
+      "business intelligence",
+      "productivity",
+      "forecasting",
+      "retention",
+      "analytics"
+    ]
+  },
+  {
+    "category": "16-reports",
+    "name": "Gift Card Reports",
+    "description": "Complete gift card lifecycle tracking from sales to usage and balances",
+    "complexity": "basic",
+    "keywords": [
+      "gift cards",
+      "balances",
+      "usage",
+      "liability"
+    ]
+  },
+  {
+    "category": "16-reports",
+    "name": "Package Reports",
+    "description": "Package sales and usage tracking with outstanding credits management",
+    "complexity": "basic",
+    "keywords": [
+      "packages",
+      "credits",
+      "usage",
+      "sales"
+    ]
+  },
+  {
+    "category": "16-reports",
+    "name": "Membership Reports",
+    "description": "Membership lifecycle management with payment tracking and usage analytics",
+    "complexity": "intermediate",
+    "keywords": [
+      "memberships",
+      "payments",
+      "cancellations",
+      "usage"
+    ]
+  },
+  {
+    "category": "16-reports",
+    "name": "Inventory Reports",
+    "description": "Product inventory management with cost analysis and usage tracking",
+    "complexity": "intermediate",
+    "keywords": [
+      "inventory",
+      "cost of goods",
+      "stock",
+      "usage"
+    ]
+  },
+  {
+    "category": "16-reports",
+    "name": "Offers Reports",
+    "description": "Marketing offer tracking and performance analysis",
+    "complexity": "basic",
+    "keywords": [
+      "offers",
+      "promotions",
+      "marketing",
+      "usage"
+    ]
+  },
+  {
+    "category": "16-reports",
+    "name": "Client Account Balance Reports",
+    "description": "Client account balance management with deposit and usage tracking",
+    "complexity": "basic",
+    "keywords": [
+      "client accounts",
+      "balances",
+      "deposits",
+      "usage"
+    ]
+  },
+  {
+    "category": "16-reports",
+    "name": "Cashflow Report",
+    "description": "Financial cashflow analysis excluding non-cash payments",
+    "complexity": "intermediate",
+    "keywords": [
+      "cashflow",
+      "tips",
+      "sales tax",
+      "net revenue"
+    ]
+  },
+  {
+    "category": "16-reports",
+    "name": "Daily and Weekly Totals for Staff",
+    "description": "Individual staff member performance tracking accessible via mobile app",
+    "complexity": "basic",
+    "keywords": [
+      "daily totals",
+      "weekly totals",
+      "mobile",
+      "staff performance"
+    ]
+  },
+  {
+    "category": "16-reports",
+    "name": "Report Access Control",
+    "description": "Permission-based access to company reports with role-based restrictions",
+    "complexity": "basic",
+    "keywords": [
+      "permissions",
+      "access control",
+      "admin",
+      "security"
+    ]
+  },
+  {
+    "category": "17-integrations",
+    "name": "Webhooks Integration",
+    "description": "Send event data from Mangomint to third-party applications when key events occur",
+    "complexity": "advanced",
+    "keywords": [
+      "webhooks",
+      "integration",
+      "events",
+      "notifications",
+      "third-party",
+      "automation"
+    ]
+  },
+  {
+    "category": "17-integrations",
+    "name": "Shopify Integration",
+    "description": "Sync product inventory seamlessly between Mangomint and Shopify online store",
+    "complexity": "intermediate",
+    "keywords": [
+      "shopify",
+      "ecommerce",
+      "inventory",
+      "sync",
+      "SKU",
+      "products",
+      "online store"
+    ]
+  },
+  {
+    "category": "17-integrations",
+    "name": "Mailchimp Integration",
+    "description": "Sync client details from Mangomint to Mailchimp for email marketing campaigns",
+    "complexity": "basic",
+    "keywords": [
+      "mailchimp",
+      "email marketing",
+      "client sync",
+      "campaigns"
+    ]
+  },
+  {
+    "category": "17-integrations",
+    "name": "WaiverForever Integration",
+    "description": "Store completed WaiverForever forms on client timelines in Mangomint",
+    "complexity": "basic",
+    "keywords": [
+      "waiverforever",
+      "forms",
+      "waivers",
+      "client timeline",
+      "documentation"
+    ]
+  },
+  {
+    "category": "17-integrations",
+    "name": "Gift Up! Integration",
+    "description": "Automatically add gift cards sold in Gift Up! to Mangomint",
+    "complexity": "basic",
+    "keywords": [
+      "gift up",
+      "gift cards",
+      "sales tracking",
+      "automation"
+    ]
+  },
+  {
+    "category": "17-integrations",
+    "name": "App Management",
+    "description": "Enable and disable different apps and integrations within Mangomint",
+    "complexity": "basic",
+    "keywords": [
+      "app management",
+      "customization",
+      "admin",
+      "configuration"
+    ]
+  },
+  {
+    "category": "17-integrations",
+    "name": "Offers",
+    "description": "Create flexible discounts and promo codes for client rewards and bookings",
+    "complexity": "intermediate",
+    "keywords": [
+      "offers",
+      "discounts",
+      "promo codes",
+      "rewards",
+      "loyalty"
+    ]
+  },
+  {
+    "category": "17-integrations",
+    "name": "Payroll Processing",
+    "description": "Process payroll for employees, contractors, and multiple compensation types",
+    "complexity": "advanced",
+    "keywords": [
+      "payroll",
+      "employees",
+      "contractors",
+      "taxes",
+      "deductions",
+      "compensation"
+    ]
+  },
+  {
+    "category": "17-integrations",
+    "name": "Gift Cards",
+    "description": "Sell digital and physical gift cards with promotions",
+    "complexity": "intermediate",
+    "keywords": [
+      "gift cards",
+      "digital",
+      "physical",
+      "promotions",
+      "online booking"
+    ]
+  },
+  {
+    "category": "17-integrations",
+    "name": "Packages",
+    "description": "Sell bundled services at discounted prices with tracking capabilities",
+    "complexity": "intermediate",
+    "keywords": [
+      "packages",
+      "bundles",
+      "discounts",
+      "tracking",
+      "services"
+    ]
+  },
+  {
+    "category": "17-integrations",
+    "name": "Memberships",
+    "description": "Create and sell custom recurring membership plans with automatic billing",
+    "complexity": "advanced",
+    "keywords": [
+      "memberships",
+      "recurring",
+      "billing",
+      "cash flow",
+      "retention"
+    ]
+  },
+  {
+    "category": "17-integrations",
+    "name": "Intelligent Waitlist",
+    "description": "Automatically manage client waitlists with instant opening notifications",
+    "complexity": "intermediate",
+    "keywords": [
+      "waitlist",
+      "intelligent",
+      "notifications",
+      "bookings",
+      "optimization"
+    ]
+  },
+  {
+    "category": "17-integrations",
+    "name": "Forms",
+    "description": "Create and collect custom forms with automated client distribution",
+    "complexity": "intermediate",
+    "keywords": [
+      "forms",
+      "templates",
+      "SOAP notes",
+      "submissions",
+      "automation"
+    ]
+  },
+  {
+    "category": "17-integrations",
+    "name": "Resources",
+    "description": "Assign and manage limited resources like rooms or equipment for services",
+    "complexity": "intermediate",
+    "keywords": [
+      "resources",
+      "rooms",
+      "equipment",
+      "capacity",
+      "scheduling"
+    ]
+  },
+  {
+    "category": "17-integrations",
+    "name": "Service Customizations",
+    "description": "Deliver personalized experiences with service add-ons and pricing adjustments",
+    "complexity": "intermediate",
+    "keywords": [
+      "customizations",
+      "add-ons",
+      "pricing",
+      "personalization",
+      "revenue"
+    ]
+  },
+  {
+    "category": "17-integrations",
+    "name": "Flows",
+    "description": "Create automated sequences for sending texts and emails based on triggers",
+    "complexity": "advanced",
+    "keywords": [
+      "flows",
+      "automation",
+      "sequences",
+      "triggers",
+      "communications"
+    ]
+  },
+  {
+    "category": "17-integrations",
+    "name": "Email Campaigns",
+    "description": "Create marketing campaigns with intuitive email builder and templates",
+    "complexity": "intermediate",
+    "keywords": [
+      "email campaigns",
+      "templates",
+      "promotions",
+      "newsletters",
+      "marketing"
+    ]
+  },
+  {
+    "category": "17-integrations",
+    "name": "Time Clock",
+    "description": "Track staff working hours and manage time cards with PIN-based access",
+    "complexity": "intermediate",
+    "keywords": [
+      "time clock",
+      "tracking",
+      "PIN",
+      "time cards",
+      "reports",
+      "payroll"
+    ]
+  },
+  {
+    "category": "17-integrations",
+    "name": "Cash Drawer",
+    "description": "Manage cash sales, pay-ins, pay-outs, and daily closeouts",
+    "complexity": "basic",
+    "keywords": [
+      "cash drawer",
+      "cash sales",
+      "closeouts",
+      "tips",
+      "reconciliation"
+    ]
+  },
+  {
+    "category": "17-integrations",
+    "name": "Purchase Orders",
+    "description": "Create supplier orders based on inventory preferences and stock levels",
+    "complexity": "intermediate",
+    "keywords": [
+      "purchase orders",
+      "inventory",
+      "suppliers",
+      "stock levels",
+      "ordering"
+    ]
+  },
+  {
+    "category": "18-payments",
+    "name": "Payment Types",
+    "description": "Multiple payment methods available for completing checkouts including card readers, self checkout, credit cards, cash, checks, gift cards, account balance, and custom buttons",
+    "complexity": "basic",
+    "keywords": [
+      "payment",
+      "checkout",
+      "credit card",
+      "cash",
+      "gift card",
+      "custom buttons"
+    ]
+  },
+  {
+    "category": "18-payments",
+    "name": "Front Desk Display",
+    "description": "Client-facing iPad kiosk system that allows customers to complete payments independently at the front desk",
+    "complexity": "intermediate",
+    "keywords": [
+      "front desk",
+      "kiosk",
+      "iPad",
+      "client-facing",
+      "checkout"
+    ]
+  },
+  {
+    "category": "18-payments",
+    "name": "Card Reader Direct Connection",
+    "description": "Connect card readers directly to iPhone or iPad for mobile payment processing",
+    "complexity": "intermediate",
+    "keywords": [
+      "card reader",
+      "mobile",
+      "bluetooth",
+      "direct connection",
+      "iPhone",
+      "iPad"
+    ]
+  },
+  {
+    "category": "18-payments",
+    "name": "Client Self Checkout",
+    "description": "Allow clients to complete payments on their own mobile devices via text message link",
+    "complexity": "basic",
+    "keywords": [
+      "self checkout",
+      "mobile",
+      "SMS",
+      "contactless",
+      "remote"
+    ]
+  },
+  {
+    "category": "18-payments",
+    "name": "Payment Processing Setup",
+    "description": "Integrated payment processing account creation and management with no monthly fees",
+    "complexity": "intermediate",
+    "keywords": [
+      "payment processing",
+      "account setup",
+      "verification",
+      "stripe",
+      "banking"
+    ]
+  },
+  {
+    "category": "18-payments",
+    "name": "Cards on File Management",
+    "description": "Store and manage customer credit card information securely for future transactions",
+    "complexity": "basic",
+    "keywords": [
+      "cards on file",
+      "wallet",
+      "card storage",
+      "customer data"
+    ]
+  },
+  {
+    "category": "18-payments",
+    "name": "Split Payments",
+    "description": "Divide payment across multiple payment methods for a single transaction",
+    "complexity": "basic",
+    "keywords": [
+      "split payments",
+      "partial payments",
+      "multiple methods",
+      "balance"
+    ]
+  },
+  {
+    "category": "18-payments",
+    "name": "Payment Account Management",
+    "description": "Manage primary and additional payment accounts for businesses and individual contractors",
+    "complexity": "advanced",
+    "keywords": [
+      "payment accounts",
+      "contractors",
+      "booth renters",
+      "account routing"
+    ]
+  },
+  {
+    "category": "18-payments",
+    "name": "Payment Disputes Management",
+    "description": "Handle credit card chargebacks and disputes with guided support and evidence gathering",
+    "complexity": "advanced",
+    "keywords": [
+      "disputes",
+      "chargebacks",
+      "evidence",
+      "documentation",
+      "prevention"
+    ]
+  },
+  {
+    "category": "18-payments",
+    "name": "Balance and Payouts Tracking",
+    "description": "Monitor current payment account balance and view payout history with detailed transaction breakdowns",
+    "complexity": "basic",
+    "keywords": [
+      "balance",
+      "payouts",
+      "transactions",
+      "fees",
+      "refunds"
+    ]
+  },
+  {
+    "category": "18-payments",
+    "name": "Non-Integrated Payment Processors",
+    "description": "Support for external payment systems like Square, Clover, PayPal, and other third-party processors",
+    "complexity": "basic",
+    "keywords": [
+      "non-integrated",
+      "external processors",
+      "custom buttons",
+      "third-party"
+    ]
+  },
+  {
+    "category": "18-payments",
+    "name": "Cash Drawer Management",
+    "description": "Track and manage cash transactions with daily counts, pay-ins, pay-outs, and closeout procedures",
+    "complexity": "basic",
+    "keywords": [
+      "cash drawer",
+      "cash management",
+      "closeout",
+      "count",
+      "reconciliation"
+    ]
+  },
+  {
+    "category": "18-payments",
+    "name": "Deposit Collection",
+    "description": "Collect deposits manually, through Express Booking, or via online booking with flexible deposit requirements",
+    "complexity": "intermediate",
+    "keywords": [
+      "deposits",
+      "manual collection",
+      "online booking",
+      "express booking",
+      "no-shows"
+    ]
+  },
+  {
+    "category": "18-payments",
+    "name": "Payment Hardware Setup",
+    "description": "Configure and manage iPad stands, card readers, and other payment hardware components",
+    "complexity": "intermediate",
+    "keywords": [
+      "hardware",
+      "iPad",
+      "card reader",
+      "bluetooth",
+      "setup",
+      "compatibility"
+    ]
+  },
+  {
+    "category": "18-payments",
+    "name": "Payment Best Practices",
+    "description": "Guidance and recommendations for secure payment processing to prevent disputes and ensure compliance",
+    "complexity": "basic",
+    "keywords": [
+      "best practices",
+      "security",
+      "disputes",
+      "compliance",
+      "verification"
+    ]
+  },
+  {
+    "category": "18-payments",
+    "name": "Payment Processing Account Details",
+    "description": "Update business information, personal details, and banking information for payment accounts",
+    "complexity": "intermediate",
+    "keywords": [
+      "account details",
+      "business information",
+      "banking",
+      "verification",
+      "updates"
+    ]
+  },
+  {
+    "category": "18-payments",
+    "name": "Payout Scheduling",
+    "description": "Next-business-day deposit schedule with clear timing for payment transfers to bank accounts",
+    "complexity": "basic",
+    "keywords": [
+      "payouts",
+      "deposits",
+      "scheduling",
+      "next-day",
+      "banking"
+    ]
+  },
+  {
+    "category": "18-payments",
+    "name": "Monthly Payment Summaries",
+    "description": "Comprehensive monthly reports showing transactions, fees, refunds, and account activity",
+    "complexity": "basic",
+    "keywords": [
+      "monthly summaries",
+      "reporting",
+      "transactions",
+      "fees",
+      "analysis"
+    ]
+  },
+  {
+    "category": "18-payments",
+    "name": "Test Transaction Processing",
+    "description": "Complete test transactions to verify card reader and payment system functionality",
+    "complexity": "basic",
+    "keywords": [
+      "test transaction",
+      "verification",
+      "setup",
+      "testing",
+      "confirmation"
+    ]
+  },
+  {
+    "category": "18-payments",
+    "name": "Payment Troubleshooting",
+    "description": "Comprehensive troubleshooting guides for card readers, Front Desk Displays, and payment issues",
+    "complexity": "intermediate",
+    "keywords": [
+      "troubleshooting",
+      "error messages",
+      "connectivity",
+      "hardware",
+      "support"
+    ]
+  },
+  {
+    "category": "19-account-management",
+    "name": "Subscription Management",
+    "description": "Comprehensive subscription management system allowing users to manage their Mangomint plans, add-ons, and billing",
+    "complexity": "intermediate",
+    "keywords": [
+      "subscription",
+      "plan",
+      "billing",
+      "management",
+      "update"
+    ]
+  },
+  {
+    "category": "19-account-management",
+    "name": "Invoice Management",
+    "description": "System for viewing and downloading subscription invoices with detailed billing breakdowns",
+    "complexity": "basic",
+    "keywords": [
+      "invoice",
+      "billing",
+      "payment",
+      "history",
+      "download"
+    ]
+  },
+  {
+    "category": "19-account-management",
+    "name": "Add-on Management",
+    "description": "Feature to add or remove subscription add-ons including Connect, Forms & Charting, and Payroll Processing",
+    "complexity": "intermediate",
+    "keywords": [
+      "add-on",
+      "connect",
+      "forms",
+      "charting",
+      "payroll",
+      "processing"
+    ]
+  },
+  {
+    "category": "19-account-management",
+    "name": "Payment Method Management",
+    "description": "System for updating and managing credit card information for subscription payments",
+    "complexity": "basic",
+    "keywords": [
+      "payment",
+      "credit card",
+      "billing",
+      "update",
+      "method"
+    ]
+  },
+  {
+    "category": "19-account-management",
+    "name": "Marketing Credits Management",
+    "description": "Comprehensive system for managing marketing credits used for campaigns, flows, emails, and texts",
+    "complexity": "advanced",
+    "keywords": [
+      "marketing",
+      "credits",
+      "campaigns",
+      "flows",
+      "email",
+      "text",
+      "auto-refill"
+    ]
+  },
+  {
+    "category": "19-account-management",
+    "name": "Billing User Management",
+    "description": "System for managing billing user permissions and access to subscription features",
+    "complexity": "intermediate",
+    "keywords": [
+      "billing user",
+      "permissions",
+      "account owner",
+      "access control"
+    ]
+  },
+  {
+    "category": "19-account-management",
+    "name": "Usage Analytics",
+    "description": "System for tracking and viewing marketing credit usage over time periods",
+    "complexity": "intermediate",
+    "keywords": [
+      "usage",
+      "analytics",
+      "tracking",
+      "reporting",
+      "30-day"
+    ]
+  }
+]

@@ -1,0 +1,281 @@
+{
+  "total_pages": 796,
+  "successful": 405,
+  "failed": 23,
+  "failed_topics": [
+    {
+      "title": "Couples or Related Groups",
+      "url": "Booking, Billing, Charting and Notifications - https://jane.app/guide/couples-or-related-groups-booking-billing-charting-and-notifications",
+      "category": "Schedule"
+    },
+    {
+      "title": "Resource Booking",
+      "url": "Working With Limited Resources - https://jane.app/guide/resource-booking",
+      "category": "Schedule"
+    },
+    {
+      "title": "Family Profiles",
+      "url": "Managing Family Members (For Patients) - https://jane.app/guide/family-profiles-managing-family-members-for-patients",
+      "category": "Online Booking"
+    },
+    {
+      "title": "Family Profiles",
+      "url": "Managing Family Members from the Patient Profile - https://jane.app/guide/family-profiles-managing-family-members-from-the-client-profile",
+      "category": "Online Booking"
+    },
+    {
+      "title": "Family Profiles",
+      "url": "Online Booking & Intake Forms - https://jane.app/guide/family-profiles-online-booking-intake-forms",
+      "category": "Online Booking"
+    },
+    {
+      "title": "Family Profiles",
+      "url": "Payments with Shared Credit Cards - https://jane.app/guide/family-profiles-payments-with-shared-credit-cards",
+      "category": "Online Booking"
+    },
+    {
+      "title": "Not Accepting New Patients",
+      "url": "Return Clients Only - https://jane.app/guide/not-accepting-new-patients-return-clients-only",
+      "category": "Online Booking"
+    },
+    {
+      "title": "Uploads for Review",
+      "url": "Labs, X-Rays and Other Reporting - https://jane.app/guide/uploads-for-review-labs-x-rays-and-other-reporting",
+      "category": "Charting"
+    },
+    {
+      "title": "Credits and Owings",
+      "url": "Investigating - https://jane.app/guide/credits-and-owings-investigating",
+      "category": "Charting"
+    },
+    {
+      "title": "Family Profiles",
+      "url": "Turning Off Financial Communications for Children or Teens - https://jane.app/guide/family-profiles-turning-off-financial-communications-for-children-or-teens",
+      "category": "Charting"
+    },
+    {
+      "title": "My Account",
+      "url": "Your Patient/Client Portal - https://jane.app/guide/my-account-your-patient-client-portal",
+      "category": "Patient Profiles"
+    },
+    {
+      "title": "Billing to WorkSafe BC",
+      "url": "Physiotherapy - https://jane.app/guide/billing-to-worksafe-bc-physiotherapy",
+      "category": "Teleplan"
+    },
+    {
+      "title": "Teleplan Status",
+      "url": "Opted In Versus Opted Out - https://jane.app/guide/teleplan-status-opted-in-versus-opted-out",
+      "category": "Teleplan"
+    },
+    {
+      "title": "Fullscript",
+      "url": "Recommendation Templates - https://jane.app/guide/fullscript-recommendation-templates",
+      "category": "Integrations"
+    },
+    {
+      "title": "Clinic Sites",
+      "url": "Jane\u2019s Website Integration - https://jane.app/guide/jane-s-integration-with-clinic-sites",
+      "category": "Integrations"
+    },
+    {
+      "title": "Physitrack",
+      "url": "Setting Up Your Integration - https://jane.app/guide/physitrack-setting-up-your-integration",
+      "category": "Integrations"
+    },
+    {
+      "title": "Physitrack",
+      "url": "Using Jane & Physitrack Together - https://jane.app/guide/physitrack-using-jane-physitrack-together",
+      "category": "Integrations"
+    },
+    {
+      "title": "Pacific Blue Cross",
+      "url": "Setting up your PROVIDERnet Integration - https://jane.app/guide/pacific-blue-cross-setting-up-your-providernet-integration",
+      "category": "Integrations"
+    },
+    {
+      "title": "Pacific Blue Cross",
+      "url": "Submitting Claims Through the PROVIDERnet Integration - https://jane.app/guide/pacific-blue-cross-submitting-claims-through-the-providernet-integration",
+      "category": "Integrations"
+    },
+    {
+      "title": "Pacific Blue Cross",
+      "url": "Reversing Claims Through the PROVIDERnet Integration - https://jane.app/guide/pacific-blue-cross-reversing-claims-through-the-providernet-integration",
+      "category": "Integrations"
+    },
+    {
+      "title": "TELUS eClaims",
+      "url": "Setting Up Your TELUS eClaims Integration - https://jane.app/guide/telus-eclaims-setting-up-your-telus-eclaims-integration",
+      "category": "Integrations"
+    },
+    {
+      "title": "TELUS eClaims",
+      "url": "Submitting Claims and Eligibility Checks Through the TELUS eClaims Integration - https://jane.app/guide/telus-eclaims-submitting-claims-and-eligibility-checks-through-the-telus-eclaims-integration",
+      "category": "Integrations"
+    },
+    {
+      "title": "TELUS eClaims",
+      "url": "Reversing Submissions Through the TELUS eClaims Integration - https://jane.app/guide/telus-eclaims-reversing-submissions-through-the-telus-eclaims-integration",
+      "category": "Integrations"
+    }
+  ],
+  "categories_summary": {
+    "Welcome": {
+      "name": "Welcome",
+      "total_topics": 5
+    },
+    "Whats_new_in_Jane": {
+      "name": "What's new in Jane?",
+      "total_topics": 7
+    },
+    "Quick_Start": {
+      "name": "Quick Start",
+      "total_topics": 11
+    },
+    "Switching_to_Jane": {
+      "name": "Switching to Jane",
+      "total_topics": 2
+    },
+    "Account_Basics": {
+      "name": "Account Basics",
+      "total_topics": 25
+    },
+    "Importing_to_Jane": {
+      "name": "Importing to Jane",
+      "total_topics": 19
+    },
+    "Importing_from_Other_Software": {
+      "name": "Importing from Other Software",
+      "total_topics": 87
+    },
+    "Front_Desk_Training": {
+      "name": "Front-Desk Training",
+      "total_topics": 9
+    },
+    "Practitioner_Training": {
+      "name": "Practitioner Training",
+      "total_topics": 11
+    },
+    "Schedule": {
+      "name": "Schedule",
+      "total_topics": 43
+    },
+    "Online_Booking": {
+      "name": "Online Booking",
+      "total_topics": 42
+    },
+    "Janes_Mobile_App_for_Clients": {
+      "name": "Jane's Mobile App for Clients",
+      "total_topics": 5
+    },
+    "Online_Appointments_Telehealth": {
+      "name": "Online Appointments (Telehealth)",
+      "total_topics": 12
+    },
+    "AI_Scribe": {
+      "name": "AI Scribe",
+      "total_topics": 5
+    },
+    "Charting": {
+      "name": "Charting",
+      "total_topics": 148
+    },
+    "Reports": {
+      "name": "Reports",
+      "total_topics": 35
+    },
+    "Community_Resources": {
+      "name": "Community Resources",
+      "total_topics": 2
+    },
+    "Webinars_Events": {
+      "name": "Webinars & Events",
+      "total_topics": 1
+    },
+    "Privacy": {
+      "name": "Privacy",
+      "total_topics": 29
+    },
+    "Security": {
+      "name": "Security",
+      "total_topics": 11
+    },
+    "Wait_List_Management": {
+      "name": "Wait List Management",
+      "total_topics": 3
+    },
+    "Notifications_Reminders": {
+      "name": "Notifications & Reminders",
+      "total_topics": 13
+    },
+    "Forms_Surveys_and_Ratings": {
+      "name": "Forms, Surveys, and Ratings",
+      "total_topics": 1
+    },
+    "Patient_Profiles": {
+      "name": "Patient Profiles",
+      "total_topics": 40
+    },
+    "Practitioner_Profiles": {
+      "name": "Practitioner Profiles",
+      "total_topics": 5
+    },
+    "Payroll": {
+      "name": "Payroll",
+      "total_topics": 6
+    },
+    "Messaging": {
+      "name": "Messaging",
+      "total_topics": 0
+    },
+    "US_Insurance_Billing_Training": {
+      "name": "US Insurance Billing Training",
+      "total_topics": 21
+    },
+    "US_Insurance_Billing_Additional_Resources": {
+      "name": "US Insurance Billing Additional Resources",
+      "total_topics": 70
+    },
+    "Gift_Cards": {
+      "name": "Gift Cards",
+      "total_topics": 9
+    },
+    "Teleplan": {
+      "name": "Teleplan",
+      "total_topics": 16
+    },
+    "Packages_Memberships": {
+      "name": "Packages & Memberships",
+      "total_topics": 13
+    },
+    "Integrations": {
+      "name": "Integrations",
+      "total_topics": 20
+    },
+    "Patient_Feedback": {
+      "name": "Patient Feedback",
+      "total_topics": 5
+    },
+    "Troubleshooting": {
+      "name": "Troubleshooting",
+      "total_topics": 11
+    },
+    "Allied_2022_Jane_Summer_School": {
+      "name": "Allied 2022: Jane Summer School",
+      "total_topics": 26
+    },
+    "Allied_2021_Jane_Summer_School": {
+      "name": "Allied 2021: Jane Summer School",
+      "total_topics": 20
+    },
+    "Allied_2020_The_Virtual_Community_Conference": {
+      "name": "Allied 2020: The Virtual Community Conference",
+      "total_topics": 1
+    },
+    "Intake_Forms": {
+      "name": "Intake Forms",
+      "total_topics": 7
+    }
+  },
+  "timestamp": "2025-08-21 18:21:57"
+}

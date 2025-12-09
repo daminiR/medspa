@@ -1,0 +1,435 @@
+{
+  "category": "13-online-booking",
+  "features": [
+    {
+      "feature_name": "Online Booking System",
+      "description": "Allows clients to book appointments online through website or shared links without creating accounts",
+      "capabilities": [
+        "Client booking without login/registration",
+        "Works on websites and social platforms",
+        "Shareable booking links",
+        "Overlay integration with websites",
+        "Separate browser tab fallback"
+      ],
+      "user_benefits": [
+        "Easy and convenient booking for clients",
+        "No barriers to booking",
+        "Seamless website integration",
+        "24/7 booking availability"
+      ],
+      "complexity": "basic",
+      "integrations": [
+        "Website builders",
+        "Google Business Profile",
+        "Facebook",
+        "Instagram"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "online booking",
+        "client booking",
+        "appointment scheduling",
+        "website integration"
+      ]
+    },
+    {
+      "feature_name": "Website Integration",
+      "description": "Embed online booking directly into websites using script tags and booking links",
+      "capabilities": [
+        "Script tag integration",
+        "HTML header placement",
+        "Overlay booking widget",
+        "Custom booking buttons/links",
+        "Website builder compatibility"
+      ],
+      "user_benefits": [
+        "Clients book without leaving website",
+        "Professional integration",
+        "Customizable booking experience",
+        "Increased conversion rates"
+      ],
+      "complexity": "intermediate",
+      "integrations": [
+        "Shopify",
+        "Squarespace",
+        "Wix",
+        "WordPress",
+        "Custom websites"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "website integration",
+        "script tag",
+        "embedding",
+        "overlay widget"
+      ]
+    },
+    {
+      "feature_name": "Platform-Specific Setup Guides",
+      "description": "Detailed integration instructions for popular website builders",
+      "capabilities": [
+        "Shopify theme.liquid integration",
+        "Squarespace code injection",
+        "Wix custom code setup",
+        "WordPress WPCode plugin integration",
+        "Step-by-step instructions"
+      ],
+      "user_benefits": [
+        "Easy setup for non-technical users",
+        "Platform-specific guidance",
+        "Reduced setup time",
+        "Professional support available"
+      ],
+      "complexity": "intermediate",
+      "integrations": [
+        "Shopify",
+        "Squarespace",
+        "Wix",
+        "WordPress"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "setup guide",
+        "website builders",
+        "integration tutorial"
+      ]
+    },
+    {
+      "feature_name": "Payment Requirements",
+      "description": "Require full payment or partial deposits for online bookings",
+      "capabilities": [
+        "Full payment requirement",
+        "Partial deposit collection",
+        "Service tax application",
+        "Single payment account restriction",
+        "Pre-payment processing"
+      ],
+      "user_benefits": [
+        "Reduced no-shows",
+        "Guaranteed revenue",
+        "Flexible payment options",
+        "Automated payment collection"
+      ],
+      "complexity": "intermediate",
+      "integrations": [
+        "Payment processing systems"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "deposits",
+        "prepayment",
+        "payment collection",
+        "revenue protection"
+      ]
+    },
+    {
+      "feature_name": "Credit Card Requirements",
+      "description": "Require credit cards for specific services or staff members in online booking",
+      "capabilities": [
+        "Service-specific card requirements",
+        "Staff-specific card requirements",
+        "Card on file storage",
+        "Cancellation policy enforcement",
+        "Optional staff exemptions"
+      ],
+      "user_benefits": [
+        "Enforce cancellation policies",
+        "Reduce no-shows",
+        "Secure payment information",
+        "Flexible staff controls"
+      ],
+      "complexity": "intermediate",
+      "integrations": [
+        "Payment processing",
+        "Client management"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "credit card",
+        "card on file",
+        "payment security",
+        "cancellation policy"
+      ]
+    },
+    {
+      "feature_name": "Direct Booking Links",
+      "description": "Generate specific booking links for individual staff, services, or categories",
+      "capabilities": [
+        "Staff member direct links",
+        "Single service direct links",
+        "Service category direct links",
+        "Staff-service combination links",
+        "Hidden category links"
+      ],
+      "user_benefits": [
+        "Targeted marketing campaigns",
+        "Simplified booking process",
+        "Staff-specific promotion",
+        "Service-focused marketing"
+      ],
+      "complexity": "basic",
+      "integrations": [
+        "Marketing campaigns",
+        "Social media",
+        "Email marketing"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "direct links",
+        "targeted booking",
+        "marketing links",
+        "specific services"
+      ]
+    },
+    {
+      "feature_name": "Booking Preferences Configuration",
+      "description": "Comprehensive settings to control online booking behavior and restrictions",
+      "capabilities": [
+        "Time restrictions (advance booking days, minimum prior time)",
+        "Multiple services booking",
+        "Same service multiple times",
+        "Single staff member restriction",
+        "Book for someone else option",
+        "Staff schedule gap avoidance",
+        "Photo collection during booking",
+        "Waitlist integration",
+        "Prompt to call/email for last-minute bookings"
+      ],
+      "user_benefits": [
+        "Customized booking experience",
+        "Operational efficiency",
+        "Schedule optimization",
+        "Flexible booking options",
+        "Better client information collection"
+      ],
+      "complexity": "advanced",
+      "integrations": [
+        "Waitlist system",
+        "Schedule management",
+        "Client management"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "preferences",
+        "booking rules",
+        "restrictions",
+        "customization"
+      ]
+    },
+    {
+      "feature_name": "Google Business Profile Integration",
+      "description": "Add booking links directly to Google Business Profile for search visibility",
+      "capabilities": [
+        "Google search booking button",
+        "Business profile integration",
+        "Direct booking from search results",
+        "Increased online visibility"
+      ],
+      "user_benefits": [
+        "More booking opportunities",
+        "Better search presence",
+        "Easy client access",
+        "Increased conversions"
+      ],
+      "complexity": "basic",
+      "integrations": [
+        "Google Business Profile"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "Google Business",
+        "search integration",
+        "online visibility",
+        "local search"
+      ]
+    },
+    {
+      "feature_name": "DNS Records Management",
+      "description": "Setup DNS records for custom email addresses across various domain providers",
+      "capabilities": [
+        "Wix DNS setup",
+        "Squarespace DNS setup",
+        "Bluehost DNS setup",
+        "GoDaddy DNS setup",
+        "Custom email address support"
+      ],
+      "user_benefits": [
+        "Professional email communications",
+        "Custom domain email",
+        "Brand consistency",
+        "Enhanced credibility"
+      ],
+      "complexity": "advanced",
+      "integrations": [
+        "Domain providers",
+        "Email systems"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "DNS records",
+        "custom email",
+        "domain configuration",
+        "email setup"
+      ]
+    },
+    {
+      "feature_name": "Service and Staff Management",
+      "description": "Control which services and staff members are available for online booking",
+      "capabilities": [
+        "Enable/disable specific services",
+        "Enable/disable specific staff members",
+        "Service descriptions for online booking",
+        "Staff availability control"
+      ],
+      "user_benefits": [
+        "Controlled service offerings",
+        "Staff schedule management",
+        "Clear service information",
+        "Operational flexibility"
+      ],
+      "complexity": "intermediate",
+      "integrations": [
+        "Services management",
+        "Staff scheduling"
+      ],
+      "screenshots_available": false,
+      "keywords": [
+        "service management",
+        "staff control",
+        "availability",
+        "service descriptions"
+      ]
+    },
+    {
+      "feature_name": "Client Waitlist Integration",
+      "description": "Allow clients to join waitlists through online booking when appointments aren't available",
+      "capabilities": [
+        "Waitlist joining via online booking",
+        "Automatic waitlist notifications",
+        "Alternative booking options"
+      ],
+      "user_benefits": [
+        "Capture missed opportunities",
+        "Improved client satisfaction",
+        "Fill last-minute cancellations",
+        "Maximize booking efficiency"
+      ],
+      "complexity": "intermediate",
+      "integrations": [
+        "Waitlist management system"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "waitlist",
+        "booking alternatives",
+        "appointment availability",
+        "client retention"
+      ]
+    }
+  ],
+  "key_workflows": [
+    {
+      "workflow_name": "Basic Online Booking Setup",
+      "steps": [
+        "Enable online booking in Settings app",
+        "Copy script tag and booking link",
+        "Add script tag to website header",
+        "Use booking link for website buttons"
+      ],
+      "features_involved": [
+        "Online Booking System",
+        "Website Integration"
+      ]
+    },
+    {
+      "workflow_name": "Payment-Required Booking Setup",
+      "steps": [
+        "Open Services app and select service",
+        "Go to Online Booking tab and select Edit",
+        "Enable 'Require payment at time of booking'",
+        "Choose full payment or partial deposit",
+        "Configure payment account settings"
+      ],
+      "features_involved": [
+        "Payment Requirements",
+        "Service and Staff Management"
+      ]
+    },
+    {
+      "workflow_name": "Platform-Specific Website Integration",
+      "steps": [
+        "Get script tag from Mangomint Settings",
+        "Access website builder admin panel",
+        "Navigate to code injection/custom code section",
+        "Paste script tag in header section",
+        "Add booking links to website buttons",
+        "Test integration functionality"
+      ],
+      "features_involved": [
+        "Website Integration",
+        "Platform-Specific Setup Guides"
+      ]
+    },
+    {
+      "workflow_name": "DNS Setup for Custom Email",
+      "steps": [
+        "Copy DNS records from Mangomint",
+        "Access domain provider's DNS settings",
+        "Add new DNS records with correct type",
+        "Paste host and value information",
+        "Save and verify DNS propagation"
+      ],
+      "features_involved": [
+        "DNS Records Management"
+      ]
+    }
+  ],
+  "integrations": [
+    {
+      "name": "Shopify",
+      "purpose": "E-commerce website booking integration through theme.liquid file modification"
+    },
+    {
+      "name": "Squarespace",
+      "purpose": "Website building platform integration through code injection and DNS management"
+    },
+    {
+      "name": "Wix",
+      "purpose": "Website builder integration through custom code sections and DNS configuration"
+    },
+    {
+      "name": "WordPress",
+      "purpose": "CMS integration using WPCode plugin for header script injection"
+    },
+    {
+      "name": "Google Business Profile",
+      "purpose": "Local search integration for direct booking from Google search results"
+    },
+    {
+      "name": "Payment Processing Systems",
+      "purpose": "Secure payment collection for deposits and full payments during booking"
+    },
+    {
+      "name": "Domain Providers (GoDaddy, Bluehost)",
+      "purpose": "DNS configuration for custom email address functionality"
+    },
+    {
+      "name": "Social Media Platforms",
+      "purpose": "Share booking links on Facebook, Instagram, and other social channels"
+    }
+  ],
+  "competitive_advantages": [
+    "No client registration required for booking",
+    "Seamless overlay integration that keeps clients on original website",
+    "Comprehensive platform-specific setup guides with screenshots",
+    "Free professional integration setup service offered by Mangomint team",
+    "Flexible payment requirements (full payment or partial deposits)",
+    "Advanced booking preferences with gap avoidance for optimal scheduling",
+    "Direct booking links for targeted marketing campaigns",
+    "Photo collection capability during booking process",
+    "Integration with waitlist system for maximum booking capture",
+    "Support for booking on behalf of others",
+    "Multiple service booking in single appointment",
+    "Staff-specific credit card requirement controls"
+  ]
+}

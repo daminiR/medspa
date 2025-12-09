@@ -1,0 +1,322 @@
+{
+  "category": "10-email-marketing",
+  "features": [
+    {
+      "feature_name": "Custom Email Address Setup",
+      "description": "Send email campaigns and flow emails from a branded custom email address instead of the default mangomint-email.com domain",
+      "capabilities": [
+        "Custom domain email sending",
+        "DNS record configuration",
+        "Brand awareness enhancement",
+        "Custom sender name configuration",
+        "Email reply routing to contact address"
+      ],
+      "user_benefits": [
+        "Increased brand recognition",
+        "Professional email appearance",
+        "Better client trust",
+        "Consistent brand messaging"
+      ],
+      "complexity": "intermediate",
+      "integrations": [
+        "Bluehost",
+        "GoDaddy",
+        "Squarespace",
+        "Wix"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "custom",
+        "domain",
+        "email",
+        "branding",
+        "DNS",
+        "sender"
+      ]
+    },
+    {
+      "feature_name": "Mailchimp Integration",
+      "description": "Sync client details from Mangomint to Mailchimp for external email marketing campaigns",
+      "capabilities": [
+        "API key integration",
+        "Client data synchronization",
+        "Audience selection",
+        "Automatic client import",
+        "Duplicate contact prevention",
+        "One-way data sync from Mangomint to Mailchimp"
+      ],
+      "user_benefits": [
+        "Leverages existing Mailchimp expertise",
+        "Advanced email marketing features",
+        "Segmented campaigns",
+        "Professional email templates"
+      ],
+      "complexity": "intermediate",
+      "integrations": [
+        "Mailchimp"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "mailchimp",
+        "integration",
+        "sync",
+        "audience",
+        "API"
+      ]
+    },
+    {
+      "feature_name": "Email Campaign Management",
+      "description": "Create, send, and manage email marketing campaigns directly within Mangomint",
+      "capabilities": [
+        "Campaign creation",
+        "Draft saving",
+        "Campaign scheduling",
+        "Campaign duplication",
+        "Campaign deletion",
+        "Sent campaign tracking"
+      ],
+      "user_benefits": [
+        "No external integration required",
+        "Streamlined workflow",
+        "Campaign reusability",
+        "Centralized marketing management"
+      ],
+      "complexity": "basic",
+      "integrations": [],
+      "screenshots_available": true,
+      "keywords": [
+        "campaigns",
+        "email",
+        "marketing",
+        "draft",
+        "schedule"
+      ]
+    },
+    {
+      "feature_name": "Campaign Performance Analytics",
+      "description": "Track and analyze email campaign performance with detailed metrics and reporting",
+      "capabilities": [
+        "Performance overview dashboard",
+        "Email open tracking",
+        "Link click tracking",
+        "Recipient list viewing",
+        "Content review",
+        "Delivery statistics"
+      ],
+      "user_benefits": [
+        "Data-driven marketing decisions",
+        "Campaign optimization insights",
+        "ROI measurement",
+        "Engagement analysis"
+      ],
+      "complexity": "basic",
+      "integrations": [],
+      "screenshots_available": true,
+      "keywords": [
+        "analytics",
+        "performance",
+        "tracking",
+        "metrics",
+        "reporting"
+      ]
+    },
+    {
+      "feature_name": "Client Data Synchronization",
+      "description": "Automatically sync comprehensive client information for targeted email marketing",
+      "capabilities": [
+        "First and last name sync",
+        "Email address sync",
+        "Phone number sync",
+        "Birthday sync",
+        "Address sync",
+        "Future appointment status",
+        "Active membership status",
+        "Marketing email eligibility",
+        "Marketing text eligibility"
+      ],
+      "user_benefits": [
+        "Targeted marketing campaigns",
+        "Personalized communications",
+        "Compliance with marketing preferences",
+        "Automated data management"
+      ],
+      "complexity": "intermediate",
+      "integrations": [
+        "Mailchimp"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "sync",
+        "client",
+        "data",
+        "targeting",
+        "segmentation"
+      ]
+    },
+    {
+      "feature_name": "Flow Emails",
+      "description": "Automated email sequences that can be sent from custom email addresses",
+      "capabilities": [
+        "Automated email sequences",
+        "Custom domain sending",
+        "Flow management",
+        "Trigger-based sending"
+      ],
+      "user_benefits": [
+        "Automated client nurturing",
+        "Consistent communication",
+        "Time-saving automation",
+        "Professional brand presence"
+      ],
+      "complexity": "intermediate",
+      "integrations": [],
+      "screenshots_available": true,
+      "keywords": [
+        "flows",
+        "automation",
+        "sequences",
+        "triggers"
+      ]
+    },
+    {
+      "feature_name": "DNS Configuration Support",
+      "description": "Guided DNS record setup for custom email domains with provider-specific instructions",
+      "capabilities": [
+        "DNS record generation",
+        "Provider-specific guides",
+        "Record verification",
+        "Setup validation",
+        "Troubleshooting support"
+      ],
+      "user_benefits": [
+        "Simplified technical setup",
+        "Reduced configuration errors",
+        "Provider-specific guidance",
+        "Quick verification process"
+      ],
+      "complexity": "advanced",
+      "integrations": [
+        "Bluehost",
+        "GoDaddy",
+        "Squarespace",
+        "Wix"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "DNS",
+        "configuration",
+        "setup",
+        "verification",
+        "technical"
+      ]
+    },
+    {
+      "feature_name": "Marketing Eligibility Management",
+      "description": "Track and manage client preferences for email and text marketing communications",
+      "capabilities": [
+        "Email marketing opt-in tracking",
+        "Text marketing opt-in tracking",
+        "Preference synchronization",
+        "Compliance management"
+      ],
+      "user_benefits": [
+        "Legal compliance",
+        "Respect client preferences",
+        "Reduced unsubscribe rates",
+        "Better engagement"
+      ],
+      "complexity": "basic",
+      "integrations": [
+        "Mailchimp"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "eligibility",
+        "preferences",
+        "opt-in",
+        "compliance"
+      ]
+    }
+  ],
+  "key_workflows": [
+    {
+      "workflow_name": "Custom Email Domain Setup",
+      "steps": [
+        "Access Business Setup > Advanced Settings",
+        "Select Set up custom address",
+        "Enter domain and get DNS records",
+        "Add DNS records to domain provider",
+        "Verify DNS records",
+        "Configure sender address and display name",
+        "Complete setup"
+      ],
+      "features_involved": [
+        "Custom Email Address Setup",
+        "DNS Configuration Support"
+      ]
+    },
+    {
+      "workflow_name": "Mailchimp Integration Setup",
+      "steps": [
+        "Generate API key in Mailchimp",
+        "Access Mangomint Apps > Mailchimp > Settings",
+        "Enter API key",
+        "Select audience to sync",
+        "Complete integration",
+        "Import existing clients"
+      ],
+      "features_involved": [
+        "Mailchimp Integration",
+        "Client Data Synchronization"
+      ]
+    },
+    {
+      "workflow_name": "Email Campaign Creation and Analysis",
+      "steps": [
+        "Create new email campaign",
+        "Design and configure content",
+        "Select target audience",
+        "Schedule or send campaign",
+        "Monitor performance metrics",
+        "Analyze results and optimize"
+      ],
+      "features_involved": [
+        "Email Campaign Management",
+        "Campaign Performance Analytics"
+      ]
+    }
+  ],
+  "integrations": [
+    {
+      "name": "Mailchimp",
+      "purpose": "External email marketing platform for advanced campaign features and templates"
+    },
+    {
+      "name": "Bluehost",
+      "purpose": "Domain provider for DNS configuration and custom email setup"
+    },
+    {
+      "name": "GoDaddy",
+      "purpose": "Domain provider for DNS configuration and custom email setup"
+    },
+    {
+      "name": "Squarespace",
+      "purpose": "Domain provider for DNS configuration and custom email setup"
+    },
+    {
+      "name": "Wix",
+      "purpose": "Domain provider for DNS configuration and custom email setup"
+    }
+  ],
+  "competitive_advantages": [
+    "Native email marketing with no external integration required",
+    "Custom domain email sending for brand consistency",
+    "Comprehensive client data sync including membership and appointment status",
+    "Built-in DNS configuration with provider-specific guides",
+    "Unified marketing eligibility management for both email and text",
+    "Performance analytics integrated within the platform",
+    "Flexible integration options (native campaigns or Mailchimp)",
+    "Automated client import and duplicate prevention",
+    "Campaign duplication and management features"
+  ]
+}

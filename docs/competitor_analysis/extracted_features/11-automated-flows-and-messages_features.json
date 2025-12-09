@@ -1,0 +1,418 @@
+{
+  "category": "11-automated-flows-and-messages",
+  "features": [
+    {
+      "feature_name": "Web Chat",
+      "description": "Real-time live chat functionality for website visitors to communicate directly with salon/spa staff",
+      "capabilities": [
+        "Real-time chat with website visitors",
+        "Chat icon in lower-right corner of website",
+        "Custom welcome messages",
+        "Estimated response time messages",
+        "Anonymous user display (Pink Apple, Purple Strawberry)",
+        "Live user indicators",
+        "Typing indicators for both visitors and staff",
+        "Message timestamps on hover",
+        "Attachment support for images",
+        "Live message previews as typed",
+        "Auto-close inactive conversations after 3 days (configurable)",
+        "Block users from sending messages",
+        "Link conversations to existing clients",
+        "Phone number collection for direct contact",
+        "Chat conversation management through Inbox app",
+        "Message deletion by admin users",
+        "Badge notifications when replies are sent"
+      ],
+      "user_benefits": [
+        "Turn website visitors into new clients",
+        "Build trust from first interaction",
+        "Answer questions in real-time",
+        "Share photos during conversations",
+        "Follow up via text if preferred",
+        "Manage all chat messages through Mangomint platform"
+      ],
+      "complexity": "intermediate",
+      "integrations": [
+        "Website integration via script tag",
+        "Online booking integration",
+        "Connect add-on subscription"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "web chat",
+        "live chat",
+        "website visitors",
+        "real-time communication",
+        "customer engagement"
+      ]
+    },
+    {
+      "feature_name": "Automated Messages",
+      "description": "System for sending automated email and text notifications for appointments, bookings, and business events",
+      "capabilities": [
+        "Booking confirmations",
+        "Appointment reminders",
+        "Membership notifications",
+        "Custom message text addition",
+        "Message timing customization",
+        "Preview messages before sending",
+        "Send test messages to email/phone",
+        "Set appointments to Unconfirmed or Confirmed status",
+        "Multiple phone number support for multi-location businesses",
+        "Cancellation policy integration",
+        "Always show staff name in notifications toggle",
+        "Text message auto-response setup",
+        "Enable/disable individual message types"
+      ],
+      "user_benefits": [
+        "Reduce no-shows with automated reminders",
+        "Keep clients informed about appointments",
+        "Save time with automated communication",
+        "Maintain consistent messaging",
+        "Customize messages for brand voice"
+      ],
+      "complexity": "basic",
+      "integrations": [
+        "Settings app",
+        "Calendar & Appointments",
+        "Multiple locations support"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "automated messages",
+        "appointment reminders",
+        "booking confirmations",
+        "text messages",
+        "email notifications"
+      ]
+    },
+    {
+      "feature_name": "Automated Flows",
+      "description": "Advanced automation system for creating personalized, triggered email and text message sequences based on client behavior and events",
+      "capabilities": [
+        "Pre-built flow templates",
+        "Custom flow creation from scratch",
+        "Multiple trigger types (appointment completed, booked, canceled, before appointment, membership events, form submissions, client birthday, sale closed, package/membership credit expiration)",
+        "Complex filtering by staff, service, category, location, resource, appointment notes, dates, forms",
+        "Time delays between steps",
+        "Conditional logic and client filtering",
+        "Email and text message sending",
+        "Account balance adjustments",
+        "Merge tags for personalization",
+        "Marketing vs non-marketing message types",
+        "Flow run frequency controls (every time, once per appointment, once per client, once per time period)",
+        "Goal tracking and statistics",
+        "Flow editing while active",
+        "Manual client removal from flows",
+        "Flow deactivation with run cancellation options",
+        "Comprehensive analytics and reporting"
+      ],
+      "user_benefits": [
+        "Send rebooking reminders automatically",
+        "Provide custom pre and post-care instructions",
+        "Cross-sell and upsell products/services",
+        "Notify staff of key events",
+        "Drive repeat business and revenue",
+        "Save time with automated personalization",
+        "Track effectiveness with goals and analytics"
+      ],
+      "complexity": "advanced",
+      "integrations": [
+        "Forms integration",
+        "Sales integration",
+        "Calendar integration",
+        "Offers integration",
+        "Memberships integration",
+        "Packages integration",
+        "Products integration",
+        "Gift Cards integration",
+        "Campaigns app",
+        "Marketing phone numbers"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "automated flows",
+        "triggers",
+        "personalization",
+        "marketing automation",
+        "client journey",
+        "rebooking",
+        "cross-sell",
+        "upsell"
+      ]
+    },
+    {
+      "feature_name": "Flow Message Types",
+      "description": "System for categorizing and managing different types of messages within automated flows",
+      "capabilities": [
+        "Non-marketing message classification (appointment-related, sale-related)",
+        "Marketing message classification for promotions",
+        "Different phone numbers for marketing vs non-marketing texts",
+        "Separate unsubscribe handling",
+        "14-day rule for non-marketing classification",
+        "Merge tag support for personalization",
+        "Business name, phone number, online booking link merge tags",
+        "Custom form field merge tags",
+        "Trigger-specific merge tag availability",
+        "Email subject line merge tag support"
+      ],
+      "user_benefits": [
+        "Comply with messaging regulations",
+        "Separate marketing from operational communications",
+        "Maintain client preferences properly",
+        "Personalize messages effectively",
+        "Protect appointment-related messaging from marketing unsubscribes"
+      ],
+      "complexity": "intermediate",
+      "integrations": [
+        "Marketing phone numbers",
+        "Form templates",
+        "Business setup"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "message types",
+        "marketing messages",
+        "non-marketing",
+        "merge tags",
+        "personalization",
+        "compliance"
+      ]
+    },
+    {
+      "feature_name": "Form Response Integration",
+      "description": "Capability to use form submissions and responses to trigger and customize automated flows",
+      "capabilities": [
+        "Form submitted trigger for flows",
+        "Form field availability in flows toggle",
+        "Custom merge tags from form responses",
+        "Different flow paths based on form responses",
+        "Support for dropdown, multiple choice, choose one, toggle fields for flow branching",
+        "Support for email, phone, short answer, long answer, signature fields for completion checking",
+        "Unique naming for form fields in flows",
+        "Form response filtering in flows"
+      ],
+      "user_benefits": [
+        "Send personalized messages based on client responses",
+        "Automate follow-up based on form submissions",
+        "Create different client experiences based on preferences",
+        "Improve client engagement with relevant content"
+      ],
+      "complexity": "intermediate",
+      "integrations": [
+        "Form templates",
+        "Flow triggers",
+        "Merge tags system"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "forms",
+        "form responses",
+        "triggers",
+        "personalization",
+        "client feedback",
+        "automation"
+      ]
+    },
+    {
+      "feature_name": "Flow Message Pricing",
+      "description": "Credit-based pricing system for sending emails and text messages through automated flows",
+      "capabilities": [
+        "Marketing credit requirement for flow messages",
+        "Email messages cost 5 credits each",
+        "Text messages start at 10 credits (increases by 5 per segment)",
+        "Image support in texts (+20 credits for up to 5 images)",
+        "Message segment calculation (160 chars for basic text, 70 for Unicode/emoji)",
+        "24-hour retry system for insufficient credits",
+        "Automatic flow run cancellation after 24 hours without credits",
+        "Low credit email notifications",
+        "Free test messages",
+        "Merge tag character counting (15 chars each)"
+      ],
+      "user_benefits": [
+        "Predictable pricing for messaging",
+        "Flexible message lengths and content",
+        "Grace period for credit replenishment",
+        "Cost control through credit system",
+        "Support for rich media messages"
+      ],
+      "complexity": "basic",
+      "integrations": [
+        "Marketing credits system",
+        "Billing system"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "pricing",
+        "marketing credits",
+        "text segments",
+        "message cost",
+        "billing"
+      ]
+    },
+    {
+      "feature_name": "Advanced Message Settings",
+      "description": "Advanced configuration options for automated messaging behavior",
+      "capabilities": [
+        "Always show staff name in notifications toggle",
+        "Auto-close inactive conversations timer setting",
+        "Text message auto-response configuration",
+        "Conversation management settings",
+        "Message timing controls",
+        "Staff name inclusion rules"
+      ],
+      "user_benefits": [
+        "Customize notification behavior",
+        "Manage conversation lifecycle automatically",
+        "Set up automatic responses for efficiency",
+        "Control staff information display"
+      ],
+      "complexity": "basic",
+      "integrations": [
+        "Automated messages system",
+        "Staff management"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "advanced settings",
+        "auto-response",
+        "staff names",
+        "conversation management"
+      ]
+    },
+    {
+      "feature_name": "Flow Statistics and Analytics",
+      "description": "Comprehensive reporting and analytics system for tracking automated flow performance",
+      "capabilities": [
+        "Flow run statistics (currently running, canceled early, completed, total)",
+        "Goal achievement tracking with percentages",
+        "Marketing credit usage tracking (30-day and total)",
+        "Individual flow run details",
+        "Client progress tracking through flows",
+        "Manual flow run cancellation",
+        "Flow editing impact analysis",
+        "Completion reason tracking (completed, goal reached, time expired)",
+        "Flow performance comparison",
+        "Real-time flow monitoring"
+      ],
+      "user_benefits": [
+        "Measure flow effectiveness",
+        "Track ROI on automated messaging",
+        "Monitor client engagement",
+        "Optimize flow performance",
+        "Understand client behavior patterns",
+        "Make data-driven improvements"
+      ],
+      "complexity": "intermediate",
+      "integrations": [
+        "Flow system",
+        "Analytics platform",
+        "Goal tracking"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "analytics",
+        "statistics",
+        "flow performance",
+        "tracking",
+        "reporting",
+        "ROI"
+      ]
+    }
+  ],
+  "key_workflows": [
+    {
+      "workflow_name": "Web Chat Customer Engagement",
+      "steps": [
+        "Enable web chat in settings",
+        "Customize welcome and response time messages",
+        "Visitor clicks chat icon on website",
+        "Staff receives notification in Inbox app",
+        "Staff replies to chat in real-time",
+        "Conversation can be linked to client profile",
+        "Follow-up via text if phone number provided"
+      ],
+      "features_involved": [
+        "Web Chat",
+        "Automated Messages"
+      ]
+    },
+    {
+      "workflow_name": "Automated Flow Creation and Management",
+      "steps": [
+        "Select trigger event (appointment completed, form submitted, etc.)",
+        "Configure trigger filters (service, staff, location, etc.)",
+        "Add flow steps (delays, messages, conditions)",
+        "Set message types (marketing vs non-marketing)",
+        "Configure flow settings (frequency, goals)",
+        "Activate flow",
+        "Monitor statistics and performance",
+        "Edit or deactivate as needed"
+      ],
+      "features_involved": [
+        "Automated Flows",
+        "Flow Message Types",
+        "Flow Statistics and Analytics"
+      ]
+    },
+    {
+      "workflow_name": "Form-Based Flow Automation",
+      "steps": [
+        "Create form template with flow-enabled fields",
+        "Set unique names for form fields",
+        "Client submits form",
+        "Form submission triggers automated flow",
+        "Flow uses form responses for personalization",
+        "Different flow paths based on responses",
+        "Track completion and effectiveness"
+      ],
+      "features_involved": [
+        "Form Response Integration",
+        "Automated Flows",
+        "Flow Message Types"
+      ]
+    }
+  ],
+  "integrations": [
+    {
+      "name": "Website Integration",
+      "purpose": "Embed web chat and online booking functionality directly into client websites"
+    },
+    {
+      "name": "Marketing Phone Numbers",
+      "purpose": "Separate phone numbers for marketing messages to protect appointment communications from unsubscribes"
+    },
+    {
+      "name": "Form Templates",
+      "purpose": "Use form submissions and responses to trigger and personalize automated flows"
+    },
+    {
+      "name": "Calendar and Appointments",
+      "purpose": "Trigger flows and messages based on appointment events and scheduling"
+    },
+    {
+      "name": "Sales and Transactions",
+      "purpose": "Trigger flows based on sales events and transaction amounts"
+    },
+    {
+      "name": "Memberships and Packages",
+      "purpose": "Automate messaging around membership and package events and expirations"
+    },
+    {
+      "name": "Marketing Credits System",
+      "purpose": "Manage pricing and billing for automated message sending"
+    }
+  ],
+  "competitive_advantages": [
+    "Highly flexible flow automation with complex conditional logic and filtering",
+    "Separation of marketing and non-marketing messages with different phone numbers",
+    "Real-time web chat with live typing indicators and message previews",
+    "Advanced form integration allowing dynamic flow paths based on responses",
+    "Comprehensive analytics with goal tracking and ROI measurement",
+    "Credit-based pricing system with grace periods and automatic retry logic",
+    "Pre-built flow templates for common salon/spa use cases",
+    "Integration across all business functions (appointments, sales, memberships, forms)",
+    "Sophisticated message personalization with extensive merge tag system",
+    "Professional 1:1 consultation calls for flow strategy and setup"
+  ]
+}

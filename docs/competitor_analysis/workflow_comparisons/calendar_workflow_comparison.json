@@ -1,0 +1,750 @@
+{
+  "category": "Calendar & Appointments",
+  "total_features_compared": 8,
+  "comparisons": [
+    {
+      "feature_name": "Create Time Block",
+      "mangomint": {
+        "feature_name": "Create Time Block",
+        "workflow_steps": [
+          "Select desired time slot directly on calendar",
+          "Choose 'Create time block' from context menu",
+          "Specify duration using visual duration selector",
+          "Click 'Create Time Block' to confirm",
+          "Time block appears on calendar with visual indicator"
+        ],
+        "ux_highlights": [
+          "Direct calendar click-to-create - no form navigation required",
+          "Visual duration selector with drag/resize capability",
+          "Immediate calendar feedback showing blocked time",
+          "Consistent mobile '+' button for quick access",
+          "Visual time block representation distinguishable from appointments"
+        ],
+        "key_interactions": [
+          "Calendar click/tap to initiate",
+          "Duration drag/resize interaction",
+          "Context menu with pencil icon for editing",
+          "Three-dot menu for delete action",
+          "Mobile '+' button for creation"
+        ],
+        "mobile_support": "Yes",
+        "pain_points_solved": [
+          "Staff availability management without complex scheduling",
+          "Blocking online booking during breaks/meetings",
+          "Quick visual calendar management",
+          "Override regular work hours on-demand"
+        ]
+      },
+      "lukes_platform": {
+        "implemented": "No",
+        "workflow_steps": [
+          "No create time block functionality found in the provided code snippets",
+          "Only appointment scheduling and waitlist management components are present",
+          "AppointmentSlot component handles individual appointments but not time blocks"
+        ],
+        "ux_strengths": [
+          "Has foundational appointment management structure",
+          "Includes drag-and-drop functionality for appointments",
+          "Has proper appointment styling and visual representation",
+          "Includes practitioner assignment capabilities",
+          "Has room/resource management integration"
+        ],
+        "ux_weaknesses": [
+          "No time blocking feature available",
+          "Cannot reserve time slots for administrative tasks",
+          "No way to block practitioner availability",
+          "Missing bulk time management capabilities",
+          "No protection against overbooking during blocked periods"
+        ],
+        "missing_features": [
+          "Create time block modal/interface",
+          "Time block duration selection",
+          "Block type categorization (break, admin, unavailable)",
+          "Recurring time block creation",
+          "Visual distinction between appointments and blocks",
+          "Time block editing and deletion",
+          "Conflict detection with existing appointments",
+          "Practitioner-specific time blocking",
+          "Room/resource blocking capabilities",
+          "Time block templates for common scenarios"
+        ]
+      },
+      "comparison": {
+        "winner": "Mango Mint",
+        "winner_reasoning": "Mango Mint provides a complete, user-friendly time block creation feature with intuitive calendar interaction and visual feedback, while Luke's implementation lacks this functionality entirely.",
+        "mangomint_score": 8,
+        "lukes_score": 0,
+        "key_differentiators": [
+          "Direct calendar click-to-create eliminates form navigation friction",
+          "Visual duration selector with drag/resize provides intuitive control",
+          "Immediate visual feedback shows blocked time on calendar",
+          "Solves critical business need for staff availability management",
+          "Prevents overbooking during breaks and administrative tasks"
+        ],
+        "how_to_beat_them": [
+          "Implement basic time block creation functionality first",
+          "Add one-click calendar time blocking with visual indicators",
+          "Create drag-and-drop time block duration adjustment",
+          "Integrate time blocks with existing appointment drag-and-drop system",
+          "Add bulk time blocking for recurring breaks/meetings",
+          "Include time block templates for common scenarios (lunch, meetings, etc.)",
+          "Implement time block conflict detection with existing appointments",
+          "Add practitioner-specific time block permissions and overrides"
+        ]
+      }
+    },
+    {
+      "feature_name": "Repeating Time Block",
+      "mangomint": {
+        "feature_name": "Repeating Time Block",
+        "workflow_steps": [
+          "Create or select existing time block",
+          "Access three-dot menu on time block",
+          "Select 'Make Repeating' option",
+          "Toggle 'Repeat this time block' switch",
+          "Choose frequency (daily, weekly, etc.)",
+          "Click 'Save' to apply recurring pattern",
+          "System displays one year of repeating blocks"
+        ],
+        "ux_highlights": [
+          "Build on existing time block rather than starting fresh",
+          "Simple toggle-based activation",
+          "Frequency selection with clear options",
+          "One-year visual preview of recurring pattern",
+          "Must be within one year constraint prevents infinite blocks"
+        ],
+        "key_interactions": [
+          "Toggle switch for repeat activation",
+          "Frequency dropdown/picker",
+          "Calendar preview showing recurring instances",
+          "One-year limitation with automatic display management"
+        ],
+        "mobile_support": "Yes",
+        "pain_points_solved": [
+          "Eliminates manual creation of recurring blocks",
+          "Standardizes regular break times/meetings",
+          "Reduces administrative overhead for schedule management",
+          "Prevents booking conflicts for recurring events"
+        ]
+      },
+      "lukes_platform": {
+        "implemented": "No",
+        "workflow_steps": [],
+        "ux_strengths": [],
+        "ux_weaknesses": [
+          "No recurring appointment functionality visible in the codebase",
+          "Users likely need to manually create each appointment in a series",
+          "No time-saving automation for regular patient schedules",
+          "Increased administrative burden for staff scheduling repeat treatments"
+        ],
+        "missing_features": [
+          "Recurring appointment creation interface",
+          "Time block template system for repeated schedules",
+          "Frequency selection options (daily, weekly, monthly, custom intervals)",
+          "End date or occurrence count settings for recurring series",
+          "Bulk editing capabilities for recurring appointment series",
+          "Exception handling for skipped or rescheduled recurring appointments",
+          "Visual indicators in calendar view to show recurring vs. one-time appointments",
+          "Master appointment record that manages the entire recurring series",
+          "Automatic conflict detection across recurring time blocks",
+          "Patient notification automation for upcoming recurring appointments",
+          "Practitioner availability validation across recurring schedule",
+          "Resource booking automation for recurring appointments",
+          "Series modification options (edit single, edit all, edit future)",
+          "Recurring appointment cancellation with series impact options"
+        ]
+      },
+      "comparison": {
+        "winner": "Mango Mint",
+        "winner_reasoning": "Mango Mint has a fully implemented repeating time block feature with intuitive workflow and visual preview, while Luke's platform has no recurring appointment functionality at all.",
+        "mangomint_score": 8,
+        "lukes_score": 0,
+        "key_differentiators": [
+          "Complete recurring appointment system vs. no functionality",
+          "One-year visual preview shows users exactly what they're creating",
+          "Toggle-based activation makes it simple to convert existing blocks",
+          "Built-in frequency options (daily, weekly, etc.) cover common use cases",
+          "Prevents infinite blocks with one-year constraint",
+          "Eliminates manual recreation of regular appointments"
+        ],
+        "how_to_beat_them": [
+          "Implement basic recurring appointment functionality immediately",
+          "Add smart conflict detection for recurring appointments",
+          "Create flexible recurrence patterns (every 2 weeks, monthly, custom intervals)",
+          "Build bulk editing capabilities for entire recurring series",
+          "Add exception handling for holidays/closures in recurring patterns",
+          "Include recurring appointment analytics and optimization suggestions",
+          "Implement automatic patient notification for recurring appointment series",
+          "Add recurring revenue tracking and forecasting features"
+        ]
+      }
+    },
+    {
+      "feature_name": "Group Booking from Calendar",
+      "mangomint": {
+        "feature_name": "Group Booking from Calendar",
+        "workflow_steps": [
+          "Select 'Group Appointment' from calendar",
+          "Add first appointment with client/service details",
+          "Click 'Add Appointment' to continue building group",
+          "Add subsequent appointments for each group member",
+          "Assign/change primary contact using 'Make Primary Contact'",
+          "Review all appointments in group preview",
+          "Click 'Book Appointments' to finalize group booking",
+          "System sends individual confirmations to each client"
+        ],
+        "ux_highlights": [
+          "Progressive appointment building - add one at a time",
+          "Clear primary contact assignment with easy switching",
+          "Group preview showing all appointments before confirmation",
+          "Individual client treatment within group context",
+          "Visual group appointment icons on calendar"
+        ],
+        "key_interactions": [
+          "Group Appointment selection from calendar",
+          "Add Appointment button for building group",
+          "Primary contact radio button selection",
+          "Group confirmation dialog before booking",
+          "Individual appointment forms within group flow"
+        ],
+        "mobile_support": "Partial",
+        "pain_points_solved": [
+          "Coordinates multiple related appointments efficiently",
+          "Maintains individual client communication preferences",
+          "Simplifies group event management",
+          "Handles primary contact designation for group coordination"
+        ]
+      },
+      "lukes_platform": {
+        "implemented": "No",
+        "workflow_steps": [
+          "No group booking workflow found in the provided code snippets"
+        ],
+        "ux_strengths": [
+          "Individual appointment management appears well-structured with AppointmentSlot component",
+          "Calendar view seems to support visual appointment display",
+          "Appointment history tracking is implemented",
+          "Individual appointment editing and management appears functional"
+        ],
+        "ux_weaknesses": [
+          "No group booking functionality detected in any component",
+          "No batch appointment creation workflow",
+          "No group selection or multi-appointment management",
+          "Individual appointment focus only - no group coordination features"
+        ],
+        "missing_features": [
+          "Group booking initiation from calendar interface",
+          "Multi-participant selection and management",
+          "Group appointment scheduling wizard",
+          "Bulk time slot selection for groups",
+          "Group-specific pricing and service packages",
+          "Coordinated scheduling for multiple participants",
+          "Group booking confirmation and notification system",
+          "Group waitlist management",
+          "Resource allocation for group appointments",
+          "Group booking modification and cancellation workflows",
+          "Group payment processing",
+          "Group appointment conflict resolution",
+          "Capacity management for group bookings",
+          "Group booking templates and recurring options",
+          "Group communication and reminder systems"
+        ]
+      },
+      "comparison": {
+        "winner": "Luke's Not Implemented",
+        "winner_reasoning": "Mango Mint wins by default as they have a complete group booking implementation while Luke's platform has no group booking functionality at all.",
+        "mangomint_score": 8,
+        "lukes_score": 0,
+        "key_differentiators": [
+          "Complete group booking workflow with progressive appointment building",
+          "Primary contact management for group coordination",
+          "Group preview functionality before confirmation",
+          "Individual client treatment within group context",
+          "Visual group appointment representation on calendar"
+        ],
+        "how_to_beat_them": [
+          "Implement comprehensive group booking workflow starting with group creation interface",
+          "Add batch appointment selection and management capabilities",
+          "Create primary contact designation and switching functionality",
+          "Build group preview system showing all appointments before confirmation",
+          "Add visual indicators for group appointments on calendar view",
+          "Implement group-level communication and coordination features",
+          "Add ability to modify entire groups while maintaining individual preferences",
+          "Create group templates for recurring group bookings"
+        ]
+      }
+    },
+    {
+      "feature_name": "Group Booking Check-in/Check-out",
+      "mangomint": {
+        "feature_name": "Group Booking Check-in/Check-out",
+        "workflow_steps": [
+          "Locate group booking on calendar (shows group icon)",
+          "Choose individual or group check-in approach",
+          "For individual: Select specific client appointment, click 'Check-In'",
+          "For group: Select group icon, click 'Check-In' for all",
+          "Repeat process for check-out with payment options",
+          "For group checkout: Choose split payment or single payer",
+          "Process payments according to selected method",
+          "System updates all appointment statuses"
+        ],
+        "ux_highlights": [
+          "Flexible check-in/out - individual or group operations",
+          "Visual group indicators on calendar for easy identification",
+          "Payment splitting options during group checkout",
+          "Maintains individual client account benefits in group context",
+          "Clear differentiation between group and individual actions"
+        ],
+        "key_interactions": [
+          "Group icon selection vs individual appointment selection",
+          "Check-in/Check-out button context switching",
+          "Payment method selection during checkout",
+          "Client removal from group checkout flow",
+          "Split payment interface for multiple payers"
+        ],
+        "mobile_support": "Yes",
+        "pain_points_solved": [
+          "Handles staggered arrivals within group bookings",
+          "Supports flexible payment arrangements",
+          "Maintains individual membership/package benefits",
+          "Streamlines group service delivery workflow"
+        ]
+      },
+      "lukes_platform": {
+        "implemented": "No",
+        "workflow_steps": [
+          "Individual appointments are managed through AppointmentSlot component",
+          "Each appointment is handled as a separate entity with single patient data",
+          "Check-in/check-out processes appear to be individual-based only",
+          "No group booking creation or management functionality visible",
+          "Waitlist system (AddWaitlistModal) handles individual patients only"
+        ],
+        "ux_strengths": [
+          "Strong individual appointment management with detailed appointment data",
+          "Comprehensive appointment history tracking for individual patients",
+          "Visual appointment slots with clear styling and practitioner assignment",
+          "Drag-and-drop functionality for individual appointment rescheduling",
+          "Detailed appointment status tracking (scheduled, confirmed, completed, cancelled, no-show)"
+        ],
+        "ux_weaknesses": [
+          "No group booking creation interface or functionality",
+          "Cannot handle multiple patients checking in/out simultaneously",
+          "No bulk operations for managing related appointments",
+          "Individual-focused workflow would be inefficient for group services",
+          "Missing group-specific status management and coordination features"
+        ],
+        "missing_features": [
+          "Group booking creation and management interface",
+          "Bulk check-in/check-out functionality for multiple patients",
+          "Group appointment status synchronization",
+          "Lead patient designation and group hierarchy management",
+          "Group-specific pricing and payment handling",
+          "Partial group check-in handling (some members present, others absent)",
+          "Group communication and notification systems",
+          "Group appointment modification tools (add/remove members)",
+          "Collective waitlist management for groups",
+          "Group capacity and resource allocation management"
+        ]
+      },
+      "comparison": {
+        "winner": "Luke's Not Implemented",
+        "winner_reasoning": "Luke's platform lacks any group booking functionality, making this feature completely unavailable rather than a competitive comparison.",
+        "mangomint_score": 8,
+        "lukes_score": 0,
+        "key_differentiators": [
+          "Mango Mint has dedicated group booking creation and management system",
+          "Flexible individual vs group check-in/out operations with visual group indicators",
+          "Sophisticated payment splitting options for group checkout scenarios",
+          "Maintains individual client benefits and account management within group context",
+          "Handles complex group scenarios like staggered arrivals and flexible payment arrangements"
+        ],
+        "how_to_beat_them": [
+          "Build comprehensive group booking creation interface with multi-patient selection",
+          "Implement group check-in/out workflows that allow bulk operations while maintaining individual appointment integrity",
+          "Add payment splitting functionality with options for individual payments, single payer, or custom splits",
+          "Create visual group indicators and management tools in the calendar interface",
+          "Develop group-specific status management that coordinates multiple appointments as a cohesive unit",
+          "Build staggered arrival handling and flexible group service delivery workflows",
+          "Integrate group operations with existing individual appointment strengths like history tracking and status management"
+        ]
+      }
+    },
+    {
+      "feature_name": "Group Booking from Online Booking",
+      "mangomint": {
+        "feature_name": "Group Booking from Online Booking",
+        "workflow_steps": [
+          "Client selects number of guests in group",
+          "Choose services and providers for each guest",
+          "Select day and time for group appointment",
+          "Enter contact information for all group members",
+          "Add individual and group comments",
+          "Designate primary contact for group",
+          "Pay required deposits for entire group",
+          "Receive confirmations - individual and group details",
+          "Primary contact manages group reschedule/cancel via portal"
+        ],
+        "ux_highlights": [
+          "Guest number selection upfront sets expectations",
+          "Individual service customization within group booking",
+          "Comprehensive contact collection for all participants",
+          "Combined deposit payment simplifies transaction",
+          "Differentiated confirmation emails based on role"
+        ],
+        "key_interactions": [
+          "Group size selector at booking start",
+          "Service selection per guest interface",
+          "Multi-client contact form",
+          "Primary contact designation",
+          "Combined deposit payment processing",
+          "Group vs individual portal access controls"
+        ],
+        "mobile_support": "Yes",
+        "pain_points_solved": [
+          "Enables client-initiated group coordination",
+          "Reduces staff booking administrative work",
+          "Handles complex group payment scenarios",
+          "Maintains individual client relationships within groups",
+          "Provides group organizer control over scheduling changes"
+        ]
+      },
+      "lukes_platform": {
+        "implemented": "No",
+        "workflow_steps": [
+          "No group booking workflow exists in the current codebase",
+          "Only individual appointment booking through standard appointment creation",
+          "Waitlist functionality exists but for individual patients only",
+          "No multi-person booking or group session management"
+        ],
+        "ux_strengths": [
+          "Individual appointment booking appears well-structured with proper form validation",
+          "Appointment history tracking exists for individual patients",
+          "Calendar view supports individual appointment management",
+          "Waitlist system allows for individual patient queuing"
+        ],
+        "ux_weaknesses": [
+          "No group booking capability at all",
+          "Cannot book multiple people in a single transaction",
+          "No group session management or coordination",
+          "Missing group-specific pricing or package options",
+          "No way to link related bookings for group events",
+          "Cannot handle group cancellations or modifications together",
+          "No group communication features",
+          "Missing capacity management for group sessions"
+        ],
+        "missing_features": [
+          "Group booking form with multiple participant fields",
+          "Group size limits and capacity management",
+          "Group pricing and discount structures",
+          "Lead booker designation and responsibility",
+          "Group modification and cancellation workflows",
+          "Group communication and notification system",
+          "Group session scheduling with appropriate time slots",
+          "Group payment splitting options",
+          "Group waitlist management",
+          "Group booking confirmation and reminder system",
+          "Multi-participant check-in process",
+          "Group session room/resource allocation",
+          "Group booking analytics and reporting"
+        ]
+      },
+      "comparison": {
+        "winner": "Mango Mint",
+        "winner_reasoning": "Mango Mint wins decisively as they have a complete, well-thought-out group booking system while Luke's platform has no group booking functionality at all. This is a critical feature gap for medical spas that offer group services.",
+        "mangomint_score": 9,
+        "lukes_score": 0,
+        "key_differentiators": [
+          "Complete group booking workflow with upfront guest selection",
+          "Individual service customization within group context",
+          "Sophisticated group payment handling with combined deposits",
+          "Primary contact designation for group management",
+          "Group-specific confirmation and communication system",
+          "Built-in group reschedule/cancel management through portal"
+        ],
+        "how_to_beat_them": [
+          "Implement basic group booking functionality with guest selection",
+          "Add group payment processing and deposit handling",
+          "Create group session calendar management and capacity controls",
+          "Build primary contact/organizer role with group management permissions",
+          "Develop group-specific pricing and package options",
+          "Add group communication and notification systems",
+          "Implement linked booking management for group modifications",
+          "Create group booking analytics and reporting features",
+          "Add waitlist management for group sessions",
+          "Integrate group booking with existing individual appointment system"
+        ]
+      }
+    },
+    {
+      "feature_name": "Group Booking from Existing Appointments",
+      "mangomint": {
+        "feature_name": "Group Booking from Existing Appointments",
+        "workflow_steps": [
+          "Select first existing appointment on calendar",
+          "Click 'Add to Group' from appointment menu",
+          "Choose 'New Group Appointment' option",
+          "First client becomes primary contact automatically",
+          "Click 'Add Appointment' to include other existing bookings",
+          "Select additional appointments to add to group",
+          "Added clients receive group notification emails",
+          "Calendar updates to show group appointment icons"
+        ],
+        "ux_highlights": [
+          "Converts existing separate bookings into coordinated group",
+          "Automatic primary contact assignment from first selection",
+          "Progressive group building by adding existing appointments",
+          "Notification system informs added clients of group status",
+          "Visual calendar updates reflect new group relationships"
+        ],
+        "key_interactions": [
+          "Add to Group option in appointment context menu",
+          "New Group Appointment vs existing group selection",
+          "Add Appointment button for expanding group",
+          "Existing appointment selection interface",
+          "Group notification trigger"
+        ],
+        "mobile_support": "Yes",
+        "pain_points_solved": [
+          "Handles post-booking group coordination needs",
+          "Avoids rebooking when group needs emerge",
+          "Maintains existing appointment details while adding group benefits",
+          "Improves communication coordination for related appointments"
+        ]
+      },
+      "lukes_platform": {
+        "implemented": "No",
+        "workflow_steps": [],
+        "ux_strengths": [],
+        "ux_weaknesses": [
+          "No mechanism to select multiple existing appointments for group booking",
+          "No group management interface visible in appointment components",
+          "No bulk operations or multi-select functionality in appointment views",
+          "Individual appointment slots don't show group association capabilities",
+          "Missing group booking indicators or visual cues in the appointment display"
+        ],
+        "missing_features": [
+          "Multi-select functionality for existing appointments",
+          "Group booking creation workflow from selected appointments",
+          "Visual indicators showing which appointments belong to a group",
+          "Bulk operations interface for managing grouped appointments",
+          "Group booking management dashboard or view",
+          "Ability to link/unlink appointments to/from groups",
+          "Group pricing and billing coordination",
+          "Synchronized scheduling controls for grouped appointments",
+          "Group booking confirmation and communication tools",
+          "Visual grouping indicators in calendar views",
+          "Group booking templates or presets",
+          "Bulk modification capabilities for grouped appointments"
+        ]
+      },
+      "comparison": {
+        "winner": "Luke's Not Implemented",
+        "winner_reasoning": "Luke's platform has no implementation of group booking from existing appointments functionality, while Mango Mint provides a complete workflow for converting individual bookings into coordinated group appointments.",
+        "mangomint_score": 8,
+        "lukes_score": 0,
+        "key_differentiators": [
+          "Complete workflow for selecting and converting existing appointments into groups",
+          "Automatic primary contact assignment from first selected appointment",
+          "Progressive group building by adding multiple existing bookings",
+          "Notification system to inform clients of new group status",
+          "Visual calendar updates with group appointment indicators",
+          "Preserves existing appointment details while adding group coordination benefits"
+        ],
+        "how_to_beat_them": [
+          "Implement multi-select functionality for existing appointments in calendar view",
+          "Add 'Convert to Group' or 'Add to Group' options in appointment context menus",
+          "Create group appointment management interface for linking existing bookings",
+          "Develop notification system to inform clients when their individual appointment becomes part of a group",
+          "Add visual indicators in calendar to show group appointment relationships",
+          "Build primary contact assignment logic for group coordination",
+          "Implement bulk operations for managing multiple related appointments as a group"
+        ]
+      }
+    },
+    {
+      "feature_name": "Enable Group Booking Configuration",
+      "mangomint": {
+        "feature_name": "Enable Group Booking Configuration",
+        "workflow_steps": [
+          "Open Settings app navigation",
+          "Navigate to Calendar & Appointments > Scheduling Options",
+          "Access Group Appointments configuration section",
+          "Toggle 'Enable scheduling of group appointments' for staff",
+          "Toggle 'Allow clients to book group appointments online'",
+          "Set maximum group size (up to 5 clients for online)",
+          "Select locations to enable for online group booking",
+          "Choose services to exclude from group booking if needed",
+          "Save configuration settings"
+        ],
+        "ux_highlights": [
+          "Hierarchical toggle system - staff first, then client access",
+          "Granular control over locations and services",
+          "Maximum group size limits prevent oversized bookings",
+          "Service exclusion allows fine-tuned availability control",
+          "Clear distinction between staff and client capabilities"
+        ],
+        "key_interactions": [
+          "Sequential toggle activation",
+          "Group size number selector",
+          "Location multi-select interface",
+          "Service exclusion checklist",
+          "Settings save confirmation"
+        ],
+        "mobile_support": "Yes",
+        "pain_points_solved": [
+          "Provides business control over group booking feature rollout",
+          "Prevents inappropriate services from group booking",
+          "Manages capacity constraints through size limits",
+          "Allows location-specific group booking policies"
+        ]
+      },
+      "lukes_platform": {
+        "implemented": "No",
+        "workflow_steps": [
+          "No group booking functionality exists in current codebase",
+          "Individual appointments are created through standard booking flow",
+          "No mechanism to link multiple appointments together",
+          "No group-specific configuration options available"
+        ],
+        "ux_strengths": [],
+        "ux_weaknesses": [
+          "Cannot book multiple people in a single transaction",
+          "No way to manage group appointments as a cohesive unit",
+          "Missing group-specific pricing or discount configuration",
+          "No coordination tools for group scheduling conflicts",
+          "Cannot set group size limits or requirements"
+        ],
+        "missing_features": [
+          "Group booking creation interface",
+          "Group size configuration (min/max participants)",
+          "Group pricing rules and discounts",
+          "Lead booker designation and contact management",
+          "Group appointment synchronization tools",
+          "Partial booking handling (when some group members can't attend)",
+          "Group-specific cancellation policies",
+          "Bulk communication tools for group participants",
+          "Group booking confirmation and reminder workflows",
+          "Split payment options for group bookings",
+          "Group booking templates for recurring events",
+          "Waitlist management for group bookings",
+          "Group capacity management across different services",
+          "Group booking reporting and analytics"
+        ]
+      },
+      "comparison": {
+        "winner": "Mango Mint",
+        "winner_reasoning": "Mango Mint provides a complete, well-architected group booking configuration system with granular controls, while Luke's platform has no group booking functionality whatsoever.",
+        "mangomint_score": 8,
+        "lukes_score": 0,
+        "key_differentiators": [
+          "Complete group booking infrastructure with hierarchical permission controls",
+          "Granular configuration options for locations, services, and group sizes",
+          "Business-friendly controls to manage feature rollout and capacity",
+          "Clear separation between staff capabilities and client self-service options",
+          "Service exclusion system to prevent inappropriate group bookings"
+        ],
+        "how_to_beat_them": [
+          "Build comprehensive group booking system from ground up",
+          "Implement advanced group coordination features like automatic conflict resolution",
+          "Add group-specific pricing tiers and discount structures",
+          "Create group communication tools and notifications",
+          "Develop waitlist management for group bookings",
+          "Add group booking analytics and reporting dashboard",
+          "Implement dynamic group size optimization based on demand patterns",
+          "Create group booking templates for recurring events"
+        ]
+      }
+    },
+    {
+      "feature_name": "Update Existing Group Booking",
+      "mangomint": {
+        "feature_name": "Update Existing Group Booking",
+        "workflow_steps": [
+          "Locate group booking on calendar via group icon",
+          "Select group to access update options",
+          "Choose update type: reschedule, add/remove appointments, or change primary contact",
+          "For reschedule: Drag-drop group or use reschedule option",
+          "For adding: Use 'Add Appointment' to include new clients",
+          "For removing: Select appointments to remove from group",
+          "For primary contact change: Select new primary contact",
+          "Confirm changes and trigger appropriate notifications",
+          "Calendar and notifications update to reflect changes"
+        ],
+        "ux_highlights": [
+          "Central group management from single calendar selection",
+          "Multiple update options accessible from same interface",
+          "Drag-drop rescheduling maintains group integrity",
+          "Add/remove flexibility without rebuilding entire group",
+          "Automatic notification management for all changes"
+        ],
+        "key_interactions": [
+          "Group icon selection for management access",
+          "Drag-drop calendar rescheduling",
+          "Add/Remove appointment buttons",
+          "Primary contact selection interface",
+          "Change confirmation dialogs",
+          "Notification trigger system"
+        ],
+        "mobile_support": "Yes",
+        "pain_points_solved": [
+          "Handles inevitable group booking changes efficiently",
+          "Maintains group coordination during modifications",
+          "Prevents need to recreate groups for simple changes",
+          "Manages complex notification requirements automatically"
+        ]
+      },
+      "lukes_platform": {
+        "implemented": "No",
+        "workflow_steps": [],
+        "ux_strengths": [],
+        "ux_weaknesses": [
+          "No visible group booking update functionality in provided code",
+          "Individual appointment management appears to be the only option",
+          "No bulk edit capabilities for related appointments",
+          "No group booking identification or linking system"
+        ],
+        "missing_features": [
+          "Group booking identification and management interface",
+          "Bulk update functionality for multiple appointments in a group",
+          "Group member addition/removal capabilities",
+          "Synchronized scheduling changes across group members",
+          "Group booking status management (partial completion, cancellations)",
+          "Group-specific pricing and payment management",
+          "Group booking history and audit trail",
+          "Validation for group booking constraints and dependencies",
+          "Group booking modification approval workflow",
+          "Notification system for group booking changes affecting all members",
+          "Group booking reschedule functionality",
+          "Split group booking capability",
+          "Group booking conflict resolution",
+          "Bulk communication tools for group participants",
+          "Group booking reporting and analytics"
+        ]
+      },
+      "comparison": {
+        "winner": "Luke's Not Implemented",
+        "winner_reasoning": "Luke's platform has no visible group booking update functionality, while Mango Mint provides a comprehensive system for managing group booking modifications with multiple update options and automatic coordination.",
+        "mangomint_score": 9,
+        "lukes_score": 0,
+        "key_differentiators": [
+          "Unified group management interface from single calendar selection",
+          "Multiple update types (reschedule, add/remove, contact changes) in one workflow",
+          "Drag-drop rescheduling that maintains group integrity",
+          "Flexible add/remove capabilities without rebuilding entire groups",
+          "Automatic notification management for all group changes",
+          "Handles complex group coordination during modifications"
+        ],
+        "how_to_beat_them": [
+          "Implement group booking identification and linking system",
+          "Create bulk edit capabilities for related appointments",
+          "Add group-specific update interface with multiple modification options",
+          "Develop drag-drop rescheduling for entire groups",
+          "Build automatic notification system for group changes",
+          "Create add/remove functionality that maintains group relationships",
+          "Implement primary contact management for groups",
+          "Add visual group indicators on calendar interface"
+        ]
+      }
+    }
+  ]
+}

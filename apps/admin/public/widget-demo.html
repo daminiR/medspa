@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Luxe Medical Spa - Booking Widget Demo</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f9fafb;
+            padding: 40px 20px;
+        }
+        .demo-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .demo-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        h1 {
+            color: #111827;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            color: #6b7280;
+            font-size: 1.125rem;
+        }
+        .code-block {
+            background: #1f2937;
+            color: #f3f4f6;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            overflow-x: auto;
+        }
+        .code-block code {
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+        }
+        .section {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        h2 {
+            color: #374151;
+            margin-bottom: 15px;
+        }
+        .feature-list {
+            list-style: none;
+            padding: 0;
+        }
+        .feature-list li {
+            padding: 8px 0;
+            color: #4b5563;
+        }
+        .feature-list li:before {
+            content: "✓ ";
+            color: #10b981;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-container">
+        <div class="demo-header">
+            <h1>Luxe Medical Spa Booking Widget</h1>
+            <p class="subtitle">Add online booking to any website in 2 minutes</p>
+        </div>
+
+        <div class="section">
+            <h2>Live Demo</h2>
+            <p>This is how your booking widget looks on any website:</p>
+            <!-- The actual widget -->
+            <div id="luxe-booking" data-clinic-id="12345"></div>
+        </div>
+
+        <div class="section">
+            <h2>How to Install</h2>
+            <p>Add these two lines to any website:</p>
+            <div class="code-block">
+                <code>&lt;script src="https://yourdomain.com/booking-widget.js"&gt;&lt;/script&gt;<br>
+&lt;div id="luxe-booking" data-clinic-id="YOUR_CLINIC_ID"&gt;&lt;/div&gt;</code>
+            </div>
+            <p style="color: #6b7280; margin-top: 10px;">That's it! The widget handles everything else.</p>
+        </div>
+
+        <div class="section">
+            <h2>Features</h2>
+            <ul class="feature-list">
+                <li>Real-time availability</li>
+                <li>Service and provider selection</li>
+                <li>Mobile responsive</li>
+                <li>Automatic confirmations</li>
+                <li>No coding required</li>
+                <li>Customizable colors</li>
+                <li>HIPAA compliant</li>
+                <li>Works on any website</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>Integration Options</h2>
+            
+            <h3>WordPress</h3>
+            <div class="code-block">
+                <code>[luxe_booking clinic_id="12345"]</code>
+            </div>
+            
+            <h3>Squarespace</h3>
+            <div class="code-block">
+                <code>// Add to Code Injection area<br>
+&lt;script src="https://yourdomain.com/booking-widget.js"&gt;&lt;/script&gt;</code>
+            </div>
+            
+            <h3>React/Next.js</h3>
+            <div class="code-block">
+                <code>import Script from 'next/script'<br>
+<br>
+&lt;Script src="https://yourdomain.com/booking-widget.js" /&gt;<br>
+&lt;div id="luxe-booking" data-clinic-id="12345" /&gt;</code>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Customization</h2>
+            <p>Pass additional options:</p>
+            <div class="code-block">
+                <code>&lt;div id="luxe-booking" <br>
+  data-clinic-id="12345"<br>
+  data-theme="dark"<br>
+  data-primary-color="#667eea"<br>
+  data-show-prices="true"<br>
+  data-language="en"<br>
+&gt;&lt;/div&gt;</code>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load the widget -->
+    <script src="/booking-widget.js"></script>
+</body>
+</html>

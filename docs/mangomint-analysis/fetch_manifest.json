@@ -1,0 +1,1899 @@
+{
+  "total_articles": 359,
+  "categories": {
+    "07-products-and-inventory": {
+      "total": 12,
+      "articles": [
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/07-products-and-inventory/track-inventory-and-add-inventory-change.md",
+          "url": "https://www.mangomint.com/learn/track-inventory-and-add-inventory-change/",
+          "status": "completed"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/07-products-and-inventory/receive-a-purchase-order-delivery.md",
+          "url": "https://www.mangomint.com/learn/receive-a-purchase-order-delivery/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/07-products-and-inventory/purchase-orders.md",
+          "url": "https://www.mangomint.com/learn/help-articles/products-and-inventory/purchase-orders/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/07-products-and-inventory/manage-categories-and-add-products.md",
+          "url": "https://www.mangomint.com/learn/manage-categories-and-add-products/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/07-products-and-inventory/create-purchase-orders.md",
+          "url": "https://www.mangomint.com/learn/create-purchase-orders/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/07-products-and-inventory/inventory-reports.md",
+          "url": "https://www.mangomint.com/learn/inventory-reports/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/07-products-and-inventory/set-up-products-for-purchase-orders.md",
+          "url": "https://www.mangomint.com/learn/set-up-products-for-purchase-orders/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/07-products-and-inventory/products-and-inventory.md",
+          "url": "https://www.mangomint.com/learn/help-articles/products-and-inventory/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/07-products-and-inventory/search-and-sort-products.md",
+          "url": "https://www.mangomint.com/learn/search-and-sort-products/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/07-products-and-inventory/manage-suppliers.md",
+          "url": "https://www.mangomint.com/learn/manage-suppliers/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/07-products-and-inventory/faq-products-and-inventory.md",
+          "url": "https://www.mangomint.com/learn/faq-products-and-inventory/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/07-products-and-inventory/service-and-product-commission.md",
+          "url": "https://www.mangomint.com/learn/service-and-product-commission/",
+          "status": "pending"
+        }
+      ]
+    },
+    "02-calendar-and-appointments": {
+      "total": 51,
+      "articles": [
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/02-calendar-and-appointments/time-blocks/create-a-time-block.md",
+          "url": "https://www.mangomint.com/learn/create-a-time-block/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/02-calendar-and-appointments/time-blocks/time-blocks.md",
+          "url": "https://www.mangomint.com/learn/help-articles/calendar/time-blocks/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/02-calendar-and-appointments/time-blocks/appointments-and-time-blocks.md",
+          "url": "https://www.mangomint.com/learn/help-articles/calendar/appointments-and-time-blocks/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/02-calendar-and-appointments/time-blocks/make-a-repeating-time-block.md",
+          "url": "https://www.mangomint.com/learn/make-a-repeating-time-block/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/02-calendar-and-appointments/group-booking/create-a-group-booking-from-the-calendar.md",
+          "url": "https://www.mangomint.com/learn/create-a-group-booking-from-the-calendar/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/02-calendar-and-appointments/group-booking/check-in-and-check-out-a-group-booking.md",
+          "url": "https://www.mangomint.com/learn/check-in-and-check-out-a-group-booking/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/02-calendar-and-appointments/group-booking/create-a-group-booking-from-online-booking.md",
+          "url": "https://www.mangomint.com/learn/create-a-group-booking-from-online-booking/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/02-calendar-and-appointments/group-booking/enable-group-booking.md",
+          "url": "https://www.mangomint.com/learn/enable-group-booking/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/02-calendar-and-appointments/group-booking/create-a-group-booking-from-existing-appointments.md",
+          "url": "https://www.mangomint.com/learn/create-a-group-booking-from-existing-appointments/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/02-calendar-and-appointments/group-booking/update-an-existing-group-booking.md",
+          "url": "https://www.mangomint.com/learn/update-an-existing-group-booking/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/02-calendar-and-appointments/group-booking/group-booking.md",
+          "url": "https://www.mangomint.com/learn/help-articles/calendar/group-booking/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/02-calendar-and-appointments/group-booking/faq-group-booking.md",
+          "url": "https://www.mangomint.com/learn/faq-group-booking/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/02-calendar-and-appointments/waiting-room/waiting-room.md",
+          "url": "https://www.mangomint.com/learn/waiting-room/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/02-calendar-and-appointments/waiting-room/client-self-check-in.md",
+          "url": "https://www.mangomint.com/learn/client-self-check-in/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/02-calendar-and-appointments/waiting-room/client-self-check-out.md",
+          "url": "https://www.mangomint.com/learn/client-self-check-out/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/02-calendar-and-appointments/appointments-and-time-blocks/adding-a-form-to-an-existing-appointment.md",
+          "url": "https://www.mangomint.com/learn/adding-a-form-to-an-existing-appointment/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/02-calendar-and-appointments/appointments-and-time-blocks/create-a-new-appointment.md",
+          "url": "https://www.mangomint.com/learn/create-a-new-appointment/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/02-calendar-and-appointments/appointments-and-time-blocks/cancel-or-delete-an-appointment.md",
+          "url": "https://www.mangomint.com/learn/cancel-or-delete-an-appointment/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/02-calendar-and-appointments/appointments-and-time-blocks/repeating-appointments.md",
+          "url": "https://www.mangomint.com/learn/repeating-appointments/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/02-calendar-and-appointments/appointments-and-time-blocks/edit-an-appointment.md",
+          "url": "https://www.mangomint.com/learn/edit-an-appointment/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/02-calendar-and-appointments/appointments-and-time-blocks/processing-finishing-and-buffer-times.md",
+          "url": "https://www.mangomint.com/learn/processing-finishing-and-buffer-times/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/02-calendar-and-appointments/appointments-and-time-blocks/how-can-i-enforce-my-cancellation-policy.md",
+          "url": "https://www.mangomint.com/learn/how-can-i-enforce-my-cancellation-policy/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/02-calendar-and-appointments/appointments-and-time-blocks/print-appointment-details.md",
+          "url": "https://www.mangomint.com/learn/print-appointment-details/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/02-calendar-and-appointments/express-booking/how-to-use-express-booking.md",
+          "url": "https://www.mangomint.com/learn/how-to-use-express-booking/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/02-calendar-and-appointments/express-booking/faq-express-booking.md",
+          "url": "https://www.mangomint.com/learn/faq-express-booking/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/02-calendar-and-appointments/express-booking/how-to-take-deposits-with-express-booking.md",
+          "url": "https://www.mangomint.com/learn/how-to-take-deposits-with-express-booking/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/02-calendar-and-appointments/express-booking/express-booking.md",
+          "url": "https://www.mangomint.com/learn/help-articles/calendar/express-booking/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/02-calendar-and-appointments/express-booking/how-to-set-up-express-booking.md",
+          "url": "https://www.mangomint.com/learn/how-to-set-up-express-booking/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/02-calendar-and-appointments/express-booking/what-happens-after-an-express-booking-link-is-sent.md",
+          "url": "https://www.mangomint.com/learn/what-happens-after-an-express-booking-link-is-sent/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/02-calendar-and-appointments/resources/resources.md",
+          "url": "https://www.mangomint.com/learn/help-articles/calendar/resources/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/02-calendar-and-appointments/resources/adding-resource-requirements-to-services.md",
+          "url": "https://www.mangomint.com/learn/adding-resource-requirements-to-services/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/02-calendar-and-appointments/resources/understanding-resources-and-resource-groups.md",
+          "url": "https://www.mangomint.com/learn/understanding-resources-and-resource-groups/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/02-calendar-and-appointments/resources/viewing-resources-on-the-calendar.md",
+          "url": "https://www.mangomint.com/learn/viewing-resources-on-the-calendar/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/02-calendar-and-appointments/resources/early-access-resources.md",
+          "url": "https://www.mangomint.com/learn/help-articles/early-access-resources/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/02-calendar-and-appointments/resources/creating-resources.md",
+          "url": "https://www.mangomint.com/learn/creating-resources/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/02-calendar-and-appointments/resources/using-resources-to-manage-service-availability.md",
+          "url": "https://www.mangomint.com/learn/using-resources-to-manage-service-availability/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/02-calendar-and-appointments/resources/faq-resources.md",
+          "url": "https://www.mangomint.com/learn/faq-resources/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/02-calendar-and-appointments/resources/creating-services-with-resource-requirements-only-no-staff-required.md",
+          "url": "https://www.mangomint.com/learn/creating-services-with-resource-requirements-only-no-staff-required/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/02-calendar-and-appointments/intelligent-waitlist/intelligent-waitlist-notifications-and-automated-messages.md",
+          "url": "https://www.mangomint.com/learn/intelligent-waitlist-notifications-and-automated-messages/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/02-calendar-and-appointments/intelligent-waitlist/book-from-the-waitlist.md",
+          "url": "https://www.mangomint.com/learn/book-from-the-waitlist/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/02-calendar-and-appointments/intelligent-waitlist/how-to-get-started-with-the-intelligent-waitlist.md",
+          "url": "https://www.mangomint.com/learn/how-to-get-started-with-the-intelligent-waitlist/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/02-calendar-and-appointments/intelligent-waitlist/how-to-use-the-intelligent-waitlist.md",
+          "url": "https://www.mangomint.com/learn/how-to-use-the-intelligent-waitlist/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/02-calendar-and-appointments/intelligent-waitlist/how-clients-add-themselves-to-the-waitlist.md",
+          "url": "https://www.mangomint.com/learn/how-clients-add-themselves-to-the-waitlist/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/02-calendar-and-appointments/intelligent-waitlist/intelligent-waitlist.md",
+          "url": "https://www.mangomint.com/learn/help-articles/calendar/intelligent-waitlist/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/02-calendar-and-appointments/calendar-basics/calendar-basics-and-views.md",
+          "url": "https://www.mangomint.com/learn/calendar-basics-and-views/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/02-calendar-and-appointments/calendar-basics/cancellations-and-rescheduling.md",
+          "url": "https://www.mangomint.com/learn/cancellations-and-rescheduling/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/02-calendar-and-appointments/calendar-basics/calendar-color-key-icons.md",
+          "url": "https://www.mangomint.com/learn/calendar-color-key-icons/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/02-calendar-and-appointments/calendar-basics/calendar-basics.md",
+          "url": "https://www.mangomint.com/learn/help-articles/calendar/calendar-basics/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/02-calendar-and-appointments/calendar-basics/calendar-settings.md",
+          "url": "https://www.mangomint.com/learn/calendar-settings/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/02-calendar-and-appointments/calendar-basics/how-can-i-link-my-mangomint-calendar-to-my-ical-calendar.md",
+          "url": "https://www.mangomint.com/learn/how-can-i-link-my-mangomint-calendar-to-my-ical-calendar/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/02-calendar-and-appointments/calendar-basics/scheduling-options.md",
+          "url": "https://www.mangomint.com/learn/scheduling-options/",
+          "status": "pending"
+        }
+      ]
+    },
+    "15-offers": {
+      "total": 5,
+      "articles": [
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/15-offers/creating-an-offer.md",
+          "url": "https://www.mangomint.com/learn/creating-an-offer/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/15-offers/applying-an-offer.md",
+          "url": "https://www.mangomint.com/learn/applying-an-offer/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/15-offers/faq-offers.md",
+          "url": "https://www.mangomint.com/learn/faq-offers/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/15-offers/offers.md",
+          "url": "https://www.mangomint.com/learn/help-articles/offers/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/15-offers/offers-reports.md",
+          "url": "https://www.mangomint.com/learn/offers-reports/",
+          "status": "pending"
+        }
+      ]
+    },
+    "08-services": {
+      "total": 14,
+      "articles": [
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/08-services/how-can-i-track-services-sold-in-groupon-or-other-online-promos.md",
+          "url": "https://www.mangomint.com/learn/how-can-i-track-services-sold-in-groupon-or-other-online-promos/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/08-services/change-the-service-provider-on-a-closed-sale.md",
+          "url": "https://www.mangomint.com/learn/change-the-service-provider-on-a-closed-sale/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/08-services/how-do-i-set-up-couples-services.md",
+          "url": "https://www.mangomint.com/learn/how-do-i-set-up-couples-services/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/08-services/enable-services-for-online-booking.md",
+          "url": "https://www.mangomint.com/learn/enable-services-for-online-booking/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/08-services/delete-services-and-categories.md",
+          "url": "https://www.mangomint.com/learn/delete-services-and-categories/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/08-services/customize-a-service-for-an-appointment.md",
+          "url": "https://www.mangomint.com/learn/customize-a-service-for-an-appointment/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/08-services/set-up-service-customizations.md",
+          "url": "https://www.mangomint.com/learn/set-up-service-customizations/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/08-services/service-customizations.md",
+          "url": "https://www.mangomint.com/learn/help-articles/services/service-customizations/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/08-services/add-categories-and-services.md",
+          "url": "https://www.mangomint.com/learn/add-categories-and-services/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/08-services/show-base-prices-for-service-customizations.md",
+          "url": "https://www.mangomint.com/learn/show-base-prices-for-service-customizations/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/08-services/faq-service-customizations.md",
+          "url": "https://www.mangomint.com/learn/faq-service-customizations/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/08-services/services.md",
+          "url": "https://www.mangomint.com/learn/help-articles/services/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/08-services/link-services-to-staff-members.md",
+          "url": "https://www.mangomint.com/learn/link-services-to-staff-members/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/08-services/faq-services.md",
+          "url": "https://www.mangomint.com/learn/faq-services/",
+          "status": "pending"
+        }
+      ]
+    },
+    "14-business-setup": {
+      "total": 10,
+      "articles": [
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/14-business-setup/using-multiple-phone-numbers.md",
+          "url": "https://www.mangomint.com/learn/using-multiple-phone-numbers/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/14-business-setup/business-setup-logo-and-branding.md",
+          "url": "https://www.mangomint.com/learn/business-setup-logo-and-branding/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/14-business-setup/how-to-update-your-mangomint-app.md",
+          "url": "https://www.mangomint.com/learn/how-to-update-your-mangomint-app/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/14-business-setup/adding-phone-numbers.md",
+          "url": "https://www.mangomint.com/learn/adding-phone-numbers/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/14-business-setup/business-setup-locations.md",
+          "url": "https://www.mangomint.com/learn/business-setup-locations/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/14-business-setup/business-setup.md",
+          "url": "https://www.mangomint.com/learn/help-articles/business-setup/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/14-business-setup/business-details.md",
+          "url": "https://www.mangomint.com/learn/business-details/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/14-business-setup/phone-numbers.md",
+          "url": "https://www.mangomint.com/learn/help-articles/business-setup/phone-numbers/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/14-business-setup/setting-up-your-ipad-on-kiosk-mode.md",
+          "url": "https://www.mangomint.com/learn/setting-up-your-ipad-on-kiosk-mode/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/14-business-setup/enabling-desktop-notifications.md",
+          "url": "https://www.mangomint.com/learn/enabling-desktop-notifications/",
+          "status": "pending"
+        }
+      ]
+    },
+    "01-getting-started": {
+      "total": 23,
+      "articles": [
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/01-getting-started/about-mangomint.md",
+          "url": "https://www.mangomint.com/learn/help-articles/getting-started-with-mangomint/about-mangomint/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/01-getting-started/switching-to-mangomint.md",
+          "url": "https://www.mangomint.com/learn/switching-to-mangomint/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/01-getting-started/getting-started-with-mangomint.md",
+          "url": "https://www.mangomint.com/learn/help-articles/getting-started-with-mangomint/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/01-getting-started/calculating-change-for-cash-transactions.md",
+          "url": "https://www.mangomint.com/learn/calculating-change-for-cash-transactions/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/01-getting-started/how-do-i-fix-an-accidentally-voided-sale.md",
+          "url": "https://www.mangomint.com/learn/how-do-i-fix-an-accidentally-voided-sale/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/01-getting-started/hipaa-compliance.md",
+          "url": "https://www.mangomint.com/learn/hipaa-compliance/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/01-getting-started/guide-for-admin-users.md",
+          "url": "https://www.mangomint.com/learn/guide-for-admin-users/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/01-getting-started/setting-up-your-account.md",
+          "url": "https://www.mangomint.com/learn/help-articles/getting-started-with-mangomint/setting-up-your-account/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/01-getting-started/introduction-to-mangomint.md",
+          "url": "https://www.mangomint.com/learn/introduction-to-mangomint/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/01-getting-started/guide-for-non-admin-users.md",
+          "url": "https://www.mangomint.com/learn/guide-for-non-admin-users/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/01-getting-started/adding-notes-in-mangomint.md",
+          "url": "https://www.mangomint.com/learn/adding-notes-in-mangomint/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/01-getting-started/how-do-i-fix-an-unassigned-tip.md",
+          "url": "https://www.mangomint.com/learn/how-do-i-fix-an-unassigned-tip/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/01-getting-started/resolving-a-remaining-balance.md",
+          "url": "https://www.mangomint.com/learn/resolving-a-remaining-balance/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/01-getting-started/learning-the-basics-in-mangomint.md",
+          "url": "https://www.mangomint.com/learn/learning-the-basics-in-mangomint/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/01-getting-started/how-can-i-set-up-alternating-hours-every-other-week.md",
+          "url": "https://www.mangomint.com/learn/how-can-i-set-up-alternating-hours-every-other-week/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/01-getting-started/add-a-new-count.md",
+          "url": "https://www.mangomint.com/learn/add-a-new-count/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/01-getting-started/mangomint-basics.md",
+          "url": "https://www.mangomint.com/learn/help-articles/getting-started-with-mangomint/mangomint-basics/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/01-getting-started/check-out-appointments-together.md",
+          "url": "https://www.mangomint.com/learn/check-out-appointments-together/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/01-getting-started/transitioning-to-booth-renter-model.md",
+          "url": "https://www.mangomint.com/learn/transitioning-to-booth-renter-model/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/01-getting-started/faq-calendar-and-appointments.md",
+          "url": "https://www.mangomint.com/learn/faq-calendar-and-appointments/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/01-getting-started/marketing-options-in-mangomint.md",
+          "url": "https://www.mangomint.com/learn/marketing-options-in-mangomint/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/01-getting-started/add-new-pay-in-or-pay-out.md",
+          "url": "https://www.mangomint.com/learn/add-new-pay-in-or-pay-out/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/01-getting-started/check-out-an-appointment.md",
+          "url": "https://www.mangomint.com/learn/check-out-an-appointment/",
+          "status": "pending"
+        }
+      ]
+    },
+    "11-automated-flows-and-messages": {
+      "total": 19,
+      "articles": [
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/11-automated-flows-and-messages/faq-web-chat.md",
+          "url": "https://www.mangomint.com/learn/faq-web-chat/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/11-automated-flows-and-messages/automated-messages.md",
+          "url": "https://www.mangomint.com/learn/help-articles/automated-messages/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/11-automated-flows-and-messages/receiving-web-chat-messages.md",
+          "url": "https://www.mangomint.com/learn/receiving-web-chat-messages/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/11-automated-flows-and-messages/customize-automated-messages.md",
+          "url": "https://www.mangomint.com/learn/customize-automated-messages/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/11-automated-flows-and-messages/advanced-settings-automated-messages.md",
+          "url": "https://www.mangomint.com/learn/advanced-settings-automated-messages/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/11-automated-flows-and-messages/using-form-responses-with-flows.md",
+          "url": "https://www.mangomint.com/learn/using-form-responses-with-flows/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/11-automated-flows-and-messages/flows-basics.md",
+          "url": "https://www.mangomint.com/learn/flows-basics/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/11-automated-flows-and-messages/web-chat.md",
+          "url": "https://www.mangomint.com/learn/help-articles/web-chat/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/11-automated-flows-and-messages/faq-flows.md",
+          "url": "https://www.mangomint.com/learn/faq-flows/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/11-automated-flows-and-messages/flow-message-types.md",
+          "url": "https://www.mangomint.com/learn/flow-message-types/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/11-automated-flows-and-messages/building-and-activating-a-flow.md",
+          "url": "https://www.mangomint.com/learn/building-and-activating-a-flow/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/11-automated-flows-and-messages/enabling-and-disabling-automated-messages.md",
+          "url": "https://www.mangomint.com/learn/enabling-and-disabling-automated-messages/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/11-automated-flows-and-messages/replying-to-web-chat-messages.md",
+          "url": "https://www.mangomint.com/learn/replying-to-web-chat-messages/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/11-automated-flows-and-messages/enabling-web-chat.md",
+          "url": "https://www.mangomint.com/learn/enabling-web-chat/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/11-automated-flows-and-messages/editing-and-deactivating-a-flow.md",
+          "url": "https://www.mangomint.com/learn/editing-and-deactivating-a-flow/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/11-automated-flows-and-messages/creating-flows.md",
+          "url": "https://www.mangomint.com/learn/help-articles/automated-flows/creating-flows/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/11-automated-flows-and-messages/automated-flows.md",
+          "url": "https://www.mangomint.com/learn/help-articles/automated-flows/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/11-automated-flows-and-messages/flow-message-pricing.md",
+          "url": "https://www.mangomint.com/learn/flow-message-pricing/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/11-automated-flows-and-messages/viewing-flow-details-and-statistics.md",
+          "url": "https://www.mangomint.com/learn/viewing-flow-details-and-statistics/",
+          "status": "pending"
+        }
+      ]
+    },
+    "16-reports": {
+      "total": 6,
+      "articles": [
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/16-reports/reports.md",
+          "url": "https://www.mangomint.com/learn/help-articles/reports/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/16-reports/faq-reports.md",
+          "url": "https://www.mangomint.com/learn/faq-reports/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/16-reports/payment-reports.md",
+          "url": "https://www.mangomint.com/learn/payment-reports/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/16-reports/viewing-your-daily-and-weekly-totals.md",
+          "url": "https://www.mangomint.com/learn/viewing-your-daily-and-weekly-totals/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/16-reports/available-reports.md",
+          "url": "https://www.mangomint.com/learn/available-reports/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/16-reports/business-reports.md",
+          "url": "https://www.mangomint.com/learn/business-reports/",
+          "status": "pending"
+        }
+      ]
+    },
+    "17-integrations": {
+      "total": 4,
+      "articles": [
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/17-integrations/webhooks-integration.md",
+          "url": "https://www.mangomint.com/learn/webhooks-integration/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/17-integrations/shopify-integration.md",
+          "url": "https://www.mangomint.com/learn/shopify-integration/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/17-integrations/integrations.md",
+          "url": "https://www.mangomint.com/learn/help-articles/integrations/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/17-integrations/managing-your-apps-and-integrations.md",
+          "url": "https://www.mangomint.com/learn/managing-your-apps-and-integrations/",
+          "status": "pending"
+        }
+      ]
+    },
+    "13-online-booking": {
+      "total": 18,
+      "articles": [
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/13-online-booking/adding-online-booking-to-your-website.md",
+          "url": "https://www.mangomint.com/learn/adding-online-booking-to-your-website/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/13-online-booking/adding-dns-records-to-wix.md",
+          "url": "https://www.mangomint.com/learn/adding-dns-records-to-wix/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/13-online-booking/how-to-require-a-prepayment-for-online-booking.md",
+          "url": "https://www.mangomint.com/learn/how-to-require-a-prepayment-for-online-booking/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/13-online-booking/setting-up-online-booking-for-a-shopify-website.md",
+          "url": "https://www.mangomint.com/learn/setting-up-online-booking-for-a-shopify-website/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/13-online-booking/add-booking-link-to-google-business-profile.md",
+          "url": "https://www.mangomint.com/learn/add-booking-link-to-google-business-profile/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/13-online-booking/online-booking.md",
+          "url": "https://www.mangomint.com/learn/help-articles/online-booking/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/13-online-booking/setting-up-online-booking-for-a-wix-website.md",
+          "url": "https://www.mangomint.com/learn/setting-up-online-booking-for-a-wix-website/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/13-online-booking/faq-online-booking.md",
+          "url": "https://www.mangomint.com/learn/faq-online-booking/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/13-online-booking/using-direct-booking-links.md",
+          "url": "https://www.mangomint.com/learn/using-direct-booking-links/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/13-online-booking/setting-up-online-booking-for-a-wordpress-website.md",
+          "url": "https://www.mangomint.com/learn/setting-up-online-booking-for-a-wordpress-website/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/13-online-booking/adjusting-online-booking-preferences.md",
+          "url": "https://www.mangomint.com/learn/adjusting-online-booking-preferences/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/13-online-booking/adding-dns-records-to-squarespace.md",
+          "url": "https://www.mangomint.com/learn/adding-dns-records-to-squarespace/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/13-online-booking/adding-dns-records-to-bluehost.md",
+          "url": "https://www.mangomint.com/learn/adding-dns-records-to-bluehost/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/13-online-booking/adding-dns-records-to-godaddy.md",
+          "url": "https://www.mangomint.com/learn/adding-dns-records-to-godaddy/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/13-online-booking/setting-up-online-booking-for-a-squarespace-website.md",
+          "url": "https://www.mangomint.com/learn/setting-up-online-booking-for-a-squarespace-website/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/13-online-booking/how-can-i-require-a-credit-card-for-online-booking.md",
+          "url": "https://www.mangomint.com/learn/how-can-i-require-a-credit-card-for-online-booking/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/13-online-booking/enabling-online-booking.md",
+          "url": "https://www.mangomint.com/learn/enabling-online-booking/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/13-online-booking/online-booking-guides-for-popular-website-builders.md",
+          "url": "https://www.mangomint.com/learn/help-articles/online-booking/online-booking-guides-for-popular-website-builders/",
+          "status": "pending"
+        }
+      ]
+    },
+    "12-forms-and-waivers": {
+      "total": 13,
+      "articles": [
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/12-forms-and-waivers/completing-forms.md",
+          "url": "https://www.mangomint.com/learn/help-articles/integrated-forms/completing-forms/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/12-forms-and-waivers/using-image-markup-on-a-form.md",
+          "url": "https://www.mangomint.com/learn/using-image-markup-on-a-form/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/12-forms-and-waivers/managing-form-submissions.md",
+          "url": "https://www.mangomint.com/learn/help-articles/integrated-forms/managing-form-submissions/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/12-forms-and-waivers/viewing-form-submissions.md",
+          "url": "https://www.mangomint.com/learn/viewing-form-submissions/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/12-forms-and-waivers/creating-form-templates.md",
+          "url": "https://www.mangomint.com/learn/creating-form-templates/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/12-forms-and-waivers/waiverforever-integration.md",
+          "url": "https://www.mangomint.com/learn/help-articles/integrations/waiverforever-integration/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/12-forms-and-waivers/set-up-the-waiverforever-integration.md",
+          "url": "https://www.mangomint.com/learn/set-up-the-waiverforever-integration/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/12-forms-and-waivers/creating-waivers-in-waiverforever.md",
+          "url": "https://www.mangomint.com/learn/creating-waivers-in-waiverforever/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/12-forms-and-waivers/integrated-forms.md",
+          "url": "https://www.mangomint.com/learn/help-articles/integrated-forms/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/12-forms-and-waivers/approving-a-form-submission.md",
+          "url": "https://www.mangomint.com/learn/approving-a-form-submission/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/12-forms-and-waivers/faq-integrated-forms.md",
+          "url": "https://www.mangomint.com/learn/faq-integrated-forms/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/12-forms-and-waivers/creating-and-requesting-forms.md",
+          "url": "https://www.mangomint.com/learn/help-articles/integrated-forms/creating-and-requesting-forms/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/12-forms-and-waivers/saving-progress-on-a-form.md",
+          "url": "https://www.mangomint.com/learn/saving-progress-on-a-form/",
+          "status": "pending"
+        }
+      ]
+    },
+    "09-staff-and-payroll": {
+      "total": 38,
+      "articles": [
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/09-staff-and-payroll/how-can-i-have-my-staff-members-clock-in-and-clock-out-on-a-front-desk.md",
+          "url": "https://www.mangomint.com/learn/how-can-i-have-my-staff-members-clock-in-and-clock-out-on-a-front-desk/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/09-staff-and-payroll/set-days-off-for-multiple-staff-members-at-once.md",
+          "url": "https://www.mangomint.com/learn/set-days-off-for-multiple-staff-members-at-once/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/09-staff-and-payroll/faq-payroll-processing.md",
+          "url": "https://www.mangomint.com/learn/faq-payroll-processing/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/09-staff-and-payroll/staff-members.md",
+          "url": "https://www.mangomint.com/learn/help-articles/staff-members/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/09-staff-and-payroll/payroll-settings.md",
+          "url": "https://www.mangomint.com/learn/payroll-settings/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/09-staff-and-payroll/how-to-manage-and-edit-time-cards.md",
+          "url": "https://www.mangomint.com/learn/how-to-manage-and-edit-time-cards/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/09-staff-and-payroll/payroll-processing.md",
+          "url": "https://www.mangomint.com/learn/help-articles/payroll-processing/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/09-staff-and-payroll/payroll-account-details-and-documents.md",
+          "url": "https://www.mangomint.com/learn/payroll-account-details-and-documents/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/09-staff-and-payroll/reset-staff-password.md",
+          "url": "https://www.mangomint.com/learn/reset-staff-password/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/09-staff-and-payroll/payroll.md",
+          "url": "https://www.mangomint.com/learn/help-articles/business-setup/payroll/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/09-staff-and-payroll/completing-the-employer-onboarding-for-payroll.md",
+          "url": "https://www.mangomint.com/learn/completing-the-employer-onboarding-for-payroll/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/09-staff-and-payroll/staff-compensation.md",
+          "url": "https://www.mangomint.com/learn/help-articles/staff-members/staff-compensation/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/09-staff-and-payroll/archiving-staff-members.md",
+          "url": "https://www.mangomint.com/learn/archiving-staff-members/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/09-staff-and-payroll/using-the-time-clock.md",
+          "url": "https://www.mangomint.com/learn/using-the-time-clock/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/09-staff-and-payroll/adjusting-staff-selection-options-in-online-booking.md",
+          "url": "https://www.mangomint.com/learn/adjusting-staff-selection-options-in-online-booking/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/09-staff-and-payroll/running-payroll.md",
+          "url": "https://www.mangomint.com/learn/help-articles/payroll-processing/running-payroll/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/09-staff-and-payroll/set-up-the-time-clock-and-assign-pins-to-staff.md",
+          "url": "https://www.mangomint.com/learn/set-up-the-time-clock-and-assign-pins-to-staff/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/09-staff-and-payroll/staff-member-work-hours-and-days-off.md",
+          "url": "https://www.mangomint.com/learn/help-articles/staff-members/staff-member-work-hours-and-days-off/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/09-staff-and-payroll/adding-staff-members-to-your-payroll.md",
+          "url": "https://www.mangomint.com/learn/adding-staff-members-to-your-payroll/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/09-staff-and-payroll/set-a-day-off-for-a-staff-member.md",
+          "url": "https://www.mangomint.com/learn/set-a-day-off-for-a-staff-member/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/09-staff-and-payroll/how-to-set-up-a-payment-account-for-a-staff-member.md",
+          "url": "https://www.mangomint.com/learn/how-to-set-up-a-payment-account-for-a-staff-member/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/09-staff-and-payroll/staff-member-work-hours.md",
+          "url": "https://www.mangomint.com/learn/staff-member-work-hours/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/09-staff-and-payroll/viewing-past-payroll-runs.md",
+          "url": "https://www.mangomint.com/learn/viewing-past-payroll-runs/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/09-staff-and-payroll/signing-up-for-payroll-as-a-worker.md",
+          "url": "https://www.mangomint.com/learn/signing-up-for-payroll-as-a-worker/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/09-staff-and-payroll/payroll-accounts.md",
+          "url": "https://www.mangomint.com/learn/payroll-accounts/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/09-staff-and-payroll/how-to-sign-up-for-a-payment-account-for-staff-members.md",
+          "url": "https://www.mangomint.com/learn/how-to-sign-up-for-a-payment-account-for-staff-members/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/09-staff-and-payroll/running-payroll-in-mangomint.md",
+          "url": "https://www.mangomint.com/learn/running-payroll-in-mangomint/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/09-staff-and-payroll/time-clock.md",
+          "url": "https://www.mangomint.com/learn/help-articles/staff-members/time-clock/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/09-staff-and-payroll/staff-reports.md",
+          "url": "https://www.mangomint.com/learn/staff-reports/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/09-staff-and-payroll/viewing-your-paystubs-and-tax-documents.md",
+          "url": "https://www.mangomint.com/learn/viewing-your-paystubs-and-tax-documents/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/09-staff-and-payroll/adding-a-staff-member.md",
+          "url": "https://www.mangomint.com/learn/adding-a-staff-member/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/09-staff-and-payroll/employer-onboarding-for-payroll.md",
+          "url": "https://www.mangomint.com/learn/help-articles/payroll-processing/employer-onboarding-for-payroll/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/09-staff-and-payroll/staff-member-permissions.md",
+          "url": "https://www.mangomint.com/learn/staff-member-permissions/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/09-staff-and-payroll/signing-up-for-payroll-processing.md",
+          "url": "https://www.mangomint.com/learn/signing-up-for-payroll-processing/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/09-staff-and-payroll/payroll-report.md",
+          "url": "https://www.mangomint.com/learn/payroll-report/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/09-staff-and-payroll/worker-onboarding-for-payroll.md",
+          "url": "https://www.mangomint.com/learn/help-articles/payroll-processing/worker-onboarding-for-payroll/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/09-staff-and-payroll/hourly-and-salary-compensation.md",
+          "url": "https://www.mangomint.com/learn/hourly-and-salary-compensation/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/09-staff-and-payroll/staff-member-notifications.md",
+          "url": "https://www.mangomint.com/learn/staff-member-notifications/",
+          "status": "pending"
+        }
+      ]
+    },
+    "18-payments": {
+      "total": 31,
+      "articles": [
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/18-payments/payment-types.md",
+          "url": "https://www.mangomint.com/learn/payment-types/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/18-payments/how-to-take-payments-with-the-front-desk-display.md",
+          "url": "https://www.mangomint.com/learn/how-to-take-payments-with-the-front-desk-display/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/18-payments/best-practices-credit-card-payments.md",
+          "url": "https://www.mangomint.com/learn/best-practices-credit-card-payments/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/18-payments/signing-up-for-payment-processing.md",
+          "url": "https://www.mangomint.com/learn/signing-up-for-payment-processing/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/18-payments/how-to-use-non-integrated-payment-processors.md",
+          "url": "https://www.mangomint.com/learn/how-to-use-non-integrated-payment-processors/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/18-payments/managing-cards-on-file.md",
+          "url": "https://www.mangomint.com/learn/managing-cards-on-file/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/18-payments/payment-processing-update-account-details.md",
+          "url": "https://www.mangomint.com/learn/payment-processing-update-account-details/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/18-payments/front-desk-display-vs-direct-connection.md",
+          "url": "https://www.mangomint.com/learn/front-desk-display-vs-direct-connection/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/18-payments/how-to-split-payments.md",
+          "url": "https://www.mangomint.com/learn/how-to-split-payments/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/18-payments/payment-accounts.md",
+          "url": "https://www.mangomint.com/learn/payment-accounts/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/18-payments/payment-disputes.md",
+          "url": "https://www.mangomint.com/learn/payment-disputes/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/18-payments/how-to-charge-cards-on-file.md",
+          "url": "https://www.mangomint.com/learn/how-to-charge-cards-on-file/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/18-payments/how-to-connect-your-card-reader-to-directly-your-iphone-or-ipad.md",
+          "url": "https://www.mangomint.com/learn/how-to-connect-your-card-reader-to-directly-your-iphone-or-ipad/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/18-payments/front-desk-display.md",
+          "url": "https://www.mangomint.com/learn/help-articles/payments/front-desk-display/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/18-payments/mangomint-pay.md",
+          "url": "https://www.mangomint.com/learn/help-articles/payments/mangomint-pay/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/18-payments/payment-processing-balances-and-payouts.md",
+          "url": "https://www.mangomint.com/learn/payment-processing-balances-and-payouts/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/18-payments/payments.md",
+          "url": "https://www.mangomint.com/learn/help-articles/payments/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/18-payments/cash-drawer-daily-close-out.md",
+          "url": "https://www.mangomint.com/learn/cash-drawer-daily-close-out/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/18-payments/cash-drawer.md",
+          "url": "https://www.mangomint.com/learn/help-articles/payments/cash-drawer/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/18-payments/basics-payments.md",
+          "url": "https://www.mangomint.com/learn/help-articles/payments/basics-payments/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/18-payments/front-desk-display-hardware-purchase-guide.md",
+          "url": "https://www.mangomint.com/learn/front-desk-display-hardware-purchase-guide/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/18-payments/how-to-take-payments-with-the-card-reader-direct-connection.md",
+          "url": "https://www.mangomint.com/learn/how-to-take-payments-with-the-card-reader-direct-connection/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/18-payments/setting-up-your-front-desk-display.md",
+          "url": "https://www.mangomint.com/learn/setting-up-your-front-desk-display/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/18-payments/card-reader-troubleshooting-guide.md",
+          "url": "https://www.mangomint.com/learn/card-reader-troubleshooting-guide/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/18-payments/faq-payment-processing.md",
+          "url": "https://www.mangomint.com/learn/faq-payment-processing/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/18-payments/payment-processing-payout-schedule.md",
+          "url": "https://www.mangomint.com/learn/payment-processing-payout-schedule/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/18-payments/completing-a-test-transaction-using-your-card-reader.md",
+          "url": "https://www.mangomint.com/learn/completing-a-test-transaction-using-your-card-reader/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/18-payments/front-desk-display-troubleshooting-guide.md",
+          "url": "https://www.mangomint.com/learn/front-desk-display-troubleshooting-guide/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/18-payments/payment-processing-monthly-summaries.md",
+          "url": "https://www.mangomint.com/learn/payment-processing-monthly-summaries/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/18-payments/deposits.md",
+          "url": "https://www.mangomint.com/learn/help-articles/payments/deposits/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/18-payments/how-to-take-a-deposit-manually.md",
+          "url": "https://www.mangomint.com/learn/how-to-take-a-deposit-manually/",
+          "status": "pending"
+        }
+      ]
+    },
+    "05-memberships": {
+      "total": 14,
+      "articles": [
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/05-memberships/business-setup-membership-settings.md",
+          "url": "https://www.mangomint.com/learn/business-setup-membership-settings/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/05-memberships/upgrade-switch-to-the-current-version-of-a-membership-plan.md",
+          "url": "https://www.mangomint.com/learn/upgrade-switch-to-the-current-version-of-a-membership-plan/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/05-memberships/faq-memberships.md",
+          "url": "https://www.mangomint.com/learn/faq-memberships/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/05-memberships/signing-membership-agreements.md",
+          "url": "https://www.mangomint.com/learn/signing-membership-agreements/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/05-memberships/memberships.md",
+          "url": "https://www.mangomint.com/learn/help-articles/memberships/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/05-memberships/set-up-a-membership-plan.md",
+          "url": "https://www.mangomint.com/learn/set-up-a-membership-plan/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/05-memberships/what-do-the-membership-statuses-mean.md",
+          "url": "https://www.mangomint.com/learn/what-do-the-membership-statuses-mean/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/05-memberships/how-do-i-transfer-memberships-from-my-old-booking-system.md",
+          "url": "https://www.mangomint.com/learn/how-do-i-transfer-memberships-from-my-old-booking-system/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/05-memberships/creating-membership-agreements.md",
+          "url": "https://www.mangomint.com/learn/creating-membership-agreements/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/05-memberships/selling-memberships-online.md",
+          "url": "https://www.mangomint.com/learn/selling-memberships-online/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/05-memberships/create-an-account-balance-membership-plan.md",
+          "url": "https://www.mangomint.com/learn/create-an-account-balance-membership-plan/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/05-memberships/managing-membership-plans.md",
+          "url": "https://www.mangomint.com/learn/help-articles/memberships/managing-membership-plans/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/05-memberships/membership-agreements.md",
+          "url": "https://www.mangomint.com/learn/help-articles/memberships/membership-agreements/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/05-memberships/membership-reports.md",
+          "url": "https://www.mangomint.com/learn/membership-reports/",
+          "status": "pending"
+        }
+      ]
+    },
+    "04-clients": {
+      "total": 37,
+      "articles": [
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/04-clients/collecting-waivers-from-your-clients.md",
+          "url": "https://www.mangomint.com/learn/collecting-waivers-from-your-clients/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/04-clients/client-portal.md",
+          "url": "https://www.mangomint.com/learn/help-articles/clients/client-portal/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/04-clients/clients.md",
+          "url": "https://www.mangomint.com/learn/help-articles/clients/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/04-clients/how-do-i-resend-the-credit-card-email-request-to-my-client.md",
+          "url": "https://www.mangomint.com/learn/how-do-i-resend-the-credit-card-email-request-to-my-client/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/04-clients/pause-and-resume-a-clients-membership.md",
+          "url": "https://www.mangomint.com/learn/pause-and-resume-a-clients-membership/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/04-clients/start-a-new-membership-for-a-client.md",
+          "url": "https://www.mangomint.com/learn/start-a-new-membership-for-a-client/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/04-clients/client-filters-for-marketing-emails.md",
+          "url": "https://www.mangomint.com/learn/client-filters-for-marketing-emails/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/04-clients/add-a-new-client.md",
+          "url": "https://www.mangomint.com/learn/add-a-new-client/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/04-clients/how-to-find-a-clients-membership.md",
+          "url": "https://www.mangomint.com/learn/how-to-find-a-clients-membership/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/04-clients/managing-appointments-from-the-client-portal.md",
+          "url": "https://www.mangomint.com/learn/managing-appointments-from-the-client-portal/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/04-clients/how-do-i-change-the-service-expiration-date-on-a-clients-membership.md",
+          "url": "https://www.mangomint.com/learn/how-do-i-change-the-service-expiration-date-on-a-clients-membership/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/04-clients/use-a-clients-account-balance-as-a-payment-method.md",
+          "url": "https://www.mangomint.com/learn/use-a-clients-account-balance-as-a-payment-method/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/04-clients/online-booking-from-the-clients-perspective.md",
+          "url": "https://www.mangomint.com/learn/online-booking-from-the-clients-perspective/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/04-clients/how-to-merge-duplicate-clients.md",
+          "url": "https://www.mangomint.com/learn/how-to-merge-duplicate-clients/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/04-clients/add-to-a-clients-account-balance.md",
+          "url": "https://www.mangomint.com/learn/add-to-a-clients-account-balance/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/04-clients/cancel-a-clients-membership.md",
+          "url": "https://www.mangomint.com/learn/cancel-a-clients-membership/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/04-clients/how-can-i-send-custom-campaigns-to-my-clients-with-active-memberships.md",
+          "url": "https://www.mangomint.com/learn/how-can-i-send-custom-campaigns-to-my-clients-with-active-memberships/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/04-clients/sending-forms-to-clients.md",
+          "url": "https://www.mangomint.com/learn/sending-forms-to-clients/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/04-clients/client-account-balances-reports.md",
+          "url": "https://www.mangomint.com/learn/client-account-balances-reports/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/04-clients/clients-list.md",
+          "url": "https://www.mangomint.com/learn/help-articles/clients/clients-list/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/04-clients/create-and-send-marketing-emails-to-clients.md",
+          "url": "https://www.mangomint.com/learn/create-and-send-marketing-emails-to-clients/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/04-clients/client-account-balances.md",
+          "url": "https://www.mangomint.com/learn/help-articles/clients/client-account-balances/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/04-clients/navigating-the-client-list.md",
+          "url": "https://www.mangomint.com/learn/navigating-the-client-list/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/04-clients/client-details.md",
+          "url": "https://www.mangomint.com/learn/client-details/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/04-clients/client-filters-for-automated-flows.md",
+          "url": "https://www.mangomint.com/learn/client-filters-for-automated-flows/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/04-clients/filling-out-client-forms-in-person.md",
+          "url": "https://www.mangomint.com/learn/filling-out-client-forms-in-person/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/04-clients/client-details-and-timeline.md",
+          "url": "https://www.mangomint.com/learn/help-articles/clients/client-details-and-timeline/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/04-clients/transfer-a-package-to-another-client.md",
+          "url": "https://www.mangomint.com/learn/transfer-a-package-to-another-client/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/04-clients/adjust-the-quantities-of-remaining-services-on-a-clients-membership.md",
+          "url": "https://www.mangomint.com/learn/adjust-the-quantities-of-remaining-services-on-a-clients-membership/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/04-clients/create-a-client-export-list.md",
+          "url": "https://www.mangomint.com/learn/create-a-client-export-list/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/04-clients/advanced-settings-client-ownership.md",
+          "url": "https://www.mangomint.com/learn/advanced-settings-client-ownership/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/04-clients/sending-emails-to-your-clients-using-mailchimp.md",
+          "url": "https://www.mangomint.com/learn/sending-emails-to-your-clients-using-mailchimp/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/04-clients/managing-clients-memberships.md",
+          "url": "https://www.mangomint.com/learn/help-articles/memberships/managing-clients-memberships/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/04-clients/block-a-client-from-online-booking.md",
+          "url": "https://www.mangomint.com/learn/block-a-client-from-online-booking/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/04-clients/managing-memberships-from-the-client-portal.md",
+          "url": "https://www.mangomint.com/learn/managing-memberships-from-the-client-portal/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/04-clients/faq-client-account-balances.md",
+          "url": "https://www.mangomint.com/learn/faq-client-account-balances/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/04-clients/client-timeline.md",
+          "url": "https://www.mangomint.com/learn/client-timeline/",
+          "status": "pending"
+        }
+      ]
+    },
+    "10-email-marketing": {
+      "total": 7,
+      "articles": [
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/10-email-marketing/using-a-custom-email-address.md",
+          "url": "https://www.mangomint.com/learn/help-articles/email-marketing/using-a-custom-email-address/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/10-email-marketing/set-up-the-mailchimp-integration.md",
+          "url": "https://www.mangomint.com/learn/set-up-the-mailchimp-integration/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/10-email-marketing/sending-marketing-emails-from-a-custom-address.md",
+          "url": "https://www.mangomint.com/learn/sending-marketing-emails-from-a-custom-address/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/10-email-marketing/mailchimp-integration.md",
+          "url": "https://www.mangomint.com/learn/help-articles/integrations/mailchimp-integration/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/10-email-marketing/view-your-email-campaign-performance.md",
+          "url": "https://www.mangomint.com/learn/view-your-email-campaign-performance/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/10-email-marketing/duplicate-or-delete-an-email-campaign.md",
+          "url": "https://www.mangomint.com/learn/duplicate-or-delete-an-email-campaign/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/10-email-marketing/faq-email-marketing.md",
+          "url": "https://www.mangomint.com/learn/faq-email-marketing/",
+          "status": "pending"
+        }
+      ]
+    },
+    "03-sales-and-checkout": {
+      "total": 33,
+      "articles": [
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/03-sales-and-checkout/apply-a-discount-during-checkout.md",
+          "url": "https://www.mangomint.com/learn/apply-a-discount-during-checkout/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/03-sales-and-checkout/product-returns-non-credit-card.md",
+          "url": "https://www.mangomint.com/learn/product-returns-non-credit-card/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/03-sales-and-checkout/how-do-i-pay-my-staff-members-cash-tips.md",
+          "url": "https://www.mangomint.com/learn/how-do-i-pay-my-staff-members-cash-tips/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/03-sales-and-checkout/how-to-set-up-and-use-a-barcode-scanner.md",
+          "url": "https://www.mangomint.com/learn/how-to-set-up-and-use-a-barcode-scanner/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/03-sales-and-checkout/product-returns.md",
+          "url": "https://www.mangomint.com/learn/product-returns/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/03-sales-and-checkout/navigating-and-filtering-the-sales-page.md",
+          "url": "https://www.mangomint.com/learn/navigating-and-filtering-the-sales-page/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/03-sales-and-checkout/send-client-receipt.md",
+          "url": "https://www.mangomint.com/learn/send-client-receipt/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/03-sales-and-checkout/sales-reports.md",
+          "url": "https://www.mangomint.com/learn/sales-reports/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/03-sales-and-checkout/how-to-sell-a-gift-card-during-checkout.md",
+          "url": "https://www.mangomint.com/learn/how-to-sell-a-gift-card-during-checkout/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/03-sales-and-checkout/refunding-a-single-payment.md",
+          "url": "https://www.mangomint.com/learn/refunding-a-single-payment/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/03-sales-and-checkout/complete-a-credit-card-refund.md",
+          "url": "https://www.mangomint.com/learn/complete-a-credit-card-refund/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/03-sales-and-checkout/advanced-settings-payments-checkout.md",
+          "url": "https://www.mangomint.com/learn/advanced-settings-payments-checkout/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/03-sales-and-checkout/adding-and-splitting-tips.md",
+          "url": "https://www.mangomint.com/learn/adding-and-splitting-tips/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/03-sales-and-checkout/how-to-split-services-into-separate-checkouts.md",
+          "url": "https://www.mangomint.com/learn/how-to-split-services-into-separate-checkouts/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/03-sales-and-checkout/add-a-surcharge-or-fee-to-every-checkout-automatically.md",
+          "url": "https://www.mangomint.com/learn/add-a-surcharge-or-fee-to-every-checkout-automatically/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/03-sales-and-checkout/sales-and-checkout.md",
+          "url": "https://www.mangomint.com/learn/help-articles/sales-and-checkout/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/03-sales-and-checkout/tips-gratuity.md",
+          "url": "https://www.mangomint.com/learn/help-articles/sales-and-checkout/tips-gratuity/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/03-sales-and-checkout/refunding-a-deposit.md",
+          "url": "https://www.mangomint.com/learn/refunding-a-deposit/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/03-sales-and-checkout/use-redeem-a-membership-during-checkout.md",
+          "url": "https://www.mangomint.com/learn/use-redeem-a-membership-during-checkout/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/03-sales-and-checkout/how-do-i-handle-product-exchanges.md",
+          "url": "https://www.mangomint.com/learn/how-do-i-handle-product-exchanges/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/03-sales-and-checkout/how-do-i-collect-tips-on-a-zero-balance-sale.md",
+          "url": "https://www.mangomint.com/learn/how-do-i-collect-tips-on-a-zero-balance-sale/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/03-sales-and-checkout/discard-an-existing-checkout.md",
+          "url": "https://www.mangomint.com/learn/discard-an-existing-checkout/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/03-sales-and-checkout/basics-sales-and-checkout.md",
+          "url": "https://www.mangomint.com/learn/help-articles/sales-and-checkout/basics-sales-and-checkout/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/03-sales-and-checkout/voiding-a-sale.md",
+          "url": "https://www.mangomint.com/learn/voiding-a-sale/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/03-sales-and-checkout/how-to-use-redeem-a-package-during-checkout.md",
+          "url": "https://www.mangomint.com/learn/how-to-use-redeem-a-package-during-checkout/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/03-sales-and-checkout/start-a-checkout-without-an-appointment.md",
+          "url": "https://www.mangomint.com/learn/start-a-checkout-without-an-appointment/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/03-sales-and-checkout/completing-a-refund.md",
+          "url": "https://www.mangomint.com/learn/completing-a-refund/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/03-sales-and-checkout/how-to-use-redeem-a-gift-card-during-checkout.md",
+          "url": "https://www.mangomint.com/learn/how-to-use-redeem-a-gift-card-during-checkout/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/03-sales-and-checkout/refunds.md",
+          "url": "https://www.mangomint.com/learn/help-articles/sales-and-checkout/refunds/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/03-sales-and-checkout/voiding-a-single-payment.md",
+          "url": "https://www.mangomint.com/learn/voiding-a-single-payment/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/03-sales-and-checkout/how-to-assign-tips-to-assistants.md",
+          "url": "https://www.mangomint.com/learn/how-to-assign-tips-to-assistants/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/03-sales-and-checkout/how-do-i-complete-a-product-return-and-refund-to-the-client-account-balance.md",
+          "url": "https://www.mangomint.com/learn/how-do-i-complete-a-product-return-and-refund-to-the-client-account-balance/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/03-sales-and-checkout/save-a-checkout-for-later.md",
+          "url": "https://www.mangomint.com/learn/save-a-checkout-for-later/",
+          "status": "pending"
+        }
+      ]
+    },
+    "19-account-management": {
+      "total": 3,
+      "articles": [
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/19-account-management/mangomint-subscription.md",
+          "url": "https://www.mangomint.com/learn/help-articles/mangomint-subscription/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/19-account-management/viewing-invoices-for-your-mangomint-subscription.md",
+          "url": "https://www.mangomint.com/learn/viewing-invoices-for-your-mangomint-subscription/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/19-account-management/updating-your-mangomint-subscription.md",
+          "url": "https://www.mangomint.com/learn/updating-your-mangomint-subscription/",
+          "status": "pending"
+        }
+      ]
+    },
+    "06-gift-cards-and-packages": {
+      "total": 21,
+      "articles": [
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/06-gift-cards-and-packages/manage-packages-and-adjust-package-quantities.md",
+          "url": "https://www.mangomint.com/learn/manage-packages-and-adjust-package-quantities/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/06-gift-cards-and-packages/gift-card-reports.md",
+          "url": "https://www.mangomint.com/learn/gift-card-reports/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/06-gift-cards-and-packages/gift-up-integration.md",
+          "url": "https://www.mangomint.com/learn/help-articles/integrations/gift-up-integration/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/06-gift-cards-and-packages/how-to-sell-a-gift-card.md",
+          "url": "https://www.mangomint.com/learn/how-to-sell-a-gift-card/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/06-gift-cards-and-packages/adding-gift-up-on-your-website.md",
+          "url": "https://www.mangomint.com/learn/adding-gift-up-on-your-website/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/06-gift-cards-and-packages/giftcards.md",
+          "url": "https://www.mangomint.com/learn/help-articles/giftcards/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/06-gift-cards-and-packages/how-to-apply-discounts-on-gift-cards.md",
+          "url": "https://www.mangomint.com/learn/how-to-apply-discounts-on-gift-cards/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/06-gift-cards-and-packages/how-to-sell-a-package.md",
+          "url": "https://www.mangomint.com/learn/how-to-sell-a-package/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/06-gift-cards-and-packages/selling-and-redeeming-gift-cards.md",
+          "url": "https://www.mangomint.com/learn/help-articles/giftcards/selling-and-redeeming-gift-cards/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/06-gift-cards-and-packages/how-to-create-a-package.md",
+          "url": "https://www.mangomint.com/learn/how-to-create-a-package/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/06-gift-cards-and-packages/how-to-manage-gift-cards.md",
+          "url": "https://www.mangomint.com/learn/how-to-manage-gift-cards/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/06-gift-cards-and-packages/set-up-the-gift-up-integration.md",
+          "url": "https://www.mangomint.com/learn/set-up-the-gift-up-integration/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/06-gift-cards-and-packages/sell-and-redeem-a-package-on-the-same-day.md",
+          "url": "https://www.mangomint.com/learn/sell-and-redeem-a-package-on-the-same-day/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/06-gift-cards-and-packages/packages-reports.md",
+          "url": "https://www.mangomint.com/learn/packages-reports/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/06-gift-cards-and-packages/creating-gift-card-promotions.md",
+          "url": "https://www.mangomint.com/learn/creating-gift-card-promotions/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/06-gift-cards-and-packages/packages.md",
+          "url": "https://www.mangomint.com/learn/help-articles/packages/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/06-gift-cards-and-packages/how-to-sell-digital-gift-cards-online.md",
+          "url": "https://www.mangomint.com/learn/how-to-sell-digital-gift-cards-online/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/06-gift-cards-and-packages/selling-packages-online.md",
+          "url": "https://www.mangomint.com/learn/selling-packages-online/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/06-gift-cards-and-packages/faq-gift-cards.md",
+          "url": "https://www.mangomint.com/learn/faq-gift-cards/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/06-gift-cards-and-packages/buying-physical-gift-cards.md",
+          "url": "https://www.mangomint.com/learn/buying-physical-gift-cards/",
+          "status": "pending"
+        },
+        {
+          "file": "/Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/06-gift-cards-and-packages/how-do-i-fix-an-unassigned-tip-on-a-gift-card-or-package-sale.md",
+          "url": "https://www.mangomint.com/learn/how-do-i-fix-an-unassigned-tip-on-a-gift-card-or-package-sale/",
+          "status": "pending"
+        }
+      ]
+    }
+  },
+  "status": "in_progress",
+  "fetched_count": 1,
+  "failed_count": 0,
+  "notes": "WebFetch tool unable to extract content from Mangomint pages (JavaScript-rendered content). Using WebSearch API which has rate limits."
+}

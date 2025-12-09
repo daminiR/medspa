@@ -1,0 +1,684 @@
+{
+  "category": "01-getting-started",
+  "features": [
+    {
+      "feature_name": "Platform Introduction & Overview",
+      "description": "Comprehensive introduction to Mangomint platform with video tours, live demos, and free trial options",
+      "capabilities": [
+        "on-demand video tours",
+        "live demo booking",
+        "free trial access",
+        "platform exploration"
+      ],
+      "user_benefits": [
+        "easy platform evaluation",
+        "guided learning experience",
+        "risk-free trial"
+      ],
+      "complexity": "basic",
+      "integrations": [],
+      "screenshots_available": false,
+      "keywords": [
+        "introduction",
+        "overview",
+        "demo",
+        "trial",
+        "video tour"
+      ]
+    },
+    {
+      "feature_name": "HIPAA Compliance",
+      "description": "HIPAA compliant software that supports privacy and security needs of medical spas and related businesses",
+      "capabilities": [
+        "Protected Health Information handling",
+        "Business Associate Agreement",
+        "HIPAA compliance setup",
+        "medical spa support"
+      ],
+      "user_benefits": [
+        "regulatory compliance",
+        "secure patient data handling",
+        "legal protection"
+      ],
+      "complexity": "advanced",
+      "integrations": [],
+      "screenshots_available": false,
+      "keywords": [
+        "HIPAA",
+        "compliance",
+        "medical spa",
+        "PHI",
+        "BAA"
+      ]
+    },
+    {
+      "feature_name": "Booth Renter Model Support",
+      "description": "Comprehensive support for businesses with booth rental or hybrid models including independent payment accounts",
+      "capabilities": [
+        "individual merchant accounts",
+        "direct booking links",
+        "client ownership",
+        "product ownership",
+        "rent collection via memberships",
+        "mobile payments"
+      ],
+      "user_benefits": [
+        "flexible business model support",
+        "independent contractor management",
+        "automated rent collection"
+      ],
+      "complexity": "advanced",
+      "integrations": [
+        "card readers",
+        "third-party payment processors"
+      ],
+      "screenshots_available": false,
+      "keywords": [
+        "booth renter",
+        "hybrid model",
+        "merchant account",
+        "independent contractor"
+      ]
+    },
+    {
+      "feature_name": "Onboarding Process",
+      "description": "Dedicated onboarding manager and structured setup process for new users",
+      "capabilities": [
+        "30-minute onboarding sessions",
+        "data import assistance",
+        "dedicated onboarding manager",
+        "setup guidance"
+      ],
+      "user_benefits": [
+        "smooth transition",
+        "expert guidance",
+        "reduced setup time"
+      ],
+      "complexity": "basic",
+      "integrations": [],
+      "screenshots_available": false,
+      "keywords": [
+        "onboarding",
+        "setup",
+        "data import",
+        "migration"
+      ]
+    },
+    {
+      "feature_name": "Data Import & Migration",
+      "description": "Professional data import service from previous scheduling software",
+      "capabilities": [
+        "client data import",
+        "product inventory import",
+        "gift card import",
+        "appointment history migration"
+      ],
+      "user_benefits": [
+        "seamless data transition",
+        "no data loss",
+        "business continuity"
+      ],
+      "complexity": "intermediate",
+      "integrations": [
+        "various scheduling software systems"
+      ],
+      "screenshots_available": false,
+      "keywords": [
+        "data import",
+        "migration",
+        "client data",
+        "inventory"
+      ]
+    },
+    {
+      "feature_name": "Playground Mode",
+      "description": "Test environment with sample data for learning and experimentation",
+      "capabilities": [
+        "sample data generation",
+        "feature testing",
+        "safe learning environment",
+        "demo mode"
+      ],
+      "user_benefits": [
+        "risk-free learning",
+        "feature exploration",
+        "training environment"
+      ],
+      "complexity": "basic",
+      "integrations": [],
+      "screenshots_available": true,
+      "keywords": [
+        "playground",
+        "demo",
+        "sample data",
+        "testing"
+      ]
+    },
+    {
+      "feature_name": "User Role Management",
+      "description": "Different user types and permissions including Admin and Normal users",
+      "capabilities": [
+        "Admin user management",
+        "Normal user permissions",
+        "staff member invitations",
+        "role-based access"
+      ],
+      "user_benefits": [
+        "secure access control",
+        "appropriate permissions",
+        "team management"
+      ],
+      "complexity": "intermediate",
+      "integrations": [],
+      "screenshots_available": true,
+      "keywords": [
+        "user roles",
+        "permissions",
+        "admin",
+        "staff management"
+      ]
+    },
+    {
+      "feature_name": "Get Started Page",
+      "description": "Centralized setup guide with helpful videos and setup checklist",
+      "capabilities": [
+        "setup videos",
+        "guided setup process",
+        "progress tracking",
+        "resource links"
+      ],
+      "user_benefits": [
+        "structured onboarding",
+        "self-service setup",
+        "progress visibility"
+      ],
+      "complexity": "basic",
+      "integrations": [],
+      "screenshots_available": true,
+      "keywords": [
+        "get started",
+        "setup guide",
+        "onboarding"
+      ]
+    },
+    {
+      "feature_name": "Video Library",
+      "description": "On-demand video content covering different Mangomint features",
+      "capabilities": [
+        "feature training videos",
+        "on-demand access",
+        "detailed feature explanations",
+        "staff training resources"
+      ],
+      "user_benefits": [
+        "self-paced learning",
+        "visual training",
+        "comprehensive feature coverage"
+      ],
+      "complexity": "basic",
+      "integrations": [],
+      "screenshots_available": false,
+      "keywords": [
+        "video library",
+        "training",
+        "tutorials",
+        "learning"
+      ]
+    },
+    {
+      "feature_name": "Platform Updates",
+      "description": "Easy access to new features and improvements with notifications",
+      "capabilities": [
+        "new feature announcements",
+        "push notifications",
+        "update videos",
+        "notification preferences"
+      ],
+      "user_benefits": [
+        "stay current with features",
+        "learn about improvements",
+        "customized notifications"
+      ],
+      "complexity": "basic",
+      "integrations": [
+        "mobile push notifications"
+      ],
+      "screenshots_available": false,
+      "keywords": [
+        "platform updates",
+        "new features",
+        "notifications"
+      ]
+    },
+    {
+      "feature_name": "Multi-Platform Access",
+      "description": "Access via web browser and mobile app",
+      "capabilities": [
+        "web browser access",
+        "mobile app",
+        "cross-platform sync",
+        "flexible access"
+      ],
+      "user_benefits": [
+        "work anywhere",
+        "device flexibility",
+        "consistent experience"
+      ],
+      "complexity": "basic",
+      "integrations": [
+        "App Store",
+        "Google Play"
+      ],
+      "screenshots_available": false,
+      "keywords": [
+        "mobile app",
+        "web access",
+        "cross-platform"
+      ]
+    },
+    {
+      "feature_name": "Chat Support",
+      "description": "Real-time chat support with human representatives",
+      "capabilities": [
+        "real-time chat",
+        "human support",
+        "in-app chat",
+        "question resolution"
+      ],
+      "user_benefits": [
+        "immediate help",
+        "personalized support",
+        "problem resolution"
+      ],
+      "complexity": "basic",
+      "integrations": [],
+      "screenshots_available": true,
+      "keywords": [
+        "chat support",
+        "help",
+        "customer service"
+      ]
+    },
+    {
+      "feature_name": "Notes System",
+      "description": "Comprehensive note-taking system for clients, appointments, and sales",
+      "capabilities": [
+        "client notes",
+        "timeline notes",
+        "appointment notes",
+        "sale notes",
+        "file attachments",
+        "chronological ordering"
+      ],
+      "user_benefits": [
+        "detailed record keeping",
+        "client history tracking",
+        "service customization"
+      ],
+      "complexity": "intermediate",
+      "integrations": [],
+      "screenshots_available": true,
+      "keywords": [
+        "notes",
+        "client notes",
+        "timeline",
+        "record keeping"
+      ]
+    },
+    {
+      "feature_name": "Cash Payment Processing",
+      "description": "Cash payment handling with change calculation",
+      "capabilities": [
+        "cash payments",
+        "change calculator",
+        "automatic calculations",
+        "cash drawer integration"
+      ],
+      "user_benefits": [
+        "accurate cash handling",
+        "automated calculations",
+        "integrated cash management"
+      ],
+      "complexity": "basic",
+      "integrations": [
+        "Cash Drawer app"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "cash payments",
+        "change calculator",
+        "cash drawer"
+      ]
+    },
+    {
+      "feature_name": "Sale Void Recovery",
+      "description": "Process to fix accidentally voided sales",
+      "capabilities": [
+        "sale recreation",
+        "void correction",
+        "report accuracy",
+        "payment tracking"
+      ],
+      "user_benefits": [
+        "accurate reporting",
+        "error correction",
+        "financial accuracy"
+      ],
+      "complexity": "intermediate",
+      "integrations": [],
+      "screenshots_available": true,
+      "keywords": [
+        "voided sales",
+        "sale correction",
+        "error fix"
+      ]
+    },
+    {
+      "feature_name": "Tip Management",
+      "description": "Comprehensive tip handling including unassigned tip resolution",
+      "capabilities": [
+        "tip assignment",
+        "unassigned tip fixing",
+        "staff tip allocation",
+        "tip splitting"
+      ],
+      "user_benefits": [
+        "accurate tip distribution",
+        "staff compensation",
+        "tip tracking"
+      ],
+      "complexity": "intermediate",
+      "integrations": [],
+      "screenshots_available": true,
+      "keywords": [
+        "tips",
+        "gratuity",
+        "tip assignment",
+        "staff compensation"
+      ]
+    },
+    {
+      "feature_name": "Remaining Balance Resolution",
+      "description": "System to resolve remaining balances after refunds",
+      "capabilities": [
+        "balance resolution",
+        "refund management",
+        "item assignment",
+        "payment collection"
+      ],
+      "user_benefits": [
+        "accurate reporting",
+        "clean financial records",
+        "refund tracking"
+      ],
+      "complexity": "advanced",
+      "integrations": [],
+      "screenshots_available": true,
+      "keywords": [
+        "remaining balance",
+        "refunds",
+        "balance resolution"
+      ]
+    },
+    {
+      "feature_name": "Staff Schedule Management",
+      "description": "Flexible staff scheduling including bi-weekly alternating schedules",
+      "capabilities": [
+        "weekly shifts",
+        "time blocks",
+        "repeating schedules",
+        "bi-weekly patterns",
+        "schedule overrides"
+      ],
+      "user_benefits": [
+        "flexible scheduling",
+        "automated patterns",
+        "complex schedule support"
+      ],
+      "complexity": "intermediate",
+      "integrations": [],
+      "screenshots_available": true,
+      "keywords": [
+        "staff schedules",
+        "bi-weekly",
+        "alternating hours",
+        "time blocks"
+      ]
+    },
+    {
+      "feature_name": "Cash Drawer Management",
+      "description": "Complete cash drawer tracking and management",
+      "capabilities": [
+        "new counts",
+        "pay-ins",
+        "pay-outs",
+        "daily closeouts",
+        "cash tracking"
+      ],
+      "user_benefits": [
+        "accurate cash management",
+        "theft prevention",
+        "financial accountability"
+      ],
+      "complexity": "intermediate",
+      "integrations": [],
+      "screenshots_available": true,
+      "keywords": [
+        "cash drawer",
+        "cash management",
+        "counts",
+        "closeouts"
+      ]
+    },
+    {
+      "feature_name": "Combined Appointment Checkout",
+      "description": "Ability to check out multiple appointments together",
+      "capabilities": [
+        "multi-appointment checkout",
+        "shared services",
+        "membership sharing",
+        "combined billing"
+      ],
+      "user_benefits": [
+        "streamlined checkout",
+        "family bookings",
+        "efficient processing"
+      ],
+      "complexity": "intermediate",
+      "integrations": [],
+      "screenshots_available": true,
+      "keywords": [
+        "combined checkout",
+        "multiple appointments",
+        "shared services"
+      ]
+    },
+    {
+      "feature_name": "Automated Marketing",
+      "description": "Built-in marketing automation with flows and campaigns",
+      "capabilities": [
+        "automated flows",
+        "email campaigns",
+        "rebooking reminders",
+        "review requests",
+        "client segmentation"
+      ],
+      "user_benefits": [
+        "automated marketing",
+        "client retention",
+        "increased bookings"
+      ],
+      "complexity": "advanced",
+      "integrations": [],
+      "screenshots_available": true,
+      "keywords": [
+        "marketing",
+        "automation",
+        "flows",
+        "campaigns",
+        "email marketing"
+      ]
+    },
+    {
+      "feature_name": "Platform Navigation",
+      "description": "App-based navigation system for different platform features",
+      "capabilities": [
+        "app switching",
+        "main menu navigation",
+        "permission-based access",
+        "app management"
+      ],
+      "user_benefits": [
+        "organized interface",
+        "easy feature access",
+        "customizable workspace"
+      ],
+      "complexity": "basic",
+      "integrations": [],
+      "screenshots_available": false,
+      "keywords": [
+        "navigation",
+        "apps",
+        "interface",
+        "menu"
+      ]
+    },
+    {
+      "feature_name": "Client Switching Notification",
+      "description": "Tools to notify clients about switching to Mangomint",
+      "capabilities": [
+        "email templates",
+        "Canva integration",
+        "social media assets",
+        "client communication"
+      ],
+      "user_benefits": [
+        "smooth client transition",
+        "professional communication",
+        "brand consistency"
+      ],
+      "complexity": "basic",
+      "integrations": [
+        "Canva",
+        "Instagram"
+      ],
+      "screenshots_available": false,
+      "keywords": [
+        "client notification",
+        "switching",
+        "templates",
+        "communication"
+      ]
+    }
+  ],
+  "key_workflows": [
+    {
+      "workflow_name": "New User Onboarding",
+      "steps": [
+        "sign up for trial",
+        "playground mode exploration",
+        "onboarding session booking",
+        "account setup",
+        "data import",
+        "launch date planning",
+        "subscription start"
+      ],
+      "features_involved": [
+        "Platform Introduction",
+        "Playground Mode",
+        "Onboarding Process",
+        "Data Import",
+        "Get Started Page"
+      ]
+    },
+    {
+      "workflow_name": "Cash Transaction Processing",
+      "steps": [
+        "select cash payment",
+        "enter amount received",
+        "calculate change",
+        "complete transaction",
+        "update cash drawer"
+      ],
+      "features_involved": [
+        "Cash Payment Processing",
+        "Cash Drawer Management"
+      ]
+    },
+    {
+      "workflow_name": "Sale Error Correction",
+      "steps": [
+        "identify voided sale",
+        "create new checkout",
+        "match original sale details",
+        "close with Other payment",
+        "adjust date if needed"
+      ],
+      "features_involved": [
+        "Sale Void Recovery",
+        "Notes System"
+      ]
+    },
+    {
+      "workflow_name": "Staff Schedule Setup",
+      "steps": [
+        "add weekly shift",
+        "create time blocks",
+        "set repeating patterns",
+        "configure overrides"
+      ],
+      "features_involved": [
+        "Staff Schedule Management",
+        "User Role Management"
+      ]
+    },
+    {
+      "workflow_name": "Marketing Campaign Creation",
+      "steps": [
+        "select campaign type",
+        "choose recipients",
+        "create content",
+        "schedule delivery",
+        "track results"
+      ],
+      "features_involved": [
+        "Automated Marketing",
+        "Notes System"
+      ]
+    }
+  ],
+  "integrations": [
+    {
+      "name": "Card Readers",
+      "purpose": "Mobile payment processing for booth renters"
+    },
+    {
+      "name": "Third-party Payment Processors",
+      "purpose": "Alternative payment processing options"
+    },
+    {
+      "name": "App Store/Google Play",
+      "purpose": "Mobile app distribution"
+    },
+    {
+      "name": "Canva",
+      "purpose": "Creating marketing materials for client notifications"
+    },
+    {
+      "name": "Various Scheduling Software",
+      "purpose": "Data import and migration from previous systems"
+    }
+  ],
+  "competitive_advantages": [
+    "Dedicated onboarding manager with personalized setup assistance",
+    "Comprehensive booth renter model support with individual merchant accounts",
+    "HIPAA compliance for medical spas and healthcare-related businesses",
+    "Playground mode for risk-free learning and testing",
+    "Professional data import service from competing platforms",
+    "Built-in marketing automation with flows and campaigns",
+    "Comprehensive note system with file attachments and timeline organization",
+    "Advanced cash management with change calculation and drawer integration",
+    "Multi-platform access with synchronized web and mobile experience",
+    "Real-time human chat support integrated into the platform"
+  ]
+}

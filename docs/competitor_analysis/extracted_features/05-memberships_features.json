@@ -1,0 +1,491 @@
+{
+  "category": "05-memberships",
+  "features": [
+    {
+      "feature_name": "Service-Based Membership Plans",
+      "description": "Create membership plans that include redeemable services with flexible service groups and billing intervals",
+      "capabilities": [
+        "Create service groups with multiple services",
+        "Set service redemption quantities per billing cycle",
+        "Configure billing intervals (day, week, month)",
+        "Include service customizations up to specified amounts",
+        "Set service expiration rules",
+        "Configure service tax charging",
+        "Control staff commission calculations"
+      ],
+      "user_benefits": [
+        "Build reliable recurring revenue",
+        "Boost client retention",
+        "Flexible service offerings per billing cycle",
+        "Clear service redemption tracking"
+      ],
+      "complexity": "intermediate",
+      "integrations": [
+        "payment processing",
+        "tax calculation",
+        "commission system"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "service-based",
+        "membership plans",
+        "billing intervals",
+        "service groups",
+        "redemption"
+      ]
+    },
+    {
+      "feature_name": "Account Balance Membership Plans",
+      "description": "Membership plans that add money to client account balance instead of providing specific services",
+      "capabilities": [
+        "Add configurable amounts to client account balance",
+        "Set different charge amount vs credit amount",
+        "Use balance for any services or products",
+        "Never expiring account balances",
+        "Multi-location balance usage",
+        "Flexible payment options"
+      ],
+      "user_benefits": [
+        "Maximum client flexibility",
+        "Simple recurring revenue model",
+        "No service expiration concerns",
+        "Cross-location usage"
+      ],
+      "complexity": "basic",
+      "integrations": [
+        "client account balance system",
+        "payment processing"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "account balance",
+        "credit",
+        "flexible payments",
+        "recurring revenue"
+      ]
+    },
+    {
+      "feature_name": "Membership Agreements",
+      "description": "Digital agreements that clients must sign before starting memberships",
+      "capabilities": [
+        "Create custom agreements per membership plan",
+        "Digital signature collection",
+        "Automatic price and billing frequency inclusion",
+        "Email delivery of agreements",
+        "Print and download signed agreements",
+        "Agreement bypass permissions for staff",
+        "Agreement status tracking"
+      ],
+      "user_benefits": [
+        "Legal protection for business",
+        "Clear client expectations",
+        "Digital workflow efficiency",
+        "Automated agreement management"
+      ],
+      "complexity": "intermediate",
+      "integrations": [
+        "email system",
+        "digital signature platform"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "agreements",
+        "digital signature",
+        "legal protection",
+        "client expectations"
+      ]
+    },
+    {
+      "feature_name": "Online Membership Sales",
+      "description": "Sell memberships directly through online booking and website integration",
+      "capabilities": [
+        "Enable memberships in online booking",
+        "Direct website integration with script tags",
+        "Shareable membership purchase links",
+        "Direct purchase links for specific plans",
+        "Online agreement signing",
+        "Customizable membership descriptions",
+        "Hidden memberships with direct links only"
+      ],
+      "user_benefits": [
+        "24/7 membership sales availability",
+        "Reduced staff workload",
+        "Seamless client experience",
+        "Marketing campaign integration"
+      ],
+      "complexity": "intermediate",
+      "integrations": [
+        "online booking system",
+        "website integration",
+        "payment processing"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "online sales",
+        "website integration",
+        "direct links",
+        "24/7 availability"
+      ]
+    },
+    {
+      "feature_name": "Member Discounts",
+      "description": "Exclusive discounts for members on products and additional services",
+      "capabilities": [
+        "Automatic discount application",
+        "Product and service discount configuration",
+        "Manual discount removal during checkout",
+        "Member-only offers creation",
+        "Selective product/service eligibility"
+      ],
+      "user_benefits": [
+        "Increased member value proposition",
+        "Automatic discount application",
+        "Flexible discount management",
+        "Enhanced member loyalty"
+      ],
+      "complexity": "basic",
+      "integrations": [
+        "checkout system",
+        "offers system"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "member discounts",
+        "exclusive offers",
+        "automatic discounts",
+        "loyalty"
+      ]
+    },
+    {
+      "feature_name": "Membership Settings and Configuration",
+      "description": "Comprehensive settings for managing membership billing, locations, and client permissions",
+      "capabilities": [
+        "Multi-location billing configuration",
+        "Client self-cancellation permissions",
+        "Online sales location settings",
+        "Membership billing location selection",
+        "Location-specific membership reports"
+      ],
+      "user_benefits": [
+        "Centralized membership management",
+        "Multi-location flexibility",
+        "Client self-service options",
+        "Streamlined operations"
+      ],
+      "complexity": "basic",
+      "integrations": [
+        "multi-location system",
+        "client portal"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "settings",
+        "multi-location",
+        "billing configuration",
+        "client permissions"
+      ]
+    },
+    {
+      "feature_name": "Client Membership Management",
+      "description": "Tools for managing individual client memberships and their lifecycle",
+      "capabilities": [
+        "Multiple membership status tracking",
+        "Payment method updates",
+        "Billing location changes",
+        "Membership plan upgrades/switches",
+        "Service quantity adjustments",
+        "Membership pause and resume",
+        "Cancellation management",
+        "Failed payment handling"
+      ],
+      "user_benefits": [
+        "Complete membership lifecycle management",
+        "Flexible client support options",
+        "Clear status visibility",
+        "Efficient problem resolution"
+      ],
+      "complexity": "intermediate",
+      "integrations": [
+        "payment processing",
+        "client management",
+        "automated messaging"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "client management",
+        "membership status",
+        "lifecycle management",
+        "payment handling"
+      ]
+    },
+    {
+      "feature_name": "Membership Version Control",
+      "description": "System to manage different versions of membership plans and client upgrades",
+      "capabilities": [
+        "Track plan version differences",
+        "Client upgrade notifications",
+        "Selective version upgrade application",
+        "Filter by different versions",
+        "Immediate vs next-cycle changes"
+      ],
+      "user_benefits": [
+        "Granular plan change control",
+        "Client notification management",
+        "Clear version tracking",
+        "Flexible update timing"
+      ],
+      "complexity": "advanced",
+      "integrations": [
+        "membership management system"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "version control",
+        "plan upgrades",
+        "change management",
+        "notifications"
+      ]
+    },
+    {
+      "feature_name": "Membership Checkout Integration",
+      "description": "Seamless integration of membership services and discounts during checkout",
+      "capabilities": [
+        "Automatic service redemption",
+        "Real-time discount application",
+        "Manual discount removal option",
+        "Service customization inclusion",
+        "Membership benefit visibility"
+      ],
+      "user_benefits": [
+        "Streamlined checkout experience",
+        "Automatic benefit application",
+        "Clear value demonstration",
+        "Flexible discount control"
+      ],
+      "complexity": "intermediate",
+      "integrations": [
+        "POS system",
+        "checkout system",
+        "discount engine"
+      ],
+      "screenshots_available": false,
+      "keywords": [
+        "checkout integration",
+        "service redemption",
+        "discount application",
+        "POS"
+      ]
+    },
+    {
+      "feature_name": "Membership Reports and Analytics",
+      "description": "Comprehensive reporting on membership performance, payments, and usage",
+      "capabilities": [
+        "Membership payments tracking",
+        "Service usage reporting",
+        "New membership analytics",
+        "Cancellation reporting",
+        "Revenue tracking",
+        "Client behavior analysis"
+      ],
+      "user_benefits": [
+        "Data-driven decision making",
+        "Performance monitoring",
+        "Revenue optimization",
+        "Client retention insights"
+      ],
+      "complexity": "intermediate",
+      "integrations": [
+        "reporting system",
+        "analytics platform"
+      ],
+      "screenshots_available": false,
+      "keywords": [
+        "reports",
+        "analytics",
+        "payments",
+        "usage tracking",
+        "revenue"
+      ]
+    },
+    {
+      "feature_name": "Automated Membership Messaging",
+      "description": "Automated email and text communications for membership lifecycle events",
+      "capabilities": [
+        "New membership confirmations",
+        "Renewal reminders",
+        "Agreement signing requests",
+        "Payment failure notifications",
+        "Cancellation confirmations",
+        "Custom message flows",
+        "Internal fraud alerts"
+      ],
+      "user_benefits": [
+        "Reduced manual communication",
+        "Consistent client experience",
+        "Timely notifications",
+        "Fraud risk management"
+      ],
+      "complexity": "intermediate",
+      "integrations": [
+        "email system",
+        "SMS system",
+        "automated flows"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "automated messaging",
+        "notifications",
+        "lifecycle communications",
+        "fraud alerts"
+      ]
+    },
+    {
+      "feature_name": "Membership Plan Ordering",
+      "description": "Drag-and-drop reordering of membership plans for sales presentation",
+      "capabilities": [
+        "Visual drag-and-drop interface",
+        "Custom plan ordering",
+        "Consistent ordering across channels",
+        "Real-time order updates"
+      ],
+      "user_benefits": [
+        "Optimized sales presentation",
+        "Easy plan prioritization",
+        "Consistent customer experience",
+        "Simple management interface"
+      ],
+      "complexity": "basic",
+      "integrations": [
+        "membership management system"
+      ],
+      "screenshots_available": false,
+      "keywords": [
+        "plan ordering",
+        "drag-and-drop",
+        "sales presentation",
+        "prioritization"
+      ]
+    }
+  ],
+  "key_workflows": [
+    {
+      "workflow_name": "Create Service-Based Membership",
+      "steps": [
+        "Open Memberships app and select Manage plans",
+        "Create new membership plan with Services type",
+        "Configure Details tab with billing and expiration settings",
+        "Set up Services tab with service groups and quantities",
+        "Configure Discounts tab for member benefits",
+        "Set up Agreement tab if required",
+        "Enable Online Sales if needed",
+        "Configure Advanced settings for commission"
+      ],
+      "features_involved": [
+        "Service-Based Membership Plans",
+        "Membership Agreements",
+        "Online Membership Sales",
+        "Member Discounts"
+      ]
+    },
+    {
+      "workflow_name": "Online Membership Sales Setup",
+      "steps": [
+        "Enable online sales in Membership Settings",
+        "Configure billing location for online sales",
+        "Enable specific plans for online purchase",
+        "Set up plan descriptions and settings",
+        "Add script tag to website",
+        "Create membership purchase buttons/links",
+        "Configure automated messages"
+      ],
+      "features_involved": [
+        "Online Membership Sales",
+        "Membership Settings and Configuration",
+        "Automated Membership Messaging"
+      ]
+    },
+    {
+      "workflow_name": "Membership Agreement Process",
+      "steps": [
+        "Create agreement in membership plan",
+        "Client starts new membership",
+        "System sends email with agreement link",
+        "Client signs agreement digitally",
+        "Client enters payment information",
+        "Membership becomes active after payment",
+        "Client receives confirmation with signed agreement"
+      ],
+      "features_involved": [
+        "Membership Agreements",
+        "Client Membership Management",
+        "Automated Membership Messaging"
+      ]
+    },
+    {
+      "workflow_name": "Client Membership Lifecycle Management",
+      "steps": [
+        "Start new membership for client",
+        "Monitor membership status changes",
+        "Handle payment failures or updates",
+        "Process membership upgrades if needed",
+        "Manage pauses or cancellations",
+        "Track service usage and remaining balances",
+        "Generate reports for analysis"
+      ],
+      "features_involved": [
+        "Client Membership Management",
+        "Membership Version Control",
+        "Membership Reports and Analytics",
+        "Automated Membership Messaging"
+      ]
+    }
+  ],
+  "integrations": [
+    {
+      "name": "Payment Processing",
+      "purpose": "Handle recurring membership billing, payment failures, and retry logic"
+    },
+    {
+      "name": "Digital Signature Platform",
+      "purpose": "Collect and store legally binding membership agreement signatures"
+    },
+    {
+      "name": "Email and SMS Systems",
+      "purpose": "Send automated membership communications and agreement requests"
+    },
+    {
+      "name": "Website Integration",
+      "purpose": "Embed membership sales directly on business websites"
+    },
+    {
+      "name": "Client Portal",
+      "purpose": "Allow clients to manage their own memberships and view agreements"
+    },
+    {
+      "name": "POS and Checkout System",
+      "purpose": "Apply membership benefits and redeem services during transactions"
+    },
+    {
+      "name": "Multi-location System",
+      "purpose": "Manage memberships across multiple business locations"
+    },
+    {
+      "name": "Reporting and Analytics",
+      "purpose": "Track membership performance, revenue, and client behavior"
+    }
+  ],
+  "competitive_advantages": [
+    "Flexible membership types (service-based and account balance)",
+    "Digital agreement signing with automatic legal text inclusion",
+    "Seamless online and in-person membership sales",
+    "Sophisticated service group configuration with multiple redemption options",
+    "Account balance memberships that never expire and work across locations",
+    "Staff permission system for bypassing agreements when appropriate",
+    "Comprehensive membership version control and upgrade management",
+    "Automated fraud risk alerts for online sales",
+    "Drag-and-drop plan ordering for optimized sales presentation",
+    "Integration with automated flow system for personalized messaging",
+    "Granular discount control with manual override capabilities",
+    "Multi-location billing and reporting flexibility"
+  ]
+}

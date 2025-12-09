@@ -1,0 +1,460 @@
+{
+  "category": "08-services",
+  "features": [
+    {
+      "feature_name": "Groupon Integration",
+      "description": "Track and redeem services sold through Groupon or other promotional websites",
+      "capabilities": [
+        "Create Groupon service categories",
+        "Set Groupon pricing and duration",
+        "Add pre-commission deductions for Groupon fees",
+        "Create custom payment buttons for Groupon",
+        "Handle split payments with tips",
+        "Calculate commission after Groupon fees"
+      ],
+      "user_benefits": [
+        "Proper tracking of promotional sales",
+        "Accurate commission calculations",
+        "Seamless checkout for pre-paid services",
+        "Professional handling of third-party promotions"
+      ],
+      "complexity": "intermediate",
+      "integrations": [
+        "Groupon",
+        "Custom promotional websites"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "groupon",
+        "promotion",
+        "tracking",
+        "pre-paid",
+        "commission"
+      ]
+    },
+    {
+      "feature_name": "Service Provider Management",
+      "description": "Change staff members assigned to services on closed sales",
+      "capabilities": [
+        "Reopen closed sales",
+        "Update staff member assignments",
+        "Modify service details post-sale",
+        "Save changes to completed transactions"
+      ],
+      "user_benefits": [
+        "Fix assignment errors after checkout",
+        "Ensure accurate staff credit",
+        "Maintain correct commission records",
+        "Flexibility in service delivery"
+      ],
+      "complexity": "basic",
+      "integrations": [],
+      "screenshots_available": true,
+      "keywords": [
+        "staff",
+        "provider",
+        "assignment",
+        "closed sale",
+        "reopen"
+      ]
+    },
+    {
+      "feature_name": "Couples Services",
+      "description": "Services requiring two staff members working simultaneously",
+      "capabilities": [
+        "Require two staff members for booking",
+        "Split commission equally between staff",
+        "Split tips evenly or with custom distribution",
+        "Book under single client name",
+        "Manage forms for booking client only",
+        "Drag-and-drop calendar updates"
+      ],
+      "user_benefits": [
+        "Streamlined couples massage bookings",
+        "Fair compensation distribution",
+        "Simplified scheduling",
+        "Enhanced service offerings"
+      ],
+      "complexity": "intermediate",
+      "integrations": [],
+      "screenshots_available": true,
+      "keywords": [
+        "couples",
+        "two staff",
+        "commission split",
+        "massage",
+        "simultaneous"
+      ]
+    },
+    {
+      "feature_name": "Online Booking for Services",
+      "description": "Enable services to be booked through online booking platform",
+      "capabilities": [
+        "Enable/disable services for online booking",
+        "Add service descriptions for online display",
+        "Show price as minimum price (e.g. $100+)",
+        "Show prompt-to-call instead of booking",
+        "Require home address for in-home services",
+        "Require credit card on file",
+        "Require payment at time of booking",
+        "Set full payment or partial deposit options"
+      ],
+      "user_benefits": [
+        "24/7 booking availability",
+        "Clear service information for clients",
+        "Flexible pricing display options",
+        "Secure payment collection",
+        "Reduced no-shows with deposits"
+      ],
+      "complexity": "advanced",
+      "integrations": [
+        "Integrated payment accounts"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "online booking",
+        "payment",
+        "deposit",
+        "credit card",
+        "minimum price"
+      ]
+    },
+    {
+      "feature_name": "Service Deletion Management",
+      "description": "Delete services and categories while preserving existing appointments",
+      "capabilities": [
+        "Delete individual services",
+        "Delete service categories",
+        "Preserve existing booked appointments",
+        "Prevent future bookings of deleted services",
+        "Multi-location deletion requirements"
+      ],
+      "user_benefits": [
+        "Clean service menus",
+        "Honor existing commitments",
+        "Organized service offerings",
+        "Consistent multi-location management"
+      ],
+      "complexity": "basic",
+      "integrations": [],
+      "screenshots_available": true,
+      "keywords": [
+        "delete",
+        "remove",
+        "categories",
+        "appointments",
+        "multi-location"
+      ]
+    },
+    {
+      "feature_name": "Service Customizations",
+      "description": "Flexible add-ons and modifications for services to create personalized experiences",
+      "capabilities": [
+        "Create option groups with multiple choices",
+        "Set required or optional selections",
+        "Modify service price and duration",
+        "Add resource requirements",
+        "Exclude specific staff members",
+        "Set commission deductions",
+        "Display in online booking",
+        "Internal-only customizations",
+        "Calendar icons for selected options",
+        "Base price display options"
+      ],
+      "user_benefits": [
+        "Personalized client experiences",
+        "Flexible service offerings",
+        "Additional revenue opportunities",
+        "Clear online booking presentation",
+        "Staff-specific capabilities"
+      ],
+      "complexity": "advanced",
+      "integrations": [],
+      "screenshots_available": true,
+      "keywords": [
+        "customizations",
+        "add-ons",
+        "options",
+        "personalized",
+        "flexible"
+      ]
+    },
+    {
+      "feature_name": "Service Creation and Management",
+      "description": "Create and organize service categories and individual services",
+      "capabilities": [
+        "Create service categories",
+        "Add services to categories",
+        "Set duration and pricing",
+        "Configure processing and finishing times",
+        "Set buffer times",
+        "Resource-only services (no staff required)",
+        "Two-staff-member requirements",
+        "Pre and post-commission deductions",
+        "Drag-and-drop organization",
+        "Direct link access for categories"
+      ],
+      "user_benefits": [
+        "Organized service structure",
+        "Accurate time management",
+        "Flexible service types",
+        "Professional service presentation",
+        "Easy reorganization"
+      ],
+      "complexity": "intermediate",
+      "integrations": [],
+      "screenshots_available": true,
+      "keywords": [
+        "create",
+        "categories",
+        "duration",
+        "pricing",
+        "organization"
+      ]
+    },
+    {
+      "feature_name": "Staff-Service Assignment",
+      "description": "Link services to staff members with individual customizations",
+      "capabilities": [
+        "Assign services to staff members",
+        "Customize duration per staff member",
+        "Set individual pricing per staff",
+        "Adjust processing and finishing times",
+        "Set staff-specific commission rates",
+        "Enable/disable online booking per staff",
+        "Direct booking links per staff-service combo",
+        "Bulk assignment options"
+      ],
+      "user_benefits": [
+        "Tailored service offerings per staff",
+        "Accurate pricing and timing",
+        "Individual commission structures",
+        "Flexible online booking control",
+        "Efficient assignment management"
+      ],
+      "complexity": "intermediate",
+      "integrations": [],
+      "screenshots_available": true,
+      "keywords": [
+        "staff assignment",
+        "individual pricing",
+        "commission",
+        "online booking"
+      ]
+    },
+    {
+      "feature_name": "Service Customization During Booking",
+      "description": "Apply service customizations at the time of booking from calendar or online",
+      "capabilities": [
+        "Select customizations from calendar",
+        "Update customizations during checkout",
+        "Required selection indicators",
+        "Online booking customization flow",
+        "Real-time price and duration updates"
+      ],
+      "user_benefits": [
+        "Flexible booking process",
+        "Clear customization options",
+        "Accurate final pricing",
+        "Seamless client experience"
+      ],
+      "complexity": "basic",
+      "integrations": [],
+      "screenshots_available": false,
+      "keywords": [
+        "booking",
+        "customization",
+        "calendar",
+        "checkout",
+        "real-time"
+      ]
+    },
+    {
+      "feature_name": "Base Price Display for Customizations",
+      "description": "Show combined service and option prices as base prices in online booking",
+      "capabilities": [
+        "Display base prices in online booking",
+        "Combine service price with option price",
+        "Single selection requirement enforcement",
+        "Option group reordering",
+        "First option group priority"
+      ],
+      "user_benefits": [
+        "Clear pricing presentation",
+        "Simplified client decision making",
+        "Professional online appearance",
+        "Transparent cost structure"
+      ],
+      "complexity": "intermediate",
+      "integrations": [],
+      "screenshots_available": true,
+      "keywords": [
+        "base price",
+        "online booking",
+        "transparent",
+        "pricing"
+      ]
+    },
+    {
+      "feature_name": "Service Tax Management",
+      "description": "Enable or disable taxes on individual services",
+      "capabilities": [
+        "Toggle tax application per service",
+        "Individual service tax settings",
+        "Tax compliance management"
+      ],
+      "user_benefits": [
+        "Accurate tax calculations",
+        "Compliance with local regulations",
+        "Flexible tax application"
+      ],
+      "complexity": "basic",
+      "integrations": [],
+      "screenshots_available": true,
+      "keywords": [
+        "taxes",
+        "enable",
+        "disable",
+        "compliance"
+      ]
+    },
+    {
+      "feature_name": "Resource-Only Services",
+      "description": "Services that require only resources without staff members",
+      "capabilities": [
+        "Create services without staff requirements",
+        "Resource-only booking",
+        "Equipment or facility reservations"
+      ],
+      "user_benefits": [
+        "Facility rental management",
+        "Equipment booking capabilities",
+        "Flexible service types"
+      ],
+      "complexity": "intermediate",
+      "integrations": [],
+      "screenshots_available": true,
+      "keywords": [
+        "resources",
+        "no staff",
+        "equipment",
+        "facility"
+      ]
+    },
+    {
+      "feature_name": "Commission Deductions",
+      "description": "Apply pre and post-commission deductions to services",
+      "capabilities": [
+        "Pre-commission deductions",
+        "Post-commission deductions",
+        "Backbar fee deductions",
+        "Service-specific deduction rules"
+      ],
+      "user_benefits": [
+        "Accurate commission calculations",
+        "Cost management",
+        "Fair staff compensation",
+        "Business expense tracking"
+      ],
+      "complexity": "intermediate",
+      "integrations": [],
+      "screenshots_available": false,
+      "keywords": [
+        "commission",
+        "deductions",
+        "backbar",
+        "fees"
+      ]
+    }
+  ],
+  "key_workflows": [
+    {
+      "workflow_name": "Groupon Service Setup and Redemption",
+      "steps": [
+        "Create Groupon service category",
+        "Add services with Groupon pricing",
+        "Set pre-commission deductions",
+        "Assign services to staff",
+        "Create Groupon payment button",
+        "Process Groupon checkout with tip handling"
+      ],
+      "features_involved": [
+        "Groupon Integration",
+        "Service Creation and Management",
+        "Staff-Service Assignment"
+      ]
+    },
+    {
+      "workflow_name": "Service Customization Implementation",
+      "steps": [
+        "Create option groups",
+        "Define customization options",
+        "Set pricing and duration impacts",
+        "Configure display settings",
+        "Assign to services",
+        "Test in online booking"
+      ],
+      "features_involved": [
+        "Service Customizations",
+        "Base Price Display for Customizations",
+        "Online Booking for Services"
+      ]
+    },
+    {
+      "workflow_name": "Couples Service Setup",
+      "steps": [
+        "Create couples service",
+        "Enable two staff member requirement",
+        "Assign qualified staff members",
+        "Configure commission splitting",
+        "Test booking process"
+      ],
+      "features_involved": [
+        "Couples Services",
+        "Staff-Service Assignment",
+        "Commission Deductions"
+      ]
+    },
+    {
+      "workflow_name": "Online Booking Service Configuration",
+      "steps": [
+        "Enable service for online booking",
+        "Add service description",
+        "Configure payment requirements",
+        "Set pricing display options",
+        "Test client booking flow"
+      ],
+      "features_involved": [
+        "Online Booking for Services",
+        "Service Customizations",
+        "Base Price Display for Customizations"
+      ]
+    }
+  ],
+  "integrations": [
+    {
+      "name": "Groupon",
+      "purpose": "Track and process pre-paid promotional services with proper commission handling"
+    },
+    {
+      "name": "Integrated Payment Accounts",
+      "purpose": "Process credit card requirements and deposits for online booking services"
+    },
+    {
+      "name": "Online Booking Platform",
+      "purpose": "Display services with customizations and handle client self-service booking"
+    }
+  ],
+  "competitive_advantages": [
+    "Comprehensive Groupon integration with fee handling and commission calculations",
+    "Advanced service customization system with flexible pricing and duration impacts",
+    "Sophisticated couples service management with automatic commission splitting",
+    "Flexible online booking with multiple payment and deposit options",
+    "Resource-only services for equipment and facility bookings",
+    "Granular staff-service assignment with individual pricing and timing",
+    "Base price display for transparent customization pricing",
+    "Internal-only customizations for staff notes invisible to clients",
+    "Multi-location service category management",
+    "Drag-and-drop service organization"
+  ]
+}

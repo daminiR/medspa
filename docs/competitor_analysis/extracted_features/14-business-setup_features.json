@@ -1,0 +1,380 @@
+{
+  "category": "14-business-setup",
+  "features": [
+    {
+      "feature_name": "Multiple Phone Numbers Management",
+      "description": "Allows businesses to manage multiple phone numbers for different locations or purposes, with separate numbers for automated messages and marketing campaigns",
+      "capabilities": [
+        "Assign different phone numbers to different locations",
+        "Assign multiple locations to the same phone number",
+        "View phone number and location information in conversations",
+        "Separate marketing and transactional phone numbers",
+        "Staff access control based on location assignments"
+      ],
+      "user_benefits": [
+        "Better organization for multi-location businesses",
+        "Localized communication for different areas",
+        "Controlled staff access to conversations",
+        "Separate marketing from appointment-related communications"
+      ],
+      "complexity": "intermediate",
+      "integrations": [
+        "Messages app",
+        "Staff Members location settings"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "phone numbers",
+        "multiple locations",
+        "messaging",
+        "staff permissions",
+        "conversations"
+      ]
+    },
+    {
+      "feature_name": "Logo and Branding Customization",
+      "description": "Comprehensive branding system allowing businesses to customize their visual identity across all customer touchpoints",
+      "capabilities": [
+        "Upload custom business logo (.jpg or .png, minimum 80px height)",
+        "Set brand color with hex code support",
+        "Add cover image for client portal (minimum 600px width)",
+        "Apply branding to online booking, emails, client portal",
+        "Customize Front Desk Display welcome screen"
+      ],
+      "user_benefits": [
+        "Consistent brand experience across all platforms",
+        "Professional appearance in customer communications",
+        "Enhanced brand recognition",
+        "Customized client portal experience"
+      ],
+      "complexity": "basic",
+      "integrations": [
+        "Online booking",
+        "Email system",
+        "Client portal",
+        "Front Desk Display",
+        "Express Booking",
+        "Client Self Checkout"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "branding",
+        "logo",
+        "colors",
+        "customization",
+        "client portal",
+        "online booking"
+      ]
+    },
+    {
+      "feature_name": "Location Management",
+      "description": "Multi-location business management system supporting both physical and virtual locations with individual configuration options",
+      "capabilities": [
+        "Add unlimited physical and virtual locations",
+        "Configure individual location details (address, contact, tax rates, timezone)",
+        "Assign services to specific locations with location-specific pricing",
+        "Assign staff members to specific locations",
+        "Share services, staff, and gift cards across locations",
+        "Generate separate reports per location"
+      ],
+      "user_benefits": [
+        "Efficient multi-location business management",
+        "Flexible pricing across different locations",
+        "Localized tax rate compliance",
+        "Streamlined staff scheduling and permissions",
+        "Separate business type management (salon vs spa)"
+      ],
+      "complexity": "intermediate",
+      "integrations": [
+        "Services app",
+        "Staff Members app",
+        "Online booking",
+        "Reports",
+        "Gift cards system"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "locations",
+        "multi-location",
+        "physical",
+        "virtual",
+        "tax rates",
+        "staff assignment",
+        "services"
+      ]
+    },
+    {
+      "feature_name": "Phone Number Addition and Management",
+      "description": "System for adding, changing, and configuring different types of phone numbers for various business communication needs",
+      "capabilities": [
+        "Add local phone numbers for two-way texting",
+        "Add toll-free numbers for marketing campaigns",
+        "Change existing phone numbers with immediate effect",
+        "Register toll-free numbers with business information",
+        "Assign phone numbers to specific locations"
+      ],
+      "user_benefits": [
+        "Professional communication setup",
+        "Separate marketing and transactional messaging",
+        "Area code alignment with business locations",
+        "Compliance with toll-free number regulations"
+      ],
+      "complexity": "intermediate",
+      "integrations": [
+        "Text messaging system",
+        "Marketing flows",
+        "Appointment reminders"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "phone numbers",
+        "toll-free",
+        "local numbers",
+        "marketing",
+        "two-way texting",
+        "registration"
+      ]
+    },
+    {
+      "feature_name": "Business Details Configuration",
+      "description": "Central management of core business information displayed across all customer-facing communications and documentation",
+      "capabilities": [
+        "Update business name",
+        "Set business website URL",
+        "Configure country and currency settings",
+        "Apply changes across all customer touchpoints"
+      ],
+      "user_benefits": [
+        "Consistent business information everywhere",
+        "Professional appearance in communications",
+        "Proper currency and regional settings",
+        "Easy centralized updates"
+      ],
+      "complexity": "basic",
+      "integrations": [
+        "Automated messages",
+        "Receipts",
+        "Client portal"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "business details",
+        "company name",
+        "website",
+        "currency",
+        "country settings"
+      ]
+    },
+    {
+      "feature_name": "iPad Kiosk Mode Setup",
+      "description": "Comprehensive system for setting up iPads as dedicated Front Desk Display terminals with restricted access and automatic functionality",
+      "capabilities": [
+        "Enable Guided Access with passcode protection",
+        "Disable auto-lock for continuous operation",
+        "Lock iPad to Mangomint app only",
+        "Restrict access to other apps and settings",
+        "Configure accessibility shortcuts",
+        "Support for Touch ID and Face ID authentication"
+      ],
+      "user_benefits": [
+        "Secure front desk operations",
+        "Professional customer check-in experience",
+        "Prevents unauthorized access to device functions",
+        "Continuous operation without interruption",
+        "Easy enable/disable functionality"
+      ],
+      "complexity": "intermediate",
+      "integrations": [
+        "Front Desk Display",
+        "iPad system settings",
+        "Mangomint mobile app"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "kiosk mode",
+        "iPad",
+        "front desk",
+        "guided access",
+        "security",
+        "display"
+      ]
+    },
+    {
+      "feature_name": "Mobile App Updates",
+      "description": "Process for updating the Mangomint mobile app on Front Desk Display iPads while maintaining kiosk functionality",
+      "capabilities": [
+        "Update app through App Store integration",
+        "Temporary kiosk mode disable for updates",
+        "Automatic re-enabling of kiosk mode post-update",
+        "Guided process for update installation"
+      ],
+      "user_benefits": [
+        "Easy maintenance of Front Desk Display",
+        "Access to latest features and security updates",
+        "Minimal disruption to business operations",
+        "Maintained security after updates"
+      ],
+      "complexity": "basic",
+      "integrations": [
+        "App Store",
+        "iPad kiosk mode",
+        "Mangomint mobile app"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "app updates",
+        "mobile app",
+        "front desk display",
+        "maintenance",
+        "app store"
+      ]
+    },
+    {
+      "feature_name": "Desktop Notifications",
+      "description": "Cross-platform notification system for receiving real-time alerts about web chat messages on desktop computers",
+      "capabilities": [
+        "Enable notifications on Mac and Windows systems",
+        "Configure browser-specific notification settings",
+        "Receive real-time web chat message alerts",
+        "Test notification functionality",
+        "Support for multiple browsers (Firefox, Chrome)"
+      ],
+      "user_benefits": [
+        "Immediate awareness of customer messages",
+        "Improved response times to client inquiries",
+        "Enhanced front desk staff productivity",
+        "No missed customer communications"
+      ],
+      "complexity": "intermediate",
+      "integrations": [
+        "Web chat system",
+        "Mac system notifications",
+        "Windows notifications",
+        "Web browsers"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "desktop notifications",
+        "web chat",
+        "alerts",
+        "messaging",
+        "staff notifications",
+        "real-time"
+      ]
+    }
+  ],
+  "key_workflows": [
+    {
+      "workflow_name": "Multi-Location Setup",
+      "steps": [
+        "Add new physical or virtual location",
+        "Configure location details (address, tax rates, timezone)",
+        "Assign services to location with pricing",
+        "Assign staff members to location",
+        "Configure phone numbers for location",
+        "Test online booking with location selection"
+      ],
+      "features_involved": [
+        "Location Management",
+        "Multiple Phone Numbers Management",
+        "Business Details Configuration"
+      ]
+    },
+    {
+      "workflow_name": "Brand Customization",
+      "steps": [
+        "Upload business logo meeting size requirements",
+        "Set brand color using hex code",
+        "Add cover image for client portal",
+        "Verify branding across all touchpoints",
+        "Update Front Desk Display welcome screen"
+      ],
+      "features_involved": [
+        "Logo and Branding Customization",
+        "iPad Kiosk Mode Setup"
+      ]
+    },
+    {
+      "workflow_name": "Front Desk Display Setup",
+      "steps": [
+        "Enable Guided Access on iPad",
+        "Set up passcode and biometric authentication",
+        "Disable auto-lock settings",
+        "Open Mangomint app and enable kiosk mode",
+        "Test functionality and troubleshoot if needed"
+      ],
+      "features_involved": [
+        "iPad Kiosk Mode Setup",
+        "Mobile App Updates"
+      ]
+    },
+    {
+      "workflow_name": "Communication System Configuration",
+      "steps": [
+        "Add local phone number for transactional messages",
+        "Add toll-free number for marketing (if needed)",
+        "Assign phone numbers to appropriate locations",
+        "Configure staff access permissions",
+        "Enable desktop notifications for staff",
+        "Test messaging functionality"
+      ],
+      "features_involved": [
+        "Phone Number Addition and Management",
+        "Multiple Phone Numbers Management",
+        "Desktop Notifications"
+      ]
+    }
+  ],
+  "integrations": [
+    {
+      "name": "App Store",
+      "purpose": "Updates Mangomint mobile app on Front Desk Display iPads"
+    },
+    {
+      "name": "iPad System Settings",
+      "purpose": "Configures Guided Access and kiosk mode functionality"
+    },
+    {
+      "name": "Online Booking System",
+      "purpose": "Displays business branding and location selection"
+    },
+    {
+      "name": "Email System",
+      "purpose": "Applies business branding to automated email communications"
+    },
+    {
+      "name": "Client Portal",
+      "purpose": "Displays custom branding, logos, and cover images"
+    },
+    {
+      "name": "Text Messaging System",
+      "purpose": "Routes messages through appropriate phone numbers based on type and location"
+    },
+    {
+      "name": "Staff Members App",
+      "purpose": "Controls location-based access permissions and assignments"
+    },
+    {
+      "name": "Services App",
+      "purpose": "Manages service availability and pricing per location"
+    },
+    {
+      "name": "Web Browsers",
+      "purpose": "Delivers desktop notifications for web chat messages"
+    },
+    {
+      "name": "Operating System Notifications",
+      "purpose": "Provides native notification functionality on Mac and Windows"
+    }
+  ],
+  "competitive_advantages": [
+    "Comprehensive multi-location support with individual configuration options",
+    "Separation of marketing and transactional phone numbers for better compliance",
+    "Advanced iPad kiosk mode with security features and easy maintenance",
+    "Cross-platform desktop notification support for improved staff responsiveness",
+    "Flexible location assignment system supporting both physical and virtual locations",
+    "Integrated branding system across all customer touchpoints",
+    "Staff permission system based on location assignments for better security",
+    "Professional toll-free number registration with business verification"
+  ]
+}

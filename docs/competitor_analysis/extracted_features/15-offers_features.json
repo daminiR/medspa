@@ -1,0 +1,349 @@
+{
+  "category": "15-offers",
+  "features": [
+    {
+      "feature_name": "Offer Creation and Management",
+      "description": "Create and manage comprehensive offers with service, product, or sale-level discounts that can be applied during checkout",
+      "capabilities": [
+        "Create offers with custom names and descriptions",
+        "Set offer validity periods and date restrictions",
+        "Enable/disable offers",
+        "Multi-location offer management",
+        "Permission-based offer creation (Admin or Can manage offers permission)"
+      ],
+      "user_benefits": [
+        "Flexible discount management",
+        "Improved marketing capabilities",
+        "Better client retention through targeted offers",
+        "Streamlined promotional campaigns"
+      ],
+      "complexity": "intermediate",
+      "integrations": [
+        "Online booking system",
+        "Staff member settings",
+        "Location management"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "offers",
+        "discounts",
+        "promotions",
+        "create",
+        "manage",
+        "enable"
+      ]
+    },
+    {
+      "feature_name": "Multiple Offer Application Methods",
+      "description": "Apply offers through staff manual selection, client offer codes, or automatic application based on conditions",
+      "capabilities": [
+        "Manual staff application during checkout",
+        "Offer code entry in online booking",
+        "Automatic application based on offer settings",
+        "Promo code validation and processing"
+      ],
+      "user_benefits": [
+        "Flexible discount application",
+        "Enhanced client experience",
+        "Reduced staff workload with automation",
+        "Marketing campaign integration"
+      ],
+      "complexity": "basic",
+      "integrations": [
+        "Online booking system",
+        "Checkout system",
+        "Staff interface"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "apply",
+        "offer codes",
+        "promo codes",
+        "automatic",
+        "manual",
+        "checkout"
+      ]
+    },
+    {
+      "feature_name": "Advanced Offer Targeting",
+      "description": "Target specific client segments and conditions with sophisticated offer rules and restrictions",
+      "capabilities": [
+        "New clients only targeting",
+        "Once per client limitations",
+        "Membership-based offers",
+        "Minimum sale amount requirements",
+        "Specific service provider targeting",
+        "Date-based restrictions (appointment, booking, sale dates)"
+      ],
+      "user_benefits": [
+        "Precise marketing targeting",
+        "Client acquisition and retention",
+        "Revenue optimization",
+        "Exclusive member benefits",
+        "Provider-specific promotions"
+      ],
+      "complexity": "advanced",
+      "integrations": [
+        "Client database",
+        "Membership system",
+        "Service provider management"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "targeting",
+        "restrictions",
+        "new clients",
+        "membership",
+        "minimum amount",
+        "service providers"
+      ]
+    },
+    {
+      "feature_name": "Multi-Type Discount System",
+      "description": "Support for service discounts, product discounts, and entire sale discounts with flexible configuration options",
+      "capabilities": [
+        "Service-specific discounts with customization support",
+        "Product-specific discounts",
+        "Entire sale discounts (dollar amount only)",
+        "Category-based discounts",
+        "Multiple discount combinations",
+        "Percentage and fixed amount discounts",
+        "Free service/product offers (100% discount)"
+      ],
+      "user_benefits": [
+        "Comprehensive discount flexibility",
+        "Complex promotional strategies",
+        "Gift and incentive programs",
+        "Category-specific promotions"
+      ],
+      "complexity": "intermediate",
+      "integrations": [
+        "Service catalog",
+        "Product catalog",
+        "Pricing system"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "service discounts",
+        "product discounts",
+        "sale discounts",
+        "percentage",
+        "fixed amount",
+        "free gifts"
+      ]
+    },
+    {
+      "feature_name": "Commission Management for Offers",
+      "description": "Configure staff commission calculations based on regular price or discounted price for offer transactions",
+      "capabilities": [
+        "Regular price commission calculation",
+        "Discounted price commission calculation",
+        "Configurable commission rules per offer"
+      ],
+      "user_benefits": [
+        "Fair staff compensation",
+        "Flexible commission structures",
+        "Staff incentive alignment"
+      ],
+      "complexity": "intermediate",
+      "integrations": [
+        "Staff management",
+        "Commission system",
+        "Payroll"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "commission",
+        "staff compensation",
+        "regular price",
+        "discounted price"
+      ]
+    },
+    {
+      "feature_name": "Smart Offer Optimization",
+      "description": "Automatically apply the best available discount when multiple offers are eligible for the same transaction",
+      "capabilities": [
+        "Multiple offer eligibility checking",
+        "Highest discount automatic selection",
+        "Line item specific offer application",
+        "Sale-level offer prioritization",
+        "Offer conflict resolution"
+      ],
+      "user_benefits": [
+        "Maximum savings for clients",
+        "Simplified checkout process",
+        "Reduced decision complexity"
+      ],
+      "complexity": "advanced",
+      "integrations": [
+        "Checkout system",
+        "Pricing engine"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "optimization",
+        "multiple offers",
+        "best discount",
+        "automatic selection"
+      ]
+    },
+    {
+      "feature_name": "Offer Details and Transparency",
+      "description": "View detailed information about applied offers during checkout and transaction processing",
+      "capabilities": [
+        "Offer detail viewing during checkout",
+        "Discount amount display",
+        "Offer application status messages",
+        "Receipt display configuration"
+      ],
+      "user_benefits": [
+        "Transaction transparency",
+        "Client understanding of savings",
+        "Staff clarity on applied discounts"
+      ],
+      "complexity": "basic",
+      "integrations": [
+        "Checkout system",
+        "Receipt system"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "details",
+        "transparency",
+        "discount amount",
+        "receipt",
+        "status"
+      ]
+    },
+    {
+      "feature_name": "Comprehensive Offers Reporting",
+      "description": "Track and analyze offer usage, performance, and financial impact through detailed reporting",
+      "capabilities": [
+        "Offers Usage Report with sale details",
+        "Offers Summary Report with usage statistics",
+        "Discount amount tracking",
+        "Client usage analysis",
+        "Date-based reporting",
+        "Before/after discount comparisons"
+      ],
+      "user_benefits": [
+        "Marketing campaign analysis",
+        "ROI measurement",
+        "Client behavior insights",
+        "Financial impact assessment"
+      ],
+      "complexity": "intermediate",
+      "integrations": [
+        "Reports system",
+        "Analytics platform"
+      ],
+      "screenshots_available": false,
+      "keywords": [
+        "reports",
+        "analytics",
+        "usage",
+        "tracking",
+        "performance",
+        "ROI"
+      ]
+    }
+  ],
+  "key_workflows": [
+    {
+      "workflow_name": "Create and Deploy Offer Campaign",
+      "steps": [
+        "Open Offers app and select Create Offer",
+        "Configure Details tab with application method and restrictions",
+        "Set up Discounts tab with specific discount types and amounts",
+        "Configure Advanced tab for locations and commission settings",
+        "Enable the offer to make it active"
+      ],
+      "features_involved": [
+        "Offer Creation and Management",
+        "Advanced Offer Targeting",
+        "Multi-Type Discount System"
+      ]
+    },
+    {
+      "workflow_name": "Client Uses Offer Code in Online Booking",
+      "steps": [
+        "Client enters offer code in Promo code field during online booking",
+        "System validates and saves offer with appointment",
+        "During checkout, offer is applied automatically",
+        "Discount is reflected in final payment amount"
+      ],
+      "features_involved": [
+        "Multiple Offer Application Methods",
+        "Offer Details and Transparency"
+      ]
+    },
+    {
+      "workflow_name": "Staff Manual Offer Application",
+      "steps": [
+        "Begin checkout process normally",
+        "Select More > Offer during checkout",
+        "Choose from available eligible offers",
+        "System applies discount and shows details",
+        "Complete transaction with discounted amount"
+      ],
+      "features_involved": [
+        "Multiple Offer Application Methods",
+        "Smart Offer Optimization",
+        "Offer Details and Transparency"
+      ]
+    },
+    {
+      "workflow_name": "Analyze Offer Performance",
+      "steps": [
+        "Access Reports app",
+        "Generate Offers Usage or Summary report",
+        "Review usage statistics and discount amounts",
+        "Analyze client behavior and campaign effectiveness",
+        "Adjust offer strategy based on insights"
+      ],
+      "features_involved": [
+        "Comprehensive Offers Reporting"
+      ]
+    }
+  ],
+  "integrations": [
+    {
+      "name": "Online Booking System",
+      "purpose": "Enable clients to enter offer codes during booking process and apply discounts automatically"
+    },
+    {
+      "name": "Staff Management System",
+      "purpose": "Control permissions for offer creation and manage commission calculations"
+    },
+    {
+      "name": "Client Database",
+      "purpose": "Track client eligibility for targeted offers like new client or once-per-client restrictions"
+    },
+    {
+      "name": "Membership System",
+      "purpose": "Enable exclusive offers for members with active memberships"
+    },
+    {
+      "name": "Reports and Analytics",
+      "purpose": "Provide detailed tracking and analysis of offer usage and performance"
+    },
+    {
+      "name": "Checkout and Payment System",
+      "purpose": "Apply discounts during transaction processing and calculate final amounts"
+    },
+    {
+      "name": "Service and Product Catalogs",
+      "purpose": "Enable specific service and product targeting for discount application"
+    }
+  ],
+  "competitive_advantages": [
+    "Sophisticated offer targeting with multiple restriction types (new clients, membership, minimum amounts)",
+    "Intelligent offer optimization that automatically applies the best available discount",
+    "Comprehensive discount types including service, product, and entire sale discounts",
+    "Flexible commission management allowing choice between regular and discounted price calculations",
+    "Seamless integration between online booking and in-store checkout for offer code usage",
+    "Advanced reporting capabilities for detailed offer performance analysis",
+    "Multi-location offer management with location-specific configurations",
+    "Support for complex promotional strategies with multiple discount combinations"
+  ]
+}

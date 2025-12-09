@@ -1,0 +1,803 @@
+{
+  "category": "18-payments",
+  "features": [
+    {
+      "feature_name": "Payment Types",
+      "description": "Multiple payment methods available for completing checkouts including card readers, self checkout, credit cards, cash, checks, gift cards, account balance, and custom buttons",
+      "capabilities": [
+        "front desk payments",
+        "card reader payments",
+        "self checkout",
+        "credit card processing",
+        "cash payments",
+        "check payments",
+        "gift card payments",
+        "account balance payments",
+        "custom payment buttons",
+        "other payment types"
+      ],
+      "user_benefits": [
+        "flexible payment options",
+        "accommodate various customer preferences",
+        "track all payment methods",
+        "integrated and non-integrated payment support"
+      ],
+      "complexity": "basic",
+      "integrations": [
+        "integrated payment processors",
+        "custom payment apps like Venmo, PayPal"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "payment",
+        "checkout",
+        "credit card",
+        "cash",
+        "gift card",
+        "custom buttons"
+      ]
+    },
+    {
+      "feature_name": "Front Desk Display",
+      "description": "Client-facing iPad kiosk system that allows customers to complete payments independently at the front desk",
+      "capabilities": [
+        "client-facing checkout",
+        "tip selection",
+        "signature capture",
+        "receipt delivery options",
+        "card reader integration",
+        "kiosk mode operation"
+      ],
+      "user_benefits": [
+        "hands-off payment processing",
+        "improved customer experience",
+        "reduced staff workload",
+        "professional appearance"
+      ],
+      "complexity": "intermediate",
+      "integrations": [
+        "iPad",
+        "Bluetooth card readers",
+        "payment processing"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "front desk",
+        "kiosk",
+        "iPad",
+        "client-facing",
+        "checkout"
+      ]
+    },
+    {
+      "feature_name": "Card Reader Direct Connection",
+      "description": "Connect card readers directly to iPhone or iPad for mobile payment processing",
+      "capabilities": [
+        "mobile payment processing",
+        "on-the-go payments",
+        "booth renter support",
+        "tap/insert/swipe card acceptance",
+        "tip processing",
+        "signature capture"
+      ],
+      "user_benefits": [
+        "mobility for service providers",
+        "independent contractor support",
+        "calendar and payment on same device"
+      ],
+      "complexity": "intermediate",
+      "integrations": [
+        "iPhone",
+        "iPad",
+        "Bluetooth card readers"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "card reader",
+        "mobile",
+        "bluetooth",
+        "direct connection",
+        "iPhone",
+        "iPad"
+      ]
+    },
+    {
+      "feature_name": "Client Self Checkout",
+      "description": "Allow clients to complete payments on their own mobile devices via text message link",
+      "capabilities": [
+        "mobile payment completion",
+        "SMS payment links",
+        "tip addition",
+        "receipt viewing",
+        "remote payment processing"
+      ],
+      "user_benefits": [
+        "contactless payments",
+        "customer convenience",
+        "reduced physical contact",
+        "flexible payment timing"
+      ],
+      "complexity": "basic",
+      "integrations": [
+        "SMS messaging",
+        "mobile web interface"
+      ],
+      "screenshots_available": false,
+      "keywords": [
+        "self checkout",
+        "mobile",
+        "SMS",
+        "contactless",
+        "remote"
+      ]
+    },
+    {
+      "feature_name": "Payment Processing Setup",
+      "description": "Integrated payment processing account creation and management with no monthly fees",
+      "capabilities": [
+        "payment account creation",
+        "business verification",
+        "bank account setup",
+        "multi-location support",
+        "industry-specific setup"
+      ],
+      "user_benefits": [
+        "no monthly charges",
+        "no hidden fees",
+        "major credit card acceptance",
+        "consolidated or separate location payouts"
+      ],
+      "complexity": "intermediate",
+      "integrations": [
+        "Stripe",
+        "banking systems",
+        "IRS verification"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "payment processing",
+        "account setup",
+        "verification",
+        "stripe",
+        "banking"
+      ]
+    },
+    {
+      "feature_name": "Cards on File Management",
+      "description": "Store and manage customer credit card information securely for future transactions",
+      "capabilities": [
+        "card storage",
+        "automatic card addition",
+        "manual card entry",
+        "card deletion",
+        "wallet management",
+        "Express Booking integration"
+      ],
+      "user_benefits": [
+        "faster checkout",
+        "improved customer experience",
+        "reduced data entry",
+        "secure card storage"
+      ],
+      "complexity": "basic",
+      "integrations": [
+        "online booking",
+        "Express Booking",
+        "self checkout"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "cards on file",
+        "wallet",
+        "card storage",
+        "customer data"
+      ]
+    },
+    {
+      "feature_name": "Split Payments",
+      "description": "Divide payment across multiple payment methods for a single transaction",
+      "capabilities": [
+        "partial payment processing",
+        "multiple payment method support",
+        "automatic balance calculation",
+        "real-time payment tracking"
+      ],
+      "user_benefits": [
+        "payment flexibility",
+        "accommodates various customer needs",
+        "accurate payment tracking"
+      ],
+      "complexity": "basic",
+      "integrations": [
+        "all payment methods",
+        "cash drawer",
+        "reporting systems"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "split payments",
+        "partial payments",
+        "multiple methods",
+        "balance"
+      ]
+    },
+    {
+      "feature_name": "Payment Account Management",
+      "description": "Manage primary and additional payment accounts for businesses and individual contractors",
+      "capabilities": [
+        "primary account setup",
+        "additional payment accounts",
+        "staff member account assignment",
+        "automatic payment routing",
+        "independent contractor support"
+      ],
+      "user_benefits": [
+        "flexible payment routing",
+        "booth renter support",
+        "independent contractor accommodation"
+      ],
+      "complexity": "advanced",
+      "integrations": [
+        "staff management",
+        "payment processing",
+        "contractor systems"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "payment accounts",
+        "contractors",
+        "booth renters",
+        "account routing"
+      ]
+    },
+    {
+      "feature_name": "Payment Disputes Management",
+      "description": "Handle credit card chargebacks and disputes with guided support and evidence gathering",
+      "capabilities": [
+        "dispute notification",
+        "evidence gathering",
+        "documentation support",
+        "dispute fighting assistance",
+        "prevention guidance"
+      ],
+      "user_benefits": [
+        "professional dispute handling",
+        "increased win rates",
+        "guided process",
+        "prevention strategies"
+      ],
+      "complexity": "advanced",
+      "integrations": [
+        "payment processing",
+        "documentation systems",
+        "customer communication"
+      ],
+      "screenshots_available": false,
+      "keywords": [
+        "disputes",
+        "chargebacks",
+        "evidence",
+        "documentation",
+        "prevention"
+      ]
+    },
+    {
+      "feature_name": "Balance and Payouts Tracking",
+      "description": "Monitor current payment account balance and view payout history with detailed transaction breakdowns",
+      "capabilities": [
+        "current balance display",
+        "payout history",
+        "transaction details",
+        "fee breakdown",
+        "refund tracking",
+        "payout scheduling"
+      ],
+      "user_benefits": [
+        "financial transparency",
+        "detailed reporting",
+        "cash flow management",
+        "transaction traceability"
+      ],
+      "complexity": "basic",
+      "integrations": [
+        "banking systems",
+        "payment processing",
+        "reporting"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "balance",
+        "payouts",
+        "transactions",
+        "fees",
+        "refunds"
+      ]
+    },
+    {
+      "feature_name": "Non-Integrated Payment Processors",
+      "description": "Support for external payment systems like Square, Clover, PayPal, and other third-party processors",
+      "capabilities": [
+        "custom payment buttons",
+        "external processor support",
+        "transaction tracking",
+        "reference number entry",
+        "payment reconciliation"
+      ],
+      "user_benefits": [
+        "processor flexibility",
+        "existing system integration",
+        "comprehensive tracking",
+        "business continuity"
+      ],
+      "complexity": "basic",
+      "integrations": [
+        "Square",
+        "Clover",
+        "PayPal",
+        "Venmo",
+        "Affirm",
+        "Afterpay",
+        "CareCredit",
+        "Cherry",
+        "Klarna"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "non-integrated",
+        "external processors",
+        "custom buttons",
+        "third-party"
+      ]
+    },
+    {
+      "feature_name": "Cash Drawer Management",
+      "description": "Track and manage cash transactions with daily counts, pay-ins, pay-outs, and closeout procedures",
+      "capabilities": [
+        "cash transaction tracking",
+        "drawer count updates",
+        "pay-in/pay-out recording",
+        "daily closeouts",
+        "change calculation",
+        "cash reporting"
+      ],
+      "user_benefits": [
+        "accurate cash tracking",
+        "end-of-day reconciliation",
+        "theft prevention",
+        "audit trail"
+      ],
+      "complexity": "basic",
+      "integrations": [
+        "cash payments",
+        "staff permissions",
+        "reporting systems"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "cash drawer",
+        "cash management",
+        "closeout",
+        "count",
+        "reconciliation"
+      ]
+    },
+    {
+      "feature_name": "Deposit Collection",
+      "description": "Collect deposits manually, through Express Booking, or via online booking with flexible deposit requirements",
+      "capabilities": [
+        "manual deposit collection",
+        "Express Booking deposits",
+        "online booking deposits",
+        "deposit tracking",
+        "balance calculation",
+        "appointment securing"
+      ],
+      "user_benefits": [
+        "reduced no-shows",
+        "cash flow improvement",
+        "booking security",
+        "flexible deposit options"
+      ],
+      "complexity": "intermediate",
+      "integrations": [
+        "online booking",
+        "Express Booking",
+        "payment processing",
+        "appointment scheduling"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "deposits",
+        "manual collection",
+        "online booking",
+        "express booking",
+        "no-shows"
+      ]
+    },
+    {
+      "feature_name": "Payment Hardware Setup",
+      "description": "Configure and manage iPad stands, card readers, and other payment hardware components",
+      "capabilities": [
+        "hardware configuration",
+        "iPad compatibility check",
+        "Bluetooth pairing",
+        "firmware updates",
+        "device management",
+        "troubleshooting support"
+      ],
+      "user_benefits": [
+        "reliable hardware operation",
+        "easy setup process",
+        "ongoing support",
+        "device compatibility"
+      ],
+      "complexity": "intermediate",
+      "integrations": [
+        "iPad",
+        "Bluetooth card readers",
+        "charging docks",
+        "iPad stands"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "hardware",
+        "iPad",
+        "card reader",
+        "bluetooth",
+        "setup",
+        "compatibility"
+      ]
+    },
+    {
+      "feature_name": "Payment Best Practices",
+      "description": "Guidance and recommendations for secure payment processing to prevent disputes and ensure compliance",
+      "capabilities": [
+        "card-present transaction guidance",
+        "card-not-present best practices",
+        "large transaction protocols",
+        "cancellation policy integration",
+        "receipt management",
+        "ID verification"
+      ],
+      "user_benefits": [
+        "reduced dispute risk",
+        "increased security",
+        "compliance assurance",
+        "professional practices"
+      ],
+      "complexity": "basic",
+      "integrations": [
+        "Express Booking",
+        "Forms app",
+        "cancellation policies",
+        "receipt systems"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "best practices",
+        "security",
+        "disputes",
+        "compliance",
+        "verification"
+      ]
+    },
+    {
+      "feature_name": "Payment Processing Account Details",
+      "description": "Update business information, personal details, and banking information for payment accounts",
+      "capabilities": [
+        "business detail updates",
+        "personal information management",
+        "bank account changes",
+        "compliance maintenance",
+        "verification updates"
+      ],
+      "user_benefits": [
+        "accurate account information",
+        "compliance maintenance",
+        "banking flexibility",
+        "business updates"
+      ],
+      "complexity": "intermediate",
+      "integrations": [
+        "Stripe Express",
+        "banking systems",
+        "verification services"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "account details",
+        "business information",
+        "banking",
+        "verification",
+        "updates"
+      ]
+    },
+    {
+      "feature_name": "Payout Scheduling",
+      "description": "Next-business-day deposit schedule with clear timing for payment transfers to bank accounts",
+      "capabilities": [
+        "next-day deposits",
+        "payout scheduling",
+        "holiday handling",
+        "batch processing",
+        "timing transparency"
+      ],
+      "user_benefits": [
+        "predictable cash flow",
+        "fast access to funds",
+        "clear expectations",
+        "reliable timing"
+      ],
+      "complexity": "basic",
+      "integrations": [
+        "banking systems",
+        "payment processing",
+        "calendar systems"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "payouts",
+        "deposits",
+        "scheduling",
+        "next-day",
+        "banking"
+      ]
+    },
+    {
+      "feature_name": "Monthly Payment Summaries",
+      "description": "Comprehensive monthly reports showing transactions, fees, refunds, and account activity",
+      "capabilities": [
+        "monthly reporting",
+        "transaction summaries",
+        "fee breakdown",
+        "refund tracking",
+        "balance reporting",
+        "payout summaries"
+      ],
+      "user_benefits": [
+        "financial oversight",
+        "tax preparation",
+        "business analysis",
+        "record keeping"
+      ],
+      "complexity": "basic",
+      "integrations": [
+        "payment processing",
+        "reporting systems",
+        "accounting integration"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "monthly summaries",
+        "reporting",
+        "transactions",
+        "fees",
+        "analysis"
+      ]
+    },
+    {
+      "feature_name": "Test Transaction Processing",
+      "description": "Complete test transactions to verify card reader and payment system functionality",
+      "capabilities": [
+        "test transaction creation",
+        "system verification",
+        "refund processing",
+        "setup confirmation",
+        "troubleshooting support"
+      ],
+      "user_benefits": [
+        "system confidence",
+        "setup verification",
+        "risk-free testing",
+        "operational assurance"
+      ],
+      "complexity": "basic",
+      "integrations": [
+        "card readers",
+        "payment processing",
+        "refund systems"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "test transaction",
+        "verification",
+        "setup",
+        "testing",
+        "confirmation"
+      ]
+    },
+    {
+      "feature_name": "Payment Troubleshooting",
+      "description": "Comprehensive troubleshooting guides for card readers, Front Desk Displays, and payment issues",
+      "capabilities": [
+        "error message resolution",
+        "connectivity troubleshooting",
+        "hardware diagnostics",
+        "step-by-step guidance",
+        "support escalation"
+      ],
+      "user_benefits": [
+        "quick issue resolution",
+        "minimal downtime",
+        "self-service support",
+        "operational continuity"
+      ],
+      "complexity": "intermediate",
+      "integrations": [
+        "hardware systems",
+        "Bluetooth connectivity",
+        "Wi-Fi networks",
+        "support systems"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "troubleshooting",
+        "error messages",
+        "connectivity",
+        "hardware",
+        "support"
+      ]
+    }
+  ],
+  "key_workflows": [
+    {
+      "workflow_name": "Front Desk Display Setup",
+      "steps": [
+        "Download Mangomint app on iPad",
+        "Enter front desk mode and get pairing code",
+        "Connect display in Settings",
+        "Connect Bluetooth card reader",
+        "Enable Kiosk Mode"
+      ],
+      "features_involved": [
+        "Front Desk Display",
+        "Payment Hardware Setup",
+        "Card Reader Direct Connection"
+      ]
+    },
+    {
+      "workflow_name": "Payment Processing Onboarding",
+      "steps": [
+        "Sign up for payment processing",
+        "Verify business information",
+        "Set up bank account",
+        "Configure locations",
+        "Complete application"
+      ],
+      "features_involved": [
+        "Payment Processing Setup",
+        "Payment Processing Account Details"
+      ]
+    },
+    {
+      "workflow_name": "Split Payment Processing",
+      "steps": [
+        "Begin checkout",
+        "Enter partial payment amount",
+        "Select first payment method",
+        "Process remaining balance",
+        "Complete sale"
+      ],
+      "features_involved": [
+        "Split Payments",
+        "Payment Types",
+        "Cash Drawer Management"
+      ]
+    },
+    {
+      "workflow_name": "Manual Deposit Collection",
+      "steps": [
+        "Select appointment",
+        "Start checkout",
+        "Go to payments",
+        "Change amount to deposit",
+        "Process payment",
+        "Complete on service day"
+      ],
+      "features_involved": [
+        "Deposit Collection",
+        "Payment Types",
+        "Cards on File Management"
+      ]
+    },
+    {
+      "workflow_name": "Card Reader Setup",
+      "steps": [
+        "Open Mangomint app",
+        "Access Card Readers",
+        "Turn on and charge card reader",
+        "Pair via Bluetooth",
+        "Update firmware if needed",
+        "Confirm connection"
+      ],
+      "features_involved": [
+        "Card Reader Direct Connection",
+        "Payment Hardware Setup",
+        "Test Transaction Processing"
+      ]
+    },
+    {
+      "workflow_name": "Payment Dispute Handling",
+      "steps": [
+        "Receive dispute notification",
+        "Gather evidence",
+        "Provide documentation",
+        "Submit dispute response",
+        "Track outcome"
+      ],
+      "features_involved": [
+        "Payment Disputes Management",
+        "Payment Best Practices",
+        "Cards on File Management"
+      ]
+    },
+    {
+      "workflow_name": "Cash Drawer Daily Closeout",
+      "steps": [
+        "Open Cash Drawer app",
+        "Select New Pay-Out",
+        "Enter amount information",
+        "Save and record",
+        "Print current count"
+      ],
+      "features_involved": [
+        "Cash Drawer Management",
+        "Payment Types"
+      ]
+    }
+  ],
+  "integrations": [
+    {
+      "name": "Stripe",
+      "purpose": "Primary payment processing backend for credit card transactions and account management"
+    },
+    {
+      "name": "iPad/iPhone",
+      "purpose": "Hardware platform for Front Desk Display and direct card reader connections"
+    },
+    {
+      "name": "Bluetooth Card Readers",
+      "purpose": "Physical payment processing hardware for in-person transactions"
+    },
+    {
+      "name": "Express Booking\u2122",
+      "purpose": "Integrated booking system that collects deposits and cards on file during appointment booking"
+    },
+    {
+      "name": "Online Booking",
+      "purpose": "Web-based booking system that can require deposits and collect payment information"
+    },
+    {
+      "name": "SMS Messaging",
+      "purpose": "Deliver self-checkout payment links to customers' mobile devices"
+    },
+    {
+      "name": "Third-party Processors",
+      "purpose": "Support for external payment systems like Square, Clover, PayPal, Venmo, and buy-now-pay-later services"
+    },
+    {
+      "name": "Banking Systems",
+      "purpose": "Direct deposit of funds and account verification for payment processing"
+    },
+    {
+      "name": "Forms App",
+      "purpose": "Collect digital documentation for large transactions and dispute prevention"
+    }
+  ],
+  "competitive_advantages": [
+    "No monthly fees or hidden charges for integrated payment processing",
+    "Next-business-day deposits for fast access to funds",
+    "Comprehensive payment method support including integrated and non-integrated processors",
+    "Client-facing Front Desk Display for hands-off payment processing",
+    "Mobile payment processing with direct card reader connection to iPhone/iPad",
+    "Contactless self-checkout via SMS links",
+    "Robust dispute management with guided evidence gathering",
+    "Flexible payment account routing for independent contractors and booth renters",
+    "Integrated cash drawer management with real-time tracking",
+    "Multi-modal deposit collection (manual, online, Express Booking)",
+    "Comprehensive troubleshooting and support documentation",
+    "Split payment capabilities across multiple payment methods",
+    "Detailed financial reporting with monthly summaries and transaction tracking",
+    "Built-in best practices guidance for dispute prevention and compliance"
+  ]
+}

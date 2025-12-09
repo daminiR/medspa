@@ -1,0 +1,302 @@
+{
+  "category": "19-account-management",
+  "features": [
+    {
+      "feature_name": "Subscription Management",
+      "description": "Comprehensive subscription management system allowing users to manage their Mangomint plans, add-ons, and billing",
+      "capabilities": [
+        "plan comparison",
+        "plan switching",
+        "subscription updates",
+        "add-on management",
+        "billing management"
+      ],
+      "user_benefits": [
+        "flexible plan management",
+        "easy upgrades/downgrades",
+        "self-service subscription control"
+      ],
+      "complexity": "intermediate",
+      "integrations": [],
+      "screenshots_available": true,
+      "keywords": [
+        "subscription",
+        "plan",
+        "billing",
+        "management",
+        "update"
+      ]
+    },
+    {
+      "feature_name": "Invoice Management",
+      "description": "System for viewing and downloading subscription invoices with detailed billing breakdowns",
+      "capabilities": [
+        "invoice viewing",
+        "invoice downloading",
+        "detailed billing breakdown",
+        "billing history access"
+      ],
+      "user_benefits": [
+        "transparent billing",
+        "easy record keeping",
+        "detailed expense tracking"
+      ],
+      "complexity": "basic",
+      "integrations": [],
+      "screenshots_available": true,
+      "keywords": [
+        "invoice",
+        "billing",
+        "payment",
+        "history",
+        "download"
+      ]
+    },
+    {
+      "feature_name": "Add-on Management",
+      "description": "Feature to add or remove subscription add-ons including Connect, Forms & Charting, and Payroll Processing",
+      "capabilities": [
+        "add-on addition",
+        "add-on removal",
+        "Connect communication tools",
+        "custom forms creation",
+        "payroll processing",
+        "worker count adjustment"
+      ],
+      "user_benefits": [
+        "modular subscription customization",
+        "scalable feature set",
+        "pay for what you need"
+      ],
+      "complexity": "intermediate",
+      "integrations": [
+        "web chat",
+        "forms system",
+        "payroll system"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "add-on",
+        "connect",
+        "forms",
+        "charting",
+        "payroll",
+        "processing"
+      ]
+    },
+    {
+      "feature_name": "Payment Method Management",
+      "description": "System for updating and managing credit card information for subscription payments",
+      "capabilities": [
+        "credit card updates",
+        "payment method changes",
+        "secure payment processing"
+      ],
+      "user_benefits": [
+        "easy payment updates",
+        "uninterrupted service",
+        "secure payment handling"
+      ],
+      "complexity": "basic",
+      "integrations": [],
+      "screenshots_available": true,
+      "keywords": [
+        "payment",
+        "credit card",
+        "billing",
+        "update",
+        "method"
+      ]
+    },
+    {
+      "feature_name": "Marketing Credits Management",
+      "description": "Comprehensive system for managing marketing credits used for campaigns, flows, emails, and texts",
+      "capabilities": [
+        "credit balance viewing",
+        "credit purchasing",
+        "auto-refill settings",
+        "usage tracking",
+        "credit plan management",
+        "rollover credit handling"
+      ],
+      "user_benefits": [
+        "flexible marketing budget management",
+        "usage visibility",
+        "cost optimization",
+        "automated refilling"
+      ],
+      "complexity": "advanced",
+      "integrations": [
+        "Campaigns app",
+        "Flows app"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "marketing",
+        "credits",
+        "campaigns",
+        "flows",
+        "email",
+        "text",
+        "auto-refill"
+      ]
+    },
+    {
+      "feature_name": "Billing User Management",
+      "description": "System for managing billing user permissions and access to subscription features",
+      "capabilities": [
+        "billing user designation",
+        "subscription access control",
+        "account ownership management"
+      ],
+      "user_benefits": [
+        "controlled access to billing",
+        "secure subscription management",
+        "clear responsibility assignment"
+      ],
+      "complexity": "intermediate",
+      "integrations": [],
+      "screenshots_available": false,
+      "keywords": [
+        "billing user",
+        "permissions",
+        "account owner",
+        "access control"
+      ]
+    },
+    {
+      "feature_name": "Usage Analytics",
+      "description": "System for tracking and viewing marketing credit usage over time periods",
+      "capabilities": [
+        "30-day usage tracking",
+        "campaign credit usage",
+        "flow credit usage",
+        "usage reporting"
+      ],
+      "user_benefits": [
+        "informed decision making",
+        "budget planning",
+        "usage optimization"
+      ],
+      "complexity": "intermediate",
+      "integrations": [
+        "Campaigns app",
+        "Flows app"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "usage",
+        "analytics",
+        "tracking",
+        "reporting",
+        "30-day"
+      ]
+    }
+  ],
+  "key_workflows": [
+    {
+      "workflow_name": "Subscription Plan Update",
+      "steps": [
+        "access subscription page as billing user",
+        "select new plan",
+        "confirm changes",
+        "update billing"
+      ],
+      "features_involved": [
+        "Subscription Management",
+        "Billing User Management",
+        "Payment Method Management"
+      ]
+    },
+    {
+      "workflow_name": "Add-on Management",
+      "steps": [
+        "navigate to subscription page",
+        "select add or remove add-ons",
+        "choose specific add-ons",
+        "adjust settings (e.g., payroll workers)",
+        "save changes"
+      ],
+      "features_involved": [
+        "Subscription Management",
+        "Add-on Management",
+        "Payment Method Management"
+      ]
+    },
+    {
+      "workflow_name": "Invoice Access",
+      "steps": [
+        "log in as billing user",
+        "navigate to subscription page",
+        "select view past invoices",
+        "download or view invoice details"
+      ],
+      "features_involved": [
+        "Invoice Management",
+        "Billing User Management"
+      ]
+    },
+    {
+      "workflow_name": "Marketing Credits Purchase",
+      "steps": [
+        "access subscription page",
+        "view current credit balance",
+        "select buy marketing credits",
+        "choose credit amount or plan",
+        "configure auto-refill settings",
+        "complete purchase"
+      ],
+      "features_involved": [
+        "Marketing Credits Management",
+        "Payment Method Management",
+        "Usage Analytics"
+      ]
+    },
+    {
+      "workflow_name": "Payment Method Update",
+      "steps": [
+        "access subscription page as billing user",
+        "select update credit card",
+        "enter new payment information",
+        "save changes"
+      ],
+      "features_involved": [
+        "Payment Method Management",
+        "Billing User Management"
+      ]
+    }
+  ],
+  "integrations": [
+    {
+      "name": "Campaigns App",
+      "purpose": "Integrates with marketing credits system for email campaign management and credit consumption tracking"
+    },
+    {
+      "name": "Flows App",
+      "purpose": "Integrates with marketing credits system for automated email and text flow management and credit usage"
+    },
+    {
+      "name": "Connect Add-on",
+      "purpose": "Provides client communication tools via web chat and other communication channels"
+    },
+    {
+      "name": "Forms & Charting Add-on",
+      "purpose": "Enables custom form creation and client/staff information collection"
+    },
+    {
+      "name": "Payroll Processing Add-on",
+      "purpose": "Handles payroll processing for employees, contractors, and multiple compensation types"
+    }
+  ],
+  "competitive_advantages": [
+    "Flexible marketing credit system with both pay-as-you-go and subscription models",
+    "Detailed credit usage tracking with 30-day analytics for informed decision making",
+    "Auto-refill functionality for marketing credits to ensure uninterrupted campaigns",
+    "Modular add-on system allowing businesses to customize their subscription",
+    "Self-service subscription management reducing dependency on support",
+    "Comprehensive invoice system with detailed billing breakdowns",
+    "Rollover credits for purchased credits outside of plans",
+    "Different credit costs for different message types (email vs text vs images)",
+    "Integrated payroll processing with scalable worker count management"
+  ]
+}

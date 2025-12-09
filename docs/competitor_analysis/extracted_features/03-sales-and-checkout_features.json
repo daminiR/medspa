@@ -1,0 +1,896 @@
+{
+  "category": "03-sales-and-checkout",
+  "features": [
+    {
+      "feature_name": "Manual Discount Application",
+      "description": "Apply discounts during checkout including price discounts, percentage discounts, or combination of both",
+      "capabilities": [
+        "price discount",
+        "percentage discount",
+        "combined discounts",
+        "manual application"
+      ],
+      "user_benefits": [
+        "flexible pricing",
+        "quick discount application",
+        "customer satisfaction"
+      ],
+      "complexity": "basic",
+      "integrations": [],
+      "screenshots_available": true,
+      "keywords": [
+        "discount",
+        "checkout",
+        "pricing",
+        "manual"
+      ]
+    },
+    {
+      "feature_name": "Product Returns - Non-Credit Card",
+      "description": "Complete product returns for items purchased with cash, gift cards, or other non-credit card methods",
+      "capabilities": [
+        "negative quantity entry",
+        "commission deduction",
+        "inventory restoration",
+        "multiple payment methods"
+      ],
+      "user_benefits": [
+        "flexible return options",
+        "accurate inventory tracking",
+        "proper commission handling"
+      ],
+      "complexity": "intermediate",
+      "integrations": [],
+      "screenshots_available": true,
+      "keywords": [
+        "returns",
+        "refunds",
+        "inventory",
+        "commission"
+      ]
+    },
+    {
+      "feature_name": "Cash Tip Payout",
+      "description": "Pay out staff member tips in cash from the cash drawer",
+      "capabilities": [
+        "tip aggregation",
+        "cash drawer integration",
+        "payroll processing options"
+      ],
+      "user_benefits": [
+        "flexible tip distribution",
+        "accurate cash tracking",
+        "staff satisfaction"
+      ],
+      "complexity": "intermediate",
+      "integrations": [
+        "Payroll Processing"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "tips",
+        "cash",
+        "payout",
+        "staff"
+      ]
+    },
+    {
+      "feature_name": "Barcode Scanner Integration",
+      "description": "Use Bluetooth or USB barcode scanners to scan products during checkout",
+      "capabilities": [
+        "Bluetooth support",
+        "USB support",
+        "barcode assignment",
+        "product scanning"
+      ],
+      "user_benefits": [
+        "faster checkout",
+        "reduced errors",
+        "inventory efficiency"
+      ],
+      "complexity": "basic",
+      "integrations": [
+        "Bluetooth devices",
+        "USB devices"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "barcode",
+        "scanner",
+        "products",
+        "checkout"
+      ]
+    },
+    {
+      "feature_name": "Product Returns - Credit Card",
+      "description": "Complete product returns for items purchased with credit cards including voiding or updating sales",
+      "capabilities": [
+        "sale voiding",
+        "sale updating",
+        "credit card refunds",
+        "commission adjustment"
+      ],
+      "user_benefits": [
+        "complete return processing",
+        "accurate reporting",
+        "customer satisfaction"
+      ],
+      "complexity": "advanced",
+      "integrations": [
+        "Credit Card Processing"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "credit card",
+        "returns",
+        "voiding",
+        "refunds"
+      ]
+    },
+    {
+      "feature_name": "Sales App Navigation",
+      "description": "Navigate, filter, and export sales data with comprehensive reporting options",
+      "capabilities": [
+        "sales filtering",
+        "CSV export",
+        "transaction viewing",
+        "date management"
+      ],
+      "user_benefits": [
+        "detailed reporting",
+        "data analysis",
+        "business insights"
+      ],
+      "complexity": "intermediate",
+      "integrations": [],
+      "screenshots_available": true,
+      "keywords": [
+        "sales",
+        "reporting",
+        "export",
+        "filtering"
+      ]
+    },
+    {
+      "feature_name": "Receipt Management",
+      "description": "Send receipts via email or print receipts after completing sales",
+      "capabilities": [
+        "email receipts",
+        "print receipts",
+        "receipt confirmation"
+      ],
+      "user_benefits": [
+        "customer service",
+        "record keeping",
+        "professional appearance"
+      ],
+      "complexity": "basic",
+      "integrations": [
+        "Email",
+        "Printer"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "receipt",
+        "email",
+        "print",
+        "customer"
+      ]
+    },
+    {
+      "feature_name": "Sales Reports",
+      "description": "Comprehensive sales reporting including summary, service sales, product sales, and time period reports",
+      "capabilities": [
+        "sales summary",
+        "service tracking",
+        "product tracking",
+        "time period analysis"
+      ],
+      "user_benefits": [
+        "business analytics",
+        "performance tracking",
+        "financial insights"
+      ],
+      "complexity": "intermediate",
+      "integrations": [],
+      "screenshots_available": false,
+      "keywords": [
+        "reports",
+        "analytics",
+        "sales",
+        "tracking"
+      ]
+    },
+    {
+      "feature_name": "Gift Card Sales",
+      "description": "Sell gift cards during appointment checkout with automatic number generation",
+      "capabilities": [
+        "barcode scanning",
+        "automatic number generation",
+        "digital delivery"
+      ],
+      "user_benefits": [
+        "additional revenue",
+        "customer retention",
+        "gift options"
+      ],
+      "complexity": "basic",
+      "integrations": [
+        "Gift Card System"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "gift cards",
+        "sales",
+        "digital",
+        "barcode"
+      ]
+    },
+    {
+      "feature_name": "Single Payment Refunds",
+      "description": "Refund individual payments within sales that have multiple payment methods",
+      "capabilities": [
+        "partial refunds",
+        "original payment method",
+        "account balance refunds"
+      ],
+      "user_benefits": [
+        "flexible refund options",
+        "accurate processing",
+        "customer satisfaction"
+      ],
+      "complexity": "intermediate",
+      "integrations": [],
+      "screenshots_available": true,
+      "keywords": [
+        "refunds",
+        "payments",
+        "partial",
+        "flexible"
+      ]
+    },
+    {
+      "feature_name": "Credit Card Refunds",
+      "description": "Complete credit card refunds with two-step process: payment refund and sale adjustment",
+      "capabilities": [
+        "full refunds",
+        "partial refunds",
+        "sale voiding",
+        "sale updating"
+      ],
+      "user_benefits": [
+        "complete refund processing",
+        "accurate reporting",
+        "customer satisfaction"
+      ],
+      "complexity": "advanced",
+      "integrations": [
+        "Credit Card Processing"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "credit card",
+        "refunds",
+        "processing",
+        "sales"
+      ]
+    },
+    {
+      "feature_name": "Advanced Payment Settings",
+      "description": "Customize payment and checkout settings including tips, signatures, and payment methods",
+      "capabilities": [
+        "custom payment methods",
+        "tip customization",
+        "signature options",
+        "self checkout"
+      ],
+      "user_benefits": [
+        "business customization",
+        "customer experience",
+        "operational efficiency"
+      ],
+      "complexity": "advanced",
+      "integrations": [
+        "Front Desk Display",
+        "Client Self Checkout"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "payments",
+        "settings",
+        "customization",
+        "checkout"
+      ]
+    },
+    {
+      "feature_name": "Tip Management",
+      "description": "Add and split tips between staff members with automatic or custom allocation",
+      "capabilities": [
+        "tip percentages",
+        "custom amounts",
+        "automatic splitting",
+        "custom splitting"
+      ],
+      "user_benefits": [
+        "fair tip distribution",
+        "staff satisfaction",
+        "flexible options"
+      ],
+      "complexity": "intermediate",
+      "integrations": [
+        "Front Desk Display",
+        "Client Self Checkout"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "tips",
+        "splitting",
+        "staff",
+        "gratuity"
+      ]
+    },
+    {
+      "feature_name": "Split Service Checkouts",
+      "description": "Split services into separate checkouts when staff have different payment accounts",
+      "capabilities": [
+        "service splitting",
+        "separate payments",
+        "payment account management"
+      ],
+      "user_benefits": [
+        "proper payment routing",
+        "accurate accounting",
+        "staff management"
+      ],
+      "complexity": "intermediate",
+      "integrations": [
+        "Payment Accounts"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "split",
+        "services",
+        "payments",
+        "accounts"
+      ]
+    },
+    {
+      "feature_name": "Automatic Surcharges",
+      "description": "Automatically add surcharges or fees to every checkout using products",
+      "capabilities": [
+        "automatic addition",
+        "fee management",
+        "tax options",
+        "commission options"
+      ],
+      "user_benefits": [
+        "consistent fee application",
+        "revenue tracking",
+        "operational efficiency"
+      ],
+      "complexity": "intermediate",
+      "integrations": [
+        "Products"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "surcharge",
+        "fees",
+        "automatic",
+        "products"
+      ]
+    },
+    {
+      "feature_name": "Deposit Refunds",
+      "description": "Refund deposits to client account balance for future use",
+      "capabilities": [
+        "account balance transfer",
+        "deposit management",
+        "service removal"
+      ],
+      "user_benefits": [
+        "customer retention",
+        "flexible payments",
+        "credit management"
+      ],
+      "complexity": "intermediate",
+      "integrations": [
+        "Account Balance"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "deposit",
+        "refund",
+        "account balance",
+        "credit"
+      ]
+    },
+    {
+      "feature_name": "Membership Redemption",
+      "description": "Redeem service-based memberships during checkout with price adjustments",
+      "capabilities": [
+        "membership application",
+        "price differences",
+        "value calculation"
+      ],
+      "user_benefits": [
+        "membership value realization",
+        "customer satisfaction",
+        "service flexibility"
+      ],
+      "complexity": "intermediate",
+      "integrations": [
+        "Memberships"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "membership",
+        "redemption",
+        "services",
+        "checkout"
+      ]
+    },
+    {
+      "feature_name": "Product Exchanges",
+      "description": "Complete product exchanges with commission adjustment and inventory management",
+      "capabilities": [
+        "product swapping",
+        "price differences",
+        "commission adjustment",
+        "inventory tracking"
+      ],
+      "user_benefits": [
+        "customer satisfaction",
+        "inventory accuracy",
+        "fair staff compensation"
+      ],
+      "complexity": "advanced",
+      "integrations": [
+        "Inventory",
+        "Payroll"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "exchange",
+        "products",
+        "commission",
+        "inventory"
+      ]
+    },
+    {
+      "feature_name": "Zero-Balance Tip Collection",
+      "description": "Collect tips on sales with zero balance using credit card or self checkout",
+      "capabilities": [
+        "credit card tips",
+        "self checkout tips",
+        "membership value calculation"
+      ],
+      "user_benefits": [
+        "tip collection flexibility",
+        "staff compensation",
+        "customer convenience"
+      ],
+      "complexity": "intermediate",
+      "integrations": [
+        "Payment Processing",
+        "Self Checkout"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "tips",
+        "zero balance",
+        "credit card",
+        "self checkout"
+      ]
+    },
+    {
+      "feature_name": "Checkout Discard",
+      "description": "Discard existing checkouts that haven't been paid to make changes or start over",
+      "capabilities": [
+        "checkout cancellation",
+        "appointment modification",
+        "error correction"
+      ],
+      "user_benefits": [
+        "error recovery",
+        "flexibility",
+        "operational efficiency"
+      ],
+      "complexity": "basic",
+      "integrations": [],
+      "screenshots_available": true,
+      "keywords": [
+        "discard",
+        "checkout",
+        "cancel",
+        "modify"
+      ]
+    },
+    {
+      "feature_name": "Sale Voiding",
+      "description": "Void entire sales with automatic payment refunding and reporting accuracy",
+      "capabilities": [
+        "full sale voiding",
+        "payment refunding",
+        "payment reversing",
+        "status tracking"
+      ],
+      "user_benefits": [
+        "error correction",
+        "accurate reporting",
+        "complete transaction management"
+      ],
+      "complexity": "advanced",
+      "integrations": [
+        "Payment Processing",
+        "Gift Cards",
+        "Cash Drawer"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "void",
+        "sales",
+        "refund",
+        "reverse"
+      ]
+    },
+    {
+      "feature_name": "Package Redemption",
+      "description": "Redeem service packages during checkout with price adjustment capabilities",
+      "capabilities": [
+        "package application",
+        "price differences",
+        "service customization"
+      ],
+      "user_benefits": [
+        "package value utilization",
+        "service flexibility",
+        "customer satisfaction"
+      ],
+      "complexity": "intermediate",
+      "integrations": [
+        "Packages"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "package",
+        "redemption",
+        "services",
+        "pricing"
+      ]
+    },
+    {
+      "feature_name": "Walk-in Checkout",
+      "description": "Start checkout without appointment for product sales, packages, or services",
+      "capabilities": [
+        "new client creation",
+        "service addition",
+        "product addition",
+        "package sales"
+      ],
+      "user_benefits": [
+        "walk-in customer service",
+        "additional revenue",
+        "flexibility"
+      ],
+      "complexity": "basic",
+      "integrations": [
+        "Products",
+        "Services",
+        "Packages"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "walk-in",
+        "checkout",
+        "no appointment",
+        "sales"
+      ]
+    },
+    {
+      "feature_name": "Streamlined Refund Process",
+      "description": "Complete all refund steps in one workflow including commission and inventory adjustments",
+      "capabilities": [
+        "line item refunds",
+        "commission clawback",
+        "inventory restocking",
+        "payment refunding"
+      ],
+      "user_benefits": [
+        "comprehensive refund management",
+        "accurate reporting",
+        "operational efficiency"
+      ],
+      "complexity": "advanced",
+      "integrations": [
+        "Inventory",
+        "Payroll",
+        "Payment Processing"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "refund",
+        "streamlined",
+        "commission",
+        "inventory"
+      ]
+    },
+    {
+      "feature_name": "Gift Card Redemption",
+      "description": "Redeem gift cards during checkout with barcode scanning and balance tracking",
+      "capabilities": [
+        "barcode scanning",
+        "balance checking",
+        "partial redemption",
+        "multiple gift cards"
+      ],
+      "user_benefits": [
+        "easy redemption",
+        "accurate tracking",
+        "customer convenience"
+      ],
+      "complexity": "basic",
+      "integrations": [
+        "Gift Cards",
+        "Barcode Scanner"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "gift card",
+        "redemption",
+        "barcode",
+        "balance"
+      ]
+    },
+    {
+      "feature_name": "Payment Reversals",
+      "description": "Reverse individual payments with status tracking and reporting accuracy",
+      "capabilities": [
+        "payment reversal",
+        "status management",
+        "balance tracking",
+        "report integration"
+      ],
+      "user_benefits": [
+        "error correction",
+        "accurate accounting",
+        "flexible payment management"
+      ],
+      "complexity": "intermediate",
+      "integrations": [
+        "Cash Drawer",
+        "Gift Cards",
+        "Reporting"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "reverse",
+        "payments",
+        "void",
+        "balance"
+      ]
+    },
+    {
+      "feature_name": "Assistant Tip Assignment",
+      "description": "Assign portions of tips to assistants or staff for resource-only services",
+      "capabilities": [
+        "tip splitting",
+        "assistant assignment",
+        "custom allocation",
+        "zero-price services"
+      ],
+      "user_benefits": [
+        "fair compensation",
+        "team recognition",
+        "flexible tip distribution"
+      ],
+      "complexity": "intermediate",
+      "integrations": [
+        "Services",
+        "Staff Management"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "assistant",
+        "tips",
+        "assignment",
+        "splitting"
+      ]
+    },
+    {
+      "feature_name": "Account Balance Returns",
+      "description": "Complete product returns with refund to client account balance for future use",
+      "capabilities": [
+        "account credit",
+        "product returns",
+        "commission handling",
+        "inventory management"
+      ],
+      "user_benefits": [
+        "customer retention",
+        "flexible refunds",
+        "future purchase incentive"
+      ],
+      "complexity": "intermediate",
+      "integrations": [
+        "Account Balance",
+        "Inventory",
+        "Commission"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "account balance",
+        "returns",
+        "credit",
+        "future use"
+      ]
+    },
+    {
+      "feature_name": "Saved Checkouts",
+      "description": "Save checkout progress for later completion when interrupted or switching tasks",
+      "capabilities": [
+        "checkout saving",
+        "progress retention",
+        "task switching",
+        "interruption handling"
+      ],
+      "user_benefits": [
+        "workflow flexibility",
+        "error prevention",
+        "multitasking support"
+      ],
+      "complexity": "basic",
+      "integrations": [],
+      "screenshots_available": true,
+      "keywords": [
+        "save",
+        "checkout",
+        "later",
+        "progress"
+      ]
+    }
+  ],
+  "key_workflows": [
+    {
+      "workflow_name": "Complete Appointment Checkout",
+      "steps": [
+        "Select appointment",
+        "Apply discounts/packages",
+        "Add products",
+        "Go to payments",
+        "Process payment",
+        "Complete sale"
+      ],
+      "features_involved": [
+        "Manual Discount Application",
+        "Package Redemption",
+        "Barcode Scanner Integration",
+        "Tip Management"
+      ]
+    },
+    {
+      "workflow_name": "Product Return Processing",
+      "steps": [
+        "Open original sale",
+        "Determine return type",
+        "Process refund",
+        "Adjust inventory",
+        "Handle commission"
+      ],
+      "features_involved": [
+        "Product Returns - Credit Card",
+        "Product Returns - Non-Credit Card",
+        "Streamlined Refund Process"
+      ]
+    },
+    {
+      "workflow_name": "Gift Card Sales and Redemption",
+      "steps": [
+        "Add gift card to checkout",
+        "Set value",
+        "Process payment",
+        "Redeem during future checkout"
+      ],
+      "features_involved": [
+        "Gift Card Sales",
+        "Gift Card Redemption",
+        "Barcode Scanner Integration"
+      ]
+    },
+    {
+      "workflow_name": "Tip Distribution",
+      "steps": [
+        "Add tip during checkout",
+        "Split between staff",
+        "Pay out in cash",
+        "Track in payroll"
+      ],
+      "features_involved": [
+        "Tip Management",
+        "Cash Tip Payout",
+        "Assistant Tip Assignment"
+      ]
+    },
+    {
+      "workflow_name": "Walk-in Sales",
+      "steps": [
+        "Create new checkout",
+        "Select client",
+        "Add services/products",
+        "Process payment"
+      ],
+      "features_involved": [
+        "Walk-in Checkout",
+        "Barcode Scanner Integration",
+        "Automatic Surcharges"
+      ]
+    }
+  ],
+  "integrations": [
+    {
+      "name": "Payment Processing",
+      "purpose": "Process credit card payments and refunds with secure handling"
+    },
+    {
+      "name": "Barcode Scanners",
+      "purpose": "Scan product barcodes via Bluetooth or USB for faster checkout"
+    },
+    {
+      "name": "Cash Drawer",
+      "purpose": "Track cash payments, tip payouts, and balance management"
+    },
+    {
+      "name": "Gift Card System",
+      "purpose": "Manage gift card sales, redemption, and balance tracking"
+    },
+    {
+      "name": "Inventory Management",
+      "purpose": "Automatically adjust inventory for sales, returns, and exchanges"
+    },
+    {
+      "name": "Payroll System",
+      "purpose": "Handle commission adjustments and tip processing for staff"
+    },
+    {
+      "name": "Membership System",
+      "purpose": "Apply membership benefits and track usage during checkout"
+    },
+    {
+      "name": "Package System",
+      "purpose": "Redeem service packages and track remaining balances"
+    },
+    {
+      "name": "Front Desk Display",
+      "purpose": "Enable client-facing tip and signature collection"
+    },
+    {
+      "name": "Client Self Checkout",
+      "purpose": "Allow clients to complete payments on mobile devices"
+    },
+    {
+      "name": "Email System",
+      "purpose": "Send receipts and gift card information to clients"
+    },
+    {
+      "name": "Printer Integration",
+      "purpose": "Print receipts and other checkout-related documents"
+    }
+  ],
+  "competitive_advantages": [
+    "Comprehensive refund workflow that handles commission, inventory, and payments in one process",
+    "Flexible tip management with automatic and custom splitting options",
+    "Barcode scanner support for both Bluetooth and USB devices",
+    "Ability to collect tips on zero-balance sales using credit cards",
+    "Advanced product return handling for both credit card and non-credit card transactions",
+    "Automatic surcharge application using product system",
+    "Split checkout capability for different staff payment accounts",
+    "Integrated gift card and package redemption with price adjustment logic",
+    "Saved checkout functionality for workflow interruptions",
+    "Single payment refund capability for complex transactions",
+    "Account balance system for customer credit management",
+    "Assistant tip assignment for team-based services",
+    "Walk-in checkout without appointment requirement",
+    "Comprehensive sales reporting with export capabilities",
+    "Client self-checkout with mobile device integration"
+  ]
+}

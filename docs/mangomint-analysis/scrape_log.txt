@@ -1,0 +1,1291 @@
+[2025-10-16 17:07:12] ============================================================
+[2025-10-16 17:07:12] Starting Mango Mint Help Center Scraper
+[2025-10-16 17:07:12] ============================================================
+[2025-10-16 17:07:12] Total articles to fetch: 359
+[2025-10-16 17:07:12] Already completed: 0
+[2025-10-16 17:07:12] Starting scraper...
+
+[2025-10-16 17:07:13] 
+============================================================
+[2025-10-16 17:07:13] Processing category: 01-getting-started (23 articles)
+[2025-10-16 17:07:13] ============================================================
+[2025-10-16 17:07:13] [1/23] about-mangomint.md
+[2025-10-16 17:07:13] Fetching: https://www.mangomint.com/learn/help-articles/getting-started-with-mangomint/about-mangomint/
+[2025-10-16 17:07:48] Error extracting content: Page.wait_for_selector: Timeout 30000ms exceeded.
+Call log:
+  - waiting for locator("article, .article, [role=\"main\"]") to be visible
+
+[2025-10-16 17:07:48] ✗ Failed: about-mangomint.md - Failed to extract article content
+[2025-10-16 17:07:50] [2/23] switching-to-mangomint.md
+[2025-10-16 17:07:50] Fetching: https://www.mangomint.com/learn/switching-to-mangomint/
+[2025-10-16 17:09:23] ============================================================
+[2025-10-16 17:09:23] Starting Mango Mint Help Center Scraper
+[2025-10-16 17:09:23] ============================================================
+[2025-10-16 17:09:23] Total articles to fetch: 359
+[2025-10-16 17:09:23] Already completed: 0
+[2025-10-16 17:09:23] Starting scraper...
+
+[2025-10-16 17:09:23] Launching browser...
+[2025-10-16 17:09:23] 
+============================================================
+[2025-10-16 17:09:23] Processing category: 01-getting-started (23 articles)
+[2025-10-16 17:09:23] ============================================================
+[2025-10-16 17:09:23] [1/23] about-mangomint.md
+[2025-10-16 17:09:23] Fetching: https://www.mangomint.com/learn/help-articles/getting-started-with-mangomint/about-mangomint/
+[2025-10-16 17:09:29] ✓ Success: about-mangomint.md
+[2025-10-16 17:09:31] [2/23] switching-to-mangomint.md
+[2025-10-16 17:09:31] Fetching: https://www.mangomint.com/learn/switching-to-mangomint/
+[2025-10-16 17:09:37] ✓ Success: switching-to-mangomint.md
+[2025-10-16 17:09:39] [3/23] getting-started-with-mangomint.md
+[2025-10-16 17:09:39] Fetching: https://www.mangomint.com/learn/help-articles/getting-started-with-mangomint/
+[2025-10-16 17:09:44] ✓ Success: getting-started-with-mangomint.md
+[2025-10-16 17:09:47] [4/23] calculating-change-for-cash-transactions.md
+[2025-10-16 17:09:47] Fetching: https://www.mangomint.com/learn/calculating-change-for-cash-transactions/
+[2025-10-16 17:09:52] ✓ Success: calculating-change-for-cash-transactions.md
+[2025-10-16 17:09:54] [5/23] how-do-i-fix-an-accidentally-voided-sale.md
+[2025-10-16 17:09:54] Fetching: https://www.mangomint.com/learn/how-do-i-fix-an-accidentally-voided-sale/
+[2025-10-16 17:09:59] ✓ Success: how-do-i-fix-an-accidentally-voided-sale.md
+[2025-10-16 17:10:01] [6/23] hipaa-compliance.md
+[2025-10-16 17:10:01] Fetching: https://www.mangomint.com/learn/hipaa-compliance/
+[2025-10-16 17:10:07] ✓ Success: hipaa-compliance.md
+[2025-10-16 17:10:09] [7/23] guide-for-admin-users.md
+[2025-10-16 17:10:09] Fetching: https://www.mangomint.com/learn/guide-for-admin-users/
+[2025-10-16 17:10:14] ✓ Success: guide-for-admin-users.md
+[2025-10-16 17:10:16] [8/23] setting-up-your-account.md
+[2025-10-16 17:10:16] Fetching: https://www.mangomint.com/learn/help-articles/getting-started-with-mangomint/setting-up-your-account/
+[2025-10-16 17:10:22] ✓ Success: setting-up-your-account.md
+[2025-10-16 17:10:24] [9/23] introduction-to-mangomint.md
+[2025-10-16 17:10:24] Fetching: https://www.mangomint.com/learn/introduction-to-mangomint/
+[2025-10-16 17:10:29] ✓ Success: introduction-to-mangomint.md
+[2025-10-16 17:10:31] [10/23] guide-for-non-admin-users.md
+[2025-10-16 17:10:32] Fetching: https://www.mangomint.com/learn/guide-for-non-admin-users/
+[2025-10-16 17:10:37] ✓ Success: guide-for-non-admin-users.md
+[2025-10-16 17:10:39] [11/23] adding-notes-in-mangomint.md
+[2025-10-16 17:10:39] Fetching: https://www.mangomint.com/learn/adding-notes-in-mangomint/
+[2025-10-16 17:10:44] ✓ Success: adding-notes-in-mangomint.md
+[2025-10-16 17:10:46] [12/23] how-do-i-fix-an-unassigned-tip.md
+[2025-10-16 17:10:46] Fetching: https://www.mangomint.com/learn/how-do-i-fix-an-unassigned-tip/
+[2025-10-16 17:10:51] ✓ Success: how-do-i-fix-an-unassigned-tip.md
+[2025-10-16 17:10:53] [13/23] resolving-a-remaining-balance.md
+[2025-10-16 17:10:53] Fetching: https://www.mangomint.com/learn/resolving-a-remaining-balance/
+[2025-10-16 17:10:59] ✓ Success: resolving-a-remaining-balance.md
+[2025-10-16 17:11:01] [14/23] learning-the-basics-in-mangomint.md
+[2025-10-16 17:11:01] Fetching: https://www.mangomint.com/learn/learning-the-basics-in-mangomint/
+[2025-10-16 17:11:06] ✓ Success: learning-the-basics-in-mangomint.md
+[2025-10-16 17:11:08] [15/23] how-can-i-set-up-alternating-hours-every-other-week.md
+[2025-10-16 17:11:08] Fetching: https://www.mangomint.com/learn/how-can-i-set-up-alternating-hours-every-other-week/
+[2025-10-16 17:11:14] ✓ Success: how-can-i-set-up-alternating-hours-every-other-week.md
+[2025-10-16 17:11:16] [16/23] add-a-new-count.md
+[2025-10-16 17:11:16] Fetching: https://www.mangomint.com/learn/add-a-new-count/
+[2025-10-16 17:11:22] ✓ Success: add-a-new-count.md
+[2025-10-16 17:11:24] [17/23] mangomint-basics.md
+[2025-10-16 17:11:24] Fetching: https://www.mangomint.com/learn/help-articles/getting-started-with-mangomint/mangomint-basics/
+[2025-10-16 17:11:30] ✓ Success: mangomint-basics.md
+[2025-10-16 17:11:32] [18/23] check-out-appointments-together.md
+[2025-10-16 17:11:32] Fetching: https://www.mangomint.com/learn/check-out-appointments-together/
+[2025-10-16 17:11:38] ✓ Success: check-out-appointments-together.md
+[2025-10-16 17:11:40] [19/23] transitioning-to-booth-renter-model.md
+[2025-10-16 17:11:40] Fetching: https://www.mangomint.com/learn/transitioning-to-booth-renter-model/
+[2025-10-16 17:11:45] ✓ Success: transitioning-to-booth-renter-model.md
+[2025-10-16 17:11:47] [20/23] faq-calendar-and-appointments.md
+[2025-10-16 17:11:47] Fetching: https://www.mangomint.com/learn/faq-calendar-and-appointments/
+[2025-10-16 17:11:53] ✓ Success: faq-calendar-and-appointments.md
+[2025-10-16 17:11:55] [21/23] marketing-options-in-mangomint.md
+[2025-10-16 17:11:55] Fetching: https://www.mangomint.com/learn/marketing-options-in-mangomint/
+[2025-10-16 17:12:01] ✓ Success: marketing-options-in-mangomint.md
+[2025-10-16 17:12:03] [22/23] add-new-pay-in-or-pay-out.md
+[2025-10-16 17:12:03] Fetching: https://www.mangomint.com/learn/add-new-pay-in-or-pay-out/
+[2025-10-16 17:12:08] ✓ Success: add-new-pay-in-or-pay-out.md
+[2025-10-16 17:12:10] [23/23] check-out-an-appointment.md
+[2025-10-16 17:12:10] Fetching: https://www.mangomint.com/learn/check-out-an-appointment/
+[2025-10-16 17:12:16] ✓ Success: check-out-an-appointment.md
+[2025-10-16 17:12:18] 
+Category 01-getting-started completed!
+[2025-10-16 17:12:18] Progress: 23/359 completed, 0 failed, 0 skipped
+
+[2025-10-16 17:12:18] 
+============================================================
+[2025-10-16 17:12:18] Processing category: 02-calendar-and-appointments (51 articles)
+[2025-10-16 17:12:18] ============================================================
+[2025-10-16 17:12:18] [1/51] create-a-time-block.md
+[2025-10-16 17:12:18] Fetching: https://www.mangomint.com/learn/create-a-time-block/
+[2025-10-16 17:12:24] ✓ Success: create-a-time-block.md
+[2025-10-16 17:12:26] [2/51] time-blocks.md
+[2025-10-16 17:12:26] Fetching: https://www.mangomint.com/learn/help-articles/calendar/time-blocks/
+[2025-10-16 17:12:32] ✓ Success: time-blocks.md
+[2025-10-16 17:12:34] [3/51] appointments-and-time-blocks.md
+[2025-10-16 17:12:34] Fetching: https://www.mangomint.com/learn/help-articles/calendar/appointments-and-time-blocks/
+[2025-10-16 17:12:40] ✓ Success: appointments-and-time-blocks.md
+[2025-10-16 17:12:42] [4/51] make-a-repeating-time-block.md
+[2025-10-16 17:12:42] Fetching: https://www.mangomint.com/learn/make-a-repeating-time-block/
+[2025-10-16 17:12:47] ✓ Success: make-a-repeating-time-block.md
+[2025-10-16 17:12:49] [5/51] create-a-group-booking-from-the-calendar.md
+[2025-10-16 17:12:49] Fetching: https://www.mangomint.com/learn/create-a-group-booking-from-the-calendar/
+[2025-10-16 17:12:55] ✓ Success: create-a-group-booking-from-the-calendar.md
+[2025-10-16 17:12:57] [6/51] check-in-and-check-out-a-group-booking.md
+[2025-10-16 17:12:57] Fetching: https://www.mangomint.com/learn/check-in-and-check-out-a-group-booking/
+[2025-10-16 17:13:02] ✓ Success: check-in-and-check-out-a-group-booking.md
+[2025-10-16 17:13:04] [7/51] create-a-group-booking-from-online-booking.md
+[2025-10-16 17:13:04] Fetching: https://www.mangomint.com/learn/create-a-group-booking-from-online-booking/
+[2025-10-16 17:13:10] ✓ Success: create-a-group-booking-from-online-booking.md
+[2025-10-16 17:13:12] [8/51] enable-group-booking.md
+[2025-10-16 17:13:12] Fetching: https://www.mangomint.com/learn/enable-group-booking/
+[2025-10-16 17:13:18] ✓ Success: enable-group-booking.md
+[2025-10-16 17:13:20] [9/51] create-a-group-booking-from-existing-appointments.md
+[2025-10-16 17:13:20] Fetching: https://www.mangomint.com/learn/create-a-group-booking-from-existing-appointments/
+[2025-10-16 17:13:25] ✓ Success: create-a-group-booking-from-existing-appointments.md
+[2025-10-16 17:13:27] [10/51] update-an-existing-group-booking.md
+[2025-10-16 17:13:27] Fetching: https://www.mangomint.com/learn/update-an-existing-group-booking/
+[2025-10-16 17:13:33] ✓ Success: update-an-existing-group-booking.md
+[2025-10-16 17:13:35] [11/51] group-booking.md
+[2025-10-16 17:13:35] Fetching: https://www.mangomint.com/learn/help-articles/calendar/group-booking/
+[2025-10-16 17:13:40] ✓ Success: group-booking.md
+[2025-10-16 17:13:42] [12/51] faq-group-booking.md
+[2025-10-16 17:13:42] Fetching: https://www.mangomint.com/learn/faq-group-booking/
+[2025-10-16 17:13:48] ✓ Success: faq-group-booking.md
+[2025-10-16 17:13:50] [13/51] waiting-room.md
+[2025-10-16 17:13:50] Fetching: https://www.mangomint.com/learn/waiting-room/
+[2025-10-16 17:13:56] ✓ Success: waiting-room.md
+[2025-10-16 17:13:58] [14/51] client-self-check-in.md
+[2025-10-16 17:13:58] Fetching: https://www.mangomint.com/learn/client-self-check-in/
+[2025-10-16 17:14:03] ✓ Success: client-self-check-in.md
+[2025-10-16 17:14:05] [15/51] client-self-check-out.md
+[2025-10-16 17:14:05] Fetching: https://www.mangomint.com/learn/client-self-check-out/
+[2025-10-16 17:14:10] ✓ Success: client-self-check-out.md
+[2025-10-16 17:14:12] [16/51] adding-a-form-to-an-existing-appointment.md
+[2025-10-16 17:14:12] Fetching: https://www.mangomint.com/learn/adding-a-form-to-an-existing-appointment/
+[2025-10-16 17:14:18] ✓ Success: adding-a-form-to-an-existing-appointment.md
+[2025-10-16 17:14:20] [17/51] create-a-new-appointment.md
+[2025-10-16 17:14:20] Fetching: https://www.mangomint.com/learn/create-a-new-appointment/
+[2025-10-16 17:14:26] ✓ Success: create-a-new-appointment.md
+[2025-10-16 17:14:28] [18/51] cancel-or-delete-an-appointment.md
+[2025-10-16 17:14:28] Fetching: https://www.mangomint.com/learn/cancel-or-delete-an-appointment/
+[2025-10-16 17:14:33] ✓ Success: cancel-or-delete-an-appointment.md
+[2025-10-16 17:14:35] [19/51] repeating-appointments.md
+[2025-10-16 17:14:35] Fetching: https://www.mangomint.com/learn/repeating-appointments/
+[2025-10-16 17:14:40] ✓ Success: repeating-appointments.md
+[2025-10-16 17:14:42] [20/51] edit-an-appointment.md
+[2025-10-16 17:14:43] Fetching: https://www.mangomint.com/learn/edit-an-appointment/
+[2025-10-16 17:14:48] ✓ Success: edit-an-appointment.md
+[2025-10-16 17:14:50] [21/51] processing-finishing-and-buffer-times.md
+[2025-10-16 17:14:50] Fetching: https://www.mangomint.com/learn/processing-finishing-and-buffer-times/
+[2025-10-16 17:14:56] ✓ Success: processing-finishing-and-buffer-times.md
+[2025-10-16 17:14:58] [22/51] how-can-i-enforce-my-cancellation-policy.md
+[2025-10-16 17:14:58] Fetching: https://www.mangomint.com/learn/how-can-i-enforce-my-cancellation-policy/
+[2025-10-16 17:15:04] ✓ Success: how-can-i-enforce-my-cancellation-policy.md
+[2025-10-16 17:15:06] [23/51] print-appointment-details.md
+[2025-10-16 17:15:06] Fetching: https://www.mangomint.com/learn/print-appointment-details/
+[2025-10-16 17:15:12] ✓ Success: print-appointment-details.md
+[2025-10-16 17:15:14] [24/51] how-to-use-express-booking.md
+[2025-10-16 17:15:14] Fetching: https://www.mangomint.com/learn/how-to-use-express-booking/
+[2025-10-16 17:15:19] ✓ Success: how-to-use-express-booking.md
+[2025-10-16 17:15:21] [25/51] faq-express-booking.md
+[2025-10-16 17:15:21] Fetching: https://www.mangomint.com/learn/faq-express-booking/
+[2025-10-16 17:15:26] ✓ Success: faq-express-booking.md
+[2025-10-16 17:15:28] [26/51] how-to-take-deposits-with-express-booking.md
+[2025-10-16 17:15:28] Fetching: https://www.mangomint.com/learn/how-to-take-deposits-with-express-booking/
+[2025-10-16 17:15:33] ✓ Success: how-to-take-deposits-with-express-booking.md
+[2025-10-16 17:15:35] [27/51] express-booking.md
+[2025-10-16 17:15:35] Fetching: https://www.mangomint.com/learn/help-articles/calendar/express-booking/
+[2025-10-16 17:15:40] ✓ Success: express-booking.md
+[2025-10-16 17:15:42] [28/51] how-to-set-up-express-booking.md
+[2025-10-16 17:15:42] Fetching: https://www.mangomint.com/learn/how-to-set-up-express-booking/
+[2025-10-16 17:15:48] ✓ Success: how-to-set-up-express-booking.md
+[2025-10-16 17:15:50] [29/51] what-happens-after-an-express-booking-link-is-sent.md
+[2025-10-16 17:15:50] Fetching: https://www.mangomint.com/learn/what-happens-after-an-express-booking-link-is-sent/
+[2025-10-16 17:15:56] ✓ Success: what-happens-after-an-express-booking-link-is-sent.md
+[2025-10-16 17:15:58] [30/51] resources.md
+[2025-10-16 17:15:58] Fetching: https://www.mangomint.com/learn/help-articles/calendar/resources/
+[2025-10-16 17:16:04] ✓ Success: resources.md
+[2025-10-16 17:16:06] [31/51] adding-resource-requirements-to-services.md
+[2025-10-16 17:16:06] Fetching: https://www.mangomint.com/learn/adding-resource-requirements-to-services/
+[2025-10-16 17:16:11] ✓ Success: adding-resource-requirements-to-services.md
+[2025-10-16 17:16:13] [32/51] understanding-resources-and-resource-groups.md
+[2025-10-16 17:16:13] Fetching: https://www.mangomint.com/learn/understanding-resources-and-resource-groups/
+[2025-10-16 17:16:19] ✓ Success: understanding-resources-and-resource-groups.md
+[2025-10-16 17:16:21] [33/51] viewing-resources-on-the-calendar.md
+[2025-10-16 17:16:21] Fetching: https://www.mangomint.com/learn/viewing-resources-on-the-calendar/
+[2025-10-16 17:16:26] ✓ Success: viewing-resources-on-the-calendar.md
+[2025-10-16 17:16:28] [34/51] early-access-resources.md
+[2025-10-16 17:16:28] Fetching: https://www.mangomint.com/learn/help-articles/early-access-resources/
+[2025-10-16 17:16:33] ✓ Success: early-access-resources.md
+[2025-10-16 17:16:35] [35/51] creating-resources.md
+[2025-10-16 17:16:35] Fetching: https://www.mangomint.com/learn/creating-resources/
+[2025-10-16 17:16:41] ✓ Success: creating-resources.md
+[2025-10-16 17:16:43] [36/51] using-resources-to-manage-service-availability.md
+[2025-10-16 17:16:43] Fetching: https://www.mangomint.com/learn/using-resources-to-manage-service-availability/
+[2025-10-16 17:16:48] ✓ Success: using-resources-to-manage-service-availability.md
+[2025-10-16 17:16:50] [37/51] faq-resources.md
+[2025-10-16 17:16:50] Fetching: https://www.mangomint.com/learn/faq-resources/
+[2025-10-16 17:16:56] ✓ Success: faq-resources.md
+[2025-10-16 17:16:58] [38/51] creating-services-with-resource-requirements-only-no-staff-required.md
+[2025-10-16 17:16:58] Fetching: https://www.mangomint.com/learn/creating-services-with-resource-requirements-only-no-staff-required/
+[2025-10-16 17:17:03] ✓ Success: creating-services-with-resource-requirements-only-no-staff-required.md
+[2025-10-16 17:17:05] [39/51] intelligent-waitlist-notifications-and-automated-messages.md
+[2025-10-16 17:17:05] Fetching: https://www.mangomint.com/learn/intelligent-waitlist-notifications-and-automated-messages/
+[2025-10-16 17:17:11] ✓ Success: intelligent-waitlist-notifications-and-automated-messages.md
+[2025-10-16 17:17:13] [40/51] book-from-the-waitlist.md
+[2025-10-16 17:17:13] Fetching: https://www.mangomint.com/learn/book-from-the-waitlist/
+[2025-10-16 17:17:19] ✓ Success: book-from-the-waitlist.md
+[2025-10-16 17:17:21] [41/51] how-to-get-started-with-the-intelligent-waitlist.md
+[2025-10-16 17:17:21] Fetching: https://www.mangomint.com/learn/how-to-get-started-with-the-intelligent-waitlist/
+[2025-10-16 17:17:26] ✓ Success: how-to-get-started-with-the-intelligent-waitlist.md
+[2025-10-16 17:17:28] [42/51] how-to-use-the-intelligent-waitlist.md
+[2025-10-16 17:17:28] Fetching: https://www.mangomint.com/learn/how-to-use-the-intelligent-waitlist/
+[2025-10-16 17:17:34] ✓ Success: how-to-use-the-intelligent-waitlist.md
+[2025-10-16 17:17:36] [43/51] how-clients-add-themselves-to-the-waitlist.md
+[2025-10-16 17:17:36] Fetching: https://www.mangomint.com/learn/how-clients-add-themselves-to-the-waitlist/
+[2025-10-16 17:18:36] Error extracting content: Timeout 60000ms exceeded.
+=========================== logs ===========================
+"load" event fired
+============================================================
+[2025-10-16 17:18:36] ✗ Failed: how-clients-add-themselves-to-the-waitlist.md - No content extracted
+[2025-10-16 17:18:38] [44/51] intelligent-waitlist.md
+[2025-10-16 17:18:38] Fetching: https://www.mangomint.com/learn/help-articles/calendar/intelligent-waitlist/
+[2025-10-16 17:18:44] ✓ Success: intelligent-waitlist.md
+[2025-10-16 17:18:46] [45/51] calendar-basics-and-views.md
+[2025-10-16 17:18:46] Fetching: https://www.mangomint.com/learn/calendar-basics-and-views/
+[2025-10-16 17:18:52] ✓ Success: calendar-basics-and-views.md
+[2025-10-16 17:18:54] [46/51] cancellations-and-rescheduling.md
+[2025-10-16 17:18:54] Fetching: https://www.mangomint.com/learn/cancellations-and-rescheduling/
+[2025-10-16 17:18:59] ✓ Success: cancellations-and-rescheduling.md
+[2025-10-16 17:19:01] [47/51] calendar-color-key-icons.md
+[2025-10-16 17:19:01] Fetching: https://www.mangomint.com/learn/calendar-color-key-icons/
+[2025-10-16 17:19:06] ✓ Success: calendar-color-key-icons.md
+[2025-10-16 17:19:08] [48/51] calendar-basics.md
+[2025-10-16 17:19:09] Fetching: https://www.mangomint.com/learn/help-articles/calendar/calendar-basics/
+[2025-10-16 17:19:14] ✓ Success: calendar-basics.md
+[2025-10-16 17:19:16] [49/51] calendar-settings.md
+[2025-10-16 17:19:16] Fetching: https://www.mangomint.com/learn/calendar-settings/
+[2025-10-16 17:19:22] ✓ Success: calendar-settings.md
+[2025-10-16 17:19:24] [50/51] how-can-i-link-my-mangomint-calendar-to-my-ical-calendar.md
+[2025-10-16 17:19:24] Fetching: https://www.mangomint.com/learn/how-can-i-link-my-mangomint-calendar-to-my-ical-calendar/
+[2025-10-16 17:19:30] ✓ Success: how-can-i-link-my-mangomint-calendar-to-my-ical-calendar.md
+[2025-10-16 17:19:32] [51/51] scheduling-options.md
+[2025-10-16 17:19:32] Fetching: https://www.mangomint.com/learn/scheduling-options/
+[2025-10-16 17:19:37] ✓ Success: scheduling-options.md
+[2025-10-16 17:19:39] 
+Category 02-calendar-and-appointments completed!
+[2025-10-16 17:19:39] Progress: 73/359 completed, 1 failed, 0 skipped
+
+[2025-10-16 17:19:39] 
+============================================================
+[2025-10-16 17:19:39] Processing category: 03-sales-and-checkout (33 articles)
+[2025-10-16 17:19:39] ============================================================
+[2025-10-16 17:19:39] [1/33] apply-a-discount-during-checkout.md
+[2025-10-16 17:19:39] Fetching: https://www.mangomint.com/learn/apply-a-discount-during-checkout/
+[2025-10-16 17:19:45] ✓ Success: apply-a-discount-during-checkout.md
+[2025-10-16 17:19:47] [2/33] product-returns-non-credit-card.md
+[2025-10-16 17:19:47] Fetching: https://www.mangomint.com/learn/product-returns-non-credit-card/
+[2025-10-16 17:19:52] ✓ Success: product-returns-non-credit-card.md
+[2025-10-16 17:19:54] [3/33] how-do-i-pay-my-staff-members-cash-tips.md
+[2025-10-16 17:19:54] Fetching: https://www.mangomint.com/learn/how-do-i-pay-my-staff-members-cash-tips/
+[2025-10-16 17:20:00] ✓ Success: how-do-i-pay-my-staff-members-cash-tips.md
+[2025-10-16 17:20:02] [4/33] how-to-set-up-and-use-a-barcode-scanner.md
+[2025-10-16 17:20:02] Fetching: https://www.mangomint.com/learn/how-to-set-up-and-use-a-barcode-scanner/
+[2025-10-16 17:20:08] ✓ Success: how-to-set-up-and-use-a-barcode-scanner.md
+[2025-10-16 17:20:10] [5/33] product-returns.md
+[2025-10-16 17:20:10] Fetching: https://www.mangomint.com/learn/product-returns/
+[2025-10-16 17:20:15] ✓ Success: product-returns.md
+[2025-10-16 17:20:17] [6/33] navigating-and-filtering-the-sales-page.md
+[2025-10-16 17:20:17] Fetching: https://www.mangomint.com/learn/navigating-and-filtering-the-sales-page/
+[2025-10-16 17:20:23] ✓ Success: navigating-and-filtering-the-sales-page.md
+[2025-10-16 17:20:25] [7/33] send-client-receipt.md
+[2025-10-16 17:20:25] Fetching: https://www.mangomint.com/learn/send-client-receipt/
+[2025-10-16 17:20:31] ✓ Success: send-client-receipt.md
+[2025-10-16 17:20:33] [8/33] sales-reports.md
+[2025-10-16 17:20:33] Fetching: https://www.mangomint.com/learn/sales-reports/
+[2025-10-16 17:20:38] ✓ Success: sales-reports.md
+[2025-10-16 17:20:40] [9/33] how-to-sell-a-gift-card-during-checkout.md
+[2025-10-16 17:20:40] Fetching: https://www.mangomint.com/learn/how-to-sell-a-gift-card-during-checkout/
+[2025-10-16 17:20:46] ✓ Success: how-to-sell-a-gift-card-during-checkout.md
+[2025-10-16 17:20:48] [10/33] refunding-a-single-payment.md
+[2025-10-16 17:20:48] Fetching: https://www.mangomint.com/learn/refunding-a-single-payment/
+[2025-10-16 17:20:54] ✓ Success: refunding-a-single-payment.md
+[2025-10-16 17:20:56] [11/33] complete-a-credit-card-refund.md
+[2025-10-16 17:20:56] Fetching: https://www.mangomint.com/learn/complete-a-credit-card-refund/
+[2025-10-16 17:21:02] ✓ Success: complete-a-credit-card-refund.md
+[2025-10-16 17:21:04] [12/33] advanced-settings-payments-checkout.md
+[2025-10-16 17:21:04] Fetching: https://www.mangomint.com/learn/advanced-settings-payments-checkout/
+[2025-10-16 17:21:10] ✓ Success: advanced-settings-payments-checkout.md
+[2025-10-16 17:21:12] [13/33] adding-and-splitting-tips.md
+[2025-10-16 17:21:12] Fetching: https://www.mangomint.com/learn/adding-and-splitting-tips/
+[2025-10-16 17:21:17] ✓ Success: adding-and-splitting-tips.md
+[2025-10-16 17:21:19] [14/33] how-to-split-services-into-separate-checkouts.md
+[2025-10-16 17:21:19] Fetching: https://www.mangomint.com/learn/how-to-split-services-into-separate-checkouts/
+[2025-10-16 17:21:25] ✓ Success: how-to-split-services-into-separate-checkouts.md
+[2025-10-16 17:21:27] [15/33] add-a-surcharge-or-fee-to-every-checkout-automatically.md
+[2025-10-16 17:21:27] Fetching: https://www.mangomint.com/learn/add-a-surcharge-or-fee-to-every-checkout-automatically/
+[2025-10-16 17:21:33] ✓ Success: add-a-surcharge-or-fee-to-every-checkout-automatically.md
+[2025-10-16 17:21:35] [16/33] sales-and-checkout.md
+[2025-10-16 17:21:35] Fetching: https://www.mangomint.com/learn/help-articles/sales-and-checkout/
+[2025-10-16 17:21:41] ✓ Success: sales-and-checkout.md
+[2025-10-16 17:21:43] [17/33] tips-gratuity.md
+[2025-10-16 17:21:43] Fetching: https://www.mangomint.com/learn/help-articles/sales-and-checkout/tips-gratuity/
+[2025-10-16 17:21:48] ✓ Success: tips-gratuity.md
+[2025-10-16 17:21:50] [18/33] refunding-a-deposit.md
+[2025-10-16 17:21:50] Fetching: https://www.mangomint.com/learn/refunding-a-deposit/
+[2025-10-16 17:21:56] ✓ Success: refunding-a-deposit.md
+[2025-10-16 17:21:58] [19/33] use-redeem-a-membership-during-checkout.md
+[2025-10-16 17:21:58] Fetching: https://www.mangomint.com/learn/use-redeem-a-membership-during-checkout/
+[2025-10-16 17:22:04] ✓ Success: use-redeem-a-membership-during-checkout.md
+[2025-10-16 17:22:06] [20/33] how-do-i-handle-product-exchanges.md
+[2025-10-16 17:22:06] Fetching: https://www.mangomint.com/learn/how-do-i-handle-product-exchanges/
+[2025-10-16 17:22:12] ✓ Success: how-do-i-handle-product-exchanges.md
+[2025-10-16 17:22:14] [21/33] how-do-i-collect-tips-on-a-zero-balance-sale.md
+[2025-10-16 17:22:14] Fetching: https://www.mangomint.com/learn/how-do-i-collect-tips-on-a-zero-balance-sale/
+[2025-10-16 17:22:20] ✓ Success: how-do-i-collect-tips-on-a-zero-balance-sale.md
+[2025-10-16 17:22:22] [22/33] discard-an-existing-checkout.md
+[2025-10-16 17:22:22] Fetching: https://www.mangomint.com/learn/discard-an-existing-checkout/
+[2025-10-16 17:22:28] ✓ Success: discard-an-existing-checkout.md
+[2025-10-16 17:22:30] [23/33] basics-sales-and-checkout.md
+[2025-10-16 17:22:30] Fetching: https://www.mangomint.com/learn/help-articles/sales-and-checkout/basics-sales-and-checkout/
+[2025-10-16 17:22:35] ✓ Success: basics-sales-and-checkout.md
+[2025-10-16 17:22:37] [24/33] voiding-a-sale.md
+[2025-10-16 17:22:37] Fetching: https://www.mangomint.com/learn/voiding-a-sale/
+[2025-10-16 17:22:43] ✓ Success: voiding-a-sale.md
+[2025-10-16 17:22:45] [25/33] how-to-use-redeem-a-package-during-checkout.md
+[2025-10-16 17:22:45] Fetching: https://www.mangomint.com/learn/how-to-use-redeem-a-package-during-checkout/
+[2025-10-16 17:22:50] ✓ Success: how-to-use-redeem-a-package-during-checkout.md
+[2025-10-16 17:22:52] [26/33] start-a-checkout-without-an-appointment.md
+[2025-10-16 17:22:52] Fetching: https://www.mangomint.com/learn/start-a-checkout-without-an-appointment/
+[2025-10-16 17:22:57] ✓ Success: start-a-checkout-without-an-appointment.md
+[2025-10-16 17:22:59] [27/33] completing-a-refund.md
+[2025-10-16 17:22:59] Fetching: https://www.mangomint.com/learn/completing-a-refund/
+[2025-10-16 17:23:05] ✓ Success: completing-a-refund.md
+[2025-10-16 17:23:07] [28/33] how-to-use-redeem-a-gift-card-during-checkout.md
+[2025-10-16 17:23:07] Fetching: https://www.mangomint.com/learn/how-to-use-redeem-a-gift-card-during-checkout/
+[2025-10-16 17:23:12] ✓ Success: how-to-use-redeem-a-gift-card-during-checkout.md
+[2025-10-16 17:23:14] [29/33] refunds.md
+[2025-10-16 17:23:14] Fetching: https://www.mangomint.com/learn/help-articles/sales-and-checkout/refunds/
+[2025-10-16 17:23:20] ✓ Success: refunds.md
+[2025-10-16 17:23:22] [30/33] voiding-a-single-payment.md
+[2025-10-16 17:23:22] Fetching: https://www.mangomint.com/learn/voiding-a-single-payment/
+[2025-10-16 17:23:28] ✓ Success: voiding-a-single-payment.md
+[2025-10-16 17:23:30] [31/33] how-to-assign-tips-to-assistants.md
+[2025-10-16 17:23:30] Fetching: https://www.mangomint.com/learn/how-to-assign-tips-to-assistants/
+[2025-10-16 17:23:37] ✓ Success: how-to-assign-tips-to-assistants.md
+[2025-10-16 17:23:39] [32/33] how-do-i-complete-a-product-return-and-refund-to-the-client-account-balance.md
+[2025-10-16 17:23:39] Fetching: https://www.mangomint.com/learn/how-do-i-complete-a-product-return-and-refund-to-the-client-account-balance/
+[2025-10-16 17:23:44] ✓ Success: how-do-i-complete-a-product-return-and-refund-to-the-client-account-balance.md
+[2025-10-16 17:23:46] [33/33] save-a-checkout-for-later.md
+[2025-10-16 17:23:46] Fetching: https://www.mangomint.com/learn/save-a-checkout-for-later/
+[2025-10-16 17:23:52] ✓ Success: save-a-checkout-for-later.md
+[2025-10-16 17:23:54] 
+Category 03-sales-and-checkout completed!
+[2025-10-16 17:23:54] Progress: 106/359 completed, 1 failed, 0 skipped
+
+[2025-10-16 17:23:54] 
+============================================================
+[2025-10-16 17:23:54] Processing category: 04-clients (37 articles)
+[2025-10-16 17:23:54] ============================================================
+[2025-10-16 17:23:54] [1/37] collecting-waivers-from-your-clients.md
+[2025-10-16 17:23:54] Fetching: https://www.mangomint.com/learn/collecting-waivers-from-your-clients/
+[2025-10-16 17:23:59] ✓ Success: collecting-waivers-from-your-clients.md
+[2025-10-16 17:24:01] [2/37] client-portal.md
+[2025-10-16 17:24:01] Fetching: https://www.mangomint.com/learn/help-articles/clients/client-portal/
+[2025-10-16 17:24:07] ✓ Success: client-portal.md
+[2025-10-16 17:24:09] [3/37] clients.md
+[2025-10-16 17:24:09] Fetching: https://www.mangomint.com/learn/help-articles/clients/
+[2025-10-16 17:24:14] ✓ Success: clients.md
+[2025-10-16 17:24:17] [4/37] how-do-i-resend-the-credit-card-email-request-to-my-client.md
+[2025-10-16 17:24:17] Fetching: https://www.mangomint.com/learn/how-do-i-resend-the-credit-card-email-request-to-my-client/
+[2025-10-16 17:24:22] ✓ Success: how-do-i-resend-the-credit-card-email-request-to-my-client.md
+[2025-10-16 17:24:24] [5/37] pause-and-resume-a-clients-membership.md
+[2025-10-16 17:24:24] Fetching: https://www.mangomint.com/learn/pause-and-resume-a-clients-membership/
+[2025-10-16 17:24:30] ✓ Success: pause-and-resume-a-clients-membership.md
+[2025-10-16 17:24:32] [6/37] start-a-new-membership-for-a-client.md
+[2025-10-16 17:24:32] Fetching: https://www.mangomint.com/learn/start-a-new-membership-for-a-client/
+[2025-10-16 17:24:38] ✓ Success: start-a-new-membership-for-a-client.md
+[2025-10-16 17:24:40] [7/37] client-filters-for-marketing-emails.md
+[2025-10-16 17:24:40] Fetching: https://www.mangomint.com/learn/client-filters-for-marketing-emails/
+[2025-10-16 17:24:46] ✓ Success: client-filters-for-marketing-emails.md
+[2025-10-16 17:24:48] [8/37] add-a-new-client.md
+[2025-10-16 17:24:48] Fetching: https://www.mangomint.com/learn/add-a-new-client/
+[2025-10-16 17:24:53] ✓ Success: add-a-new-client.md
+[2025-10-16 17:24:55] [9/37] how-to-find-a-clients-membership.md
+[2025-10-16 17:24:55] Fetching: https://www.mangomint.com/learn/how-to-find-a-clients-membership/
+[2025-10-16 17:25:01] ✓ Success: how-to-find-a-clients-membership.md
+[2025-10-16 17:25:03] [10/37] managing-appointments-from-the-client-portal.md
+[2025-10-16 17:25:03] Fetching: https://www.mangomint.com/learn/managing-appointments-from-the-client-portal/
+[2025-10-16 17:25:09] ✓ Success: managing-appointments-from-the-client-portal.md
+[2025-10-16 17:25:11] [11/37] how-do-i-change-the-service-expiration-date-on-a-clients-membership.md
+[2025-10-16 17:25:11] Fetching: https://www.mangomint.com/learn/how-do-i-change-the-service-expiration-date-on-a-clients-membership/
+[2025-10-16 17:25:17] ✓ Success: how-do-i-change-the-service-expiration-date-on-a-clients-membership.md
+[2025-10-16 17:25:19] [12/37] use-a-clients-account-balance-as-a-payment-method.md
+[2025-10-16 17:25:19] Fetching: https://www.mangomint.com/learn/use-a-clients-account-balance-as-a-payment-method/
+[2025-10-16 17:25:24] ✓ Success: use-a-clients-account-balance-as-a-payment-method.md
+[2025-10-16 17:25:26] [13/37] online-booking-from-the-clients-perspective.md
+[2025-10-16 17:25:26] Fetching: https://www.mangomint.com/learn/online-booking-from-the-clients-perspective/
+[2025-10-16 17:25:32] ✓ Success: online-booking-from-the-clients-perspective.md
+[2025-10-16 17:25:34] [14/37] how-to-merge-duplicate-clients.md
+[2025-10-16 17:25:34] Fetching: https://www.mangomint.com/learn/how-to-merge-duplicate-clients/
+[2025-10-16 17:25:40] ✓ Success: how-to-merge-duplicate-clients.md
+[2025-10-16 17:25:42] [15/37] add-to-a-clients-account-balance.md
+[2025-10-16 17:25:42] Fetching: https://www.mangomint.com/learn/add-to-a-clients-account-balance/
+[2025-10-16 17:25:48] ✓ Success: add-to-a-clients-account-balance.md
+[2025-10-16 17:25:50] [16/37] cancel-a-clients-membership.md
+[2025-10-16 17:25:50] Fetching: https://www.mangomint.com/learn/cancel-a-clients-membership/
+[2025-10-16 17:25:56] ✓ Success: cancel-a-clients-membership.md
+[2025-10-16 17:25:58] [17/37] how-can-i-send-custom-campaigns-to-my-clients-with-active-memberships.md
+[2025-10-16 17:25:58] Fetching: https://www.mangomint.com/learn/how-can-i-send-custom-campaigns-to-my-clients-with-active-memberships/
+[2025-10-16 17:26:03] ✓ Success: how-can-i-send-custom-campaigns-to-my-clients-with-active-memberships.md
+[2025-10-16 17:26:05] [18/37] sending-forms-to-clients.md
+[2025-10-16 17:26:05] Fetching: https://www.mangomint.com/learn/sending-forms-to-clients/
+[2025-10-16 17:26:11] ✓ Success: sending-forms-to-clients.md
+[2025-10-16 17:26:13] [19/37] client-account-balances-reports.md
+[2025-10-16 17:26:13] Fetching: https://www.mangomint.com/learn/client-account-balances-reports/
+[2025-10-16 17:26:19] ✓ Success: client-account-balances-reports.md
+[2025-10-16 17:26:21] [20/37] clients-list.md
+[2025-10-16 17:26:21] Fetching: https://www.mangomint.com/learn/help-articles/clients/clients-list/
+[2025-10-16 17:26:27] ✓ Success: clients-list.md
+[2025-10-16 17:26:29] [21/37] create-and-send-marketing-emails-to-clients.md
+[2025-10-16 17:26:29] Fetching: https://www.mangomint.com/learn/create-and-send-marketing-emails-to-clients/
+[2025-10-16 17:26:34] ✓ Success: create-and-send-marketing-emails-to-clients.md
+[2025-10-16 17:26:36] [22/37] client-account-balances.md
+[2025-10-16 17:26:36] Fetching: https://www.mangomint.com/learn/help-articles/clients/client-account-balances/
+[2025-10-16 17:26:42] ✓ Success: client-account-balances.md
+[2025-10-16 17:26:44] [23/37] navigating-the-client-list.md
+[2025-10-16 17:26:44] Fetching: https://www.mangomint.com/learn/navigating-the-client-list/
+[2025-10-16 17:26:50] ✓ Success: navigating-the-client-list.md
+[2025-10-16 17:26:52] [24/37] client-details.md
+[2025-10-16 17:26:52] Fetching: https://www.mangomint.com/learn/client-details/
+[2025-10-16 17:26:58] ✓ Success: client-details.md
+[2025-10-16 17:27:00] [25/37] client-filters-for-automated-flows.md
+[2025-10-16 17:27:00] Fetching: https://www.mangomint.com/learn/client-filters-for-automated-flows/
+[2025-10-16 17:27:05] ✓ Success: client-filters-for-automated-flows.md
+[2025-10-16 17:27:07] [26/37] filling-out-client-forms-in-person.md
+[2025-10-16 17:27:07] Fetching: https://www.mangomint.com/learn/filling-out-client-forms-in-person/
+[2025-10-16 17:27:13] ✓ Success: filling-out-client-forms-in-person.md
+[2025-10-16 17:27:15] [27/37] client-details-and-timeline.md
+[2025-10-16 17:27:15] Fetching: https://www.mangomint.com/learn/help-articles/clients/client-details-and-timeline/
+[2025-10-16 17:27:21] ✓ Success: client-details-and-timeline.md
+[2025-10-16 17:27:23] [28/37] transfer-a-package-to-another-client.md
+[2025-10-16 17:27:23] Fetching: https://www.mangomint.com/learn/transfer-a-package-to-another-client/
+[2025-10-16 17:27:28] ✓ Success: transfer-a-package-to-another-client.md
+[2025-10-16 17:27:30] [29/37] adjust-the-quantities-of-remaining-services-on-a-clients-membership.md
+[2025-10-16 17:27:30] Fetching: https://www.mangomint.com/learn/adjust-the-quantities-of-remaining-services-on-a-clients-membership/
+[2025-10-16 17:27:36] ✓ Success: adjust-the-quantities-of-remaining-services-on-a-clients-membership.md
+[2025-10-16 17:27:38] [30/37] create-a-client-export-list.md
+[2025-10-16 17:27:38] Fetching: https://www.mangomint.com/learn/create-a-client-export-list/
+[2025-10-16 17:27:44] ✓ Success: create-a-client-export-list.md
+[2025-10-16 17:27:46] [31/37] advanced-settings-client-ownership.md
+[2025-10-16 17:27:46] Fetching: https://www.mangomint.com/learn/advanced-settings-client-ownership/
+[2025-10-16 17:27:51] ✓ Success: advanced-settings-client-ownership.md
+[2025-10-16 17:27:53] [32/37] sending-emails-to-your-clients-using-mailchimp.md
+[2025-10-16 17:27:53] Fetching: https://www.mangomint.com/learn/sending-emails-to-your-clients-using-mailchimp/
+[2025-10-16 17:27:59] ✓ Success: sending-emails-to-your-clients-using-mailchimp.md
+[2025-10-16 17:28:01] [33/37] managing-clients-memberships.md
+[2025-10-16 17:28:01] Fetching: https://www.mangomint.com/learn/help-articles/memberships/managing-clients-memberships/
+[2025-10-16 17:28:06] ✓ Success: managing-clients-memberships.md
+[2025-10-16 17:28:08] [34/37] block-a-client-from-online-booking.md
+[2025-10-16 17:28:08] Fetching: https://www.mangomint.com/learn/block-a-client-from-online-booking/
+[2025-10-16 17:28:14] ✓ Success: block-a-client-from-online-booking.md
+[2025-10-16 17:28:16] [35/37] managing-memberships-from-the-client-portal.md
+[2025-10-16 17:28:16] Fetching: https://www.mangomint.com/learn/managing-memberships-from-the-client-portal/
+[2025-10-16 17:28:21] ✓ Success: managing-memberships-from-the-client-portal.md
+[2025-10-16 17:28:23] [36/37] faq-client-account-balances.md
+[2025-10-16 17:28:24] Fetching: https://www.mangomint.com/learn/faq-client-account-balances/
+[2025-10-16 17:28:29] ✓ Success: faq-client-account-balances.md
+[2025-10-16 17:28:31] [37/37] client-timeline.md
+[2025-10-16 17:28:31] Fetching: https://www.mangomint.com/learn/client-timeline/
+[2025-10-16 17:28:37] ✓ Success: client-timeline.md
+[2025-10-16 17:28:39] 
+Category 04-clients completed!
+[2025-10-16 17:28:39] Progress: 143/359 completed, 1 failed, 0 skipped
+
+[2025-10-16 17:28:39] 
+============================================================
+[2025-10-16 17:28:39] Processing category: 05-memberships (14 articles)
+[2025-10-16 17:28:39] ============================================================
+[2025-10-16 17:28:39] [1/14] business-setup-membership-settings.md
+[2025-10-16 17:28:39] Fetching: https://www.mangomint.com/learn/business-setup-membership-settings/
+[2025-10-16 17:28:44] ✓ Success: business-setup-membership-settings.md
+[2025-10-16 17:28:46] [2/14] upgrade-switch-to-the-current-version-of-a-membership-plan.md
+[2025-10-16 17:28:46] Fetching: https://www.mangomint.com/learn/upgrade-switch-to-the-current-version-of-a-membership-plan/
+[2025-10-16 17:28:52] ✓ Success: upgrade-switch-to-the-current-version-of-a-membership-plan.md
+[2025-10-16 17:28:54] [3/14] faq-memberships.md
+[2025-10-16 17:28:54] Fetching: https://www.mangomint.com/learn/faq-memberships/
+[2025-10-16 17:28:59] ✓ Success: faq-memberships.md
+[2025-10-16 17:29:01] [4/14] signing-membership-agreements.md
+[2025-10-16 17:29:01] Fetching: https://www.mangomint.com/learn/signing-membership-agreements/
+[2025-10-16 17:29:07] ✓ Success: signing-membership-agreements.md
+[2025-10-16 17:29:09] [5/14] memberships.md
+[2025-10-16 17:29:09] Fetching: https://www.mangomint.com/learn/help-articles/memberships/
+[2025-10-16 17:29:15] ✓ Success: memberships.md
+[2025-10-16 17:29:17] [6/14] set-up-a-membership-plan.md
+[2025-10-16 17:29:17] Fetching: https://www.mangomint.com/learn/set-up-a-membership-plan/
+[2025-10-16 17:29:23] ✓ Success: set-up-a-membership-plan.md
+[2025-10-16 17:29:25] [7/14] what-do-the-membership-statuses-mean.md
+[2025-10-16 17:29:25] Fetching: https://www.mangomint.com/learn/what-do-the-membership-statuses-mean/
+[2025-10-16 17:29:31] ✓ Success: what-do-the-membership-statuses-mean.md
+[2025-10-16 17:29:33] [8/14] how-do-i-transfer-memberships-from-my-old-booking-system.md
+[2025-10-16 17:29:33] Fetching: https://www.mangomint.com/learn/how-do-i-transfer-memberships-from-my-old-booking-system/
+[2025-10-16 17:29:38] ✓ Success: how-do-i-transfer-memberships-from-my-old-booking-system.md
+[2025-10-16 17:29:40] [9/14] creating-membership-agreements.md
+[2025-10-16 17:29:40] Fetching: https://www.mangomint.com/learn/creating-membership-agreements/
+[2025-10-16 17:29:46] ✓ Success: creating-membership-agreements.md
+[2025-10-16 17:29:48] [10/14] selling-memberships-online.md
+[2025-10-16 17:29:48] Fetching: https://www.mangomint.com/learn/selling-memberships-online/
+[2025-10-16 17:29:53] ✓ Success: selling-memberships-online.md
+[2025-10-16 17:29:55] [11/14] create-an-account-balance-membership-plan.md
+[2025-10-16 17:29:55] Fetching: https://www.mangomint.com/learn/create-an-account-balance-membership-plan/
+[2025-10-16 17:30:01] ✓ Success: create-an-account-balance-membership-plan.md
+[2025-10-16 17:30:03] [12/14] managing-membership-plans.md
+[2025-10-16 17:30:03] Fetching: https://www.mangomint.com/learn/help-articles/memberships/managing-membership-plans/
+[2025-10-16 17:30:09] ✓ Success: managing-membership-plans.md
+[2025-10-16 17:30:11] [13/14] membership-agreements.md
+[2025-10-16 17:30:11] Fetching: https://www.mangomint.com/learn/help-articles/memberships/membership-agreements/
+[2025-10-16 17:30:16] ✓ Success: membership-agreements.md
+[2025-10-16 17:30:18] [14/14] membership-reports.md
+[2025-10-16 17:30:19] Fetching: https://www.mangomint.com/learn/membership-reports/
+[2025-10-16 17:30:24] ✓ Success: membership-reports.md
+[2025-10-16 17:30:26] 
+Category 05-memberships completed!
+[2025-10-16 17:30:26] Progress: 157/359 completed, 1 failed, 0 skipped
+
+[2025-10-16 17:30:26] 
+============================================================
+[2025-10-16 17:30:26] Processing category: 06-gift-cards-and-packages (21 articles)
+[2025-10-16 17:30:26] ============================================================
+[2025-10-16 17:30:26] [1/21] manage-packages-and-adjust-package-quantities.md
+[2025-10-16 17:30:26] Fetching: https://www.mangomint.com/learn/manage-packages-and-adjust-package-quantities/
+[2025-10-16 17:30:32] ✓ Success: manage-packages-and-adjust-package-quantities.md
+[2025-10-16 17:30:34] [2/21] gift-card-reports.md
+[2025-10-16 17:30:34] Fetching: https://www.mangomint.com/learn/gift-card-reports/
+[2025-10-16 17:30:40] ✓ Success: gift-card-reports.md
+[2025-10-16 17:30:42] [3/21] gift-up-integration.md
+[2025-10-16 17:30:42] Fetching: https://www.mangomint.com/learn/help-articles/integrations/gift-up-integration/
+[2025-10-16 17:30:47] ✓ Success: gift-up-integration.md
+[2025-10-16 17:30:49] [4/21] how-to-sell-a-gift-card.md
+[2025-10-16 17:30:49] Fetching: https://www.mangomint.com/learn/how-to-sell-a-gift-card/
+[2025-10-16 17:30:55] ✓ Success: how-to-sell-a-gift-card.md
+[2025-10-16 17:30:57] [5/21] adding-gift-up-on-your-website.md
+[2025-10-16 17:30:57] Fetching: https://www.mangomint.com/learn/adding-gift-up-on-your-website/
+[2025-10-16 17:31:02] ✓ Success: adding-gift-up-on-your-website.md
+[2025-10-16 17:31:04] [6/21] giftcards.md
+[2025-10-16 17:31:04] Fetching: https://www.mangomint.com/learn/help-articles/giftcards/
+[2025-10-16 17:31:10] ✓ Success: giftcards.md
+[2025-10-16 17:31:12] [7/21] how-to-apply-discounts-on-gift-cards.md
+[2025-10-16 17:31:12] Fetching: https://www.mangomint.com/learn/how-to-apply-discounts-on-gift-cards/
+[2025-10-16 17:31:17] ✓ Success: how-to-apply-discounts-on-gift-cards.md
+[2025-10-16 17:31:19] [8/21] how-to-sell-a-package.md
+[2025-10-16 17:31:19] Fetching: https://www.mangomint.com/learn/how-to-sell-a-package/
+[2025-10-16 17:31:36] ✓ Success: how-to-sell-a-package.md
+[2025-10-16 17:31:38] [9/21] selling-and-redeeming-gift-cards.md
+[2025-10-16 17:31:38] Fetching: https://www.mangomint.com/learn/help-articles/giftcards/selling-and-redeeming-gift-cards/
+[2025-10-16 17:31:44] ✓ Success: selling-and-redeeming-gift-cards.md
+[2025-10-16 17:31:46] [10/21] how-to-create-a-package.md
+[2025-10-16 17:31:46] Fetching: https://www.mangomint.com/learn/how-to-create-a-package/
+[2025-10-16 17:33:02] Error extracting content: Timeout 60000ms exceeded.
+=========================== logs ===========================
+"load" event fired
+============================================================
+[2025-10-16 17:33:02] ✗ Failed: how-to-create-a-package.md - No content extracted
+[2025-10-16 17:33:04] [11/21] how-to-manage-gift-cards.md
+[2025-10-16 17:33:04] Fetching: https://www.mangomint.com/learn/how-to-manage-gift-cards/
+[2025-10-16 17:34:05] Error extracting content: Timeout 60000ms exceeded.
+=========================== logs ===========================
+"load" event fired
+============================================================
+[2025-10-16 17:34:05] ✗ Failed: how-to-manage-gift-cards.md - No content extracted
+[2025-10-16 17:34:07] [12/21] set-up-the-gift-up-integration.md
+[2025-10-16 17:34:07] Fetching: https://www.mangomint.com/learn/set-up-the-gift-up-integration/
+[2025-10-16 17:34:12] ✓ Success: set-up-the-gift-up-integration.md
+[2025-10-16 17:34:14] [13/21] sell-and-redeem-a-package-on-the-same-day.md
+[2025-10-16 17:34:14] Fetching: https://www.mangomint.com/learn/sell-and-redeem-a-package-on-the-same-day/
+[2025-10-16 17:34:20] ✓ Success: sell-and-redeem-a-package-on-the-same-day.md
+[2025-10-16 17:34:22] [14/21] packages-reports.md
+[2025-10-16 17:34:22] Fetching: https://www.mangomint.com/learn/packages-reports/
+[2025-10-16 17:34:28] ✓ Success: packages-reports.md
+[2025-10-16 17:34:30] [15/21] creating-gift-card-promotions.md
+[2025-10-16 17:34:30] Fetching: https://www.mangomint.com/learn/creating-gift-card-promotions/
+[2025-10-16 17:34:35] ✓ Success: creating-gift-card-promotions.md
+[2025-10-16 17:34:37] [16/21] packages.md
+[2025-10-16 17:34:37] Fetching: https://www.mangomint.com/learn/help-articles/packages/
+[2025-10-16 17:34:43] ✓ Success: packages.md
+[2025-10-16 17:34:45] [17/21] how-to-sell-digital-gift-cards-online.md
+[2025-10-16 17:34:45] Fetching: https://www.mangomint.com/learn/how-to-sell-digital-gift-cards-online/
+[2025-10-16 17:34:52] ✓ Success: how-to-sell-digital-gift-cards-online.md
+[2025-10-16 17:34:54] [18/21] selling-packages-online.md
+[2025-10-16 17:34:54] Fetching: https://www.mangomint.com/learn/selling-packages-online/
+[2025-10-16 17:35:00] ✓ Success: selling-packages-online.md
+[2025-10-16 17:35:02] [19/21] faq-gift-cards.md
+[2025-10-16 17:35:02] Fetching: https://www.mangomint.com/learn/faq-gift-cards/
+[2025-10-16 17:35:08] ✓ Success: faq-gift-cards.md
+[2025-10-16 17:35:10] [20/21] buying-physical-gift-cards.md
+[2025-10-16 17:35:10] Fetching: https://www.mangomint.com/learn/buying-physical-gift-cards/
+[2025-10-16 17:36:10] Error extracting content: Timeout 60000ms exceeded.
+=========================== logs ===========================
+"load" event fired
+============================================================
+[2025-10-16 17:36:10] ✗ Failed: buying-physical-gift-cards.md - No content extracted
+[2025-10-16 17:36:12] [21/21] how-do-i-fix-an-unassigned-tip-on-a-gift-card-or-package-sale.md
+[2025-10-16 17:36:12] Fetching: https://www.mangomint.com/learn/how-do-i-fix-an-unassigned-tip-on-a-gift-card-or-package-sale/
+[2025-10-16 17:36:18] ✓ Success: how-do-i-fix-an-unassigned-tip-on-a-gift-card-or-package-sale.md
+[2025-10-16 17:36:20] 
+Category 06-gift-cards-and-packages completed!
+[2025-10-16 17:36:20] Progress: 175/359 completed, 4 failed, 0 skipped
+
+[2025-10-16 17:36:20] 
+============================================================
+[2025-10-16 17:36:20] Processing category: 07-products-and-inventory (12 articles)
+[2025-10-16 17:36:20] ============================================================
+[2025-10-16 17:36:20] [1/12] track-inventory-and-add-inventory-change.md
+[2025-10-16 17:36:20] Fetching: https://www.mangomint.com/learn/track-inventory-and-add-inventory-change/
+[2025-10-16 17:36:25] ✓ Success: track-inventory-and-add-inventory-change.md
+[2025-10-16 17:36:27] [2/12] receive-a-purchase-order-delivery.md
+[2025-10-16 17:36:27] Fetching: https://www.mangomint.com/learn/receive-a-purchase-order-delivery/
+[2025-10-16 17:36:33] ✓ Success: receive-a-purchase-order-delivery.md
+[2025-10-16 17:36:35] [3/12] purchase-orders.md
+[2025-10-16 17:36:35] Fetching: https://www.mangomint.com/learn/help-articles/products-and-inventory/purchase-orders/
+[2025-10-16 17:36:41] ✓ Success: purchase-orders.md
+[2025-10-16 17:36:43] [4/12] manage-categories-and-add-products.md
+[2025-10-16 17:36:43] Fetching: https://www.mangomint.com/learn/manage-categories-and-add-products/
+[2025-10-16 17:36:48] ✓ Success: manage-categories-and-add-products.md
+[2025-10-16 17:36:50] [5/12] create-purchase-orders.md
+[2025-10-16 17:36:51] Fetching: https://www.mangomint.com/learn/create-purchase-orders/
+[2025-10-16 17:36:56] ✓ Success: create-purchase-orders.md
+[2025-10-16 17:36:58] [6/12] inventory-reports.md
+[2025-10-16 17:36:58] Fetching: https://www.mangomint.com/learn/inventory-reports/
+[2025-10-16 17:37:04] ✓ Success: inventory-reports.md
+[2025-10-16 17:37:06] [7/12] set-up-products-for-purchase-orders.md
+[2025-10-16 17:37:06] Fetching: https://www.mangomint.com/learn/set-up-products-for-purchase-orders/
+[2025-10-16 17:37:12] ✓ Success: set-up-products-for-purchase-orders.md
+[2025-10-16 17:37:14] [8/12] products-and-inventory.md
+[2025-10-16 17:37:14] Fetching: https://www.mangomint.com/learn/help-articles/products-and-inventory/
+[2025-10-16 17:37:19] ✓ Success: products-and-inventory.md
+[2025-10-16 17:37:21] [9/12] search-and-sort-products.md
+[2025-10-16 17:37:22] Fetching: https://www.mangomint.com/learn/search-and-sort-products/
+[2025-10-16 17:37:27] ✓ Success: search-and-sort-products.md
+[2025-10-16 17:37:29] [10/12] manage-suppliers.md
+[2025-10-16 17:37:29] Fetching: https://www.mangomint.com/learn/manage-suppliers/
+[2025-10-16 17:37:35] ✓ Success: manage-suppliers.md
+[2025-10-16 17:37:37] [11/12] faq-products-and-inventory.md
+[2025-10-16 17:37:37] Fetching: https://www.mangomint.com/learn/faq-products-and-inventory/
+[2025-10-16 17:37:43] ✓ Success: faq-products-and-inventory.md
+[2025-10-16 17:37:45] [12/12] service-and-product-commission.md
+[2025-10-16 17:37:45] Fetching: https://www.mangomint.com/learn/service-and-product-commission/
+[2025-10-16 17:37:51] ✓ Success: service-and-product-commission.md
+[2025-10-16 17:37:53] 
+Category 07-products-and-inventory completed!
+[2025-10-16 17:37:53] Progress: 187/359 completed, 4 failed, 0 skipped
+
+[2025-10-16 17:37:53] 
+============================================================
+[2025-10-16 17:37:53] Processing category: 08-services (14 articles)
+[2025-10-16 17:37:53] ============================================================
+[2025-10-16 17:37:53] [1/14] how-can-i-track-services-sold-in-groupon-or-other-online-promos.md
+[2025-10-16 17:37:53] Fetching: https://www.mangomint.com/learn/how-can-i-track-services-sold-in-groupon-or-other-online-promos/
+[2025-10-16 17:37:58] ✓ Success: how-can-i-track-services-sold-in-groupon-or-other-online-promos.md
+[2025-10-16 17:38:00] [2/14] change-the-service-provider-on-a-closed-sale.md
+[2025-10-16 17:38:00] Fetching: https://www.mangomint.com/learn/change-the-service-provider-on-a-closed-sale/
+[2025-10-16 17:38:05] ✓ Success: change-the-service-provider-on-a-closed-sale.md
+[2025-10-16 17:38:07] [3/14] how-do-i-set-up-couples-services.md
+[2025-10-16 17:38:07] Fetching: https://www.mangomint.com/learn/how-do-i-set-up-couples-services/
+[2025-10-16 17:38:13] ✓ Success: how-do-i-set-up-couples-services.md
+[2025-10-16 17:38:15] [4/14] enable-services-for-online-booking.md
+[2025-10-16 17:38:15] Fetching: https://www.mangomint.com/learn/enable-services-for-online-booking/
+[2025-10-16 17:38:21] ✓ Success: enable-services-for-online-booking.md
+[2025-10-16 17:38:23] [5/14] delete-services-and-categories.md
+[2025-10-16 17:38:23] Fetching: https://www.mangomint.com/learn/delete-services-and-categories/
+[2025-10-16 17:38:29] ✓ Success: delete-services-and-categories.md
+[2025-10-16 17:38:31] [6/14] customize-a-service-for-an-appointment.md
+[2025-10-16 17:38:31] Fetching: https://www.mangomint.com/learn/customize-a-service-for-an-appointment/
+[2025-10-16 17:38:36] ✓ Success: customize-a-service-for-an-appointment.md
+[2025-10-16 17:38:39] [7/14] set-up-service-customizations.md
+[2025-10-16 17:38:39] Fetching: https://www.mangomint.com/learn/set-up-service-customizations/
+[2025-10-16 17:38:44] ✓ Success: set-up-service-customizations.md
+[2025-10-16 17:38:46] [8/14] service-customizations.md
+[2025-10-16 17:38:46] Fetching: https://www.mangomint.com/learn/help-articles/services/service-customizations/
+[2025-10-16 17:38:52] ✓ Success: service-customizations.md
+[2025-10-16 17:38:54] [9/14] add-categories-and-services.md
+[2025-10-16 17:38:54] Fetching: https://www.mangomint.com/learn/add-categories-and-services/
+[2025-10-16 17:39:00] ✓ Success: add-categories-and-services.md
+[2025-10-16 17:39:02] [10/14] show-base-prices-for-service-customizations.md
+[2025-10-16 17:39:02] Fetching: https://www.mangomint.com/learn/show-base-prices-for-service-customizations/
+[2025-10-16 17:39:07] ✓ Success: show-base-prices-for-service-customizations.md
+[2025-10-16 17:39:09] [11/14] faq-service-customizations.md
+[2025-10-16 17:39:09] Fetching: https://www.mangomint.com/learn/faq-service-customizations/
+[2025-10-16 17:39:15] ✓ Success: faq-service-customizations.md
+[2025-10-16 17:39:17] [12/14] services.md
+[2025-10-16 17:39:17] Fetching: https://www.mangomint.com/learn/help-articles/services/
+[2025-10-16 17:39:22] ✓ Success: services.md
+[2025-10-16 17:39:24] [13/14] link-services-to-staff-members.md
+[2025-10-16 17:39:24] Fetching: https://www.mangomint.com/learn/link-services-to-staff-members/
+[2025-10-16 17:39:30] ✓ Success: link-services-to-staff-members.md
+[2025-10-16 17:39:32] [14/14] faq-services.md
+[2025-10-16 17:39:32] Fetching: https://www.mangomint.com/learn/faq-services/
+[2025-10-16 17:39:37] ✓ Success: faq-services.md
+[2025-10-16 17:39:39] 
+Category 08-services completed!
+[2025-10-16 17:39:39] Progress: 201/359 completed, 4 failed, 0 skipped
+
+[2025-10-16 17:39:39] 
+============================================================
+[2025-10-16 17:39:39] Processing category: 09-staff-and-payroll (38 articles)
+[2025-10-16 17:39:39] ============================================================
+[2025-10-16 17:39:39] [1/38] how-can-i-have-my-staff-members-clock-in-and-clock-out-on-a-front-desk.md
+[2025-10-16 17:39:39] Fetching: https://www.mangomint.com/learn/how-can-i-have-my-staff-members-clock-in-and-clock-out-on-a-front-desk/
+[2025-10-16 17:39:45] ✓ Success: how-can-i-have-my-staff-members-clock-in-and-clock-out-on-a-front-desk.md
+[2025-10-16 17:39:47] [2/38] set-days-off-for-multiple-staff-members-at-once.md
+[2025-10-16 17:39:47] Fetching: https://www.mangomint.com/learn/set-days-off-for-multiple-staff-members-at-once/
+[2025-10-16 17:39:53] ✓ Success: set-days-off-for-multiple-staff-members-at-once.md
+[2025-10-16 17:39:55] [3/38] faq-payroll-processing.md
+[2025-10-16 17:39:55] Fetching: https://www.mangomint.com/learn/faq-payroll-processing/
+[2025-10-16 17:40:01] ✓ Success: faq-payroll-processing.md
+[2025-10-16 17:40:03] [4/38] staff-members.md
+[2025-10-16 17:40:03] Fetching: https://www.mangomint.com/learn/help-articles/staff-members/
+[2025-10-16 17:40:08] ✓ Success: staff-members.md
+[2025-10-16 17:40:10] [5/38] payroll-settings.md
+[2025-10-16 17:40:10] Fetching: https://www.mangomint.com/learn/payroll-settings/
+[2025-10-16 17:40:15] ✓ Success: payroll-settings.md
+[2025-10-16 17:40:17] [6/38] how-to-manage-and-edit-time-cards.md
+[2025-10-16 17:40:17] Fetching: https://www.mangomint.com/learn/how-to-manage-and-edit-time-cards/
+[2025-10-16 17:40:22] ✓ Success: how-to-manage-and-edit-time-cards.md
+[2025-10-16 17:40:24] [7/38] payroll-processing.md
+[2025-10-16 17:40:24] Fetching: https://www.mangomint.com/learn/help-articles/payroll-processing/
+[2025-10-16 17:40:30] ✓ Success: payroll-processing.md
+[2025-10-16 17:40:32] [8/38] payroll-account-details-and-documents.md
+[2025-10-16 17:40:32] Fetching: https://www.mangomint.com/learn/payroll-account-details-and-documents/
+[2025-10-16 17:40:37] ✓ Success: payroll-account-details-and-documents.md
+[2025-10-16 17:40:39] [9/38] reset-staff-password.md
+[2025-10-16 17:40:39] Fetching: https://www.mangomint.com/learn/reset-staff-password/
+[2025-10-16 17:40:44] ✓ Success: reset-staff-password.md
+[2025-10-16 17:40:46] [10/38] payroll.md
+[2025-10-16 17:40:47] Fetching: https://www.mangomint.com/learn/help-articles/business-setup/payroll/
+[2025-10-16 17:40:52] ✓ Success: payroll.md
+[2025-10-16 17:40:54] [11/38] completing-the-employer-onboarding-for-payroll.md
+[2025-10-16 17:40:54] Fetching: https://www.mangomint.com/learn/completing-the-employer-onboarding-for-payroll/
+[2025-10-16 17:41:00] ✓ Success: completing-the-employer-onboarding-for-payroll.md
+[2025-10-16 17:41:02] [12/38] staff-compensation.md
+[2025-10-16 17:41:02] Fetching: https://www.mangomint.com/learn/help-articles/staff-members/staff-compensation/
+[2025-10-16 17:41:08] ✓ Success: staff-compensation.md
+[2025-10-16 17:41:10] [13/38] archiving-staff-members.md
+[2025-10-16 17:41:10] Fetching: https://www.mangomint.com/learn/archiving-staff-members/
+[2025-10-16 17:41:16] ✓ Success: archiving-staff-members.md
+[2025-10-16 17:41:18] [14/38] using-the-time-clock.md
+[2025-10-16 17:41:18] Fetching: https://www.mangomint.com/learn/using-the-time-clock/
+[2025-10-16 17:41:23] ✓ Success: using-the-time-clock.md
+[2025-10-16 17:41:25] [15/38] adjusting-staff-selection-options-in-online-booking.md
+[2025-10-16 17:41:25] Fetching: https://www.mangomint.com/learn/adjusting-staff-selection-options-in-online-booking/
+[2025-10-16 17:41:31] ✓ Success: adjusting-staff-selection-options-in-online-booking.md
+[2025-10-16 17:41:33] [16/38] running-payroll.md
+[2025-10-16 17:41:33] Fetching: https://www.mangomint.com/learn/help-articles/payroll-processing/running-payroll/
+[2025-10-16 17:41:39] ✓ Success: running-payroll.md
+[2025-10-16 17:41:41] [17/38] set-up-the-time-clock-and-assign-pins-to-staff.md
+[2025-10-16 17:41:41] Fetching: https://www.mangomint.com/learn/set-up-the-time-clock-and-assign-pins-to-staff/
+[2025-10-16 17:41:46] ✓ Success: set-up-the-time-clock-and-assign-pins-to-staff.md
+[2025-10-16 17:41:48] [18/38] staff-member-work-hours-and-days-off.md
+[2025-10-16 17:41:48] Fetching: https://www.mangomint.com/learn/help-articles/staff-members/staff-member-work-hours-and-days-off/
+[2025-10-16 17:41:54] ✓ Success: staff-member-work-hours-and-days-off.md
+[2025-10-16 17:41:56] [19/38] adding-staff-members-to-your-payroll.md
+[2025-10-16 17:41:56] Fetching: https://www.mangomint.com/learn/adding-staff-members-to-your-payroll/
+[2025-10-16 17:42:02] ✓ Success: adding-staff-members-to-your-payroll.md
+[2025-10-16 17:42:04] [20/38] set-a-day-off-for-a-staff-member.md
+[2025-10-16 17:42:04] Fetching: https://www.mangomint.com/learn/set-a-day-off-for-a-staff-member/
+[2025-10-16 17:42:10] ✓ Success: set-a-day-off-for-a-staff-member.md
+[2025-10-16 17:42:12] [21/38] how-to-set-up-a-payment-account-for-a-staff-member.md
+[2025-10-16 17:42:12] Fetching: https://www.mangomint.com/learn/how-to-set-up-a-payment-account-for-a-staff-member/
+[2025-10-16 17:42:17] ✓ Success: how-to-set-up-a-payment-account-for-a-staff-member.md
+[2025-10-16 17:42:19] [22/38] staff-member-work-hours.md
+[2025-10-16 17:42:19] Fetching: https://www.mangomint.com/learn/staff-member-work-hours/
+[2025-10-16 17:42:25] ✓ Success: staff-member-work-hours.md
+[2025-10-16 17:42:27] [23/38] viewing-past-payroll-runs.md
+[2025-10-16 17:42:27] Fetching: https://www.mangomint.com/learn/viewing-past-payroll-runs/
+[2025-10-16 17:42:33] ✓ Success: viewing-past-payroll-runs.md
+[2025-10-16 17:42:35] [24/38] signing-up-for-payroll-as-a-worker.md
+[2025-10-16 17:42:35] Fetching: https://www.mangomint.com/learn/signing-up-for-payroll-as-a-worker/
+[2025-10-16 17:42:41] ✓ Success: signing-up-for-payroll-as-a-worker.md
+[2025-10-16 17:42:43] [25/38] payroll-accounts.md
+[2025-10-16 17:42:43] Fetching: https://www.mangomint.com/learn/payroll-accounts/
+[2025-10-16 17:42:50] ✓ Success: payroll-accounts.md
+[2025-10-16 17:42:52] [26/38] how-to-sign-up-for-a-payment-account-for-staff-members.md
+[2025-10-16 17:42:52] Fetching: https://www.mangomint.com/learn/how-to-sign-up-for-a-payment-account-for-staff-members/
+[2025-10-16 17:42:58] ✓ Success: how-to-sign-up-for-a-payment-account-for-staff-members.md
+[2025-10-16 17:43:00] [27/38] running-payroll-in-mangomint.md
+[2025-10-16 17:43:00] Fetching: https://www.mangomint.com/learn/running-payroll-in-mangomint/
+[2025-10-16 17:43:05] ✓ Success: running-payroll-in-mangomint.md
+[2025-10-16 17:43:07] [28/38] time-clock.md
+[2025-10-16 17:43:07] Fetching: https://www.mangomint.com/learn/help-articles/staff-members/time-clock/
+[2025-10-16 17:43:13] ✓ Success: time-clock.md
+[2025-10-16 17:43:15] [29/38] staff-reports.md
+[2025-10-16 17:43:15] Fetching: https://www.mangomint.com/learn/staff-reports/
+[2025-10-16 17:43:20] ✓ Success: staff-reports.md
+[2025-10-16 17:43:22] [30/38] viewing-your-paystubs-and-tax-documents.md
+[2025-10-16 17:43:22] Fetching: https://www.mangomint.com/learn/viewing-your-paystubs-and-tax-documents/
+[2025-10-16 17:43:28] ✓ Success: viewing-your-paystubs-and-tax-documents.md
+[2025-10-16 17:43:30] [31/38] adding-a-staff-member.md
+[2025-10-16 17:43:30] Fetching: https://www.mangomint.com/learn/adding-a-staff-member/
+[2025-10-16 17:43:36] ✓ Success: adding-a-staff-member.md
+[2025-10-16 17:43:38] [32/38] employer-onboarding-for-payroll.md
+[2025-10-16 17:43:38] Fetching: https://www.mangomint.com/learn/help-articles/payroll-processing/employer-onboarding-for-payroll/
+[2025-10-16 17:43:44] ✓ Success: employer-onboarding-for-payroll.md
+[2025-10-16 17:43:46] [33/38] staff-member-permissions.md
+[2025-10-16 17:43:46] Fetching: https://www.mangomint.com/learn/staff-member-permissions/
+[2025-10-16 17:43:51] ✓ Success: staff-member-permissions.md
+[2025-10-16 17:43:53] [34/38] signing-up-for-payroll-processing.md
+[2025-10-16 17:43:53] Fetching: https://www.mangomint.com/learn/signing-up-for-payroll-processing/
+[2025-10-16 17:43:59] ✓ Success: signing-up-for-payroll-processing.md
+[2025-10-16 17:44:01] [35/38] payroll-report.md
+[2025-10-16 17:44:01] Fetching: https://www.mangomint.com/learn/payroll-report/
+[2025-10-16 17:44:06] ✓ Success: payroll-report.md
+[2025-10-16 17:44:08] [36/38] worker-onboarding-for-payroll.md
+[2025-10-16 17:44:08] Fetching: https://www.mangomint.com/learn/help-articles/payroll-processing/worker-onboarding-for-payroll/
+[2025-10-16 17:44:14] ✓ Success: worker-onboarding-for-payroll.md
+[2025-10-16 17:44:16] [37/38] hourly-and-salary-compensation.md
+[2025-10-16 17:44:16] Fetching: https://www.mangomint.com/learn/hourly-and-salary-compensation/
+[2025-10-16 17:44:22] ✓ Success: hourly-and-salary-compensation.md
+[2025-10-16 17:44:24] [38/38] staff-member-notifications.md
+[2025-10-16 17:44:24] Fetching: https://www.mangomint.com/learn/staff-member-notifications/
+[2025-10-16 17:44:29] ✓ Success: staff-member-notifications.md
+[2025-10-16 17:44:31] 
+Category 09-staff-and-payroll completed!
+[2025-10-16 17:44:31] Progress: 239/359 completed, 4 failed, 0 skipped
+
+[2025-10-16 17:44:31] 
+============================================================
+[2025-10-16 17:44:31] Processing category: 10-email-marketing (7 articles)
+[2025-10-16 17:44:31] ============================================================
+[2025-10-16 17:44:31] [1/7] using-a-custom-email-address.md
+[2025-10-16 17:44:31] Fetching: https://www.mangomint.com/learn/help-articles/email-marketing/using-a-custom-email-address/
+[2025-10-16 17:44:36] ✓ Success: using-a-custom-email-address.md
+[2025-10-16 17:44:39] [2/7] set-up-the-mailchimp-integration.md
+[2025-10-16 17:44:39] Fetching: https://www.mangomint.com/learn/set-up-the-mailchimp-integration/
+[2025-10-16 17:44:44] ✓ Success: set-up-the-mailchimp-integration.md
+[2025-10-16 17:44:46] [3/7] sending-marketing-emails-from-a-custom-address.md
+[2025-10-16 17:44:46] Fetching: https://www.mangomint.com/learn/sending-marketing-emails-from-a-custom-address/
+[2025-10-16 17:44:52] ✓ Success: sending-marketing-emails-from-a-custom-address.md
+[2025-10-16 17:44:54] [4/7] mailchimp-integration.md
+[2025-10-16 17:44:54] Fetching: https://www.mangomint.com/learn/help-articles/integrations/mailchimp-integration/
+[2025-10-16 17:44:59] ✓ Success: mailchimp-integration.md
+[2025-10-16 17:45:01] [5/7] view-your-email-campaign-performance.md
+[2025-10-16 17:45:02] Fetching: https://www.mangomint.com/learn/view-your-email-campaign-performance/
+[2025-10-16 17:45:07] ✓ Success: view-your-email-campaign-performance.md
+[2025-10-16 17:45:09] [6/7] duplicate-or-delete-an-email-campaign.md
+[2025-10-16 17:45:09] Fetching: https://www.mangomint.com/learn/duplicate-or-delete-an-email-campaign/
+[2025-10-16 17:45:15] ✓ Success: duplicate-or-delete-an-email-campaign.md
+[2025-10-16 17:45:17] [7/7] faq-email-marketing.md
+[2025-10-16 17:45:17] Fetching: https://www.mangomint.com/learn/faq-email-marketing/
+[2025-10-16 17:45:23] ✓ Success: faq-email-marketing.md
+[2025-10-16 17:45:25] 
+Category 10-email-marketing completed!
+[2025-10-16 17:45:25] Progress: 246/359 completed, 4 failed, 0 skipped
+
+[2025-10-16 17:45:25] 
+============================================================
+[2025-10-16 17:45:25] Processing category: 11-automated-flows-and-messages (19 articles)
+[2025-10-16 17:45:25] ============================================================
+[2025-10-16 17:45:25] [1/19] faq-web-chat.md
+[2025-10-16 17:45:25] Fetching: https://www.mangomint.com/learn/faq-web-chat/
+[2025-10-16 17:45:31] ✓ Success: faq-web-chat.md
+[2025-10-16 17:45:33] [2/19] automated-messages.md
+[2025-10-16 17:45:33] Fetching: https://www.mangomint.com/learn/help-articles/automated-messages/
+[2025-10-16 17:45:38] ✓ Success: automated-messages.md
+[2025-10-16 17:45:40] [3/19] receiving-web-chat-messages.md
+[2025-10-16 17:45:40] Fetching: https://www.mangomint.com/learn/receiving-web-chat-messages/
+[2025-10-16 17:45:46] ✓ Success: receiving-web-chat-messages.md
+[2025-10-16 17:45:48] [4/19] customize-automated-messages.md
+[2025-10-16 17:45:48] Fetching: https://www.mangomint.com/learn/customize-automated-messages/
+[2025-10-16 17:45:54] ✓ Success: customize-automated-messages.md
+[2025-10-16 17:45:56] [5/19] advanced-settings-automated-messages.md
+[2025-10-16 17:45:56] Fetching: https://www.mangomint.com/learn/advanced-settings-automated-messages/
+[2025-10-16 17:46:02] ✓ Success: advanced-settings-automated-messages.md
+[2025-10-16 17:46:04] [6/19] using-form-responses-with-flows.md
+[2025-10-16 17:46:04] Fetching: https://www.mangomint.com/learn/using-form-responses-with-flows/
+[2025-10-16 17:46:10] ✓ Success: using-form-responses-with-flows.md
+[2025-10-16 17:46:12] [7/19] flows-basics.md
+[2025-10-16 17:46:12] Fetching: https://www.mangomint.com/learn/flows-basics/
+[2025-10-16 17:46:18] ✓ Success: flows-basics.md
+[2025-10-16 17:46:20] [8/19] web-chat.md
+[2025-10-16 17:46:20] Fetching: https://www.mangomint.com/learn/help-articles/web-chat/
+[2025-10-16 17:46:26] ✓ Success: web-chat.md
+[2025-10-16 17:46:28] [9/19] faq-flows.md
+[2025-10-16 17:46:28] Fetching: https://www.mangomint.com/learn/faq-flows/
+[2025-10-16 17:46:33] ✓ Success: faq-flows.md
+[2025-10-16 17:46:35] [10/19] flow-message-types.md
+[2025-10-16 17:46:35] Fetching: https://www.mangomint.com/learn/flow-message-types/
+[2025-10-16 17:46:41] ✓ Success: flow-message-types.md
+[2025-10-16 17:46:43] [11/19] building-and-activating-a-flow.md
+[2025-10-16 17:46:43] Fetching: https://www.mangomint.com/learn/building-and-activating-a-flow/
+[2025-10-16 17:46:49] ✓ Success: building-and-activating-a-flow.md
+[2025-10-16 17:46:51] [12/19] enabling-and-disabling-automated-messages.md
+[2025-10-16 17:46:51] Fetching: https://www.mangomint.com/learn/enabling-and-disabling-automated-messages/
+[2025-10-16 17:47:51] Error extracting content: Timeout 60000ms exceeded.
+=========================== logs ===========================
+"load" event fired
+============================================================
+[2025-10-16 17:47:51] ✗ Failed: enabling-and-disabling-automated-messages.md - No content extracted
+[2025-10-16 17:47:53] [13/19] replying-to-web-chat-messages.md
+[2025-10-16 17:47:53] Fetching: https://www.mangomint.com/learn/replying-to-web-chat-messages/
+[2025-10-16 17:47:58] ✓ Success: replying-to-web-chat-messages.md
+[2025-10-16 17:48:00] [14/19] enabling-web-chat.md
+[2025-10-16 17:48:00] Fetching: https://www.mangomint.com/learn/enabling-web-chat/
+[2025-10-16 17:48:06] ✓ Success: enabling-web-chat.md
+[2025-10-16 17:48:08] [15/19] editing-and-deactivating-a-flow.md
+[2025-10-16 17:48:08] Fetching: https://www.mangomint.com/learn/editing-and-deactivating-a-flow/
+[2025-10-16 17:48:13] ✓ Success: editing-and-deactivating-a-flow.md
+[2025-10-16 17:48:16] [16/19] creating-flows.md
+[2025-10-16 17:48:16] Fetching: https://www.mangomint.com/learn/help-articles/automated-flows/creating-flows/
+[2025-10-16 17:48:21] ✓ Success: creating-flows.md
+[2025-10-16 17:48:23] [17/19] automated-flows.md
+[2025-10-16 17:48:23] Fetching: https://www.mangomint.com/learn/help-articles/automated-flows/
+[2025-10-16 17:48:29] ✓ Success: automated-flows.md
+[2025-10-16 17:48:31] [18/19] flow-message-pricing.md
+[2025-10-16 17:48:31] Fetching: https://www.mangomint.com/learn/flow-message-pricing/
+[2025-10-16 17:48:37] ✓ Success: flow-message-pricing.md
+[2025-10-16 17:48:39] [19/19] viewing-flow-details-and-statistics.md
+[2025-10-16 17:48:39] Fetching: https://www.mangomint.com/learn/viewing-flow-details-and-statistics/
+[2025-10-16 17:48:44] ✓ Success: viewing-flow-details-and-statistics.md
+[2025-10-16 17:48:46] 
+Category 11-automated-flows-and-messages completed!
+[2025-10-16 17:48:46] Progress: 264/359 completed, 5 failed, 0 skipped
+
+[2025-10-16 17:48:46] 
+============================================================
+[2025-10-16 17:48:46] Processing category: 12-forms-and-waivers (13 articles)
+[2025-10-16 17:48:46] ============================================================
+[2025-10-16 17:48:46] [1/13] completing-forms.md
+[2025-10-16 17:48:47] Fetching: https://www.mangomint.com/learn/help-articles/integrated-forms/completing-forms/
+[2025-10-16 17:48:52] ✓ Success: completing-forms.md
+[2025-10-16 17:48:54] [2/13] using-image-markup-on-a-form.md
+[2025-10-16 17:48:54] Fetching: https://www.mangomint.com/learn/using-image-markup-on-a-form/
+[2025-10-16 17:49:00] ✓ Success: using-image-markup-on-a-form.md
+[2025-10-16 17:49:02] [3/13] managing-form-submissions.md
+[2025-10-16 17:49:02] Fetching: https://www.mangomint.com/learn/help-articles/integrated-forms/managing-form-submissions/
+[2025-10-16 17:49:07] ✓ Success: managing-form-submissions.md
+[2025-10-16 17:49:09] [4/13] viewing-form-submissions.md
+[2025-10-16 17:49:09] Fetching: https://www.mangomint.com/learn/viewing-form-submissions/
+[2025-10-16 17:49:14] ✓ Success: viewing-form-submissions.md
+[2025-10-16 17:49:16] [5/13] creating-form-templates.md
+[2025-10-16 17:49:16] Fetching: https://www.mangomint.com/learn/creating-form-templates/
+[2025-10-16 17:49:22] ✓ Success: creating-form-templates.md
+[2025-10-16 17:49:24] [6/13] waiverforever-integration.md
+[2025-10-16 17:49:24] Fetching: https://www.mangomint.com/learn/help-articles/integrations/waiverforever-integration/
+[2025-10-16 17:49:29] ✓ Success: waiverforever-integration.md
+[2025-10-16 17:49:31] [7/13] set-up-the-waiverforever-integration.md
+[2025-10-16 17:49:31] Fetching: https://www.mangomint.com/learn/set-up-the-waiverforever-integration/
+[2025-10-16 17:49:36] ✓ Success: set-up-the-waiverforever-integration.md
+[2025-10-16 17:49:38] [8/13] creating-waivers-in-waiverforever.md
+[2025-10-16 17:49:38] Fetching: https://www.mangomint.com/learn/creating-waivers-in-waiverforever/
+[2025-10-16 17:49:44] ✓ Success: creating-waivers-in-waiverforever.md
+[2025-10-16 17:49:46] [9/13] integrated-forms.md
+[2025-10-16 17:49:46] Fetching: https://www.mangomint.com/learn/help-articles/integrated-forms/
+[2025-10-16 17:49:51] ✓ Success: integrated-forms.md
+[2025-10-16 17:49:53] [10/13] approving-a-form-submission.md
+[2025-10-16 17:49:53] Fetching: https://www.mangomint.com/learn/approving-a-form-submission/
+[2025-10-16 17:49:58] ✓ Success: approving-a-form-submission.md
+[2025-10-16 17:50:00] [11/13] faq-integrated-forms.md
+[2025-10-16 17:50:00] Fetching: https://www.mangomint.com/learn/faq-integrated-forms/
+[2025-10-16 17:50:05] ✓ Success: faq-integrated-forms.md
+[2025-10-16 17:50:07] [12/13] creating-and-requesting-forms.md
+[2025-10-16 17:50:08] Fetching: https://www.mangomint.com/learn/help-articles/integrated-forms/creating-and-requesting-forms/
+[2025-10-16 17:50:13] ✓ Success: creating-and-requesting-forms.md
+[2025-10-16 17:50:15] [13/13] saving-progress-on-a-form.md
+[2025-10-16 17:50:15] Fetching: https://www.mangomint.com/learn/saving-progress-on-a-form/
+[2025-10-16 17:50:20] ✓ Success: saving-progress-on-a-form.md
+[2025-10-16 17:50:22] 
+Category 12-forms-and-waivers completed!
+[2025-10-16 17:50:22] Progress: 277/359 completed, 5 failed, 0 skipped
+
+[2025-10-16 17:50:22] 
+============================================================
+[2025-10-16 17:50:22] Processing category: 13-online-booking (18 articles)
+[2025-10-16 17:50:22] ============================================================
+[2025-10-16 17:50:22] [1/18] adding-online-booking-to-your-website.md
+[2025-10-16 17:50:22] Fetching: https://www.mangomint.com/learn/adding-online-booking-to-your-website/
+[2025-10-16 17:50:28] ✓ Success: adding-online-booking-to-your-website.md
+[2025-10-16 17:50:30] [2/18] adding-dns-records-to-wix.md
+[2025-10-16 17:50:30] Fetching: https://www.mangomint.com/learn/adding-dns-records-to-wix/
+[2025-10-16 17:50:35] ✓ Success: adding-dns-records-to-wix.md
+[2025-10-16 17:50:37] [3/18] how-to-require-a-prepayment-for-online-booking.md
+[2025-10-16 17:50:37] Fetching: https://www.mangomint.com/learn/how-to-require-a-prepayment-for-online-booking/
+[2025-10-16 17:50:43] ✓ Success: how-to-require-a-prepayment-for-online-booking.md
+[2025-10-16 17:50:45] [4/18] setting-up-online-booking-for-a-shopify-website.md
+[2025-10-16 17:50:45] Fetching: https://www.mangomint.com/learn/setting-up-online-booking-for-a-shopify-website/
+[2025-10-16 17:50:51] ✓ Success: setting-up-online-booking-for-a-shopify-website.md
+[2025-10-16 17:50:53] [5/18] add-booking-link-to-google-business-profile.md
+[2025-10-16 17:50:53] Fetching: https://www.mangomint.com/learn/add-booking-link-to-google-business-profile/
+[2025-10-16 17:50:59] ✓ Success: add-booking-link-to-google-business-profile.md
+[2025-10-16 17:51:01] [6/18] online-booking.md
+[2025-10-16 17:51:01] Fetching: https://www.mangomint.com/learn/help-articles/online-booking/
+[2025-10-16 17:51:06] ✓ Success: online-booking.md
+[2025-10-16 17:51:08] [7/18] setting-up-online-booking-for-a-wix-website.md
+[2025-10-16 17:51:08] Fetching: https://www.mangomint.com/learn/setting-up-online-booking-for-a-wix-website/
+[2025-10-16 17:51:14] ✓ Success: setting-up-online-booking-for-a-wix-website.md
+[2025-10-16 17:51:16] [8/18] faq-online-booking.md
+[2025-10-16 17:51:16] Fetching: https://www.mangomint.com/learn/faq-online-booking/
+[2025-10-16 17:51:22] ✓ Success: faq-online-booking.md
+[2025-10-16 17:51:24] [9/18] using-direct-booking-links.md
+[2025-10-16 17:51:24] Fetching: https://www.mangomint.com/learn/using-direct-booking-links/
+[2025-10-16 17:51:30] ✓ Success: using-direct-booking-links.md
+[2025-10-16 17:51:32] [10/18] setting-up-online-booking-for-a-wordpress-website.md
+[2025-10-16 17:51:32] Fetching: https://www.mangomint.com/learn/setting-up-online-booking-for-a-wordpress-website/
+[2025-10-16 17:51:38] ✓ Success: setting-up-online-booking-for-a-wordpress-website.md
+[2025-10-16 17:51:40] [11/18] adjusting-online-booking-preferences.md
+[2025-10-16 17:51:40] Fetching: https://www.mangomint.com/learn/adjusting-online-booking-preferences/
+[2025-10-16 17:51:45] ✓ Success: adjusting-online-booking-preferences.md
+[2025-10-16 17:51:47] [12/18] adding-dns-records-to-squarespace.md
+[2025-10-16 17:51:47] Fetching: https://www.mangomint.com/learn/adding-dns-records-to-squarespace/
+[2025-10-16 17:51:53] ✓ Success: adding-dns-records-to-squarespace.md
+[2025-10-16 17:51:55] [13/18] adding-dns-records-to-bluehost.md
+[2025-10-16 17:51:55] Fetching: https://www.mangomint.com/learn/adding-dns-records-to-bluehost/
+[2025-10-16 17:52:00] ✓ Success: adding-dns-records-to-bluehost.md
+[2025-10-16 17:52:02] [14/18] adding-dns-records-to-godaddy.md
+[2025-10-16 17:52:02] Fetching: https://www.mangomint.com/learn/adding-dns-records-to-godaddy/
+[2025-10-16 17:52:08] ✓ Success: adding-dns-records-to-godaddy.md
+[2025-10-16 17:52:10] [15/18] setting-up-online-booking-for-a-squarespace-website.md
+[2025-10-16 17:52:10] Fetching: https://www.mangomint.com/learn/setting-up-online-booking-for-a-squarespace-website/
+[2025-10-16 17:52:15] ✓ Success: setting-up-online-booking-for-a-squarespace-website.md
+[2025-10-16 17:52:17] [16/18] how-can-i-require-a-credit-card-for-online-booking.md
+[2025-10-16 17:52:17] Fetching: https://www.mangomint.com/learn/how-can-i-require-a-credit-card-for-online-booking/
+[2025-10-16 17:52:23] ✓ Success: how-can-i-require-a-credit-card-for-online-booking.md
+[2025-10-16 17:52:25] [17/18] enabling-online-booking.md
+[2025-10-16 17:52:25] Fetching: https://www.mangomint.com/learn/enabling-online-booking/
+[2025-10-16 17:52:31] ✓ Success: enabling-online-booking.md
+[2025-10-16 17:52:33] [18/18] online-booking-guides-for-popular-website-builders.md
+[2025-10-16 17:52:33] Fetching: https://www.mangomint.com/learn/help-articles/online-booking/online-booking-guides-for-popular-website-builders/
+[2025-10-16 17:52:39] ✓ Success: online-booking-guides-for-popular-website-builders.md
+[2025-10-16 17:52:41] 
+Category 13-online-booking completed!
+[2025-10-16 17:52:41] Progress: 295/359 completed, 5 failed, 0 skipped
+
+[2025-10-16 17:52:41] 
+============================================================
+[2025-10-16 17:52:41] Processing category: 14-business-setup (10 articles)
+[2025-10-16 17:52:41] ============================================================
+[2025-10-16 17:52:41] [1/10] using-multiple-phone-numbers.md
+[2025-10-16 17:52:41] Fetching: https://www.mangomint.com/learn/using-multiple-phone-numbers/
+[2025-10-16 17:52:46] ✓ Success: using-multiple-phone-numbers.md
+[2025-10-16 17:52:48] [2/10] business-setup-logo-and-branding.md
+[2025-10-16 17:52:48] Fetching: https://www.mangomint.com/learn/business-setup-logo-and-branding/
+[2025-10-16 17:52:54] ✓ Success: business-setup-logo-and-branding.md
+[2025-10-16 17:52:56] [3/10] how-to-update-your-mangomint-app.md
+[2025-10-16 17:52:56] Fetching: https://www.mangomint.com/learn/how-to-update-your-mangomint-app/
+[2025-10-16 17:53:01] ✓ Success: how-to-update-your-mangomint-app.md
+[2025-10-16 17:53:03] [4/10] adding-phone-numbers.md
+[2025-10-16 17:53:03] Fetching: https://www.mangomint.com/learn/adding-phone-numbers/
+[2025-10-16 17:53:09] ✓ Success: adding-phone-numbers.md
+[2025-10-16 17:53:11] [5/10] business-setup-locations.md
+[2025-10-16 17:53:11] Fetching: https://www.mangomint.com/learn/business-setup-locations/
+[2025-10-16 17:53:17] ✓ Success: business-setup-locations.md
+[2025-10-16 17:53:19] [6/10] business-setup.md
+[2025-10-16 17:53:19] Fetching: https://www.mangomint.com/learn/help-articles/business-setup/
+[2025-10-16 17:53:24] ✓ Success: business-setup.md
+[2025-10-16 17:53:26] [7/10] business-details.md
+[2025-10-16 17:53:27] Fetching: https://www.mangomint.com/learn/business-details/
+[2025-10-16 17:53:32] ✓ Success: business-details.md
+[2025-10-16 17:53:34] [8/10] phone-numbers.md
+[2025-10-16 17:53:34] Fetching: https://www.mangomint.com/learn/help-articles/business-setup/phone-numbers/
+[2025-10-16 17:53:40] ✓ Success: phone-numbers.md
+[2025-10-16 17:53:42] [9/10] setting-up-your-ipad-on-kiosk-mode.md
+[2025-10-16 17:53:42] Fetching: https://www.mangomint.com/learn/setting-up-your-ipad-on-kiosk-mode/
+[2025-10-16 17:53:48] ✓ Success: setting-up-your-ipad-on-kiosk-mode.md
+[2025-10-16 17:53:50] [10/10] enabling-desktop-notifications.md
+[2025-10-16 17:53:50] Fetching: https://www.mangomint.com/learn/enabling-desktop-notifications/
+[2025-10-16 17:53:55] ✓ Success: enabling-desktop-notifications.md
+[2025-10-16 17:53:57] 
+Category 14-business-setup completed!
+[2025-10-16 17:53:57] Progress: 305/359 completed, 5 failed, 0 skipped
+
+[2025-10-16 17:53:57] 
+============================================================
+[2025-10-16 17:53:57] Processing category: 15-offers (5 articles)
+[2025-10-16 17:53:57] ============================================================
+[2025-10-16 17:53:57] [1/5] creating-an-offer.md
+[2025-10-16 17:53:57] Fetching: https://www.mangomint.com/learn/creating-an-offer/
+[2025-10-16 17:54:03] ✓ Success: creating-an-offer.md
+[2025-10-16 17:54:05] [2/5] applying-an-offer.md
+[2025-10-16 17:54:05] Fetching: https://www.mangomint.com/learn/applying-an-offer/
+[2025-10-16 17:54:10] ✓ Success: applying-an-offer.md
+[2025-10-16 17:54:12] [3/5] faq-offers.md
+[2025-10-16 17:54:12] Fetching: https://www.mangomint.com/learn/faq-offers/
+[2025-10-16 17:54:17] ✓ Success: faq-offers.md
+[2025-10-16 17:54:19] [4/5] offers.md
+[2025-10-16 17:54:19] Fetching: https://www.mangomint.com/learn/help-articles/offers/
+[2025-10-16 17:54:25] ✓ Success: offers.md
+[2025-10-16 17:54:27] [5/5] offers-reports.md
+[2025-10-16 17:54:27] Fetching: https://www.mangomint.com/learn/offers-reports/
+[2025-10-16 17:54:32] ✓ Success: offers-reports.md
+[2025-10-16 17:54:34] 
+Category 15-offers completed!
+[2025-10-16 17:54:34] Progress: 310/359 completed, 5 failed, 0 skipped
+
+[2025-10-16 17:54:34] 
+============================================================
+[2025-10-16 17:54:34] Processing category: 16-reports (6 articles)
+[2025-10-16 17:54:34] ============================================================
+[2025-10-16 17:54:34] [1/6] reports.md
+[2025-10-16 17:54:34] Fetching: https://www.mangomint.com/learn/help-articles/reports/
+[2025-10-16 17:54:40] ✓ Success: reports.md
+[2025-10-16 17:54:42] [2/6] faq-reports.md
+[2025-10-16 17:54:42] Fetching: https://www.mangomint.com/learn/faq-reports/
+[2025-10-16 17:54:47] ✓ Success: faq-reports.md
+[2025-10-16 17:54:50] [3/6] payment-reports.md
+[2025-10-16 17:54:50] Fetching: https://www.mangomint.com/learn/payment-reports/
+[2025-10-16 17:54:55] ✓ Success: payment-reports.md
+[2025-10-16 17:54:57] [4/6] viewing-your-daily-and-weekly-totals.md
+[2025-10-16 17:54:57] Fetching: https://www.mangomint.com/learn/viewing-your-daily-and-weekly-totals/
+[2025-10-16 17:55:03] ✓ Success: viewing-your-daily-and-weekly-totals.md
+[2025-10-16 17:55:05] [5/6] available-reports.md
+[2025-10-16 17:55:05] Fetching: https://www.mangomint.com/learn/available-reports/
+[2025-10-16 17:55:11] ✓ Success: available-reports.md
+[2025-10-16 17:55:13] [6/6] business-reports.md
+[2025-10-16 17:55:13] Fetching: https://www.mangomint.com/learn/business-reports/
+[2025-10-16 17:55:19] ✓ Success: business-reports.md
+[2025-10-16 17:55:21] 
+Category 16-reports completed!
+[2025-10-16 17:55:21] Progress: 316/359 completed, 5 failed, 0 skipped
+
+[2025-10-16 17:55:21] 
+============================================================
+[2025-10-16 17:55:21] Processing category: 17-integrations (4 articles)
+[2025-10-16 17:55:21] ============================================================
+[2025-10-16 17:55:21] [1/4] webhooks-integration.md
+[2025-10-16 17:55:21] Fetching: https://www.mangomint.com/learn/webhooks-integration/
+[2025-10-16 17:55:27] ✓ Success: webhooks-integration.md
+[2025-10-16 17:55:29] [2/4] shopify-integration.md
+[2025-10-16 17:55:29] Fetching: https://www.mangomint.com/learn/shopify-integration/
+[2025-10-16 17:55:34] ✓ Success: shopify-integration.md
+[2025-10-16 17:55:36] [3/4] integrations.md
+[2025-10-16 17:55:36] Fetching: https://www.mangomint.com/learn/help-articles/integrations/
+[2025-10-16 17:55:42] ✓ Success: integrations.md
+[2025-10-16 17:55:44] [4/4] managing-your-apps-and-integrations.md
+[2025-10-16 17:55:44] Fetching: https://www.mangomint.com/learn/managing-your-apps-and-integrations/
+[2025-10-16 17:55:50] ✓ Success: managing-your-apps-and-integrations.md
+[2025-10-16 17:55:52] 
+Category 17-integrations completed!
+[2025-10-16 17:55:52] Progress: 320/359 completed, 5 failed, 0 skipped
+
+[2025-10-16 17:55:52] 
+============================================================
+[2025-10-16 17:55:52] Processing category: 18-payments (31 articles)
+[2025-10-16 17:55:52] ============================================================
+[2025-10-16 17:55:52] [1/31] payment-types.md
+[2025-10-16 17:55:52] Fetching: https://www.mangomint.com/learn/payment-types/
+[2025-10-16 17:55:57] ✓ Success: payment-types.md
+[2025-10-16 17:55:59] [2/31] how-to-take-payments-with-the-front-desk-display.md
+[2025-10-16 17:55:59] Fetching: https://www.mangomint.com/learn/how-to-take-payments-with-the-front-desk-display/
+[2025-10-16 17:56:05] ✓ Success: how-to-take-payments-with-the-front-desk-display.md
+[2025-10-16 17:56:07] [3/31] best-practices-credit-card-payments.md
+[2025-10-16 17:56:07] Fetching: https://www.mangomint.com/learn/best-practices-credit-card-payments/
+[2025-10-16 17:56:12] ✓ Success: best-practices-credit-card-payments.md
+[2025-10-16 17:56:14] [4/31] signing-up-for-payment-processing.md
+[2025-10-16 17:56:14] Fetching: https://www.mangomint.com/learn/signing-up-for-payment-processing/
+[2025-10-16 17:56:19] ✓ Success: signing-up-for-payment-processing.md
+[2025-10-16 17:56:22] [5/31] how-to-use-non-integrated-payment-processors.md
+[2025-10-16 17:56:22] Fetching: https://www.mangomint.com/learn/how-to-use-non-integrated-payment-processors/
+[2025-10-16 17:56:27] ✓ Success: how-to-use-non-integrated-payment-processors.md
+[2025-10-16 17:56:29] [6/31] managing-cards-on-file.md
+[2025-10-16 17:56:29] Fetching: https://www.mangomint.com/learn/managing-cards-on-file/
+[2025-10-16 17:56:35] ✓ Success: managing-cards-on-file.md
+[2025-10-16 17:56:37] [7/31] payment-processing-update-account-details.md
+[2025-10-16 17:56:37] Fetching: https://www.mangomint.com/learn/payment-processing-update-account-details/
+[2025-10-16 17:56:42] ✓ Success: payment-processing-update-account-details.md
+[2025-10-16 17:56:44] [8/31] front-desk-display-vs-direct-connection.md
+[2025-10-16 17:56:44] Fetching: https://www.mangomint.com/learn/front-desk-display-vs-direct-connection/
+[2025-10-16 17:56:50] ✓ Success: front-desk-display-vs-direct-connection.md
+[2025-10-16 17:56:52] [9/31] how-to-split-payments.md
+[2025-10-16 17:56:52] Fetching: https://www.mangomint.com/learn/how-to-split-payments/
+[2025-10-16 17:56:57] ✓ Success: how-to-split-payments.md
+[2025-10-16 17:56:59] [10/31] payment-accounts.md
+[2025-10-16 17:56:59] Fetching: https://www.mangomint.com/learn/payment-accounts/
+[2025-10-16 17:57:05] ✓ Success: payment-accounts.md
+[2025-10-16 17:57:07] [11/31] payment-disputes.md
+[2025-10-16 17:57:07] Fetching: https://www.mangomint.com/learn/payment-disputes/
+[2025-10-16 17:57:12] ✓ Success: payment-disputes.md
+[2025-10-16 17:57:14] [12/31] how-to-charge-cards-on-file.md
+[2025-10-16 17:57:14] Fetching: https://www.mangomint.com/learn/how-to-charge-cards-on-file/
+[2025-10-16 17:57:19] ✓ Success: how-to-charge-cards-on-file.md
+[2025-10-16 17:57:21] [13/31] how-to-connect-your-card-reader-to-directly-your-iphone-or-ipad.md
+[2025-10-16 17:57:21] Fetching: https://www.mangomint.com/learn/how-to-connect-your-card-reader-to-directly-your-iphone-or-ipad/
+[2025-10-16 17:57:27] ✓ Success: how-to-connect-your-card-reader-to-directly-your-iphone-or-ipad.md
+[2025-10-16 17:57:29] [14/31] front-desk-display.md
+[2025-10-16 17:57:29] Fetching: https://www.mangomint.com/learn/help-articles/payments/front-desk-display/
+[2025-10-16 17:57:34] ✓ Success: front-desk-display.md
+[2025-10-16 17:57:36] [15/31] mangomint-pay.md
+[2025-10-16 17:57:37] Fetching: https://www.mangomint.com/learn/help-articles/payments/mangomint-pay/
+[2025-10-16 17:57:42] ✓ Success: mangomint-pay.md
+[2025-10-16 17:57:44] [16/31] payment-processing-balances-and-payouts.md
+[2025-10-16 17:57:44] Fetching: https://www.mangomint.com/learn/payment-processing-balances-and-payouts/
+[2025-10-16 17:57:50] ✓ Success: payment-processing-balances-and-payouts.md
+[2025-10-16 17:57:52] [17/31] payments.md
+[2025-10-16 17:57:52] Fetching: https://www.mangomint.com/learn/help-articles/payments/
+[2025-10-16 17:57:58] ✓ Success: payments.md
+[2025-10-16 17:58:00] [18/31] cash-drawer-daily-close-out.md
+[2025-10-16 17:58:00] Fetching: https://www.mangomint.com/learn/cash-drawer-daily-close-out/
+[2025-10-16 17:58:05] ✓ Success: cash-drawer-daily-close-out.md
+[2025-10-16 17:58:07] [19/31] cash-drawer.md
+[2025-10-16 17:58:07] Fetching: https://www.mangomint.com/learn/help-articles/payments/cash-drawer/
+[2025-10-16 17:58:13] ✓ Success: cash-drawer.md
+[2025-10-16 17:58:15] [20/31] basics-payments.md
+[2025-10-16 17:58:15] Fetching: https://www.mangomint.com/learn/help-articles/payments/basics-payments/
+[2025-10-16 17:58:20] ✓ Success: basics-payments.md
+[2025-10-16 17:58:22] [21/31] front-desk-display-hardware-purchase-guide.md
+[2025-10-16 17:58:22] Fetching: https://www.mangomint.com/learn/front-desk-display-hardware-purchase-guide/
+[2025-10-16 17:58:28] ✓ Success: front-desk-display-hardware-purchase-guide.md
+[2025-10-16 17:58:30] [22/31] how-to-take-payments-with-the-card-reader-direct-connection.md
+[2025-10-16 17:58:30] Fetching: https://www.mangomint.com/learn/how-to-take-payments-with-the-card-reader-direct-connection/
+[2025-10-16 17:58:36] ✓ Success: how-to-take-payments-with-the-card-reader-direct-connection.md
+[2025-10-16 17:58:38] [23/31] setting-up-your-front-desk-display.md
+[2025-10-16 17:58:38] Fetching: https://www.mangomint.com/learn/setting-up-your-front-desk-display/
+[2025-10-16 17:58:44] ✓ Success: setting-up-your-front-desk-display.md
+[2025-10-16 17:58:46] [24/31] card-reader-troubleshooting-guide.md
+[2025-10-16 17:58:46] Fetching: https://www.mangomint.com/learn/card-reader-troubleshooting-guide/
+[2025-10-16 17:58:51] ✓ Success: card-reader-troubleshooting-guide.md
+[2025-10-16 17:58:53] [25/31] faq-payment-processing.md
+[2025-10-16 17:58:54] Fetching: https://www.mangomint.com/learn/faq-payment-processing/
+[2025-10-16 17:58:59] ✓ Success: faq-payment-processing.md
+[2025-10-16 17:59:01] [26/31] payment-processing-payout-schedule.md
+[2025-10-16 17:59:01] Fetching: https://www.mangomint.com/learn/payment-processing-payout-schedule/
+[2025-10-16 17:59:06] ✓ Success: payment-processing-payout-schedule.md
+[2025-10-16 17:59:08] [27/31] completing-a-test-transaction-using-your-card-reader.md
+[2025-10-16 17:59:08] Fetching: https://www.mangomint.com/learn/completing-a-test-transaction-using-your-card-reader/
+[2025-10-16 17:59:14] ✓ Success: completing-a-test-transaction-using-your-card-reader.md
+[2025-10-16 17:59:16] [28/31] front-desk-display-troubleshooting-guide.md
+[2025-10-16 17:59:16] Fetching: https://www.mangomint.com/learn/front-desk-display-troubleshooting-guide/
+[2025-10-16 17:59:22] ✓ Success: front-desk-display-troubleshooting-guide.md
+[2025-10-16 17:59:24] [29/31] payment-processing-monthly-summaries.md
+[2025-10-16 17:59:24] Fetching: https://www.mangomint.com/learn/payment-processing-monthly-summaries/
+[2025-10-16 17:59:30] ✓ Success: payment-processing-monthly-summaries.md
+[2025-10-16 17:59:32] [30/31] deposits.md
+[2025-10-16 17:59:32] Fetching: https://www.mangomint.com/learn/help-articles/payments/deposits/
+[2025-10-16 17:59:37] ✓ Success: deposits.md
+[2025-10-16 17:59:39] [31/31] how-to-take-a-deposit-manually.md
+[2025-10-16 17:59:39] Fetching: https://www.mangomint.com/learn/how-to-take-a-deposit-manually/
+[2025-10-16 17:59:45] ✓ Success: how-to-take-a-deposit-manually.md
+[2025-10-16 17:59:47] 
+Category 18-payments completed!
+[2025-10-16 17:59:47] Progress: 351/359 completed, 5 failed, 0 skipped
+
+[2025-10-16 17:59:47] 
+============================================================
+[2025-10-16 17:59:47] Processing category: 19-account-management (3 articles)
+[2025-10-16 17:59:47] ============================================================
+[2025-10-16 17:59:47] [1/3] mangomint-subscription.md
+[2025-10-16 17:59:47] Fetching: https://www.mangomint.com/learn/help-articles/mangomint-subscription/
+[2025-10-16 17:59:52] ✓ Success: mangomint-subscription.md
+[2025-10-16 17:59:54] [2/3] viewing-invoices-for-your-mangomint-subscription.md
+[2025-10-16 17:59:54] Fetching: https://www.mangomint.com/learn/viewing-invoices-for-your-mangomint-subscription/
+[2025-10-16 18:00:00] ✓ Success: viewing-invoices-for-your-mangomint-subscription.md
+[2025-10-16 18:00:02] [3/3] updating-your-mangomint-subscription.md
+[2025-10-16 18:00:02] Fetching: https://www.mangomint.com/learn/updating-your-mangomint-subscription/
+[2025-10-16 18:00:07] ✓ Success: updating-your-mangomint-subscription.md
+[2025-10-16 18:00:09] 
+Category 19-account-management completed!
+[2025-10-16 18:00:09] Progress: 354/359 completed, 5 failed, 0 skipped
+
+[2025-10-16 18:00:10] 
+============================================================
+[2025-10-16 18:00:10] SCRAPING COMPLETE!
+[2025-10-16 18:00:10] ============================================================
+[2025-10-16 18:00:10] Total articles: 359
+[2025-10-16 18:00:10] Successfully fetched: 354
+[2025-10-16 18:00:10] Skipped (already done): 0
+[2025-10-16 18:00:10] Failed: 5
+[2025-10-16 18:00:10] 
+Failed URLs saved in: /Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/scrape_progress.json
+[2025-10-16 18:00:10] You can review failures and retry if needed.
+[2025-10-16 18:00:10] 
+All content saved to: /Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis
+[2025-10-16 18:00:10] Full log available at: /Users/daminirijhwani/medical-spa-platform/docs/mangomint-analysis/scrape_log.txt

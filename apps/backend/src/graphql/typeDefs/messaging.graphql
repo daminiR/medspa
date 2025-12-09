@@ -1,0 +1,187 @@
+type Message {
+  id: ID!
+  conversationId: String!
+  patientId: String!
+  patient: Patient
+  sender: MessageSender!
+  content: String!
+  channel: MessageChannel!
+  status: MessageStatus!
+  metadata: MessageMetadata
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type Conversation {
+  id: ID!
+  patientId: String!
+  patient: Patient
+  messages: [Message!]!
+  lastMessage: Message
+  lastMessageAt: DateTime
+  unreadCount: Int!
+  starred: Boolean!
+  status: ConversationStatus!
+  channel: MessageChannel!
+  aiAnalysis: AIAnalysis
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type MessageMetadata {
+  twilioSid: String
+  deliveredAt: DateTime
+  readAt: DateTime
+  mediaUrl: String
+  intent: String
+  sentiment: String
+}
+
+type AIAnalysis {
+  intent: String!
+  confidence: Float!
+  urgency: String!
+  requiresHuman: Boolean!
+  suggestedResponses: [String!]
+  suggestedActions: [SuggestedAction!]
+}
+
+type SuggestedAction {
+  type: String!
+  label: String!
+  description: String
+  priority: String!
+  automatable: Boolean!
+}
+
+type SMSTemplate {
+  id: ID!
+  name: String!
+  category: String!
+  content: String!
+  variables: [String!]
+  isActive: Boolean!
+}
+
+type MessageStats {
+  totalSent: Int!
+  totalReceived: Int!
+  pendingResponses: Int!
+  avgResponseTime: Float
+}
+
+enum MessageSender {
+  PATIENT
+  STAFF
+  SYSTEM
+  AI
+}
+
+enum MessageChannel {
+  SMS
+  EMAIL
+  PORTAL
+  INTERNAL
+}
+
+enum MessageStatus {
+  PENDING
+  SENT
+  DELIVERED
+  READ
+  FAILED
+}
+
+enum ConversationStatus {
+  ACTIVE
+  RESOLVED
+  WAITING
+  URGENT
+}
+
+input SendMessageInput {
+  patientId: String!
+  content: String!
+  channel: MessageChannel
+  metadata: JSON
+}
+
+input BulkMessageInput {
+  patientIds: [String!]!
+  content: String!
+  channel: MessageChannel!
+  templateId: String
+}
+
+input MessageFilterInput {
+  patientId: String
+  channel: MessageChannel
+  status: MessageStatus
+  startDate: DateTime
+  endDate: DateTime
+  unreadOnly: Boolean
+  urgentOnly: Boolean
+}
+
+type Query {
+  # Get all conversations with filters
+  conversations(filter: MessageFilterInput, limit: Int, offset: Int): [Conversation!]!
+  
+  # Get single conversation
+  conversation(id: ID!): Conversation
+  
+  # Get conversation by patient
+  conversationByPatient(patientId: String!): Conversation
+  
+  # Get message statistics
+  messageStats(startDate: DateTime, endDate: DateTime): MessageStats!
+  
+  # Get SMS templates
+  smsTemplates(category: String): [SMSTemplate!]!
+  
+  # Process message with AI (for testing)
+  analyzeMessage(message: String!, patientId: String!): AIAnalysis!
+}
+
+type Mutation {
+  # Send a single message
+  sendMessage(input: SendMessageInput!): Message!
+  
+  # Send bulk messages
+  sendBulkMessages(input: BulkMessageInput!): [Message!]!
+  
+  # Mark message as read
+  markMessageAsRead(messageId: ID!): Message!
+  
+  # Mark conversation as resolved
+  markConversationResolved(conversationId: ID!): Conversation!
+  
+  # Star/unstar conversation
+  toggleConversationStar(conversationId: ID!): Conversation!
+  
+  # Send appointment reminder
+  sendAppointmentReminder(appointmentId: ID!, type: String!): Message!
+  
+  # Update SMS opt-in status
+  updateSMSOptIn(patientId: String!, optIn: Boolean!): Patient!
+  
+  # Create/update SMS template
+  upsertSMSTemplate(
+    id: ID
+    name: String!
+    category: String!
+    content: String!
+    variables: [String!]
+  ): SMSTemplate!
+}
+
+type Subscription {
+  # Subscribe to new messages for a conversation
+  messageReceived(conversationId: ID!): Message!
+  
+  # Subscribe to all new conversations
+  newConversation: Conversation!
+  
+  # Subscribe to urgent messages
+  urgentMessage: Message!
+}

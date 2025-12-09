@@ -1,0 +1,589 @@
+{
+  "category": "04-clients",
+  "features": [
+    {
+      "feature_name": "Client Portal",
+      "description": "Self-service portal allowing clients to manage appointments, memberships, and packages online",
+      "capabilities": [
+        "Book new appointments",
+        "View, reschedule, or cancel upcoming appointments",
+        "View membership and package details",
+        "Update membership payment methods",
+        "Cancel memberships",
+        "No username or password required",
+        "Customizable with brand colors, logo, and cover image",
+        "Display contact buttons (call, email, website)"
+      ],
+      "user_benefits": [
+        "24/7 self-service access",
+        "Reduced staff workload",
+        "Improved client convenience",
+        "Custom branding maintains professional appearance"
+      ],
+      "complexity": "intermediate",
+      "integrations": [
+        "Automated messages",
+        "Flow messages with Client Profile Link merge tag"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "client portal",
+        "self-service",
+        "online management",
+        "appointments",
+        "memberships"
+      ]
+    },
+    {
+      "feature_name": "Client List Management",
+      "description": "Comprehensive client database with search, filter, and management capabilities",
+      "capabilities": [
+        "Add new clients manually or from appointment booking",
+        "Search existing clients",
+        "Filter by various criteria",
+        "Sort alphabetically or by other preferences",
+        "Export client lists as CSV",
+        "Merge duplicate client profiles",
+        "Delete client records",
+        "View client details and contact information"
+      ],
+      "user_benefits": [
+        "Organized client database",
+        "Easy client lookup",
+        "Data integrity through duplicate merging",
+        "Flexible data export for marketing"
+      ],
+      "complexity": "basic",
+      "integrations": [
+        "Online booking (auto-adds clients)",
+        "Staff permissions"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "client list",
+        "search",
+        "filter",
+        "export",
+        "merge",
+        "database"
+      ]
+    },
+    {
+      "feature_name": "Client Details & Profile Management",
+      "description": "Detailed client profiles with comprehensive information storage",
+      "capabilities": [
+        "Store contact information (name, email, phone)",
+        "Add profile images or use automatic initials",
+        "Track social media handles",
+        "Record additional details (gender, pronouns, birthday)",
+        "Store alternative phone numbers",
+        "Track referral sources",
+        "Add custom tags for organization",
+        "Store home/mailing addresses",
+        "Manage messaging preferences",
+        "Control online booking access",
+        "Add client notes visible during booking/checkout"
+      ],
+      "user_benefits": [
+        "Complete client view",
+        "Personalized service delivery",
+        "Better client communication",
+        "Improved booking experience"
+      ],
+      "complexity": "basic",
+      "integrations": [
+        "Client ownership system",
+        "Online booking restrictions"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "client profile",
+        "details",
+        "contact information",
+        "notes",
+        "preferences"
+      ]
+    },
+    {
+      "feature_name": "Client Timeline",
+      "description": "Automatic chronological record of all client interactions and activities",
+      "capabilities": [
+        "Track past and upcoming appointments",
+        "Record sales associated with client",
+        "Log form submissions",
+        "Store timeline notes",
+        "Filter timeline by entry type",
+        "Link to corresponding appointments or sales",
+        "Automatic updates for all client activities"
+      ],
+      "user_benefits": [
+        "Complete client history at a glance",
+        "Better service continuity",
+        "Easy reference to past interactions",
+        "Comprehensive client relationship tracking"
+      ],
+      "complexity": "basic",
+      "integrations": [
+        "Appointments",
+        "Sales",
+        "Forms",
+        "Timeline notes"
+      ],
+      "screenshots_available": false,
+      "keywords": [
+        "timeline",
+        "history",
+        "appointments",
+        "sales",
+        "forms",
+        "tracking"
+      ]
+    },
+    {
+      "feature_name": "Client Account Balances",
+      "description": "Account balance system allowing clients to prepay and use credits as payment",
+      "capabilities": [
+        "Add money to client account balances",
+        "Use account balance as payment method",
+        "Make deposits during checkout or via client details",
+        "Manually adjust balances (credits/debits)",
+        "Use automated flows to add to balances",
+        "Create account balance membership plans",
+        "Handle negative balances for IOUs",
+        "View account balance history",
+        "Generate account balance reports"
+      ],
+      "user_benefits": [
+        "Flexible payment options",
+        "Improved cash flow management",
+        "Convenient refund/credit system",
+        "Enhanced client loyalty programs"
+      ],
+      "complexity": "advanced",
+      "integrations": [
+        "Payment processing",
+        "Automated flows",
+        "Memberships",
+        "Reports"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "account balance",
+        "prepaid",
+        "credits",
+        "payment method",
+        "deposits"
+      ]
+    },
+    {
+      "feature_name": "Client Membership Management",
+      "description": "Comprehensive membership lifecycle management for clients",
+      "capabilities": [
+        "Start new memberships (with or without agreements)",
+        "Find client memberships across system",
+        "Pause and resume memberships",
+        "Cancel memberships with flexible timing",
+        "Adjust remaining service quantities",
+        "Change service expiration dates",
+        "Resend credit card email requests",
+        "Switch to current membership plan versions",
+        "Handle billing and payment methods",
+        "Send automated membership messages"
+      ],
+      "user_benefits": [
+        "Flexible membership options",
+        "Automated billing management",
+        "Client retention tools",
+        "Streamlined membership administration"
+      ],
+      "complexity": "advanced",
+      "integrations": [
+        "Payment processing",
+        "Automated messages",
+        "Email/SMS",
+        "Billing systems"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "memberships",
+        "billing",
+        "pause",
+        "resume",
+        "cancel",
+        "services"
+      ]
+    },
+    {
+      "feature_name": "Waiver Collection Integration",
+      "description": "Integration with WaiverForever for digital waiver collection",
+      "capabilities": [
+        "Integrate WaiverForever waiver links",
+        "Add waiver links to automated messages",
+        "Automatic PDF addition to client timeline",
+        "Email/phone synchronization for waiver completion",
+        "Seamless waiver workflow integration"
+      ],
+      "user_benefits": [
+        "Paperless waiver process",
+        "Automatic record keeping",
+        "Improved client onboarding",
+        "Legal compliance automation"
+      ],
+      "complexity": "intermediate",
+      "integrations": [
+        "WaiverForever",
+        "Automated messages",
+        "Client timeline"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "waivers",
+        "WaiverForever",
+        "digital",
+        "automated",
+        "compliance"
+      ]
+    },
+    {
+      "feature_name": "Client Forms Management",
+      "description": "Digital form system for client intake and information collection",
+      "capabilities": [
+        "Send forms to clients via automated messages",
+        "Include forms in online booking confirmation",
+        "Send manual form requests via text",
+        "Fill out forms in person on tablets",
+        "Copy and share form links",
+        "Track form completion status",
+        "Use flows to remind about incomplete forms",
+        "Automatic form inclusion based on services"
+      ],
+      "user_benefits": [
+        "Streamlined client intake",
+        "Digital record keeping",
+        "Flexible form completion options",
+        "Improved appointment preparation"
+      ],
+      "complexity": "intermediate",
+      "integrations": [
+        "Automated messages",
+        "Online booking",
+        "Automated flows",
+        "Tablets"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "forms",
+        "intake",
+        "digital",
+        "completion",
+        "reminders"
+      ]
+    },
+    {
+      "feature_name": "Client Marketing & Campaigns",
+      "description": "Advanced client segmentation and marketing campaign tools",
+      "capabilities": [
+        "Filter clients by appointment history",
+        "Filter by service provider, services, locations",
+        "Filter by client attributes (gender, tags, referrals)",
+        "Filter by membership status and types",
+        "Filter by spending patterns",
+        "Filter by birthday months",
+        "Create targeted email campaigns",
+        "Use merge tags for personalization",
+        "Schedule campaigns",
+        "Track campaign performance"
+      ],
+      "user_benefits": [
+        "Targeted marketing campaigns",
+        "Improved client engagement",
+        "Higher conversion rates",
+        "Personalized communications"
+      ],
+      "complexity": "advanced",
+      "integrations": [
+        "Email campaigns",
+        "Automated flows",
+        "Mailchimp integration"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "marketing",
+        "campaigns",
+        "filters",
+        "segmentation",
+        "email",
+        "targeting"
+      ]
+    },
+    {
+      "feature_name": "Online Booking Client Experience",
+      "description": "Client-facing online booking system with comprehensive features",
+      "capabilities": [
+        "No login required for booking",
+        "Gift card purchase option",
+        "Service customization options",
+        "Multiple service booking",
+        "Waitlist joining capability",
+        "Cancellation policy agreement",
+        "Photo upload for inspiration/reference",
+        "Form completion post-booking",
+        "Credit card requirement options",
+        "Automated confirmation messages"
+      ],
+      "user_benefits": [
+        "Convenient 24/7 booking",
+        "No account creation barriers",
+        "Complete booking customization",
+        "Enhanced service communication"
+      ],
+      "complexity": "advanced",
+      "integrations": [
+        "Payment processing",
+        "Automated messages",
+        "Forms",
+        "Gift cards"
+      ],
+      "screenshots_available": false,
+      "keywords": [
+        "online booking",
+        "self-service",
+        "convenience",
+        "customization",
+        "waitlist"
+      ]
+    },
+    {
+      "feature_name": "Client Ownership System",
+      "description": "Staff-based client assignment system for booth renters and team management",
+      "capabilities": [
+        "Assign client owners to staff members",
+        "Separate client lists by ownership",
+        "Hide other staff members' clients",
+        "Auto-assign ownership for online bookings",
+        "Allow cross-staff booking while maintaining ownership",
+        "Handle duplicate records for multiple ownership"
+      ],
+      "user_benefits": [
+        "Clear client responsibility",
+        "Revenue tracking by staff",
+        "Privacy for booth renters",
+        "Organized team management"
+      ],
+      "complexity": "intermediate",
+      "integrations": [
+        "Staff permissions",
+        "Online booking",
+        "Business setup"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "ownership",
+        "staff",
+        "booth rental",
+        "assignment",
+        "privacy"
+      ]
+    },
+    {
+      "feature_name": "Package Transfer System",
+      "description": "Ability to transfer service packages between clients",
+      "capabilities": [
+        "Transfer packages to another client",
+        "Temporary package sharing",
+        "Share package services during joint checkout",
+        "Track package ownership changes",
+        "Reverse package transfers if needed"
+      ],
+      "user_benefits": [
+        "Flexible package usage",
+        "Family/group package sharing",
+        "Enhanced customer service",
+        "Gift package management"
+      ],
+      "complexity": "intermediate",
+      "integrations": [
+        "Packages system",
+        "Checkout process",
+        "Client management"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "packages",
+        "transfer",
+        "sharing",
+        "flexibility",
+        "ownership"
+      ]
+    },
+    {
+      "feature_name": "Client Appointment Self-Management",
+      "description": "Client portal features for appointment rescheduling and cancellation",
+      "capabilities": [
+        "Self-reschedule appointments from client portal",
+        "Self-cancel appointments from client portal",
+        "Same staff member availability only",
+        "Restrictions for modified appointment durations",
+        "Group appointment rescheduling by primary contact",
+        "Automated messages for self-service actions",
+        "Customizable cancellation policies"
+      ],
+      "user_benefits": [
+        "Reduced staff workload",
+        "Client convenience and flexibility",
+        "24/7 appointment management",
+        "Improved client satisfaction"
+      ],
+      "complexity": "intermediate",
+      "integrations": [
+        "Client portal",
+        "Automated messages",
+        "Calendar system"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "self-service",
+        "reschedule",
+        "cancel",
+        "appointments",
+        "flexibility"
+      ]
+    },
+    {
+      "feature_name": "Client Reporting & Analytics",
+      "description": "Comprehensive reporting system for client account balances and usage",
+      "capabilities": [
+        "Client Account Usage Report",
+        "Client Account Balances Report",
+        "Client Account Deposits Report",
+        "Track usage by sale number and date",
+        "Monitor current balance levels",
+        "Analyze deposit patterns",
+        "Export report data"
+      ],
+      "user_benefits": [
+        "Financial tracking and analysis",
+        "Client spending insights",
+        "Account balance monitoring",
+        "Business performance metrics"
+      ],
+      "complexity": "intermediate",
+      "integrations": [
+        "Reports app",
+        "Account balance system",
+        "Sales tracking"
+      ],
+      "screenshots_available": false,
+      "keywords": [
+        "reports",
+        "analytics",
+        "usage",
+        "deposits",
+        "balances",
+        "tracking"
+      ]
+    }
+  ],
+  "key_workflows": [
+    {
+      "workflow_name": "New Client Onboarding",
+      "steps": [
+        "Add client to system (manual or via online booking)",
+        "Collect client details and preferences",
+        "Send forms for completion",
+        "Collect waivers if required",
+        "Set up membership if applicable",
+        "Configure communication preferences"
+      ],
+      "features_involved": [
+        "Client List Management",
+        "Client Details & Profile Management",
+        "Client Forms Management",
+        "Waiver Collection Integration",
+        "Client Membership Management"
+      ]
+    },
+    {
+      "workflow_name": "Membership Lifecycle Management",
+      "steps": [
+        "Start new membership for client",
+        "Set up billing and payment methods",
+        "Send agreement and credit card requests",
+        "Manage ongoing billing and renewals",
+        "Handle service adjustments and expiration dates",
+        "Process pauses, resumes, and cancellations"
+      ],
+      "features_involved": [
+        "Client Membership Management",
+        "Client Account Balances",
+        "Client Marketing & Campaigns"
+      ]
+    },
+    {
+      "workflow_name": "Client Self-Service Experience",
+      "steps": [
+        "Client accesses portal from automated messages",
+        "Views appointments and membership details",
+        "Reschedules or cancels appointments as needed",
+        "Updates payment methods",
+        "Books new appointments online",
+        "Completes forms and uploads photos"
+      ],
+      "features_involved": [
+        "Client Portal",
+        "Client Appointment Self-Management",
+        "Online Booking Client Experience",
+        "Client Forms Management"
+      ]
+    },
+    {
+      "workflow_name": "Targeted Marketing Campaign",
+      "steps": [
+        "Define client segments using filters",
+        "Create personalized email content with merge tags",
+        "Schedule or send campaign immediately",
+        "Track campaign performance and engagement",
+        "Follow up with automated flows based on responses"
+      ],
+      "features_involved": [
+        "Client Marketing & Campaigns",
+        "Client List Management",
+        "Client Details & Profile Management"
+      ]
+    }
+  ],
+  "integrations": [
+    {
+      "name": "WaiverForever",
+      "purpose": "Digital waiver collection and management system integration for automated waiver workflows"
+    },
+    {
+      "name": "Mailchimp",
+      "purpose": "Advanced email marketing platform integration for sophisticated client segmentation and campaigns"
+    },
+    {
+      "name": "Payment Processing",
+      "purpose": "Credit card processing for membership billing, account balance deposits, and online payments"
+    },
+    {
+      "name": "Automated Messages",
+      "purpose": "Integration with messaging system for appointment confirmations, reminders, and marketing communications"
+    },
+    {
+      "name": "Online Booking",
+      "purpose": "Seamless integration between client management and online booking system for automatic client creation"
+    }
+  ],
+  "competitive_advantages": [
+    "No-login client portal for maximum convenience",
+    "Comprehensive account balance system with flexible payment and refund options",
+    "Advanced client filtering and segmentation for precise marketing targeting",
+    "Integrated waiver collection with automatic timeline updates",
+    "Flexible membership management with pause/resume capabilities",
+    "Client ownership system perfect for booth rental businesses",
+    "Package transfer system for enhanced customer service flexibility",
+    "Complete client timeline automatically tracking all interactions",
+    "Self-service appointment management reducing staff workload",
+    "Automated flows for account balance rewards and loyalty programs"
+  ]
+}

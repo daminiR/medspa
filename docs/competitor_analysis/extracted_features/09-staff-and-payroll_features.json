@@ -1,0 +1,537 @@
+{
+  "category": "09-staff-and-payroll",
+  "features": [
+    {
+      "feature_name": "Staff Member Management",
+      "description": "Comprehensive system for adding, managing, and organizing staff members with profile management, permissions, and work assignments",
+      "capabilities": [
+        "Add and invite staff members",
+        "Upload staff member profile photos",
+        "Set staff member permissions with granular control",
+        "Enable/disable staff in online booking",
+        "Reorder staff member display",
+        "Archive and unarchive staff members",
+        "Assign services to staff members",
+        "Manage staff member locations"
+      ],
+      "user_benefits": [
+        "Complete staff profile management",
+        "Control over online booking visibility",
+        "Flexible permission system",
+        "Professional presentation with photos",
+        "Historical staff record keeping"
+      ],
+      "complexity": "intermediate",
+      "integrations": [
+        "Online Booking",
+        "Calendar",
+        "Service Management"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "staff",
+        "members",
+        "profile",
+        "permissions",
+        "add",
+        "invite",
+        "archive"
+      ]
+    },
+    {
+      "feature_name": "Staff Permissions System",
+      "description": "Granular permission control system allowing detailed access management across all system functionality",
+      "capabilities": [
+        "Calendar permissions (view, book, modify appointments)",
+        "Client access permissions (contact details, ownership)",
+        "Sales permissions (view, modify, checkout)",
+        "Message permissions (view, send)",
+        "Report access permissions",
+        "Product and inventory permissions",
+        "Gift card and package permissions",
+        "Cash drawer permissions",
+        "Time clock permissions",
+        "Payroll permissions",
+        "Form management permissions",
+        "Setup and management permissions"
+      ],
+      "user_benefits": [
+        "Secure access control",
+        "Role-based functionality",
+        "Flexible staff management",
+        "Data security compliance",
+        "Customizable user experiences"
+      ],
+      "complexity": "advanced",
+      "integrations": [
+        "All System Apps",
+        "Security Framework"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "permissions",
+        "access",
+        "control",
+        "security",
+        "roles",
+        "admin"
+      ]
+    },
+    {
+      "feature_name": "Staff Work Hours and Scheduling",
+      "description": "Complete work hour management system with schedule creation, alternating schedules, and days off management",
+      "capabilities": [
+        "Set regular work hours",
+        "Create alternating bi-weekly schedules",
+        "Set individual days off",
+        "Bulk set days off for multiple staff",
+        "Override normal schedules",
+        "Manage work location assignments",
+        "Integration with calendar availability"
+      ],
+      "user_benefits": [
+        "Flexible scheduling options",
+        "Accurate availability management",
+        "Time-off tracking",
+        "Multi-location support",
+        "Automated schedule management"
+      ],
+      "complexity": "intermediate",
+      "integrations": [
+        "Calendar",
+        "Online Booking",
+        "Payroll"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "schedule",
+        "hours",
+        "availability",
+        "days off",
+        "work",
+        "calendar"
+      ]
+    },
+    {
+      "feature_name": "Time Clock System",
+      "description": "Digital time tracking system with PIN-based clock in/out, task type tracking, and administrative management",
+      "capabilities": [
+        "PIN-based clock in/out",
+        "Task type creation and tracking",
+        "Paid vs unpaid task designation",
+        "Front desk device setup",
+        "Time card management (add, edit, delete)",
+        "Administrative oversight",
+        "Break and lunch tracking"
+      ],
+      "user_benefits": [
+        "Accurate time tracking",
+        "Payroll integration",
+        "Task-based time allocation",
+        "Remote and on-site flexibility",
+        "Administrative control"
+      ],
+      "complexity": "intermediate",
+      "integrations": [
+        "Payroll",
+        "Staff Members",
+        "Permissions"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "time clock",
+        "PIN",
+        "clock in",
+        "clock out",
+        "tasks",
+        "hours"
+      ]
+    },
+    {
+      "feature_name": "Staff Compensation Management",
+      "description": "Comprehensive compensation system supporting multiple payment methods and commission structures",
+      "capabilities": [
+        "Basic service commission (percentage-based)",
+        "Sliding scale service commission",
+        "Product commission tracking",
+        "Hourly compensation",
+        "Salary compensation",
+        "Greater-of calculations",
+        "Commission overrides per service",
+        "Multi-location compensation rules"
+      ],
+      "user_benefits": [
+        "Flexible compensation models",
+        "Automatic commission calculations",
+        "Performance-based incentives",
+        "Fair compensation tracking",
+        "Multi-business support"
+      ],
+      "complexity": "advanced",
+      "integrations": [
+        "Payroll",
+        "Sales",
+        "Services",
+        "Products"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "compensation",
+        "commission",
+        "salary",
+        "hourly",
+        "pay"
+      ]
+    },
+    {
+      "feature_name": "Full Payroll Processing",
+      "description": "Complete payroll solution with tax calculation, filing, direct deposit, and compliance management",
+      "capabilities": [
+        "Direct deposit payments",
+        "Multiple bank account splits",
+        "Tax calculation and filing",
+        "W-2 and 1099 generation",
+        "Multiple pay schedules",
+        "Unlimited payroll runs",
+        "Off-cycle payroll",
+        "Multi-state compliance",
+        "Benefit calculations",
+        "Time off policies",
+        "Automated notifications"
+      ],
+      "user_benefits": [
+        "Complete payroll automation",
+        "Tax compliance assurance",
+        "Flexible payment options",
+        "Professional documentation",
+        "Time savings",
+        "Legal compliance"
+      ],
+      "complexity": "advanced",
+      "integrations": [
+        "Banking Systems",
+        "Tax Agencies",
+        "Time Clock",
+        "Compensation"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "payroll",
+        "taxes",
+        "direct deposit",
+        "W2",
+        "1099",
+        "compliance"
+      ]
+    },
+    {
+      "feature_name": "Payroll Reporting",
+      "description": "Comprehensive payroll reporting system with detailed compensation breakdowns and adjustments",
+      "capabilities": [
+        "Detailed payroll reports",
+        "Pay adjustment management",
+        "Bonus and reimbursement tracking",
+        "Service and product commission reporting",
+        "Hours and compensation analysis",
+        "PDF and Excel export",
+        "Historical payroll data",
+        "Multi-location reporting"
+      ],
+      "user_benefits": [
+        "Transparent pay calculations",
+        "Easy payroll review",
+        "Detailed compensation tracking",
+        "Audit trail maintenance",
+        "Performance analysis"
+      ],
+      "complexity": "intermediate",
+      "integrations": [
+        "Payroll Processing",
+        "Time Clock",
+        "Sales"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "payroll report",
+        "compensation",
+        "adjustments",
+        "export",
+        "analysis"
+      ]
+    },
+    {
+      "feature_name": "Multiple Payroll Accounts",
+      "description": "Support for multiple legal entities with separate payroll accounts and location assignments",
+      "capabilities": [
+        "Multiple EIN support",
+        "Location-based payroll accounts",
+        "Separate tax filings",
+        "Independent pay groups",
+        "Cross-location staff management",
+        "Account-specific compensation rules"
+      ],
+      "user_benefits": [
+        "Multi-business management",
+        "Legal entity separation",
+        "Simplified compliance",
+        "Scalable operations",
+        "Flexible business structure"
+      ],
+      "complexity": "advanced",
+      "integrations": [
+        "Business Setup",
+        "Locations",
+        "Tax Systems"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "multiple accounts",
+        "EIN",
+        "entities",
+        "locations",
+        "separate"
+      ]
+    },
+    {
+      "feature_name": "Staff Payment Accounts",
+      "description": "Individual payment processing accounts for independent contractors and booth renters",
+      "capabilities": [
+        "Individual staff payment accounts",
+        "Separate payment processing",
+        "Independent payout management",
+        "Staff-specific transaction routing",
+        "Individual financial reporting"
+      ],
+      "user_benefits": [
+        "Independent contractor support",
+        "Booth renter accommodation",
+        "Separate financial management",
+        "Compliance with contractor rules",
+        "Individual business tracking"
+      ],
+      "complexity": "advanced",
+      "integrations": [
+        "Payment Processing",
+        "Stripe",
+        "Staff Management"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "payment accounts",
+        "contractors",
+        "booth rental",
+        "independent",
+        "payments"
+      ]
+    },
+    {
+      "feature_name": "Online Booking Staff Selection",
+      "description": "Customer-facing staff selection options with gender preferences and flexible assignment rules",
+      "capabilities": [
+        "Staff randomization options",
+        "Gender preference selection",
+        "Anyone option availability",
+        "Staff exclusion controls",
+        "Order-based vs random assignment",
+        "Service-specific staff availability"
+      ],
+      "user_benefits": [
+        "Customer choice flexibility",
+        "Fair staff distribution",
+        "Professional presentation",
+        "Booking conversion optimization",
+        "Staff workload management"
+      ],
+      "complexity": "intermediate",
+      "integrations": [
+        "Online Booking",
+        "Staff Management",
+        "Services"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "online booking",
+        "staff selection",
+        "gender",
+        "anyone",
+        "customer choice"
+      ]
+    },
+    {
+      "feature_name": "Staff Notifications",
+      "description": "Multi-channel notification system for staff with customizable preferences and event triggers",
+      "capabilities": [
+        "SMS notifications",
+        "Email notifications",
+        "Push notifications",
+        "Desktop notifications",
+        "Booking event notifications",
+        "Check-in notifications",
+        "Message notifications",
+        "Customizable preferences"
+      ],
+      "user_benefits": [
+        "Real-time communication",
+        "Flexible notification preferences",
+        "Improved responsiveness",
+        "Better customer service",
+        "Reduced missed appointments"
+      ],
+      "complexity": "intermediate",
+      "integrations": [
+        "Messaging",
+        "Appointments",
+        "Mobile App"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "notifications",
+        "SMS",
+        "email",
+        "push",
+        "alerts",
+        "messages"
+      ]
+    },
+    {
+      "feature_name": "Password Management",
+      "description": "Secure password management system for staff accounts with reset and invitation capabilities",
+      "capabilities": [
+        "Self-service password changes",
+        "Admin password reset",
+        "Account invitation system",
+        "Secure authentication",
+        "Account activation process"
+      ],
+      "user_benefits": [
+        "Secure account access",
+        "Easy password recovery",
+        "Streamlined onboarding",
+        "Administrative control",
+        "Security compliance"
+      ],
+      "complexity": "basic",
+      "integrations": [
+        "User Authentication",
+        "Staff Management"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "password",
+        "reset",
+        "security",
+        "login",
+        "authentication"
+      ]
+    }
+  ],
+  "key_workflows": [
+    {
+      "workflow_name": "Staff Onboarding",
+      "steps": [
+        "Create staff member profile",
+        "Set permissions and service assignments",
+        "Configure work hours and schedules",
+        "Send account invitation",
+        "Staff completes profile setup",
+        "Configure compensation rules",
+        "Set up payroll enrollment if applicable"
+      ],
+      "features_involved": [
+        "Staff Member Management",
+        "Staff Permissions System",
+        "Staff Work Hours",
+        "Password Management",
+        "Staff Compensation"
+      ]
+    },
+    {
+      "workflow_name": "Payroll Processing",
+      "steps": [
+        "Generate payroll report",
+        "Review compensation calculations",
+        "Add pay adjustments if needed",
+        "Submit payroll for processing",
+        "Review and approve payroll",
+        "Process direct deposits",
+        "Distribute paystubs"
+      ],
+      "features_involved": [
+        "Payroll Processing",
+        "Payroll Reporting",
+        "Staff Compensation",
+        "Time Clock System"
+      ]
+    },
+    {
+      "workflow_name": "Time Tracking",
+      "steps": [
+        "Staff clock in with PIN",
+        "Track task types during shift",
+        "Clock out at end of shift",
+        "Manager reviews time cards",
+        "Edit time cards if needed",
+        "Export to payroll system"
+      ],
+      "features_involved": [
+        "Time Clock System",
+        "Staff Management",
+        "Payroll Integration"
+      ]
+    },
+    {
+      "workflow_name": "Schedule Management",
+      "steps": [
+        "Set regular staff work hours",
+        "Create alternating schedules if needed",
+        "Set individual days off",
+        "Bulk schedule changes for holidays",
+        "Update online booking availability",
+        "Notify staff of changes"
+      ],
+      "features_involved": [
+        "Staff Work Hours",
+        "Staff Notifications",
+        "Online Booking Integration"
+      ]
+    }
+  ],
+  "integrations": [
+    {
+      "name": "Banking/ACH Systems",
+      "purpose": "Direct deposit processing and bank account verification for payroll"
+    },
+    {
+      "name": "Tax Filing Systems",
+      "purpose": "Automated tax calculation, filing, and compliance management"
+    },
+    {
+      "name": "Stripe Payment Processing",
+      "purpose": "Individual staff payment accounts for independent contractors"
+    },
+    {
+      "name": "Online Booking System",
+      "purpose": "Staff availability, selection, and appointment assignment"
+    },
+    {
+      "name": "Calendar System",
+      "purpose": "Schedule management, availability, and time tracking integration"
+    },
+    {
+      "name": "Mobile Applications",
+      "purpose": "Staff notifications, time clock access, and profile management"
+    }
+  ],
+  "competitive_advantages": [
+    "Comprehensive payroll processing with tax filing included in one system",
+    "Flexible compensation models supporting multiple commission structures",
+    "Support for independent contractors with separate payment accounts",
+    "Multi-entity payroll management for complex business structures",
+    "Integrated time clock with task-based tracking",
+    "Granular permission system for detailed access control",
+    "Automated staff notifications across multiple channels",
+    "Unlimited payroll runs with no additional fees",
+    "Complete integration between scheduling, time tracking, and payroll",
+    "Support for both W-2 employees and 1099 contractors in same system"
+  ]
+}

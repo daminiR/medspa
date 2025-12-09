@@ -1,0 +1,189 @@
+{
+  "platform_name": "Luke's Medical Spa",
+  "feature_categories": {
+    "Dashboard": {
+      "features": [
+        "Main Dashboard",
+        "Admin Overview",
+        "Real-time Analytics"
+      ],
+      "file_indicators": [
+        "apps/admin/src/app/dashboard/page.tsx",
+        "apps/admin/src/app/page.tsx"
+      ]
+    },
+    "Calendar": {
+      "features": [
+        "Calendar Management",
+        "Schedule View",
+        "Day View",
+        "Appointment Scheduling",
+        "Practitioner Column View",
+        "Time Slot Management",
+        "Available Slot Booking",
+        "Appointment Slots",
+        "Calendar Header Navigation",
+        "Schedule Command Bar"
+      ],
+      "file_indicators": [
+        "apps/admin/src/app/calendar/page.tsx",
+        "apps/admin/src/app/calendar/schedule/page.tsx",
+        "apps/admin/src/app/calendar/day/page.tsx",
+        "apps/admin/src/components/calendar/AppointmentSlot.tsx",
+        "apps/admin/src/components/calendar/AvailableSlotBlock.tsx",
+        "apps/admin/src/components/calendar/TimeColumn.tsx",
+        "apps/admin/src/components/calendar/PractitionerColumn.tsx",
+        "apps/admin/src/components/calendar/DayView.tsx",
+        "apps/admin/src/components/calendar/ScheduleCommandBar.tsx",
+        "apps/admin/src/components/calendar/CalendarHeader.tsx"
+      ]
+    },
+    "Patient Management": {
+      "features": [
+        "Patient List",
+        "Patient Search",
+        "Patient Profile",
+        "Add New Patient",
+        "Edit Patient",
+        "Patient Details",
+        "Patient Form",
+        "Appointment History",
+        "Patient Financials",
+        "Paginated Patient List",
+        "Optimized Patient List"
+      ],
+      "file_indicators": [
+        "apps/admin/src/app/patients/page.tsx",
+        "apps/admin/src/app/patients/new/page.tsx",
+        "apps/admin/src/app/patients/[id]/page.tsx",
+        "apps/admin/src/app/patients/[id]/edit/page.tsx",
+        "apps/admin/src/components/patients/PatientFinancials.tsx",
+        "apps/admin/src/components/patients/PatientList.tsx",
+        "apps/admin/src/components/patients/PatientDetailTabsClean.tsx",
+        "apps/admin/src/components/patients/PatientListPaginated.tsx",
+        "apps/admin/src/components/patients/PatientDetailTabs.tsx",
+        "apps/admin/src/components/patients/AppointmentHistory.tsx",
+        "apps/admin/src/components/patients/PatientProfile.tsx",
+        "apps/admin/src/components/patients/PatientSearch.tsx",
+        "apps/admin/src/components/patients/PatientForm.tsx",
+        "apps/admin/src/components/patients/PatientListOptimized.tsx"
+      ]
+    },
+    "Billing": {
+      "features": [
+        "Billing Management",
+        "Payment Processing",
+        "Payment Success Page",
+        "Stripe Integration",
+        "Customer Payment View",
+        "Enhanced Payment Form",
+        "Gift Card Management",
+        "Credits and Refunds",
+        "Stripe Charges",
+        "Stripe Subscriptions",
+        "Payment Intents",
+        "Refund Processing",
+        "Customer Management"
+      ],
+      "file_indicators": [
+        "apps/admin/src/app/billing/page.tsx",
+        "apps/admin/src/app/billing/payment-success/page.tsx",
+        "apps/admin/src/components/payments/CustomerPaymentView.tsx",
+        "apps/admin/src/components/payments/EnhancedPaymentForm.tsx",
+        "apps/admin/src/components/payments/StripePaymentForm.tsx",
+        "apps/admin/src/components/payments/GiftCardManager.tsx",
+        "apps/admin/src/components/payments/CustomerPaymentScreen.tsx",
+        "apps/admin/src/components/payments/CreditsRefunds.tsx",
+        "apps/admin/src/app/api/stripe/charge/route.ts",
+        "apps/admin/src/app/api/stripe/subscription/route.ts",
+        "apps/admin/src/app/api/stripe/payment-intent/route.ts",
+        "apps/admin/src/app/api/stripe/refund/route.ts",
+        "apps/admin/src/app/api/stripe/customer/route.ts"
+      ]
+    },
+    "Staff": {
+      "features": [
+        "Staff Management",
+        "Practitioner Management",
+        "Practitioner Edit Modal"
+      ],
+      "file_indicators": [
+        "apps/admin/src/app/staff/page.tsx",
+        "apps/admin/src/components/practitioners/PractitionerEditModal.tsx"
+      ]
+    },
+    "Reports": {
+      "features": [
+        "Reports Dashboard",
+        "Sales Reports",
+        "Treatment Outcomes Reports",
+        "Cash Reconciliation Reports",
+        "Appointment Analytics"
+      ],
+      "file_indicators": [
+        "apps/admin/src/app/reports/page.tsx",
+        "apps/admin/src/app/reports/sales/page.tsx",
+        "apps/admin/src/app/reports/treatment-outcomes/page.tsx",
+        "apps/admin/src/app/reports/cash-reconciliation/page.tsx",
+        "apps/admin/src/app/reports/appointment-analytics/page.tsx"
+      ]
+    },
+    "Messages": {
+      "features": [
+        "Message Management",
+        "SMS Webhooks",
+        "SMS Sending",
+        "SMS Reminders",
+        "Message Sending",
+        "Test SMS",
+        "Real SMS Testing",
+        "AI Message Processing",
+        "Appointment Reminders Cron"
+      ],
+      "file_indicators": [
+        "apps/admin/src/app/messages/page.tsx",
+        "apps/admin/src/app/api/messages/send-test/route.ts",
+        "apps/admin/src/app/api/test-sms/route.ts",
+        "apps/admin/src/app/api/sms/webhook/route.ts",
+        "apps/admin/src/app/api/sms/send/route.ts",
+        "apps/admin/src/app/api/sms/reminders/route.ts",
+        "apps/admin/src/app/api/ai/process-message/route.ts",
+        "apps/admin/src/app/api/messaging/webhook/route.ts",
+        "apps/admin/src/app/api/messaging/send/route.ts",
+        "apps/admin/src/app/api/test-real-sms/route.ts",
+        "apps/admin/src/app/api/cron/appointment-reminders/route.ts"
+      ]
+    },
+    "Settings": {
+      "features": [
+        "Settings Management",
+        "Quick Replies Configuration"
+      ],
+      "file_indicators": [
+        "apps/admin/src/app/settings/page.tsx",
+        "apps/admin/src/app/settings/quick-replies/page.tsx"
+      ]
+    }
+  },
+  "additional_capabilities": [
+    "Multi-App Architecture (Admin Portal, Provider Tablet, Patient Portal)",
+    "Provider Tablet Interface",
+    "Patient Portal",
+    "Treatment Management",
+    "Package Management",
+    "Charting System",
+    "Public Booking System",
+    "Waitlist Management",
+    "Test and Verification Systems",
+    "Twilio Integration for Communications",
+    "Stripe Payment Processing",
+    "AI-Powered Message Processing",
+    "Automated Appointment Reminders",
+    "Real-time SMS Testing",
+    "Gift Card System",
+    "Credits and Refunds Management",
+    "UI Component Library",
+    "Navigation System",
+    "Multi-tenant Provider Support"
+  ]
+}

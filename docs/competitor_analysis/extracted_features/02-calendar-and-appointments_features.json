@@ -1,0 +1,642 @@
+{
+  "category": "02-calendar-and-appointments",
+  "features": [
+    {
+      "feature_name": "Time Blocks",
+      "description": "Allows staff to block out time on calendar to override regular work hours and prevent online booking during specific periods",
+      "capabilities": [
+        "Create single time blocks",
+        "Create repeating time blocks",
+        "Edit and delete time blocks",
+        "Set duration and timing",
+        "Apply to staff members and resources",
+        "Mobile app support"
+      ],
+      "user_benefits": [
+        "Prevent double booking during unavailable periods",
+        "Override regular work schedules",
+        "Block time for breaks or administrative tasks",
+        "Manage staff availability efficiently"
+      ],
+      "complexity": "basic",
+      "integrations": [],
+      "screenshots_available": true,
+      "keywords": [
+        "time blocks",
+        "scheduling",
+        "availability",
+        "calendar management"
+      ]
+    },
+    {
+      "feature_name": "Group Booking",
+      "description": "Comprehensive system for booking and managing multiple clients together for events like weddings, parties, or group services",
+      "capabilities": [
+        "Create group bookings from calendar",
+        "Create group bookings from existing appointments",
+        "Online group booking by clients",
+        "Individual notifications and forms for each client",
+        "Primary contact designation and management",
+        "Individual or group check-in/check-out",
+        "Reschedule entire groups",
+        "Add/remove appointments from groups",
+        "Maximum group size limits (up to 5 for online)",
+        "Group payment splitting options"
+      ],
+      "user_benefits": [
+        "Streamline booking for parties and events",
+        "Maintain individual client records within groups",
+        "Flexible payment options",
+        "Efficient group management",
+        "Automated notifications for all participants"
+      ],
+      "complexity": "advanced",
+      "integrations": [
+        "Express Booking",
+        "Online Booking",
+        "Client Portal"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "group booking",
+        "wedding parties",
+        "events",
+        "group appointments",
+        "party booking"
+      ]
+    },
+    {
+      "feature_name": "Virtual Waiting Room",
+      "description": "Digital waiting room system that allows clients to check in and wait to be called for their appointments",
+      "capabilities": [
+        "Staff check-in to waiting room",
+        "Client self check-in",
+        "Purple appointment indicators for waiting clients",
+        "Notify button for calling clients",
+        "In-service status management",
+        "Badge showing number of waiting clients",
+        "Automated messaging integration",
+        "Ask clients to wait outside option"
+      ],
+      "user_benefits": [
+        "Reduce crowded waiting areas",
+        "Improve client flow management",
+        "Enable contactless check-in",
+        "Better staff coordination",
+        "Enhanced client experience"
+      ],
+      "complexity": "intermediate",
+      "integrations": [
+        "Automated Messages",
+        "Client Self Check-In"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "waiting room",
+        "check-in",
+        "queue management",
+        "virtual waiting",
+        "client flow"
+      ]
+    },
+    {
+      "feature_name": "Client Self Check-In",
+      "description": "Allows clients to check themselves into the waiting room using automated text messages sent before appointments",
+      "capabilities": [
+        "Automated text message 15 minutes before appointment",
+        "Link-based check-in system",
+        "Option to ask clients to wait outside",
+        "Staff notifications when clients check in",
+        "Purple calendar indicators for checked-in clients",
+        "Integration with virtual waiting room"
+      ],
+      "user_benefits": [
+        "Reduce front desk workload",
+        "Enable contactless operations",
+        "Improve client convenience",
+        "Automatic staff notifications",
+        "Streamlined check-in process"
+      ],
+      "complexity": "intermediate",
+      "integrations": [
+        "Automated Messages",
+        "Virtual Waiting Room"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "self check-in",
+        "automated check-in",
+        "contactless",
+        "client convenience"
+      ]
+    },
+    {
+      "feature_name": "Client Self Checkout",
+      "description": "Enables clients to complete payment process directly on their mobile devices via text message links",
+      "capabilities": [
+        "Text message payment links",
+        "Tip selection and custom tip entry",
+        "Credit card on file usage",
+        "New credit card entry and saving",
+        "Receipt viewing",
+        "15-minute default expiration (customizable)",
+        "Automatic sale closure"
+      ],
+      "user_benefits": [
+        "Contactless payment processing",
+        "Reduced checkout time",
+        "Improved client convenience",
+        "Automatic tip collection",
+        "Secure payment handling"
+      ],
+      "complexity": "intermediate",
+      "integrations": [
+        "Credit Card Processing",
+        "Client Profiles"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "self checkout",
+        "mobile payment",
+        "contactless payment",
+        "tips",
+        "receipts"
+      ]
+    },
+    {
+      "feature_name": "Appointment Management",
+      "description": "Core appointment creation, editing, and management system with comprehensive scheduling capabilities",
+      "capabilities": [
+        "Create appointments from calendar",
+        "Drag and drop appointment editing",
+        "Mobile app appointment creation",
+        "Multiple services per appointment",
+        "Client and service selection",
+        "Appointment status management",
+        "Notification sending",
+        "Calendar integration"
+      ],
+      "user_benefits": [
+        "Efficient appointment scheduling",
+        "Quick appointment modifications",
+        "Multi-service booking capability",
+        "Mobile scheduling access",
+        "Automated client communication"
+      ],
+      "complexity": "basic",
+      "integrations": [
+        "Client Management",
+        "Services",
+        "Automated Messages"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "appointments",
+        "scheduling",
+        "calendar",
+        "booking",
+        "drag and drop"
+      ]
+    },
+    {
+      "feature_name": "Appointment Cancellation and Deletion",
+      "description": "Comprehensive system for managing appointment cancellations with policy enforcement and various cancellation types",
+      "capabilities": [
+        "Normal cancellation within policy period",
+        "Late cancellation after policy period",
+        "No-show marking",
+        "Complete appointment deletion",
+        "Un-cancel functionality",
+        "Faded or hidden canceled appointment display",
+        "Automated cancellation notifications",
+        "Re-engagement automated flows"
+      ],
+      "user_benefits": [
+        "Enforce cancellation policies",
+        "Track different cancellation reasons",
+        "Recover accidentally canceled appointments",
+        "Maintain appointment history",
+        "Automate client re-engagement"
+      ],
+      "complexity": "intermediate",
+      "integrations": [
+        "Automated Messages",
+        "Automated Flows",
+        "Cancellation Policy"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "cancellation",
+        "no-show",
+        "appointment deletion",
+        "policy enforcement"
+      ]
+    },
+    {
+      "feature_name": "Repeating Appointments",
+      "description": "System for creating and managing recurring appointments with flexible frequency options and update capabilities",
+      "capabilities": [
+        "Create recurring appointment series",
+        "Flexible frequency settings",
+        "One year calendar display",
+        "Stop repeating series",
+        "Update individual or all future appointments",
+        "Client timeline integration",
+        "Repeating appointment icons"
+      ],
+      "user_benefits": [
+        "Automate regular client bookings",
+        "Reduce rebooking effort",
+        "Maintain consistent appointment schedules",
+        "Flexible series management",
+        "Clear visual indicators"
+      ],
+      "complexity": "intermediate",
+      "integrations": [
+        "Client Timeline",
+        "Calendar Display"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "recurring appointments",
+        "repeating",
+        "series",
+        "regular bookings"
+      ]
+    },
+    {
+      "feature_name": "Express Booking\u2122",
+      "description": "Streamlined booking process that sends clients text links to complete appointment details and payments",
+      "capabilities": [
+        "Text message booking links",
+        "Automatic or manual enabling",
+        "Customizable time limits",
+        "Credit card requirement options",
+        "Payment/deposit collection",
+        "Pending appointment status",
+        "Automatic cancellation for incomplete bookings",
+        "Integration with group bookings"
+      ],
+      "user_benefits": [
+        "Reduce front desk workload",
+        "Minimize booking errors",
+        "Collect payments upfront",
+        "Improve booking efficiency",
+        "Reduce miscommunication"
+      ],
+      "complexity": "advanced",
+      "integrations": [
+        "Payment Processing",
+        "Automated Messages",
+        "Group Booking"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "express booking",
+        "text booking",
+        "streamlined booking",
+        "payment collection"
+      ]
+    },
+    {
+      "feature_name": "Resources Management",
+      "description": "Comprehensive system for managing rooms, equipment, and limited resources with booking requirements and availability controls",
+      "capabilities": [
+        "Create resource groups and individual resources",
+        "Set resource capacity limits",
+        "Schedule resource availability",
+        "Add resource requirements to services",
+        "Prevent resource double-booking",
+        "Calendar resource viewing",
+        "Limited availability services",
+        "Services without staff requirements",
+        "Resource-specific time blocking"
+      ],
+      "user_benefits": [
+        "Prevent equipment/room conflicts",
+        "Manage limited capacity services",
+        "Create equipment-only services",
+        "Control service availability",
+        "Optimize resource utilization"
+      ],
+      "complexity": "advanced",
+      "integrations": [
+        "Services",
+        "Calendar",
+        "Online Booking"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "resources",
+        "rooms",
+        "equipment",
+        "capacity management",
+        "resource scheduling"
+      ]
+    },
+    {
+      "feature_name": "Intelligent Waitlist",
+      "description": "Smart waitlist system that automatically identifies appointment openings and facilitates rebooking from waitlist entries",
+      "capabilities": [
+        "Add clients to waitlist",
+        "Client self-addition to waitlist (optional)",
+        "Automatic opening detection",
+        "Staff notifications for available slots",
+        "Book directly from waitlist",
+        "Dismiss unwanted openings",
+        "Waitlist filtering and search",
+        "Location-specific waitlists",
+        "Automated messaging integration"
+      ],
+      "user_benefits": [
+        "Fill last-minute cancellations",
+        "Increase appointment utilization",
+        "Improve client satisfaction",
+        "Automate rebooking process",
+        "Reduce manual scheduling work"
+      ],
+      "complexity": "advanced",
+      "integrations": [
+        "Automated Messages",
+        "Express Booking",
+        "Calendar"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "waitlist",
+        "cancellation fill",
+        "rebooking",
+        "availability matching"
+      ]
+    },
+    {
+      "feature_name": "Processing, Finishing, and Buffer Times",
+      "description": "Advanced service timing system that allows for complex service workflows with different time phases",
+      "capabilities": [
+        "Set processing time (staff can take other appointments)",
+        "Set finishing time (staff required)",
+        "Set buffer time before/after services",
+        "Calendar display of different time phases",
+        "Online booking integration",
+        "Service-specific time configurations"
+      ],
+      "user_benefits": [
+        "Optimize staff utilization during processing",
+        "Ensure proper service preparation time",
+        "Manage complex service workflows",
+        "Prevent scheduling conflicts",
+        "Improve service quality"
+      ],
+      "complexity": "advanced",
+      "integrations": [
+        "Services",
+        "Calendar",
+        "Online Booking"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "processing time",
+        "buffer time",
+        "service timing",
+        "workflow management"
+      ]
+    },
+    {
+      "feature_name": "Cancellation Policy Enforcement",
+      "description": "System for enforcing cancellation policies through fees and payment collection",
+      "capabilities": [
+        "Create cancellation fee services",
+        "Adjust service prices for cancellation fees",
+        "Percentage or flat rate fees",
+        "Credit card requirement for booking",
+        "Staff assignment for commission tracking",
+        "Integration with checkout process"
+      ],
+      "user_benefits": [
+        "Recover revenue from late cancellations",
+        "Discourage no-shows",
+        "Enforce business policies consistently",
+        "Reduce financial impact of cancellations",
+        "Automate fee collection"
+      ],
+      "complexity": "intermediate",
+      "integrations": [
+        "Payment Processing",
+        "Services",
+        "Online Booking"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "cancellation policy",
+        "fees",
+        "no-show charges",
+        "policy enforcement"
+      ]
+    },
+    {
+      "feature_name": "Appointment Printing",
+      "description": "Print functionality for appointment details and client appointment lists",
+      "capabilities": [
+        "Print individual appointment details",
+        "Print client upcoming appointments",
+        "Include client contact information",
+        "Show service and purchase history",
+        "Print from calendar or client details"
+      ],
+      "user_benefits": [
+        "Physical appointment records",
+        "Client information packets",
+        "Backup documentation",
+        "Service history tracking",
+        "Professional documentation"
+      ],
+      "complexity": "basic",
+      "integrations": [
+        "Client Management",
+        "Services"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "printing",
+        "appointment details",
+        "client records",
+        "documentation"
+      ]
+    },
+    {
+      "feature_name": "Form Integration",
+      "description": "Integration system for adding and managing forms within appointments",
+      "capabilities": [
+        "Add forms to existing appointments",
+        "Resend form notifications to clients",
+        "Send individual form requests",
+        "Client and staff form templates",
+        "Automatic form inclusion"
+      ],
+      "user_benefits": [
+        "Collect client information efficiently",
+        "Ensure form completion",
+        "Streamline intake processes",
+        "Maintain client records",
+        "Reduce manual paperwork"
+      ],
+      "complexity": "intermediate",
+      "integrations": [
+        "Forms & Charting",
+        "Automated Messages"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "forms",
+        "intake",
+        "client information",
+        "documentation"
+      ]
+    }
+  ],
+  "key_workflows": [
+    {
+      "workflow_name": "Standard Appointment Booking",
+      "steps": [
+        "Select time slot on calendar",
+        "Choose client and service",
+        "Add multiple services if needed",
+        "Set appointment details",
+        "Book appointment",
+        "Send confirmation notifications"
+      ],
+      "features_involved": [
+        "Appointment Management",
+        "Client Management",
+        "Services",
+        "Automated Messages"
+      ]
+    },
+    {
+      "workflow_name": "Express Booking Process",
+      "steps": [
+        "Create appointment with minimal info",
+        "Enable Express Booking toggle",
+        "Send text message to client",
+        "Client completes information via link",
+        "Client provides payment if required",
+        "Appointment automatically confirmed"
+      ],
+      "features_involved": [
+        "Express Booking\u2122",
+        "Payment Processing",
+        "Automated Messages"
+      ]
+    },
+    {
+      "workflow_name": "Group Booking Creation",
+      "steps": [
+        "Select Group Appointment option",
+        "Add first appointment to group",
+        "Add additional appointments",
+        "Set primary contact",
+        "Book all appointments together",
+        "Send individual confirmations"
+      ],
+      "features_involved": [
+        "Group Booking",
+        "Appointment Management",
+        "Automated Messages"
+      ]
+    },
+    {
+      "workflow_name": "Virtual Waiting Room Process",
+      "steps": [
+        "Client receives self check-in text",
+        "Client clicks link to check in",
+        "Appointment shows purple on calendar",
+        "Staff receives notification",
+        "Staff notifies when ready",
+        "Client moved to in-service status"
+      ],
+      "features_involved": [
+        "Client Self Check-In",
+        "Virtual Waiting Room",
+        "Automated Messages"
+      ]
+    },
+    {
+      "workflow_name": "Waitlist to Booking",
+      "steps": [
+        "Add client to waitlist",
+        "System detects available opening",
+        "Staff receives notification",
+        "Staff reviews opening",
+        "Book appointment from waitlist",
+        "Use Express Booking if needed"
+      ],
+      "features_involved": [
+        "Intelligent Waitlist",
+        "Express Booking\u2122",
+        "Automated Messages"
+      ]
+    },
+    {
+      "workflow_name": "Resource-Based Service Setup",
+      "steps": [
+        "Create resource group",
+        "Add individual resources",
+        "Set capacity and availability",
+        "Add resource requirements to services",
+        "System prevents resource conflicts",
+        "View resources on calendar"
+      ],
+      "features_involved": [
+        "Resources Management",
+        "Services",
+        "Calendar"
+      ]
+    }
+  ],
+  "integrations": [
+    {
+      "name": "Automated Messages",
+      "purpose": "Send confirmations, reminders, and notifications for all appointment-related activities"
+    },
+    {
+      "name": "Payment Processing",
+      "purpose": "Handle deposits, payments, and cancellation fees through Express Booking and Self Checkout"
+    },
+    {
+      "name": "Online Booking",
+      "purpose": "Enable client-facing booking capabilities including group bookings and waitlist additions"
+    },
+    {
+      "name": "Client Portal",
+      "purpose": "Allow clients to view appointments, self-reschedule, and manage group bookings"
+    },
+    {
+      "name": "Services Management",
+      "purpose": "Integration with service definitions, pricing, timing, and resource requirements"
+    },
+    {
+      "name": "Forms & Charting",
+      "purpose": "Attach and manage client forms and documentation within appointments"
+    },
+    {
+      "name": "Staff Management",
+      "purpose": "Control permissions and assignments for calendar and appointment features"
+    },
+    {
+      "name": "Mobile App",
+      "purpose": "Full appointment management capabilities on mobile devices"
+    }
+  ],
+  "competitive_advantages": [
+    "Express Booking\u2122 reduces booking errors and automates information collection",
+    "Comprehensive group booking system with individual client management",
+    "Virtual waiting room enables contactless operations",
+    "Intelligent waitlist automatically matches clients with available openings",
+    "Advanced resource management prevents double-booking of rooms and equipment",
+    "Processing/finishing times optimize staff utilization during complex services",
+    "Client self check-in and checkout reduce front desk workload",
+    "Integrated cancellation policy enforcement with automated fee collection",
+    "Repeating appointments reduce rebooking administrative work",
+    "Time blocks provide granular staff availability control"
+  ]
+}

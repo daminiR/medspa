@@ -1,0 +1,456 @@
+{
+  "category": "16-reports",
+  "features": [
+    {
+      "feature_name": "Staff Reports",
+      "description": "Comprehensive reporting on staff performance, payroll, time tracking, and schedules",
+      "capabilities": [
+        "Payroll information tracking",
+        "Service and product sales by staff member",
+        "Time clock working hours tracking",
+        "Days off scheduling reports"
+      ],
+      "user_benefits": [
+        "Monitor staff performance",
+        "Calculate accurate payroll",
+        "Track working hours",
+        "Manage staff schedules"
+      ],
+      "complexity": "intermediate",
+      "integrations": [
+        "Time Clock app"
+      ],
+      "screenshots_available": false,
+      "keywords": [
+        "staff",
+        "payroll",
+        "time clock",
+        "days off",
+        "performance"
+      ]
+    },
+    {
+      "feature_name": "Sales Reports",
+      "description": "Detailed sales analytics for services and products with time-based grouping",
+      "capabilities": [
+        "Sales summary by day",
+        "Service sales quantities and totals",
+        "Product sales quantities and totals",
+        "Sales by time period (day/week/month)"
+      ],
+      "user_benefits": [
+        "Track daily revenue",
+        "Monitor service performance",
+        "Analyze product sales",
+        "Identify sales trends"
+      ],
+      "complexity": "basic",
+      "integrations": [],
+      "screenshots_available": false,
+      "keywords": [
+        "sales",
+        "revenue",
+        "services",
+        "products",
+        "summary"
+      ]
+    },
+    {
+      "feature_name": "Payment Reports",
+      "description": "Comprehensive payment tracking including multiple payment methods, deposits, and cash drawer activity",
+      "capabilities": [
+        "Payment summary by method",
+        "Payment details per transaction",
+        "Cash drawer activity tracking",
+        "Deposits collected and used tracking",
+        "Credit card refunds and reversals",
+        "In-person vs virtual card transactions"
+      ],
+      "user_benefits": [
+        "Track payment methods",
+        "Monitor cash flow",
+        "Reconcile deposits",
+        "Manage cash drawer",
+        "Process refunds accurately"
+      ],
+      "complexity": "intermediate",
+      "integrations": [
+        "Cash Drawer app",
+        "Express Booking",
+        "Self Checkout"
+      ],
+      "screenshots_available": false,
+      "keywords": [
+        "payments",
+        "cash drawer",
+        "deposits",
+        "refunds",
+        "credit card"
+      ]
+    },
+    {
+      "feature_name": "Business Intelligence Reports",
+      "description": "Advanced analytics providing insights into appointments, sales metrics, forecasting, and client retention",
+      "capabilities": [
+        "Appointment productivity metrics",
+        "Staff utilization tracking",
+        "Walk-ins and prebooking analysis",
+        "Average sales per transaction",
+        "Future business forecasting",
+        "Client retention analysis (90/180 days)",
+        "Appointment cancellation tracking"
+      ],
+      "user_benefits": [
+        "Optimize staff productivity",
+        "Predict future revenue",
+        "Improve client retention",
+        "Reduce cancellations",
+        "Make data-driven decisions"
+      ],
+      "complexity": "advanced",
+      "integrations": [
+        "Express Booking"
+      ],
+      "screenshots_available": false,
+      "keywords": [
+        "business intelligence",
+        "productivity",
+        "forecasting",
+        "retention",
+        "analytics"
+      ]
+    },
+    {
+      "feature_name": "Gift Card Reports",
+      "description": "Complete gift card lifecycle tracking from sales to usage and balances",
+      "capabilities": [
+        "Gift card usage details",
+        "Outstanding gift card balances",
+        "Gift card sales tracking",
+        "Reversed gift card payments"
+      ],
+      "user_benefits": [
+        "Track gift card liability",
+        "Monitor gift card usage",
+        "Manage outstanding balances",
+        "Process gift card refunds"
+      ],
+      "complexity": "basic",
+      "integrations": [
+        "Gift Cards app"
+      ],
+      "screenshots_available": false,
+      "keywords": [
+        "gift cards",
+        "balances",
+        "usage",
+        "liability"
+      ]
+    },
+    {
+      "feature_name": "Package Reports",
+      "description": "Package sales and usage tracking with outstanding credits management",
+      "capabilities": [
+        "Package usage details",
+        "Outstanding package credits",
+        "Package sales tracking",
+        "Detailed package sales information"
+      ],
+      "user_benefits": [
+        "Monitor package utilization",
+        "Track outstanding credits",
+        "Analyze package sales performance",
+        "Manage package inventory"
+      ],
+      "complexity": "basic",
+      "integrations": [
+        "Packages app"
+      ],
+      "screenshots_available": false,
+      "keywords": [
+        "packages",
+        "credits",
+        "usage",
+        "sales"
+      ]
+    },
+    {
+      "feature_name": "Membership Reports",
+      "description": "Membership lifecycle management with payment tracking and usage analytics",
+      "capabilities": [
+        "Membership payment tracking",
+        "Service usage by members",
+        "New membership starts",
+        "Membership cancellation tracking"
+      ],
+      "user_benefits": [
+        "Monitor membership revenue",
+        "Track member engagement",
+        "Analyze membership growth",
+        "Reduce membership churn"
+      ],
+      "complexity": "intermediate",
+      "integrations": [
+        "Memberships app"
+      ],
+      "screenshots_available": false,
+      "keywords": [
+        "memberships",
+        "payments",
+        "cancellations",
+        "usage"
+      ]
+    },
+    {
+      "feature_name": "Inventory Reports",
+      "description": "Product inventory management with cost analysis and usage tracking",
+      "capabilities": [
+        "Cost of goods and profit analysis",
+        "Product inventory levels",
+        "Inventory change tracking",
+        "Product usage details"
+      ],
+      "user_benefits": [
+        "Monitor inventory levels",
+        "Track product costs",
+        "Analyze profitability",
+        "Optimize stock management"
+      ],
+      "complexity": "intermediate",
+      "integrations": [],
+      "screenshots_available": false,
+      "keywords": [
+        "inventory",
+        "cost of goods",
+        "stock",
+        "usage"
+      ]
+    },
+    {
+      "feature_name": "Offers Reports",
+      "description": "Marketing offer tracking and performance analysis",
+      "capabilities": [
+        "Offer usage details",
+        "Offer summary statistics"
+      ],
+      "user_benefits": [
+        "Track marketing effectiveness",
+        "Monitor offer redemption",
+        "Analyze promotion performance"
+      ],
+      "complexity": "basic",
+      "integrations": [
+        "Offers app"
+      ],
+      "screenshots_available": false,
+      "keywords": [
+        "offers",
+        "promotions",
+        "marketing",
+        "usage"
+      ]
+    },
+    {
+      "feature_name": "Client Account Balance Reports",
+      "description": "Client account balance management with deposit and usage tracking",
+      "capabilities": [
+        "Account balance usage tracking",
+        "Current client balances",
+        "Account deposit details"
+      ],
+      "user_benefits": [
+        "Monitor client balances",
+        "Track account usage",
+        "Manage client deposits"
+      ],
+      "complexity": "basic",
+      "integrations": [
+        "Client Account Balances"
+      ],
+      "screenshots_available": false,
+      "keywords": [
+        "client accounts",
+        "balances",
+        "deposits",
+        "usage"
+      ]
+    },
+    {
+      "feature_name": "Cashflow Report",
+      "description": "Financial cashflow analysis excluding non-cash payments",
+      "capabilities": [
+        "Gross and net cashflow totals",
+        "Cash-equivalent payment tracking",
+        "Staff tips separation",
+        "Sales tax calculation"
+      ],
+      "user_benefits": [
+        "Monitor actual cash flow",
+        "Track tip distribution",
+        "Calculate net revenue",
+        "Separate tax collections"
+      ],
+      "complexity": "intermediate",
+      "integrations": [],
+      "screenshots_available": false,
+      "keywords": [
+        "cashflow",
+        "tips",
+        "sales tax",
+        "net revenue"
+      ]
+    },
+    {
+      "feature_name": "Daily and Weekly Totals for Staff",
+      "description": "Individual staff member performance tracking accessible via mobile app",
+      "capabilities": [
+        "Daily performance metrics",
+        "Weekly performance summaries",
+        "Service and product revenue tracking",
+        "Commission and tips calculation",
+        "Availability hours tracking"
+      ],
+      "user_benefits": [
+        "Self-monitor performance",
+        "Track personal earnings",
+        "View availability utilization",
+        "Access mobile reports"
+      ],
+      "complexity": "basic",
+      "integrations": [
+        "Mangomint mobile app"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "daily totals",
+        "weekly totals",
+        "mobile",
+        "staff performance"
+      ]
+    },
+    {
+      "feature_name": "Report Access Control",
+      "description": "Permission-based access to company reports with role-based restrictions",
+      "capabilities": [
+        "Admin user access",
+        "Permission-based report access",
+        "Staff member report permissions"
+      ],
+      "user_benefits": [
+        "Control sensitive data access",
+        "Manage user permissions",
+        "Secure financial information"
+      ],
+      "complexity": "basic",
+      "integrations": [],
+      "screenshots_available": false,
+      "keywords": [
+        "permissions",
+        "access control",
+        "admin",
+        "security"
+      ]
+    }
+  ],
+  "key_workflows": [
+    {
+      "workflow_name": "Daily Business Analysis",
+      "steps": [
+        "Access Reports app",
+        "Generate Sales Summary report",
+        "Review Payment Summary report",
+        "Check Cashflow report",
+        "Analyze staff performance via Payroll report"
+      ],
+      "features_involved": [
+        "Sales Reports",
+        "Payment Reports",
+        "Cashflow Report",
+        "Staff Reports"
+      ]
+    },
+    {
+      "workflow_name": "Staff Performance Review",
+      "steps": [
+        "Generate Payroll report",
+        "Review Business Intelligence: Appointments report",
+        "Check Service & Product Sales By Staff",
+        "Analyze Time Clock data",
+        "Review staff daily/weekly totals"
+      ],
+      "features_involved": [
+        "Staff Reports",
+        "Business Intelligence Reports",
+        "Daily and Weekly Totals for Staff"
+      ]
+    },
+    {
+      "workflow_name": "Financial Reconciliation",
+      "steps": [
+        "Generate Payment Details report",
+        "Review Cash Drawer Activity",
+        "Check Deposits Collected and Used",
+        "Analyze Cashflow report",
+        "Reconcile credit card transactions"
+      ],
+      "features_involved": [
+        "Payment Reports",
+        "Cashflow Report"
+      ]
+    }
+  ],
+  "integrations": [
+    {
+      "name": "Time Clock app",
+      "purpose": "Track staff working hours for payroll and time reporting"
+    },
+    {
+      "name": "Cash Drawer app",
+      "purpose": "Monitor cash transactions and drawer activity"
+    },
+    {
+      "name": "Express Booking",
+      "purpose": "Track online bookings, deposits, and cancellations"
+    },
+    {
+      "name": "Gift Cards app",
+      "purpose": "Track gift card sales, usage, and balances"
+    },
+    {
+      "name": "Packages app",
+      "purpose": "Monitor package sales and usage"
+    },
+    {
+      "name": "Memberships app",
+      "purpose": "Track membership payments and usage"
+    },
+    {
+      "name": "Offers app",
+      "purpose": "Monitor marketing offer performance"
+    },
+    {
+      "name": "Client Account Balances",
+      "purpose": "Track client account deposits and usage"
+    },
+    {
+      "name": "Mangomint mobile app",
+      "purpose": "Allow staff to view personal performance metrics"
+    },
+    {
+      "name": "Self Checkout",
+      "purpose": "Track virtual payment transactions"
+    }
+  ],
+  "competitive_advantages": [
+    "Comprehensive reporting across all business functions in one platform",
+    "Advanced business intelligence with productivity and retention metrics",
+    "Mobile access for staff to view personal performance",
+    "Detailed payment tracking with virtual vs in-person transaction separation",
+    "Integrated forecasting capabilities for future business planning",
+    "Role-based access control for sensitive financial data",
+    "Real-time cash drawer activity monitoring",
+    "Client retention analysis with 90 and 180-day tracking",
+    "Automatic calculation of staff productivity and utilization rates",
+    "Excel export capability for detailed analysis"
+  ]
+}

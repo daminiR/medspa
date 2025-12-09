@@ -1,0 +1,412 @@
+{
+  "category": "07-products-and-inventory",
+  "features": [
+    {
+      "feature_name": "Product Management",
+      "description": "Comprehensive system for creating and managing product catalog with detailed product information",
+      "capabilities": [
+        "Create and edit products",
+        "Organize products by categories",
+        "Set retail and wholesale pricing",
+        "Track product brands",
+        "Manage SKU and barcode information",
+        "Add product descriptions",
+        "Configure tax settings per product",
+        "Set up non-retail/backbar products",
+        "Assign product owners for booth renters",
+        "Enable/disable commission calculations",
+        "Auto-add products to sales"
+      ],
+      "user_benefits": [
+        "Organized product catalog",
+        "Flexible pricing structure",
+        "Easy product identification",
+        "Tax compliance",
+        "Support for different business models"
+      ],
+      "complexity": "intermediate",
+      "integrations": [],
+      "screenshots_available": true,
+      "keywords": [
+        "products",
+        "catalog",
+        "pricing",
+        "SKU",
+        "barcode",
+        "categories",
+        "brands"
+      ]
+    },
+    {
+      "feature_name": "Product Categories Management",
+      "description": "System for organizing products into hierarchical categories with special handling for professional-use items",
+      "capabilities": [
+        "Create product categories",
+        "Edit and delete categories",
+        "Non-retail product categorization",
+        "Control category visibility during checkout",
+        "Permission-based access to non-retail categories"
+      ],
+      "user_benefits": [
+        "Organized product structure",
+        "Controlled access to professional items",
+        "Streamlined checkout process",
+        "Better inventory organization"
+      ],
+      "complexity": "basic",
+      "integrations": [],
+      "screenshots_available": true,
+      "keywords": [
+        "categories",
+        "non-retail",
+        "backbar",
+        "professional",
+        "organization"
+      ]
+    },
+    {
+      "feature_name": "Inventory Tracking",
+      "description": "Real-time inventory management system that automatically updates stock levels based on sales and manual adjustments",
+      "capabilities": [
+        "Track current stock levels",
+        "Automatic inventory updates on sales",
+        "Manual inventory adjustments",
+        "Received stock recording",
+        "Inventory recounts",
+        "Professional use tracking",
+        "Other inventory changes with descriptions",
+        "Stock level monitoring"
+      ],
+      "user_benefits": [
+        "Real-time stock visibility",
+        "Accurate inventory counts",
+        "Prevention of stockouts",
+        "Better purchasing decisions",
+        "Audit trail for inventory changes"
+      ],
+      "complexity": "intermediate",
+      "integrations": [],
+      "screenshots_available": true,
+      "keywords": [
+        "inventory",
+        "stock",
+        "tracking",
+        "recount",
+        "adjustments",
+        "professional use"
+      ]
+    },
+    {
+      "feature_name": "Purchase Order Management",
+      "description": "Complete system for creating, managing, and fulfilling purchase orders with supplier integration",
+      "capabilities": [
+        "Create purchase orders by supplier",
+        "Automatic quantity calculations based on stock levels",
+        "Add single or multiple products to POs",
+        "Filter products by category and brand",
+        "Track desired quantity on hand",
+        "Calculate order quantities automatically",
+        "Download POs as PDF or Excel",
+        "Manage PO status and fulfillment",
+        "Handle partial and full deliveries",
+        "Close completed purchase orders"
+      ],
+      "user_benefits": [
+        "Streamlined ordering process",
+        "Optimal inventory levels",
+        "Reduced manual calculations",
+        "Better supplier communication",
+        "Efficient receiving process"
+      ],
+      "complexity": "advanced",
+      "integrations": [
+        "Excel",
+        "PDF export"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "purchase orders",
+        "PO",
+        "suppliers",
+        "ordering",
+        "procurement",
+        "automatic calculations"
+      ]
+    },
+    {
+      "feature_name": "Supplier Management",
+      "description": "System for managing product suppliers and their relationships with inventory items",
+      "capabilities": [
+        "Add and manage suppliers",
+        "Edit supplier information",
+        "Delete unused suppliers",
+        "Assign suppliers to products",
+        "Organize POs by supplier"
+      ],
+      "user_benefits": [
+        "Organized supplier database",
+        "Easy supplier selection for products",
+        "Streamlined purchasing workflows",
+        "Better vendor relationship management"
+      ],
+      "complexity": "basic",
+      "integrations": [],
+      "screenshots_available": true,
+      "keywords": [
+        "suppliers",
+        "vendors",
+        "procurement",
+        "relationships"
+      ]
+    },
+    {
+      "feature_name": "Product Search and Filtering",
+      "description": "Advanced search capabilities for quickly finding products using multiple criteria",
+      "capabilities": [
+        "Search by product name",
+        "Search by brand",
+        "Search by SKU number",
+        "Search by barcode",
+        "Sort by category",
+        "Sort by brand",
+        "Filter products in purchase orders"
+      ],
+      "user_benefits": [
+        "Quick product location",
+        "Efficient product management",
+        "Faster checkout process",
+        "Improved user experience"
+      ],
+      "complexity": "basic",
+      "integrations": [],
+      "screenshots_available": true,
+      "keywords": [
+        "search",
+        "filter",
+        "SKU",
+        "barcode",
+        "sorting",
+        "product lookup"
+      ]
+    },
+    {
+      "feature_name": "Inventory Reporting",
+      "description": "Comprehensive reporting suite for inventory analysis, costs, and usage tracking",
+      "capabilities": [
+        "Cost of Goods reporting",
+        "Product inventory status reports",
+        "Inventory changes tracking",
+        "Product usage analysis",
+        "Profit and cost analysis",
+        "Stock level reporting",
+        "Professional use tracking",
+        "Excel report exports"
+      ],
+      "user_benefits": [
+        "Financial visibility",
+        "Usage pattern insights",
+        "Cost control",
+        "Inventory optimization",
+        "Business intelligence"
+      ],
+      "complexity": "intermediate",
+      "integrations": [
+        "Excel export"
+      ],
+      "screenshots_available": false,
+      "keywords": [
+        "reports",
+        "cost of goods",
+        "inventory analysis",
+        "usage",
+        "profit",
+        "analytics"
+      ]
+    },
+    {
+      "feature_name": "Product Commission System",
+      "description": "Flexible commission structure for staff members on product sales with multiple calculation methods",
+      "capabilities": [
+        "Basic flat percentage commission",
+        "Product-specific commission rates",
+        "Sliding scale commission tiers",
+        "Zero-based commission calculation",
+        "Progressive commission calculation",
+        "Non-service provider eligibility",
+        "Commission tracking and reporting"
+      ],
+      "user_benefits": [
+        "Flexible compensation structures",
+        "Motivational sales incentives",
+        "Fair commission distribution",
+        "Detailed commission tracking",
+        "Support for different staff roles"
+      ],
+      "complexity": "advanced",
+      "integrations": [],
+      "screenshots_available": true,
+      "keywords": [
+        "commission",
+        "compensation",
+        "sales incentives",
+        "sliding scale",
+        "staff earnings"
+      ]
+    },
+    {
+      "feature_name": "Barcode Integration",
+      "description": "Support for barcode scanning and management throughout the product and sales process",
+      "capabilities": [
+        "Store product barcodes",
+        "Barcode scanning during checkout",
+        "Barcode-based product search",
+        "Barcode management in product setup"
+      ],
+      "user_benefits": [
+        "Faster checkout process",
+        "Reduced manual entry errors",
+        "Improved accuracy",
+        "Streamlined operations"
+      ],
+      "complexity": "intermediate",
+      "integrations": [
+        "Barcode scanners"
+      ],
+      "screenshots_available": true,
+      "keywords": [
+        "barcode",
+        "scanning",
+        "checkout",
+        "accuracy",
+        "automation"
+      ]
+    },
+    {
+      "feature_name": "Tax Management",
+      "description": "Product-level tax configuration system for compliance and accurate pricing",
+      "capabilities": [
+        "Enable/disable tax per product",
+        "Tax calculation on sales",
+        "Tax reporting integration",
+        "Flexible tax configuration"
+      ],
+      "user_benefits": [
+        "Tax compliance",
+        "Accurate pricing",
+        "Simplified tax management",
+        "Automated calculations"
+      ],
+      "complexity": "basic",
+      "integrations": [],
+      "screenshots_available": true,
+      "keywords": [
+        "tax",
+        "compliance",
+        "pricing",
+        "sales tax",
+        "configuration"
+      ]
+    }
+  ],
+  "key_workflows": [
+    {
+      "workflow_name": "Product Setup Workflow",
+      "steps": [
+        "Create product categories",
+        "Add suppliers",
+        "Create products with all details",
+        "Set up inventory tracking",
+        "Configure purchase order settings",
+        "Assign desired quantities"
+      ],
+      "features_involved": [
+        "Product Management",
+        "Product Categories Management",
+        "Supplier Management",
+        "Inventory Tracking"
+      ]
+    },
+    {
+      "workflow_name": "Purchase Order Process",
+      "steps": [
+        "Create new purchase order",
+        "Select supplier",
+        "Add products (single or multiple)",
+        "Review and adjust quantities",
+        "Download and send to supplier",
+        "Receive partial or full delivery",
+        "Update received quantities",
+        "Close purchase order"
+      ],
+      "features_involved": [
+        "Purchase Order Management",
+        "Supplier Management",
+        "Inventory Tracking"
+      ]
+    },
+    {
+      "workflow_name": "Inventory Management Workflow",
+      "steps": [
+        "Monitor stock levels",
+        "Add inventory changes",
+        "Record received stock",
+        "Track professional use",
+        "Generate inventory reports",
+        "Analyze usage patterns"
+      ],
+      "features_involved": [
+        "Inventory Tracking",
+        "Inventory Reporting",
+        "Purchase Order Management"
+      ]
+    },
+    {
+      "workflow_name": "Sales and Commission Workflow",
+      "steps": [
+        "Search/scan products during checkout",
+        "Add products to sale",
+        "Calculate taxes and totals",
+        "Assign staff to product sales",
+        "Calculate commissions",
+        "Update inventory automatically"
+      ],
+      "features_involved": [
+        "Product Search and Filtering",
+        "Barcode Integration",
+        "Tax Management",
+        "Product Commission System",
+        "Inventory Tracking"
+      ]
+    }
+  ],
+  "integrations": [
+    {
+      "name": "Excel Export",
+      "purpose": "Export purchase orders and inventory reports for external analysis and supplier communication"
+    },
+    {
+      "name": "PDF Generation",
+      "purpose": "Generate professional purchase order documents for supplier communication"
+    },
+    {
+      "name": "Barcode Scanners",
+      "purpose": "Enable barcode scanning for faster product lookup and checkout processes"
+    },
+    {
+      "name": "Tax Systems",
+      "purpose": "Integrate with tax calculation and reporting systems for compliance"
+    }
+  ],
+  "competitive_advantages": [
+    "Automatic purchase order quantity calculations based on desired stock levels and current inventory",
+    "Comprehensive sliding scale commission system with zero-based and progressive calculation options",
+    "Integrated backbar/professional use tracking separate from retail inventory",
+    "Flexible product ownership system supporting booth rental business models",
+    "Real-time inventory updates across sales, receiving, and manual adjustments",
+    "Multi-format export capabilities for purchase orders (PDF and Excel)",
+    "Permission-based access control for non-retail products",
+    "Automated inventory deduction during checkout process",
+    "Comprehensive cost of goods and profitability reporting",
+    "Support for partial delivery tracking and management"
+  ]
+}

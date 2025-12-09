@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Luke's Medical Spa - Build Queue</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .stat-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .stat-card h3 {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .stat-card p {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .build-queue {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .priority-section {
+            margin-bottom: 30px;
+        }
+
+        .priority-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        .p0 { background: #fee; border-left: 4px solid #dc3545; }
+        .p1 { background: #fef3e0; border-left: 4px solid #ffc107; }
+        .p2 { background: #e8f5e9; border-left: 4px solid #28a745; }
+
+        .priority-header h2 {
+            margin-left: 10px;
+        }
+
+        .feature-card {
+            background: #f8f9fa;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .feature-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .feature-card.completed {
+            opacity: 0.6;
+            background: #f0f0f0;
+        }
+
+        .feature-card.completed .feature-title {
+            text-decoration: line-through;
+            color: #999;
+        }
+
+        .feature-checkbox {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        .feature-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 10px;
+        }
+
+        .feature-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .feature-meta {
+            display: flex;
+            gap: 10px;
+        }
+
+        .badge {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .effort-low { background: #d4edda; color: #155724; }
+        .effort-medium { background: #fff3cd; color: #856404; }
+        .effort-high { background: #f8d7da; color: #721c24; }
+
+        .feature-description {
+            color: #666;
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+
+        .feature-details {
+            display: none;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 2px solid #e9ecef;
+        }
+
+        .feature-card.expanded .feature-details {
+            display: block;
+        }
+
+        .spec-section {
+            margin-bottom: 20px;
+        }
+
+        .spec-section h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .spec-section ul {
+            margin-left: 20px;
+        }
+
+        .spec-section li {
+            margin-bottom: 8px;
+            line-height: 1.6;
+        }
+
+        .code-hint {
+            background: #282c34;
+            color: #abb2bf;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            margin-top: 10px;
+            white-space: pre-wrap;
+        }
+
+        .next-up {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+        }
+
+        .next-up h2 {
+            margin-bottom: 15px;
+        }
+
+        .next-up-content {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .next-up-title {
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .action-button {
+            background: white;
+            color: #667eea;
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            display: inline-block;
+            font-weight: 600;
+            margin-top: 15px;
+            transition: all 0.3s;
+        }
+
+        .action-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .workflow {
+            background: #fff9e6;
+            border: 2px solid #ffc107;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+
+        .workflow-step {
+            display: flex;
+            align-items: center;
+            margin: 8px 0;
+        }
+
+        .workflow-step::before {
+            content: "→";
+            margin-right: 10px;
+            font-weight: bold;
+            color: #ffc107;
+        }
+
+        @media print {
+            body {
+                background: white;
+            }
+            .feature-details {
+                display: block !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🏗️ Luke's Medical Spa - Build Queue</h1>
+            <p style="color: #666; margin-top: 10px;">Injectables & Lasers Med Spa Platform - Prioritized Feature Development</p>
+
+            <div class="stats">
+                <div class="stat-card">
+                    <h3>Feature Parity</h3>
+                    <p>34%</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Completed</h3>
+                    <p id="completed-count">0/9</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Estimated Time</h3>
+                    <p>6 months</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Competitor</h3>
+                    <p>Mango Mint</p>
+                </div>
+            </div>
+
+            <!-- Progress Bar -->
+            <div style="margin-top: 20px; background: #e9ecef; border-radius: 20px; height: 10px; overflow: hidden;">
+                <div id="progress-bar" style="background: linear-gradient(90deg, #667eea, #764ba2); height: 100%; width: 0%; transition: width 0.3s;"></div>
+            </div>
+        </div>
+
+        <!-- Next Up -->
+        <div class="next-up">
+            <h2>🎯 BUILD THIS NEXT</h2>
+            <div class="next-up-content">
+                <div>
+                    <div class="next-up-title">Virtual Waiting Room</div>
+                    <div style="margin-top: 10px; opacity: 0.9;">SMS check-in from parking lot</div>
+                    <div style="margin-top: 5px; font-size: 18px;">⏱️ 1-2 weeks</div>
+                </div>
+                <div>
+                    <p style="opacity: 0.9; line-height: 1.6;">Post-COVID essential. Patients text when they arrive, wait in car until room ready. SMS notification when ready. Reduces front desk work, improves patient experience.</p>
+                    <a href="#feature-virtual-waiting-room" class="action-button">View Full Spec ↓</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- P0 Features -->
+        <div class="build-queue">
+            <div class="priority-section">
+                <div class="priority-header p0">
+                    <span style="font-size: 24px;">🔴</span>
+                    <h2>P0 - Critical (Build Immediately)</h2>
+                </div>
+
+                <!-- Feature 1: Virtual Waiting Room -->
+                <div class="feature-card" id="feature-virtual-waiting-room" data-feature-id="feature-1" onclick="if(event.target.type !== 'checkbox') this.classList.toggle('expanded')">
+                    <input type="checkbox" class="feature-checkbox" onclick="event.stopPropagation(); toggleFeature(this)" data-feature-id="feature-1">
+                    <div class="feature-header">
+                        <div class="feature-title">1. Virtual Waiting Room</div>
+                        <div class="feature-meta">
+                            <span class="badge effort-low">1-2 weeks</span>
+                        </div>
+                    </div>
+                    <div class="feature-description">
+                        <strong>Why:</strong> Post-COVID necessity, improves patient flow, reduces front desk work<br>
+                        <strong>Impact:</strong> 80% patient adoption, 30 min/day saved at front desk
+                    </div>
+
+                    <div class="feature-details">
+                        <div class="spec-section">
+                            <h4>📋 Requirements</h4>
+                            <ul>
+                                <li>SMS-based check-in when patient arrives</li>
+                                <li>Digital waiting room queue dashboard for staff</li>
+                                <li>Automatic SMS when treatment room ready</li>
+                                <li>Queue management (FIFO with VIP priority)</li>
+                                <li>Patient arrival time tracking</li>
+                            </ul>
+                        </div>
+
+                        <div class="spec-section">
+                            <h4>🔧 Technical Implementation</h4>
+                            <ul>
+                                <li><strong>SMS:</strong> Twilio integration</li>
+                                <li><strong>Real-time:</strong> WebSocket or polling every 5s</li>
+                                <li><strong>Database:</strong> Add `waiting_room_status` to appointments table</li>
+                                <li><strong>UI:</strong> New staff dashboard component</li>
+                            </ul>
+                        </div>
+
+                        <div class="spec-section">
+                            <h4>💡 AI Coding Instructions</h4>
+                            <div class="code-hint">// Database Schema Changes
+ALTER TABLE appointments ADD COLUMN waiting_room_status VARCHAR(20);
+-- Values: 'not_arrived', 'in_car', 'room_ready', 'checked_in'
+
+ALTER TABLE appointments ADD COLUMN arrival_time TIMESTAMP;
+
+CREATE TABLE waiting_room_queue (
+  id UUID PRIMARY KEY,
+  appointment_id UUID REFERENCES appointments(id),
+  arrival_time TIMESTAMP,
+  status VARCHAR(20),
+  priority INT DEFAULT 0
+);
+
+// API Endpoints to Create
+POST /api/waiting-room/check-in
+  - Body: { appointmentId, phoneNumber }
+  - Sends confirmation SMS
+  - Updates queue
+
+POST /api/waiting-room/call-patient
+  - Body: { appointmentId }
+  - Sends "room ready" SMS
+  - Updates status
+
+GET /api/waiting-room/queue
+  - Returns current queue ordered by arrival + priority
+
+// Frontend Components
+- WaitingRoomDashboard (staff view, real-time)
+- PatientCheckInPage (mobile-optimized)
+- QueueListItem component
+- SMSService for Twilio integration</div>
+                        </div>
+
+                        <div class="workflow">
+                            <strong>Patient Workflow:</strong>
+                            <div class="workflow-step">Patient arrives, parks in lot</div>
+                            <div class="workflow-step">Texts "HERE" or clicks SMS link</div>
+                            <div class="workflow-step">Gets confirmation: "You're in the queue"</div>
+                            <div class="workflow-step">Waits in car</div>
+                            <div class="workflow-step">Gets SMS: "Room 3 is ready!"</div>
+                            <div class="workflow-step">Comes inside, bypasses waiting room</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Feature 2: Resource Management -->
+                <div class="feature-card" data-feature-id="feature-2" onclick="if(event.target.type !== 'checkbox') this.classList.toggle('expanded')">
+                    <input type="checkbox" class="feature-checkbox" onclick="event.stopPropagation(); toggleFeature(this)" data-feature-id="feature-2">
+                    <div class="feature-header">
+                        <div class="feature-title">2. Resource Management (Laser/Room Booking)</div>
+                        <div class="feature-meta">
+                            <span class="badge effort-high">1-2 months</span>
+                        </div>
+                    </div>
+                    <div class="feature-description">
+                        <strong>Why:</strong> Prevent double-booking of limited laser machines and treatment rooms<br>
+                        <strong>Impact:</strong> Zero conflicts, 75% resource utilization, 40% faster scheduling
+                    </div>
+
+                    <div class="feature-details">
+                        <div class="spec-section">
+                            <h4>📋 Requirements</h4>
+                            <ul>
+                                <li>Resource catalog (rooms, laser machines, equipment)</li>
+                                <li>Link resources to appointments</li>
+                                <li>Conflict detection and prevention</li>
+                                <li>Resource availability calendar view</li>
+                                <li>Service-to-resource mapping (Laser Hair Removal → Candela Laser)</li>
+                                <li>Multi-resource booking (room + laser)</li>
+                            </ul>
+                        </div>
+
+                        <div class="spec-section">
+                            <h4>🔧 Technical Implementation</h4>
+                            <div class="code-hint">// Database Schema
+CREATE TABLE resources (
+  id UUID PRIMARY KEY,
+  name VARCHAR(100),
+  type VARCHAR(50), -- 'room', 'laser', 'equipment'
+  status VARCHAR(20), -- 'available', 'maintenance'
+  location_id UUID
+);
+
+CREATE TABLE appointment_resources (
+  appointment_id UUID REFERENCES appointments(id),
+  resource_id UUID REFERENCES resources(id),
+  start_time TIMESTAMP,
+  end_time TIMESTAMP,
+  PRIMARY KEY (appointment_id, resource_id)
+);
+
+CREATE TABLE service_resource_requirements (
+  service_id UUID REFERENCES services(id),
+  resource_type VARCHAR(50),
+  quantity INT DEFAULT 1
+);
+
+// API Endpoints
+GET /api/resources/availability
+  - Query params: startTime, endTime, resourceType
+  - Returns available resources
+
+POST /api/resources/check-conflict
+  - Body: { resourceIds, startTime, endTime }
+  - Returns boolean + conflict details
+
+POST /api/appointments/with-resources
+  - Creates appointment + reserves resources atomically
+
+// Frontend Components
+- ResourceCalendarView
+- ResourceSelector (dropdown with availability)
+- ConflictAlert component
+- ResourceUtilizationChart</div>
+                        </div>
+
+                        <div class="workflow">
+                            <strong>Scheduler Workflow:</strong>
+                            <div class="workflow-step">Create appointment for "Laser Hair Removal"</div>
+                            <div class="workflow-step">System shows: Requires "Laser Room" + "Candela Laser"</div>
+                            <div class="workflow-step">Calendar shows Room 2 + Candela Laser available at 2pm</div>
+                            <div class="workflow-step">Book appointment → Both resources auto-reserved</div>
+                            <div class="workflow-step">If conflict: Red highlight, suggest alternative times</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Feature 3: Processing/Buffer Times -->
+                <div class="feature-card" data-feature-id="feature-3" onclick="if(event.target.type !== 'checkbox') this.classList.toggle('expanded')">
+                    <input type="checkbox" class="feature-checkbox" onclick="event.stopPropagation(); toggleFeature(this)" data-feature-id="feature-3">
+                    <div class="feature-header">
+                        <div class="feature-title">3. Processing/Buffer Times (Injectables Workflow)</div>
+                        <div class="feature-meta">
+                            <span class="badge effort-medium">2-4 weeks</span>
+                        </div>
+                    </div>
+                    <div class="feature-description">
+                        <strong>Why:</strong> Optimize practitioner time during numbing periods for injectables<br>
+                        <strong>Impact:</strong> 20% more patients/day, 30% less idle time
+                    </div>
+
+                    <div class="feature-details">
+                        <div class="spec-section">
+                            <h4>📋 Requirements</h4>
+                            <ul>
+                                <li>Service timing breakdown (processing, service, finishing, buffer)</li>
+                                <li>Calendar shows different time phases with colors</li>
+                                <li>Practitioner can see other patients during processing time</li>
+                                <li>Auto-alerts when patient ready for treatment</li>
+                                <li>Resource availability during different phases</li>
+                            </ul>
+                        </div>
+
+                        <div class="spec-section">
+                            <h4>🔧 Technical Implementation</h4>
+                            <div class="code-hint">// Database Schema
+ALTER TABLE services ADD COLUMN processing_minutes INT DEFAULT 0;
+ALTER TABLE services ADD COLUMN service_minutes INT;
+ALTER TABLE services ADD COLUMN finishing_minutes INT DEFAULT 0;
+ALTER TABLE services ADD COLUMN buffer_minutes INT DEFAULT 0;
+
+ALTER TABLE appointments ADD COLUMN current_phase VARCHAR(20);
+-- Values: 'scheduled', 'processing', 'service', 'finishing', 'complete'
+
+ALTER TABLE appointments ADD COLUMN processing_start_time TIMESTAMP;
+ALTER TABLE appointments ADD COLUMN service_start_time TIMESTAMP;
+
+// Example: Botox Service
+processing_minutes: 20  (numbing cream)
+service_minutes: 15     (injection)
+finishing_minutes: 10   (observation)
+buffer_minutes: 5       (room cleanup)
+total: 50 minutes
+
+// API Endpoints
+POST /api/appointments/{id}/start-phase
+  - Body: { phase: 'processing' | 'service' | 'finishing' }
+  - Sends SMS to practitioner when ready
+
+GET /api/practitioners/{id}/availability-during-processing
+  - Returns time slots when practitioner is free
+
+// Frontend Components
+- PhaseTimeline (visual breakdown)
+- CalendarWithPhases (color-coded blocks)
+- PractitionerScheduleOptimizer
+- PhaseAlertNotification</div>
+                        </div>
+
+                        <div class="workflow">
+                            <strong>Botox Appointment Workflow:</strong>
+                            <div class="workflow-step">10:00 AM - Patient arrives</div>
+                            <div class="workflow-step">10:05 AM - Numbing cream applied (Processing: 20 min)</div>
+                            <div class="workflow-step">→ Practitioner sees Patient B during this time</div>
+                            <div class="workflow-step">10:25 AM - SMS Alert: "Patient A ready"</div>
+                            <div class="workflow-step">10:25 AM - Inject Patient A (Service: 15 min)</div>
+                            <div class="workflow-step">10:40 AM - Recovery/observation (Finishing: 10 min)</div>
+                            <div class="workflow-step">→ Practitioner starts Patient C</div>
+                            <div class="workflow-step">10:50 AM - Checkout (Buffer: 5 min)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- P1 Features -->
+            <div class="priority-section">
+                <div class="priority-header p1">
+                    <span style="font-size: 24px;">🟠</span>
+                    <h2>P1 - High Priority (Build Next Quarter)</h2>
+                </div>
+
+                <!-- Express Booking -->
+                <div class="feature-card" data-feature-id="feature-4" onclick="if(event.target.type !== 'checkbox') this.classList.toggle('expanded')">
+                    <input type="checkbox" class="feature-checkbox" onclick="event.stopPropagation(); toggleFeature(this)" data-feature-id="feature-4">
+                    <div class="feature-header">
+                        <div class="feature-title">4. Express Booking™</div>
+                        <div class="feature-meta">
+                            <span class="badge effort-medium">2-4 weeks</span>
+                        </div>
+                    </div>
+                    <div class="feature-description">
+                        <strong>Why:</strong> Reduce no-shows, automate booking confirmations<br>
+                        <strong>Impact:</strong> 60% bookings via SMS, 25% fewer no-shows
+                    </div>
+
+                    <div class="feature-details">
+                        <div class="spec-section">
+                            <h4>📋 Requirements</h4>
+                            <ul>
+                                <li>Generate unique booking link per patient/service</li>
+                                <li>Send via SMS (Twilio)</li>
+                                <li>Mobile-optimized booking page</li>
+                                <li>Payment/deposit collection ($50 deposit for Botox)</li>
+                                <li>Auto-confirm appointment</li>
+                                <li>Link expiration (24-48 hours)</li>
+                            </ul>
+                        </div>
+
+                        <div class="spec-section">
+                            <h4>💡 AI Coding Instructions</h4>
+                            <div class="code-hint">// Database Schema
+CREATE TABLE express_booking_links (
+  id UUID PRIMARY KEY,
+  token VARCHAR(100) UNIQUE,
+  patient_id UUID,
+  service_id UUID,
+  expires_at TIMESTAMP,
+  used BOOLEAN DEFAULT FALSE
+);
+
+// API Endpoints
+POST /api/express-booking/create-link
+  - Generates token, sends SMS
+
+GET /api/express-booking/{token}
+  - Returns booking form (mobile page)
+
+POST /api/express-booking/{token}/complete
+  - Process payment, create appointment
+
+// SMS Template
+"Hi Sarah! Book your Botox touchup:
+https://luke.spa/book/abc123
+(Link expires in 24 hours)"</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Intelligent Waitlist -->
+                <div class="feature-card" data-feature-id="feature-5" onclick="if(event.target.type !== 'checkbox') this.classList.toggle('expanded')">
+                    <input type="checkbox" class="feature-checkbox" onclick="event.stopPropagation(); toggleFeature(this)" data-feature-id="feature-5">
+                    <div class="feature-header">
+                        <div class="feature-title">5. Intelligent Waitlist</div>
+                        <div class="feature-meta">
+                            <span class="badge effort-high">1-2 months</span>
+                        </div>
+                    </div>
+                    <div class="feature-description">
+                        <strong>Why:</strong> Auto-fill cancellations, maximize revenue<br>
+                        <strong>Impact:</strong> 80% cancellations filled, $10k+/month recovery
+                    </div>
+
+                    <div class="feature-details">
+                        <div class="spec-section">
+                            <h4>📋 Requirements</h4>
+                            <ul>
+                                <li>Waitlist management (add/remove/prioritize)</li>
+                                <li>Auto-matching: service type, time preference, practitioner, distance</li>
+                                <li>SMS blast to matched patients</li>
+                                <li>First-to-respond gets slot</li>
+                                <li>Analytics dashboard</li>
+                            </ul>
+                        </div>
+
+                        <div class="spec-section">
+                            <h4>💡 AI Coding Instructions</h4>
+                            <div class="code-hint">// Database Schema
+CREATE TABLE waitlist (
+  id UUID PRIMARY KEY,
+  patient_id UUID,
+  service_id UUID,
+  preferred_times JSONB, -- [{ day: 'Monday', time: '2pm' }]
+  preferred_practitioner_id UUID,
+  max_distance_miles INT,
+  priority INT DEFAULT 0
+);
+
+// Matching Algorithm
+When appointment cancelled:
+1. Find waitlist entries matching service
+2. Filter by time preferences
+3. Filter by practitioner if specified
+4. Sort by priority + distance
+5. Send SMS to top 5 matches
+6. First to click link gets slot
+
+// API Endpoints
+POST /api/waitlist/add
+POST /api/waitlist/match-cancellation
+GET /api/waitlist/analytics</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Client Self Check-in -->
+                <div class="feature-card" data-feature-id="feature-6" onclick="if(event.target.type !== 'checkbox') this.classList.toggle('expanded')">
+                    <input type="checkbox" class="feature-checkbox" onclick="event.stopPropagation(); toggleFeature(this)" data-feature-id="feature-6">
+                    <div class="feature-header">
+                        <div class="feature-title">6. Client Self Check-in/Checkout</div>
+                        <div class="feature-meta">
+                            <span class="badge effort-low">1-2 weeks</span>
+                        </div>
+                    </div>
+                    <div class="feature-description">
+                        <strong>Why:</strong> Reduce front desk workload, contactless ops<br>
+                        <strong>Impact:</strong> 70% use self-service, 50% fewer calls
+                    </div>
+
+                    <div class="feature-details">
+                        <div class="spec-section">
+                            <h4>📋 Requirements</h4>
+                            <ul>
+                                <li>SMS check-in link on appointment day</li>
+                                <li>One-tap check-in confirmation</li>
+                                <li>Forms/waivers via mobile</li>
+                                <li>Mobile payment checkout</li>
+                                <li>Digital receipt via email/SMS</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- P2 Features -->
+            <div class="priority-section">
+                <div class="priority-header p2">
+                    <span style="font-size: 24px;">🟢</span>
+                    <h2>P2 - Medium Priority (Backlog)</h2>
+                </div>
+
+                <div class="feature-card" data-feature-id="feature-7" onclick="if(event.target.type !== 'checkbox') this.classList.toggle('expanded')">
+                    <input type="checkbox" class="feature-checkbox" onclick="event.stopPropagation(); toggleFeature(this)" data-feature-id="feature-7">
+                    <div class="feature-header">
+                        <div class="feature-title">7. Repeating Appointments</div>
+                        <div class="feature-meta">
+                            <span class="badge effort-medium">2-4 weeks</span>
+                        </div>
+                    </div>
+                    <div class="feature-description">
+                        Automated recurring bookings (e.g., Botox every 3 months)
+                    </div>
+                </div>
+
+                <div class="feature-card" data-feature-id="feature-8" onclick="if(event.target.type !== 'checkbox') this.classList.toggle('expanded')">
+                    <input type="checkbox" class="feature-checkbox" onclick="event.stopPropagation(); toggleFeature(this)" data-feature-id="feature-8">
+                    <div class="feature-header">
+                        <div class="feature-title">8. HIPAA Compliance Framework</div>
+                        <div class="feature-meta">
+                            <span class="badge effort-high">3+ months</span>
+                        </div>
+                    </div>
+                    <div class="feature-description">
+                        <strong>Legal requirement.</strong> Hire HIPAA consultant, security audit, BAA agreements
+                    </div>
+                </div>
+
+                <div class="feature-card" data-feature-id="feature-9" onclick="if(event.target.type !== 'checkbox') this.classList.toggle('expanded')">
+                    <input type="checkbox" class="feature-checkbox" onclick="event.stopPropagation(); toggleFeature(this)" data-feature-id="feature-9">
+                    <div class="feature-header">
+                        <div class="feature-title">9. Automated Marketing Flows</div>
+                        <div class="feature-meta">
+                            <span class="badge effort-high">3+ months</span>
+                        </div>
+                    </div>
+                    <div class="feature-description">
+                        Email campaigns, client segmentation, retention automation
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div style="background: white; padding: 20px; border-radius: 12px; text-align: center; color: #666;">
+            <p>Last Updated: October 17, 2025</p>
+            <p style="margin-top: 10px;">Source: Mango Mint competitive analysis (363 features analyzed)</p>
+            <p style="margin-top: 10px; font-size: 14px;">
+                📁 Full docs: <code>/docs/product_roadmap/</code> |
+                📊 Gap analysis: <code>/docs/competitor_analysis/reports/GAP_ANALYSIS_REPORT.md</code>
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // localStorage key for saving feature states
+        const STORAGE_KEY = 'buildQueue_featureStates';
+        const TOTAL_FEATURES = 9;
+
+        // Load saved states on page load
+        function loadSavedStates() {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (saved) {
+                const states = JSON.parse(saved);
+                Object.keys(states).forEach(featureId => {
+                    if (states[featureId]) {
+                        const checkbox = document.querySelector(`input[data-feature-id="${featureId}"]`);
+                        const card = document.querySelector(`div[data-feature-id="${featureId}"]`);
+                        if (checkbox && card) {
+                            checkbox.checked = true;
+                            card.classList.add('completed');
+                        }
+                    }
+                });
+            }
+            updateProgress();
+        }
+
+        // Save state to localStorage
+        function saveState(featureId, isCompleted) {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            const states = saved ? JSON.parse(saved) : {};
+            states[featureId] = isCompleted;
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(states));
+        }
+
+        // Toggle feature completion
+        function toggleFeature(checkbox) {
+            const featureId = checkbox.dataset.featureId;
+            const card = document.querySelector(`div[data-feature-id="${featureId}"]`);
+
+            if (checkbox.checked) {
+                card.classList.add('completed');
+            } else {
+                card.classList.remove('completed');
+            }
+
+            saveState(featureId, checkbox.checked);
+            updateProgress();
+        }
+
+        // Update progress bar and counter
+        function updateProgress() {
+            const checkboxes = document.querySelectorAll('.feature-checkbox');
+            const completed = Array.from(checkboxes).filter(cb => cb.checked).length;
+            const percentage = (completed / TOTAL_FEATURES) * 100;
+
+            // Update counter
+            document.getElementById('completed-count').textContent = `${completed}/${TOTAL_FEATURES}`;
+
+            // Update progress bar
+            document.getElementById('progress-bar').style.width = `${percentage}%`;
+        }
+
+        // Initialize on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            loadSavedStates();
+
+            // Click anywhere on card to expand (except checkbox)
+            document.querySelectorAll('.feature-card').forEach(card => {
+                card.style.userSelect = 'none';
+            });
+        });
+
+        // Print friendly
+        window.addEventListener('beforeprint', () => {
+            document.querySelectorAll('.feature-card').forEach(card => {
+                card.classList.add('expanded');
+            });
+        });
+    </script>
+</body>
+</html>

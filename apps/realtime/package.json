@@ -1,0 +1,9 @@
+{
+  "name": "@medical-spa/realtime",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "nodemon src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js"
+  }
+}
