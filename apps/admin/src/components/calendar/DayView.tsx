@@ -30,18 +30,27 @@ interface DayViewProps {
 	dragStart: DragState | null
 	dragEnd: { y: number; time: { hour: number; minute: number } } | null
 	isDraggingWaitlistPatient: boolean
+	dragTargetSlot: { practitionerId: string; time: { hour: number; minute: number }; date?: Date } | null
 	continuousSlotBlocks: ContinuousSlotBlock[]
 	selectedShift: Shift | null
 	today: Date
 	getShiftForDate: (practitionerId: string, date: Date) => any
 	getAllShiftsForDate?: (practitionerId: string, date: Date) => Shift[]
+	// Persistent appointment preview while sidebar is open
+	appointmentPreview?: {
+		practitionerId: string
+		startTime: { hour: number; minute: number }
+		duration: number
+		date: Date
+	} | null
 	onAppointmentClick: (appointment: Appointment) => void
 	onBreakClick: (breakItem: Break) => void
 	onShiftClick: (shift: Shift) => void
 	onTimeSlotClick: (e: React.MouseEvent, practitionerId: string) => void
 	onSlotClick: (slot: any) => void
 	onMouseDown: (e: React.MouseEvent, practitionerId: string) => void
-	onDragOver: (e: React.DragEvent) => void
+	onDragOver: (e: React.DragEvent, practitionerId: string, dropDate?: Date) => void
+	onDragLeave: (e: React.DragEvent) => void
 	onDrop: (e: React.DragEvent, practitionerId: string) => void
 	onCompleteMove?: (practitionerId: string, date: Date, time: { hour: number; minute: number }) => void
 	onAppointmentDragStart?: (appointment: Appointment) => void
@@ -66,11 +75,13 @@ export default function DayView({
 	dragStart,
 	dragEnd,
 	isDraggingWaitlistPatient,
+	dragTargetSlot,
 	continuousSlotBlocks,
 	selectedShift,
 	today,
 	getShiftForDate,
 	getAllShiftsForDate,
+	appointmentPreview,
 	onAppointmentClick,
 	onBreakClick,
 	onShiftClick,
@@ -78,6 +89,7 @@ export default function DayView({
 	onSlotClick,
 	onMouseDown,
 	onDragOver,
+	onDragLeave,
 	onDrop,
 	onCompleteMove,
 	onAppointmentDragStart,
@@ -124,14 +136,14 @@ export default function DayView({
 						)}
 						{/* Time Grid - no header here since it's handled by parent */}
 						<div
-							className="relative bg-white"
+							className="relative bg-white select-none"
 						onClick={(e) => {
 							if (moveMode && movingAppointment && onCompleteMove) {
 								// In move mode, calculate the time from Y position and complete the move
 								const rect = e.currentTarget.getBoundingClientRect()
 								const time = getTimeFromY(
-									e.clientY, 
-									rect, 
+									e.clientY,
+									rect,
 									timeSlotHeight,
 									calendarSettings.startHour,
 									calendarSettings.endHour,
@@ -139,18 +151,21 @@ export default function DayView({
 								)
 								onCompleteMove(practitioner.id, selectedDate, time)
 							} else {
+								// Click handling is filtered in CalendarGrid.handleTimeSlotClick
+								// (skips if a drag just completed)
 								onTimeSlotClick(e, practitioner.id)
 							}
 						}}
 						onMouseDown={(e) => onMouseDown(e, practitioner.id)}
-						onDragOver={onDragOver}
+						onDragOver={(e) => onDragOver(e, practitioner.id)}
 						onDragEnter={(e) => e.preventDefault()}
+						onDragLeave={onDragLeave}
 						onDrop={(e) => onDrop(e, practitioner.id)}
 						style={{
 							height: `${timeSlotHeight * (calendarSettings.endHour - calendarSettings.startHour)}px`,
 							cursor: moveMode ? 'crosshair' :
 								shiftMode && !isDragging ? 'crosshair' :
-								createMode === 'appointment' && !shiftMode ? 'pointer' :
+								createMode === 'appointment' && !shiftMode ? 'crosshair' :
 									createMode === 'break' && !isDragging ? 'crosshair' : 'default'
 						}}
 					>
@@ -169,6 +184,23 @@ export default function DayView({
 											{practitioner.name}
 										</div>
 									</div>
+								</div>
+							</div>
+						)}
+
+						{/* Appointment drag target indicator */}
+						{dragTargetSlot && dragTargetSlot.practitionerId === practitioner.id && (
+							<div
+								className="absolute left-1 right-1 bg-purple-100 border-2 border-dashed border-purple-500 rounded-md z-50 pointer-events-none shadow-lg"
+								style={{
+									top: `${((dragTargetSlot.time.hour - calendarSettings.startHour) * 60 + dragTargetSlot.time.minute) * (timeSlotHeight / 60)}px`,
+									height: `${timeSlotHeight / 2}px`, // Show a 30-min indicator
+								}}
+							>
+								<div className="absolute inset-x-0 top-1 text-center">
+									<span className="text-xs font-semibold text-purple-700 bg-white px-2 py-0.5 rounded shadow">
+										{dragTargetSlot.time.hour.toString().padStart(2, '0')}:{dragTargetSlot.time.minute.toString().padStart(2, '0')}
+									</span>
 								</div>
 							</div>
 						)}
@@ -301,24 +333,47 @@ export default function DayView({
 							return <>{overlays}</>
 						})()}
 
-						{/* Shift blocks - render only subtle background when not in shift mode/showShiftsOnly */}
+						{/* Shift blocks - render background with start/end indicators when not in shift mode/showShiftsOnly */}
 						{!shiftMode && !showShiftsOnly && (() => {
 							const allShifts = getAllShiftsForDate ? getAllShiftsForDate(practitioner.id, selectedDate) : []
 							const singleShift = getShiftForDate(practitioner.id, selectedDate)
 							const shiftsToRender = allShifts.length > 0 ? allShifts : (singleShift ? [singleShift] : [])
-							
+
 							if (shiftsToRender.length === 0) return null
-							
-							return shiftsToRender.map((shift, index) => (
-								<div
-									key={`shift-bg-${index}`}
-									className="absolute left-0 right-0 pointer-events-none"
-									style={{
-										...getShiftBlockStyle(shift, timeSlotHeight, 0.05, calendarSettings.startHour),
-										zIndex: 0
-									}}
-								/>
-							))
+
+							return shiftsToRender.map((shift, index) => {
+								const shiftStyle = getShiftBlockStyle(shift, timeSlotHeight, 0.05, calendarSettings.startHour)
+								const startTime = shift.startAt ? moment(shift.startAt).format('h:mm A') :
+									`${(shift as any).startHour}:${((shift as any).startMinute || 0).toString().padStart(2, '0')} AM`
+								const endTime = shift.endAt ? moment(shift.endAt).format('h:mm A') :
+									`${(shift as any).endHour}:${((shift as any).endMinute || 0).toString().padStart(2, '0')} PM`
+
+								return (
+									<div
+										key={`shift-bg-${index}`}
+										className="absolute left-0 right-0 pointer-events-none"
+										style={{
+											...shiftStyle,
+											zIndex: 1
+										}}
+									>
+										{/* Shift Start Indicator - subtle line with time */}
+										<div className="absolute top-0 left-0 right-0 flex items-center">
+											<div className="flex-1 h-[2px] bg-green-400 opacity-60"></div>
+											<div className="absolute left-1 -top-0.5 bg-green-100 text-green-700 text-[9px] px-1 py-0.5 rounded-sm font-medium shadow-sm border border-green-200">
+												{startTime}
+											</div>
+										</div>
+										{/* Shift End Indicator - subtle line with time */}
+										<div className="absolute bottom-0 left-0 right-0 flex items-center">
+											<div className="flex-1 h-[2px] bg-red-400 opacity-60"></div>
+											<div className="absolute left-1 -bottom-0.5 bg-red-100 text-red-700 text-[9px] px-1 py-0.5 rounded-sm font-medium shadow-sm border border-red-200">
+												{endTime}
+											</div>
+										</div>
+									</div>
+								)
+							})
 						})()}
 
 						{/* Current time indicator (only for today) */}
@@ -358,6 +413,27 @@ export default function DayView({
 								/>
 							))}
 
+						{/* Drag Selection (for appointments) */}
+						{isDragging && dragStart?.practitionerId === practitioner.id && createMode === 'appointment' && !shiftMode && (
+							<div
+								className="absolute bg-blue-400 opacity-60 rounded pointer-events-none border-2 border-blue-600 border-dashed"
+								style={getDragSelectionStyle(dragStart, dragEnd, timeSlotHeight, calendarSettings.startHour)}
+							>
+								<div className="p-1 text-xs text-white font-medium flex items-center">
+									{(() => {
+										if (!dragStart || !dragEnd) return 'New Appointment'
+										const startMinutes = dragStart.time.hour * 60 + dragStart.time.minute
+										const endMinutes = dragEnd.time.hour * 60 + dragEnd.time.minute
+										const duration = Math.abs(endMinutes - startMinutes)
+										const finalStart = Math.min(startMinutes, endMinutes)
+										const startHour = Math.floor(finalStart / 60)
+										const startMin = finalStart % 60
+										return `${startHour.toString().padStart(2, '0')}:${startMin.toString().padStart(2, '0')} • ${duration} min`
+									})()}
+								</div>
+							</div>
+						)}
+
 						{/* Drag Selection (for breaks or shifts) */}
 						{isDragging && dragStart?.practitionerId === practitioner.id && (createMode === 'break' || shiftMode) && (
 							<div
@@ -379,6 +455,33 @@ export default function DayView({
 											})()}
 										</>
 									)}
+								</div>
+							</div>
+						)}
+
+						{/* Persistent Appointment Preview (shows while sidebar is open) */}
+						{appointmentPreview && appointmentPreview.practitionerId === practitioner.id && moment(appointmentPreview.date).isSame(selectedDate, 'day') && (
+							<div
+								className="absolute bg-blue-500 opacity-70 rounded pointer-events-none border-2 border-blue-600 shadow-lg z-20"
+								style={{
+									top: `${((appointmentPreview.startTime.hour - calendarSettings.startHour) * 60 + appointmentPreview.startTime.minute) * (timeSlotHeight / 60)}px`,
+									height: `${appointmentPreview.duration * (timeSlotHeight / 60)}px`,
+									left: '2px',
+									right: '2px'
+								}}
+							>
+								<div className="p-2 text-xs text-white font-medium h-full flex flex-col justify-between">
+									<div className="flex items-center">
+										<span>
+											{appointmentPreview.startTime.hour.toString().padStart(2, '0')}:{appointmentPreview.startTime.minute.toString().padStart(2, '0')}
+										</span>
+									</div>
+									<div className="text-center font-semibold">
+										{appointmentPreview.duration} min
+									</div>
+									<div className="text-right text-blue-200 text-[10px]">
+										New Appointment
+									</div>
 								</div>
 							</div>
 						)}

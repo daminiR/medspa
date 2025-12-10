@@ -26,7 +26,9 @@ interface AppointmentSidebarProps {
 		minute: number
 	}
 	selectedService?: Service
+	initialDuration?: number // Duration from drag-to-create
 	onSave: (appointmentData: any) => void
+	onPreviewUpdate?: (duration: number) => void // Callback to update calendar preview
 	getShiftForDate: (practitionerId: string, date: Date) => {
 		startHour: number
 		startMinute: number
@@ -77,7 +79,9 @@ export default function AppointmentSidebar({
 	selectedDate,
 	startTime,
 	selectedService: preSelectedService,
+	initialDuration,
 	onSave,
+	onPreviewUpdate,
 	getShiftForDate,
 	getAllShiftsForDate,
 	existingAppointments,
@@ -89,22 +93,31 @@ export default function AppointmentSidebar({
 		service.practitionerIds.includes(practitioner.id) && service.isActive
 	)
 
-	// Use pre-selected service if provided, otherwise default to first available
-	const [selectedServiceState, setSelectedServiceState] = useState(() => {
+	// For new appointments: always start with null (user must choose)
+	// For existing appointments or pre-selected: use that service
+	const getInitialService = (): Service | null => {
 		if (existingAppointment) {
-			// Find the service from the existing appointment
 			const matchingService = services.find(s => s.name === existingAppointment.serviceName)
 			return matchingService || services[0]
 		} else if (preSelectedService) {
-			// Find the matching service from our services array
 			const matchingService = services.find(s =>
 				s.name === preSelectedService.name &&
 				s.duration === preSelectedService.duration
 			)
-			return matchingService || services[0]
+			return matchingService || null
 		}
-		return services[0] // Default to first available service
-	})
+		return null // NEW appointments start with no service selected
+	}
+
+	const [selectedServiceState, setSelectedServiceState] = useState<Service | null>(getInitialService)
+
+	// Reset service selection when sidebar opens for a NEW appointment (startTime changes)
+	// This ensures each drag resets to "Choose a session"
+	useEffect(() => {
+		if (!existingAppointment && !preSelectedService) {
+			setSelectedServiceState(null)
+		}
+	}, [startTime.hour, startTime.minute, existingAppointment, preSelectedService])
 
 	const [selectedClient, setSelectedClient] = useState<typeof existingClients[0] | null>(
 		existingAppointment ? existingClients.find(c => c.name === existingAppointment.patientName) || null : null
@@ -114,6 +127,11 @@ export default function AppointmentSidebar({
 	const [notes, setNotes] = useState(existingAppointment?.notes || '')
 	const [selectedStartTime, setSelectedStartTime] = useState(startTime)
 	const [endTime, setEndTime] = useState({ hour: startTime.hour, minute: startTime.minute })
+
+	// Sync selectedStartTime when startTime prop changes (user clicked elsewhere on calendar)
+	useEffect(() => {
+		setSelectedStartTime(startTime)
+	}, [startTime.hour, startTime.minute])
 	const [conflicts, setConflicts] = useState<Appointment[]>([])
 	const [resourceAvailability, setResourceAvailability] = useState<{ available: boolean; resources: any[]; conflicts?: any[] }>({ available: true, resources: [] })
 	const [selectedRoom, setSelectedRoom] = useState<string | null>(null)
@@ -157,29 +175,46 @@ export default function AppointmentSidebar({
 
 	// Update end time when service or start time changes
 	useEffect(() => {
-		if (selectedServiceState) {
-			const endDate = new Date(selectedDate)
-			endDate.setHours(selectedStartTime.hour, selectedStartTime.minute, 0, 0)
-			// Use scheduledDuration if available (for staggered booking), otherwise use full duration
-			const durationToBlock = selectedServiceState.scheduledDuration || selectedServiceState.duration
-			endDate.setMinutes(endDate.getMinutes() + durationToBlock)
-
-			setEndTime({
-				hour: endDate.getHours(),
-				minute: endDate.getMinutes()
-			})
+		if (!selectedServiceState) {
+			// No service selected - keep current preview duration, just update end time to match start
+			// DON'T call onPreviewUpdate - let the dragged duration stay
+			setEndTime({ hour: selectedStartTime.hour, minute: selectedStartTime.minute })
+			return
 		}
-	}, [selectedServiceState, selectedStartTime, selectedDate])
+
+		// Service IS selected - use service duration
+		const endDate = new Date(selectedDate)
+		endDate.setHours(selectedStartTime.hour, selectedStartTime.minute, 0, 0)
+		const durationToBlock = selectedServiceState.scheduledDuration || selectedServiceState.duration
+		endDate.setMinutes(endDate.getMinutes() + durationToBlock)
+
+		setEndTime({
+			hour: endDate.getHours(),
+			minute: endDate.getMinutes()
+		})
+
+		// Update calendar preview ONLY when service is selected
+		if (onPreviewUpdate) {
+			onPreviewUpdate(durationToBlock)
+		}
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [selectedServiceState, selectedStartTime, selectedDate]) // onPreviewUpdate excluded to prevent infinite loop
 
 	// Check for conflicts whenever time, service, or room changes
 	useEffect(() => {
+		// Skip conflict check if no service selected
+		if (!selectedServiceState) {
+			setConflicts([])
+			return
+		}
+
 		const startDateTime = new Date(selectedDate)
 		startDateTime.setHours(selectedStartTime.hour, selectedStartTime.minute, 0, 0)
 
 		const endDateTime = new Date(selectedDate)
 		endDateTime.setHours(selectedStartTime.hour, selectedStartTime.minute, 0, 0)
 		// For conflict checking, always use the full treatment duration
-		endDateTime.setMinutes(endDateTime.getMinutes() + selectedServiceState.duration)
+		endDateTime.setMinutes(endDateTime.getMinutes() + (selectedServiceState?.duration || 30))
 
 		const foundConflicts = findAppointmentConflicts(
 			{
@@ -187,8 +222,8 @@ export default function AppointmentSidebar({
 				startTime: startDateTime,
 				endTime: endDateTime,
 				roomId: selectedRoom || undefined,
-				postTreatmentTime: enablePostTreatmentTime ? selectedServiceState.postTreatmentTime : undefined,
-				serviceName: selectedServiceState.name
+				postTreatmentTime: enablePostTreatmentTime ? selectedServiceState?.postTreatmentTime : undefined,
+				serviceName: selectedServiceState?.name || ''
 			},
 			existingAppointments
 		)
@@ -209,7 +244,7 @@ export default function AppointmentSidebar({
 		const endDateTime = new Date(selectedDate)
 		endDateTime.setHours(selectedStartTime.hour, selectedStartTime.minute, 0, 0)
 		// For resource checking, use full treatment duration
-		endDateTime.setMinutes(endDateTime.getMinutes() + selectedServiceState.duration)
+		endDateTime.setMinutes(endDateTime.getMinutes() + (selectedServiceState?.duration || 30))
 
 		// Check availability for each required resource pool
 		const availableResources: any[] = []
@@ -415,7 +450,7 @@ export default function AppointmentSidebar({
 		}
 
 		// NEW: Check capability/equipment restrictions using new system
-		if (((selectedServiceState.requiredCapabilities?.length ?? 0) > 0 || 
+		if (selectedServiceState && ((selectedServiceState.requiredCapabilities?.length ?? 0) > 0 ||
 			 (selectedServiceState.requiredEquipment?.length ?? 0) > 0 ||
 			 (selectedServiceState.tags?.length ?? 0) > 0) && !overrideConflicts) {
 			
@@ -601,8 +636,8 @@ export default function AppointmentSidebar({
 	}
 
 	// Check if save button should be disabled
-	const isSaveDisabled = !selectedClient || 
-		(!overrideConflicts && (conflicts.length > 0 || 
+	const isSaveDisabled = !selectedClient || !selectedServiceState ||
+		(!overrideConflicts && (conflicts.length > 0 ||
 		(selectedServiceState?.requiredResources && selectedServiceState.requiredResources.length > 0 && !resourceAvailability.available) ||
 		hasCapabilityMismatch))
 
@@ -991,13 +1026,20 @@ export default function AppointmentSidebar({
 								</label>
 								<div className="relative">
 									<select
-										value={selectedServiceState.id}
+										value={selectedServiceState?.id || ''}
 										onChange={(e) => {
-											const service = services.find(s => s.id === e.target.value)
-											if (service) setSelectedServiceState(service)
+											if (e.target.value === '') {
+												setSelectedServiceState(null)
+											} else {
+												const service = services.find(s => s.id === e.target.value)
+												if (service) setSelectedServiceState(service)
+											}
 										}}
-										className="w-full px-4 py-2 border border-gray-300 rounded-md appearance-none bg-white pr-10 focus:outline-none focus:ring-2 focus:ring-purple-500"
+										className={`w-full px-4 py-2 border rounded-md appearance-none bg-white pr-10 focus:outline-none focus:ring-2 focus:ring-purple-500 ${
+											!selectedServiceState ? 'border-purple-400 ring-2 ring-purple-200' : 'border-gray-300'
+										}`}
 									>
+										<option value="">Choose a session...</option>
 										{services.map(service => (
 											<option key={service.id} value={service.id}>
 												{service.name} ({service.duration} min) - ${service.price}
@@ -1006,6 +1048,11 @@ export default function AppointmentSidebar({
 									</select>
 									<ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
 								</div>
+								{!selectedServiceState && (
+									<div className="mt-1 text-xs text-purple-600 font-medium">
+										👆 Please select a session to continue
+									</div>
+								)}
 								{services.length === 0 && (
 									<div className="mt-2 p-2 bg-yellow-50 rounded text-xs text-yellow-800">
 										⚠️ {practitioner.name} has no services configured. Please configure services in settings.

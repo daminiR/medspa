@@ -1073,6 +1073,7 @@
             <button class="nav-tab" data-tab="competitors">🏆 Competitive Analysis</button>
             <button class="nav-tab" data-tab="gaps">Opportunities & Gaps</button>
             <button class="nav-tab" data-tab="integrations">🔌 Integrations</button>
+            <button class="nav-tab" data-tab="backend">🔧 Backend TODO</button>
             <button class="nav-tab" data-tab="testing">🧪 Testing Checklist</button>
         </div>
 
@@ -1103,17 +1104,19 @@
                     <div class="current-feature-card" id="current-feature">
                         <div class="current-feature-header">
                             <div class="current-feature-title">Express Booking - SMS Quick Book with Payment</div>
-                            <div class="status-badge status-in-progress">🟡 In Progress (0%)</div>
+                            <div class="status-badge status-in-progress">🟡 In Progress (60%)</div>
                         </div>
 
                         <div class="progress-section">
                             <strong>Progress:</strong>
                             <div class="progress-bar-container">
-                                <div class="progress-bar-fill" style="width: 0%;">0% Complete</div>
+                                <div class="progress-bar-fill" style="width: 60%;">60% Complete</div>
                             </div>
                         </div>
 
                         <p style="color: #666; margin: 15px 0;"><strong>What it does:</strong> Staff creates quick appointment → Patient gets SMS link → Patient enters info, adds card, accepts policy → Booking confirmed. Reduces booking errors and back-and-forth.</p>
+                        <p style="color: #28a745; margin: 10px 0; font-size: 0.9em;"><strong>✅ Completed:</strong> API endpoints (create, get, complete), Patient booking page, SMS sending, Staff modal UI</p>
+                        <p style="color: #ff9800; margin: 10px 0; font-size: 0.9em;"><strong>⚠️ Remaining:</strong> Stripe card capture, Auto-expire job, Resend link, Calendar pending indicator</p>
 
                         <button class="expand-btn" onclick="toggleFeatureDetails()">📋 View Full Specs & Checklist</button>
 
@@ -1696,10 +1699,10 @@ Start with the iPad UI and voice recording, then move to backend AI processing. 
                                 <div class="priority-number">4</div>
                                 <div class="queue-item-content">
                                     <div class="queue-item-title">📅 Calendar Time Blocks</div>
-                                    <div class="queue-item-meta">⏱️ 1 week • Competitive Gap • Mango Mint has this, we don't • Essential for lunch/meetings/PTO • 🎯 BUILD ORDER: #11</div>
+                                    <div class="queue-item-meta">⏱️ 1 week • Competitive Gap • Mango Mint has this, we have most of it! • Essential for lunch/meetings/PTO • 🎯 BUILD ORDER: #11</div>
                                 </div>
                             </div>
-                            <div class="status-badge status-not-started">🔴 Not Started</div>
+                            <div class="status-badge status-in-progress">🟡 In Progress (80%)</div>
                         </div>
 
                         <div id="priority-4" style="display: none; margin-top: 20px; padding-top: 20px; border-top: 2px solid #e9ecef;">
@@ -1947,7 +1950,7 @@ Start with database and backend API, then move to frontend UI. Let me know when 
                                     <div class="queue-item-meta">⏱️ 2-3 weeks • Competitive Gap • Essential for Botox (every 3-4 months) & treatment series (6 laser sessions) • 🎯 BUILD ORDER: #12</div>
                                 </div>
                             </div>
-                            <div class="status-badge status-not-started">🔴 Not Started</div>
+                            <div class="status-badge" style="background: #28a745; color: white;">✅ Complete (90%)</div>
                         </div>
 
                         <div id="priority-5" style="display: none; margin-top: 20px; padding-top: 20px; border-top: 2px solid #e9ecef;">
@@ -2263,10 +2266,10 @@ Start with database and backend series creation, then move to frontend booking U
                                 <div class="priority-number">6</div>
                                 <div class="queue-item-content">
                                     <div class="queue-item-title">👥 Group Booking</div>
-                                    <div class="queue-item-meta">⏱️ 3-4 weeks • Competitive Gap • Mango Mint 8/10, we have 0/10 • For friends, couples, bridal parties • 🎯 BUILD ORDER: #13</div>
+                                    <div class="queue-item-meta">⏱️ 3-4 weeks • Competitive Gap • Mango Mint 8/10, we have 3/10 • For friends, couples, bridal parties • 🎯 BUILD ORDER: #13</div>
                                 </div>
                             </div>
-                            <div class="status-badge status-not-started">🔴 Not Started</div>
+                            <div class="status-badge status-in-progress">🟡 In Progress (30%)</div>
                         </div>
 
                         <div id="priority-6" style="display: none; margin-top: 20px; padding-top: 20px; border-top: 2px solid #e9ecef;">
@@ -10604,6 +10607,183 @@ Create "Rent Space at Our Spa" page where independent practitioners can apply. S
                     </ul>
                     <p style="margin-top: 15px; font-style: italic; color: #999;">Last Updated: December 2025</p>
                 </div>
+            </div>
+        </div>
+
+        <!-- BACKEND TODO TAB -->
+        <div class="tab-content" id="backend">
+            <div class="section">
+                <h2 class="section-title">🔧 Backend Implementation TODO</h2>
+                <p style="font-size: 1.1em; color: #666; margin-bottom: 30px;">
+                    Backend work needed to complete features that have front-end UI already built. These items are blocked until we implement real database and backend services.
+                </p>
+
+                <!-- Express Booking Backend -->
+                <div class="integration-card" style="margin-bottom: 30px; border-left: 5px solid #F59E0B;">
+                    <h3 style="color: #333; margin-bottom: 15px;">
+                        📱 Express Booking
+                        <span style="background: #F59E0B; color: white; padding: 4px 12px; border-radius: 12px; font-size: 0.7em; margin-left: 10px;">60% Complete</span>
+                    </h3>
+                    <p style="color: #28a745; margin-bottom: 10px;"><strong>✅ Front-end Complete:</strong> ExpressBookingModal, Patient booking page (/book/[token]), API routes (create/get/complete), Calendar pending indicator</p>
+
+                    <div style="background: #FEF3C7; padding: 20px; border-radius: 8px; margin-top: 15px;">
+                        <h4 style="color: #92400E; margin-bottom: 15px;">⚠️ Backend TODO:</h4>
+                        <div style="display: grid; gap: 10px;">
+                            <label style="display: flex; align-items: flex-start; gap: 10px; cursor: pointer;">
+                                <input type="checkbox" style="margin-top: 4px;">
+                                <div>
+                                    <strong>Stripe Elements Integration</strong>
+                                    <p style="font-size: 0.9em; color: #666; margin: 5px 0 0 0;">Add Stripe Elements to patient booking page for card capture/deposit. Files: /book/[token]/page.tsx, new StripePaymentForm component</p>
+                                </div>
+                            </label>
+                            <label style="display: flex; align-items: flex-start; gap: 10px; cursor: pointer;">
+                                <input type="checkbox" style="margin-top: 4px;">
+                                <div>
+                                    <strong>Auto-Expire Background Job</strong>
+                                    <p style="font-size: 0.9em; color: #666; margin: 5px 0 0 0;">Cron job or serverless function to expire pending bookings after expiresAt. Send SMS notification when expired. Files: /api/cron/expire-bookings, /lib/twilio.ts (add expiry template)</p>
+                                </div>
+                            </label>
+                            <label style="display: flex; align-items: flex-start; gap: 10px; cursor: pointer;">
+                                <input type="checkbox" style="margin-top: 4px;">
+                                <div>
+                                    <strong>Resend Link API</strong>
+                                    <p style="font-size: 0.9em; color: #666; margin: 5px 0 0 0;">POST /api/express-booking/[token]/resend - Reset expiry timer and re-send SMS. Add "Resend Link" button to calendar appointment popup.</p>
+                                </div>
+                            </label>
+                            <label style="display: flex; align-items: flex-start; gap: 10px; cursor: pointer;">
+                                <input type="checkbox" style="margin-top: 4px;">
+                                <div>
+                                    <strong>Database Persistence</strong>
+                                    <p style="font-size: 0.9em; color: #666; margin: 5px 0 0 0;">Replace in-memory mock data with database (Prisma/Supabase). Add expressBooking fields to appointments table schema.</p>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Group Booking Backend -->
+                <div class="integration-card" style="margin-bottom: 30px; border-left: 5px solid #8B5CF6;">
+                    <h3 style="color: #333; margin-bottom: 15px;">
+                        👥 Group Booking
+                        <span style="background: #8B5CF6; color: white; padding: 4px 12px; border-radius: 12px; font-size: 0.7em; margin-left: 10px;">30% Complete</span>
+                    </h3>
+                    <p style="color: #28a745; margin-bottom: 10px;"><strong>✅ Front-end Complete:</strong> GroupBookingModal (4-step wizard), createGroupBooking function, Calendar group indicators (indigo ring, position badges)</p>
+
+                    <div style="background: #EDE9FE; padding: 20px; border-radius: 8px; margin-top: 15px;">
+                        <h4 style="color: #5B21B6; margin-bottom: 15px;">⚠️ Backend TODO:</h4>
+                        <div style="display: grid; gap: 10px;">
+                            <label style="display: flex; align-items: flex-start; gap: 10px; cursor: pointer;">
+                                <input type="checkbox" style="margin-top: 4px;">
+                                <div>
+                                    <strong>Database Schema</strong>
+                                    <p style="font-size: 0.9em; color: #666; margin: 5px 0 0 0;">Create group_bookings table with: id, coordinator_patient_id, name, discount_percent, payment_mode, status, etc. Add group_booking_id foreign key to appointments.</p>
+                                </div>
+                            </label>
+                            <label style="display: flex; align-items: flex-start; gap: 10px; cursor: pointer;">
+                                <input type="checkbox" style="margin-top: 4px;">
+                                <div>
+                                    <strong>API Routes</strong>
+                                    <p style="font-size: 0.9em; color: #666; margin: 5px 0 0 0;">POST /api/group-booking/create, GET /api/group-booking/[id], PUT /api/group-booking/[id]/cancel, PUT /api/group-booking/[id]/update-payment</p>
+                                </div>
+                            </label>
+                            <label style="display: flex; align-items: flex-start; gap: 10px; cursor: pointer;">
+                                <input type="checkbox" style="margin-top: 4px;">
+                                <div>
+                                    <strong>Group SMS Templates</strong>
+                                    <p style="font-size: 0.9em; color: #666; margin: 5px 0 0 0;">Add to /lib/twilio.ts: groupBookingConfirmation (coordinator), groupParticipantNotification, groupReminder, groupCancellation</p>
+                                </div>
+                            </label>
+                            <label style="display: flex; align-items: flex-start; gap: 10px; cursor: pointer;">
+                                <input type="checkbox" style="margin-top: 4px;">
+                                <div>
+                                    <strong>Group Check-in Flow</strong>
+                                    <p style="font-size: 0.9em; color: #666; margin: 5px 0 0 0;">Modify waiting room to handle group check-ins. Show all group members when coordinator checks in. Option to check in entire group at once.</p>
+                                </div>
+                            </label>
+                            <label style="display: flex; align-items: flex-start; gap: 10px; cursor: pointer;">
+                                <input type="checkbox" style="margin-top: 4px;">
+                                <div>
+                                    <strong>Group Payment Processing</strong>
+                                    <p style="font-size: 0.9em; color: #666; margin: 5px 0 0 0;">Handle payment modes: individual (separate invoices), coordinator (one invoice), split (divided equally). Stripe integration for group payments.</p>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Virtual Waiting Room Backend -->
+                <div class="integration-card" style="margin-bottom: 30px; border-left: 5px solid #10B981;">
+                    <h3 style="color: #333; margin-bottom: 15px;">
+                        🏥 Virtual Waiting Room
+                        <span style="background: #10B981; color: white; padding: 4px 12px; border-radius: 12px; font-size: 0.7em; margin-left: 10px;">85% Complete</span>
+                    </h3>
+                    <p style="color: #28a745; margin-bottom: 10px;"><strong>✅ Front-end Complete:</strong> Waiting room dashboard, patient check-in page, SMS templates</p>
+
+                    <div style="background: #D1FAE5; padding: 20px; border-radius: 8px; margin-top: 15px;">
+                        <h4 style="color: #065F46; margin-bottom: 15px;">⚠️ Backend TODO:</h4>
+                        <div style="display: grid; gap: 10px;">
+                            <label style="display: flex; align-items: flex-start; gap: 10px; cursor: pointer;">
+                                <input type="checkbox" style="margin-top: 4px;">
+                                <div>
+                                    <strong>WebSocket Real-time Updates</strong>
+                                    <p style="font-size: 0.9em; color: #666; margin: 5px 0 0 0;">Add Pusher/Socket.io for real-time queue updates. Currently uses polling.</p>
+                                </div>
+                            </label>
+                            <label style="display: flex; align-items: flex-start; gap: 10px; cursor: pointer;">
+                                <input type="checkbox" style="margin-top: 4px;">
+                                <div>
+                                    <strong>Edge Case Handling</strong>
+                                    <p style="font-size: 0.9em; color: #666; margin: 5px 0 0 0;">Handle: multiple patients texting "HERE" from same phone, patient leaves and returns, network failures.</p>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Calendar Time Blocks Backend -->
+                <div class="integration-card" style="margin-bottom: 30px; border-left: 5px solid #10B981;">
+                    <h3 style="color: #333; margin-bottom: 15px;">
+                        📅 Calendar Time Blocks
+                        <span style="background: #10B981; color: white; padding: 4px 12px; border-radius: 12px; font-size: 0.7em; margin-left: 10px;">80% Complete</span>
+                    </h3>
+                    <p style="color: #28a745; margin-bottom: 10px;"><strong>✅ Front-end Complete:</strong> BreakSlot display (striped pattern), BreakDetails edit panel (type/recurring/emergency/notes), Drag-to-create breaks on calendar, Toolbar buttons, Sample break data</p>
+
+                    <div style="background: #D1FAE5; padding: 20px; border-radius: 8px; margin-top: 15px;">
+                        <h4 style="color: #065F46; margin-bottom: 15px;">⚠️ Backend TODO:</h4>
+                        <div style="display: grid; gap: 10px;">
+                            <label style="display: flex; align-items: flex-start; gap: 10px; cursor: pointer;">
+                                <input type="checkbox" style="margin-top: 4px;" checked>
+                                <div style="text-decoration: line-through; opacity: 0.7;">
+                                    <strong>Calendar Display</strong>
+                                    <p style="font-size: 0.9em; color: #666; margin: 5px 0 0 0;">BreakSlot component with striped pattern, BreakDetails panel for editing.</p>
+                                </div>
+                            </label>
+                            <label style="display: flex; align-items: flex-start; gap: 10px; cursor: pointer;">
+                                <input type="checkbox" style="margin-top: 4px;" checked>
+                                <div style="text-decoration: line-through; opacity: 0.7;">
+                                    <strong>Drag-to-create</strong>
+                                    <p style="font-size: 0.9em; color: #666; margin: 5px 0 0 0;">CalendarGrid creates break on drag, toast guidance shows instructions.</p>
+                                </div>
+                            </label>
+                            <label style="display: flex; align-items: flex-start; gap: 10px; cursor: pointer;">
+                                <input type="checkbox" style="margin-top: 4px;">
+                                <div>
+                                    <strong>Database Persistence</strong>
+                                    <p style="font-size: 0.9em; color: #666; margin: 5px 0 0 0;">Replace in-memory breaks array with database. Create time_blocks table.</p>
+                                </div>
+                            </label>
+                            <label style="display: flex; align-items: flex-start; gap: 10px; cursor: pointer;">
+                                <input type="checkbox" style="margin-top: 4px;">
+                                <div>
+                                    <strong>Prevent Booking Conflicts</strong>
+                                    <p style="font-size: 0.9em; color: #666; margin: 5px 0 0 0;">Block patients from booking during staff breaks/blocked time.</p>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <p style="margin-top: 40px; font-style: italic; color: #999;">Last Updated: December 2024</p>
             </div>
         </div>
 

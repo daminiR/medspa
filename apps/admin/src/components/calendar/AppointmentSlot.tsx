@@ -2,7 +2,7 @@ import React from 'react'
 import { Appointment, services, getGroupInfoForAppointment } from '@/lib/data'
 import { CalendarSettings } from '@/types/calendar'
 import { getAppointmentStyle } from '@/utils/calendarHelpers'
-import { AlertTriangle, MapPin, Layers, Zap, UsersRound } from 'lucide-react'
+import { AlertTriangle, MapPin, Layers, Zap, UsersRound, Clock, Send, CheckCircle2, CircleAlert } from 'lucide-react'
 import { mockRooms } from '@/lib/mockResources'
 
 interface AppointmentSlotProps {
@@ -41,6 +41,12 @@ export default function AppointmentSlot({
 		;(defaultStyle as any).opacity = 0.8
 		;(defaultStyle as any).border = '2px dashed #9CA3AF' // dashed border for deleted indication
 		;(defaultStyle as any).backgroundImage = 'repeating-linear-gradient(45deg, transparent, transparent 4px, rgba(255,255,255,0.1) 4px, rgba(255,255,255,0.1) 8px)' // subtle striped pattern
+	}
+
+	// Override background color for pending express bookings
+	if (appointment.expressBookingStatus === 'pending') {
+		defaultStyle.backgroundColor = '#F59E0B' // amber-500
+		;(defaultStyle as any).border = '2px dashed #FCD34D' // amber dashed border
 	}
 	
 	// Apply double booking mode styling
@@ -89,7 +95,27 @@ export default function AppointmentSlot({
 	// Check if this is a group booking
 	const groupInfo = appointment.groupBookingId ? getGroupInfoForAppointment(appointment.id) : null
 	const isGroupBooking = !!groupInfo
-	
+
+	// Check if this is a pending express booking
+	const isPendingExpressBooking = appointment.expressBookingStatus === 'pending'
+
+	// Confirmation status checks
+	const isConfirmed = !!appointment.smsConfirmedAt
+	const isUnconfirmed = !appointment.smsConfirmedAt &&
+		appointment.confirmationSentAt &&
+		!['cancelled', 'deleted', 'completed', 'no_show'].includes(appointment.status)
+	const isHighRisk = appointment.noShowRisk === 'high' ||
+		(isUnconfirmed && appointment.isNewPatient && !appointment.depositAmount)
+
+	// Determine the left border color based on confirmation status
+	const getConfirmationBorderClass = () => {
+		if (appointment.status === 'cancelled' || appointment.status === 'deleted') return ''
+		if (isHighRisk) return 'border-l-4 border-l-red-500'
+		if (isConfirmed) return 'border-l-4 border-l-green-500'
+		if (isUnconfirmed) return 'border-l-4 border-l-amber-400'
+		return ''
+	}
+
 	return (
 		<>
 			{/* Visual connector for overlapping appointments */}
@@ -109,14 +135,34 @@ export default function AppointmentSlot({
 				draggable={appointment.status !== 'cancelled'}
 				className={`absolute rounded-md ${appointment.status === 'cancelled' ? 'text-gray-400' : 'text-white'} ${isNarrow ? 'p-1' : calendarSettings.compactView ? 'p-1' : 'p-2'
 					} ${appointment.status === 'cancelled' ? 'cursor-not-allowed' : 'cursor-move'} hover:opacity-90 overflow-hidden transition-all duration-200 ease-in-out ${isOverlapping ? 'shadow-md hover:shadow-lg hover:-translate-y-0.5' : 'shadow-sm'} ${appointment.status === 'arrived' ? 'ring-2 ring-green-400 ring-offset-1' : ''
-					} ${appointment.status === 'no_show' ? 'opacity-50 line-through' : ''} ${appointment.status === 'cancelled' ? 'opacity-60' : ''} ${isOverlapping ? 'border-l-4 border-white border-opacity-50' : ''} ${appointment.assignedResources && appointment.assignedResources.length > 0 ? 'border-2 border-green-400 border-opacity-40' : ''} ${isGroupBooking ? 'ring-2 ring-indigo-400 ring-offset-1' : ''}`}
+					} ${appointment.status === 'no_show' ? 'opacity-50 line-through' : ''} ${appointment.status === 'cancelled' ? 'opacity-60' : ''} ${!isOverlapping ? getConfirmationBorderClass() : ''} ${isOverlapping && !getConfirmationBorderClass() ? 'border-l-4 border-white border-opacity-50' : ''} ${appointment.assignedResources && appointment.assignedResources.length > 0 ? 'border-2 border-green-400 border-opacity-40' : ''} ${isGroupBooking ? 'ring-2 ring-indigo-400 ring-offset-1' : ''} ${isPendingExpressBooking ? 'ring-2 ring-amber-400 ring-offset-1' : ''} ${isHighRisk ? 'ring-2 ring-red-400 ring-offset-1' : ''}`}
 				style={{ ...defaultStyle, ...style }}
 				onClick={(e) => onClick(e, appointment)}
 				onDragStart={handleDragStart}
 				onDragEnd={handleDragEnd}
-				title={isGroupBooking ? `Part of: ${groupInfo?.group?.name || 'Group'} (${groupInfo?.position}/${groupInfo?.totalInGroup})` : undefined}
+				title={isPendingExpressBooking ? 'Pending Express Booking - Awaiting patient confirmation' : isGroupBooking ? `Part of: ${groupInfo?.group?.name || 'Group'} (${groupInfo?.position}/${groupInfo?.totalInGroup})` : undefined}
 			>
 			<div className="text-xs font-medium truncate flex items-center gap-1">
+				{isHighRisk && (
+					<span title="High no-show risk - New patient, unconfirmed, no deposit" className="flex items-center">
+						<CircleAlert className="h-3 w-3 text-red-300 flex-shrink-0" />
+					</span>
+				)}
+				{isConfirmed && !isHighRisk && (
+					<span title={`Confirmed via SMS on ${appointment.smsConfirmedAt ? new Date(appointment.smsConfirmedAt).toLocaleString() : ''}`} className="flex items-center">
+						<CheckCircle2 className="h-3 w-3 text-green-300 flex-shrink-0" />
+					</span>
+				)}
+				{isUnconfirmed && !isHighRisk && (
+					<span title="Awaiting confirmation - SMS sent but not yet confirmed" className="flex items-center">
+						<Clock className="h-3 w-3 text-amber-300 flex-shrink-0" />
+					</span>
+				)}
+				{isPendingExpressBooking && (
+					<span title="Pending - Awaiting patient confirmation" className="flex items-center">
+						<Send className="h-3 w-3 text-amber-300 flex-shrink-0" />
+					</span>
+				)}
 				{isGroupBooking && (
 					<span title={`Group: ${groupInfo?.group?.name} (${groupInfo?.position}/${groupInfo?.totalInGroup})`} className="flex items-center">
 						<UsersRound className="h-3 w-3 text-indigo-300 flex-shrink-0" />
@@ -166,6 +212,9 @@ export default function AppointmentSlot({
 			)}
 			{appointment.status === 'deleted' && (
 				<div className="text-xs mt-1 font-semibold text-white bg-red-600 px-2 py-0.5 rounded inline-block">DELETED</div>
+			)}
+			{isPendingExpressBooking && (
+				<div className="text-xs mt-1 font-semibold text-amber-900 bg-amber-200 px-2 py-0.5 rounded inline-block">⏳ PENDING</div>
 			)}
 			{appointment.roomId && (
 				<div className="text-xs opacity-75 flex items-center gap-1 mt-1">

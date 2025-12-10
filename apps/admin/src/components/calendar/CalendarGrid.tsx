@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useRef } from 'react'
 import moment from 'moment'
 import { Appointment, Break } from '@/lib/data'
 import { CalendarSettings, ContinuousSlotBlock, DragState } from '@/types/calendar'
@@ -36,10 +36,17 @@ interface CalendarGridProps {
 	today: Date
 	calendarRef: React.RefObject<HTMLDivElement>
 	getShiftForDate: (practitionerId: string, date: Date) => any
+	// Persistent appointment preview while sidebar is open
+	appointmentPreview?: {
+		practitionerId: string
+		startTime: { hour: number; minute: number }
+		duration: number
+		date: Date
+	} | null
 	onAppointmentClick: (appointment: Appointment) => void
 	onBreakClick: (breakItem: Break) => void
 	onShiftClick: (shift: Shift) => void
-	onTimeSlotClick: (practitioner: any, date: Date, time: { hour: number; minute: number }) => void
+	onTimeSlotClick: (practitioner: any, date: Date, time: { hour: number; minute: number }, draggedDuration?: number) => void
 	onSlotClick: (slot: any) => void
 	onDragStart: (state: DragState | null) => void
 	onDragEnd: (state: { y: number; time: { hour: number; minute: number } } | null) => void
@@ -82,6 +89,7 @@ export default function CalendarGrid({
 	today,
 	calendarRef,
 	getShiftForDate,
+	appointmentPreview,
 	onAppointmentClick,
 	onBreakClick,
 	onShiftClick,
@@ -99,6 +107,16 @@ export default function CalendarGrid({
 	onAppointmentDragEnd,
 	doubleBookingMode = false
 }: CalendarGridProps) {
+	// State for tracking drag target position (for visual feedback)
+	const [dragTargetSlot, setDragTargetSlot] = useState<{
+		practitionerId: string;
+		time: { hour: number; minute: number };
+		date?: Date;
+	} | null>(null);
+
+	// Ref to track if a drag just completed (to prevent click from firing after drag)
+	const justCompletedDrag = useRef(false);
+
 	// Helper function to get appointments mapped to rooms
 	const getAppointmentsForRooms = (appointments: Appointment[], shifts: Shift[]): Appointment[] => {
 		return appointments.map(apt => {
@@ -121,10 +139,13 @@ export default function CalendarGrid({
 		}).filter(Boolean) as Appointment[]
 	}
 
-	// Mouse handlers for break/shift creation (drag)
+	// Mouse handlers for appointment/break/shift creation (drag)
 	const handleMouseDown = (e: React.MouseEvent, practitionerId: string, date?: Date) => {
-		// Only allow drag for breaks or shifts
-		if (createMode !== 'break' && !shiftMode) return
+		// Don't allow drag in 'none' mode
+		if (createMode === 'none' && !shiftMode) return
+
+		// Allow drag for appointments, breaks, or shifts
+		// Note: For appointments, we allow drag-to-create with visual preview
 
 		// Don't allow drag in week view for breaks
 		if (createMode === 'break' && view === 'week') return
@@ -150,10 +171,10 @@ export default function CalendarGrid({
 	}
 
 	const handleMouseMove = (e: React.MouseEvent) => {
-		if (isDragging && dragStart && (createMode === 'break' || shiftMode)) {
+		if (isDragging && dragStart) {
 			const time = getTimeFromY(
-				e.clientY, 
-				calendarRef.current?.getBoundingClientRect() || null, 
+				e.clientY,
+				calendarRef.current?.getBoundingClientRect() || null,
 				timeSlotHeight,
 				calendarSettings.startHour,
 				calendarSettings.endHour,
@@ -176,18 +197,33 @@ export default function CalendarGrid({
 				const practitioner = visiblePractitioners.find(p => p.id === dragStart.practitionerId)
 
 				if (practitioner) {
-					const finalStartTime = startMinutes < endMinutes ? startTime : endTime
-					const finalEndTime = startMinutes < endMinutes ? endTime : startTime
+					// For appointments: always use where user CLICKED as start time
+					// For shifts/breaks: use the earlier time as start (existing behavior)
+					const useClickAsStart = createMode === 'appointment' && !shiftMode
+					const finalStartTime = useClickAsStart ? startTime : (startMinutes < endMinutes ? startTime : endTime)
+					const finalEndTime = useClickAsStart ? endTime : (startMinutes < endMinutes ? endTime : startTime)
+					// For appointments: don't pass duration - let service selection determine it
+					// For shifts/breaks: use exact duration from drag
 					const finalDuration = duration
 
+					// Mark that a drag just completed to prevent click handler from firing
+					justCompletedDrag.current = true
+					setTimeout(() => { justCompletedDrag.current = false }, 100)
+
 					if (shiftMode) {
-						// Create shift
+						// Create shift - use earlier time as start
+						const shiftStart = startMinutes < endMinutes ? startTime : endTime
+						const shiftEnd = startMinutes < endMinutes ? endTime : startTime
 						onShiftDragComplete({
 							practitionerId: practitioner.id,
-							startTime: finalStartTime,
-							endTime: finalEndTime,
+							startTime: shiftStart,
+							endTime: shiftEnd,
 							date: selectedDate
 						})
+					} else if (createMode === 'appointment') {
+						// Trigger appointment creation - use CLICK position as start time
+						// Pass the raw drag duration for initial preview
+						onTimeSlotClick(practitioner, selectedDate, startTime, finalDuration)
 					} else {
 						// Create break WITHOUT auto-adjustment
 						const breakStartTime = new Date(selectedDate)
@@ -225,6 +261,16 @@ export default function CalendarGrid({
 
 	// Handle time slot click
 	const handleTimeSlotClick = (e: React.MouseEvent, practitionerId: string, clickDate?: Date) => {
+		// Skip if a drag just completed (drag already handled the action)
+		if (justCompletedDrag.current) {
+			return
+		}
+
+		// Don't do anything in 'none' mode
+		if (createMode === 'none' && !shiftMode) {
+			return
+		}
+
 		// Don't open if clicking on an existing appointment, break, shift, or highlight
 		if ((e.target as HTMLElement).closest('[data-appointment]') ||
 			(e.target as HTMLElement).closest('[data-break]') ||
@@ -252,16 +298,45 @@ export default function CalendarGrid({
 	}
 
 	// Handle drag and drop for waitlist patients and appointments
-	const handleDragOver = (e: React.DragEvent) => {
+	const handleDragOver = (e: React.DragEvent, practitionerId: string, dropDate?: Date) => {
 		// Always prevent default to allow drop
 		e.preventDefault()
 		e.stopPropagation()
 		e.dataTransfer.dropEffect = 'copy'
+
+		// Calculate target time from Y position for visual feedback
+		const time = getTimeFromY(
+			e.clientY,
+			calendarRef.current?.getBoundingClientRect() || null,
+			timeSlotHeight,
+			calendarSettings.startHour,
+			calendarSettings.endHour,
+			64 // Both views have 64px practitioner header
+		)
+
+		// Update drag target for visual feedback
+		setDragTargetSlot({
+			practitionerId,
+			time,
+			date: dropDate
+		})
+	}
+
+	// Clear drag target when leaving
+	const handleDragLeave = (e: React.DragEvent) => {
+		// Only clear if leaving the calendar area entirely
+		const relatedTarget = e.relatedTarget as HTMLElement
+		if (!relatedTarget || !calendarRef.current?.contains(relatedTarget)) {
+			setDragTargetSlot(null)
+		}
 	}
 
 	const handleDrop = (e: React.DragEvent, practitionerId: string, dropDate?: Date) => {
 		e.preventDefault()
 		e.stopPropagation()
+
+		// Clear drag target visual feedback
+		setDragTargetSlot(null)
 
 		// Get the drag data
 		const textData = e.dataTransfer.getData('text/plain')
@@ -480,6 +555,7 @@ export default function CalendarGrid({
 					selectedShift={selectedShift}
 					today={today}
 					isDraggingWaitlistPatient={isDraggingWaitlistPatient}
+					dragTargetSlot={dragTargetSlot}
 					getShiftForDate={getShiftForDate}
 					onAppointmentClick={onAppointmentClick}
 					onBreakClick={onBreakClick}
@@ -487,6 +563,7 @@ export default function CalendarGrid({
 					onTimeSlotClick={handleTimeSlotClick}
 					onSlotClick={onSlotClick}
 					onDragOver={handleDragOver}
+					onDragLeave={handleDragLeave}
 					onDrop={handleDrop}
 					onCompleteMove={onCompleteMove}
 					onAppointmentDragStart={onAppointmentDragStart}
@@ -511,10 +588,12 @@ export default function CalendarGrid({
 					dragStart={dragStart}
 					dragEnd={dragEnd}
 					isDraggingWaitlistPatient={isDraggingWaitlistPatient}
+					dragTargetSlot={dragTargetSlot}
 					continuousSlotBlocks={continuousSlotBlocks}
 					selectedShift={selectedShift}
 					today={today}
 					getShiftForDate={getShiftForDate}
+					appointmentPreview={appointmentPreview}
 					onAppointmentClick={onAppointmentClick}
 					onBreakClick={onBreakClick}
 					onShiftClick={onShiftClick}
@@ -522,6 +601,7 @@ export default function CalendarGrid({
 					onSlotClick={onSlotClick}
 					onMouseDown={handleMouseDown}
 					onDragOver={handleDragOver}
+					onDragLeave={handleDragLeave}
 					onDrop={handleDrop}
 					onCompleteMove={onCompleteMove}
 					onAppointmentDragStart={onAppointmentDragStart}

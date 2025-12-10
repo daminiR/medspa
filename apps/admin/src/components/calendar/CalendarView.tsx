@@ -9,7 +9,8 @@ import { getWeekDates, getTimeSlotHeight, mergeSlotsIntoContinuousBlocks } from 
 import { practitioners, appointments as initialAppointments, Break, Appointment, locations, AVAILABLE_TAGS, services } from '@/lib/data'
 import { mockRooms } from '@/lib/mockResources'
 import CalendarHeader from './CalendarHeader'
-import CalendarControls from './CalendarControls'
+import CalendarToolbar from './CalendarToolbar'
+import StatusLegend from './StatusLegend'
 import CalendarGrid from './CalendarGrid'
 import TimeColumn from './TimeColumn'
 import AppointmentDetailView from '../appointments/AppointmentDetailView'
@@ -109,11 +110,11 @@ export default function CalendarView({
 
 	// Group Booking state
 	const [showGroupBooking, setShowGroupBooking] = useState(false)
-	// Recurring shift templates - much better data structure
+	// Recurring shift templates - synced with practitioner schedules from data.ts
 	const [shiftTemplates] = useState([
-		// Dr. Sarah Johnson - Monday to Friday
+		// Jo-Ellen McKay (ID '1') - Monday to Friday, 8:00-17:00
 		{
-			id: 'template-sarah-weekdays',
+			id: 'template-joellen-weekdays',
 			practitionerId: '1',
 			daysOfWeek: [1, 2, 3, 4, 5], // Mon-Fri
 			startHour: 8,
@@ -124,42 +125,42 @@ export default function CalendarView({
 			tags: [],
 			isActive: true
 		},
-		// Dr. Marcus Gregory - Monday, Wednesday, Friday
+		// D.O. Demo Owner (ID '2') - Monday to Saturday, 9:00-18:00
 		{
-			id: 'template-marcus-mwf',
+			id: 'template-demo-owner',
 			practitionerId: '2',
-			daysOfWeek: [1, 3, 5], // Mon, Wed, Fri
+			daysOfWeek: [1, 2, 3, 4, 5, 6], // Mon-Sat
 			startHour: 9,
 			startMinute: 0,
-			endHour: 16,
+			endHour: 18,
 			endMinute: 0,
 			room: 'Treatment Room 2',
 			tags: [],
 			isActive: true
 		},
-		// Dr. Emily Chen - Tuesday, Thursday, Saturday
+		// Dr. Marcus Gregory (ID '3') - Monday to Friday, 8:30-16:30
 		{
-			id: 'template-emily-tts',
+			id: 'template-marcus-weekdays',
 			practitionerId: '3',
-			daysOfWeek: [2, 4, 6], // Tue, Thu, Sat
-			startHour: 10,
-			startMinute: 0,
-			endHour: 18,
-			endMinute: 0,
+			daysOfWeek: [1, 2, 3, 4, 5], // Mon-Fri
+			startHour: 8,
+			startMinute: 30,
+			endHour: 16,
+			endMinute: 30,
 			room: 'Suite 1',
 			tags: [],
 			isActive: true
 		},
-		// Susan Lo - Simple 9-5 schedule with equipment
+		// Susan Lo (ID '4') - Tuesday to Saturday, 10:00-19:00
 		{
-			id: 'template-susan-simple',
+			id: 'template-susan-aesthetic',
 			practitionerId: '4',
-			daysOfWeek: [1, 2, 3, 4, 5], // Monday through Friday
-			startHour: 9,
+			daysOfWeek: [2, 3, 4, 5, 6], // Tue-Sat
+			startHour: 10,
 			startMinute: 0,
-			endHour: 17,
+			endHour: 19,
 			endMinute: 0,
-			room: 'Suite 2',
+			room: 'Aesthetics Suite',
 			availableEquipment: [
 				'injection-station',
 				'numbing-system',
@@ -167,7 +168,7 @@ export default function CalendarView({
 				'IPL-machine',
 				'sterilization-unit'
 			],
-			tags: [], // Keep empty for backward compatibility
+			tags: [],
 			isActive: true
 		}
 	])
@@ -201,7 +202,15 @@ export default function CalendarView({
 	// Drag and drop state
 	const [isDraggingAppointment, setIsDraggingAppointment] = useState(false)
 	const [draggingAppointment, setDraggingAppointment] = useState<Appointment | null>(null)
-	
+
+	// Appointment preview state - persists while sidebar is open, updates with service changes
+	const [appointmentPreview, setAppointmentPreview] = useState<{
+		practitionerId: string
+		startTime: { hour: number; minute: number }
+		duration: number // in minutes
+		date: Date
+	} | null>(null)
+
 	// Resource state
 	const [showResources, setShowResources] = useState(false)
 	const [showRoomsPanel, setShowRoomsPanel] = useState(false)
@@ -930,6 +939,7 @@ export default function CalendarView({
 		
 		setShowAppointmentSidebar(false)
 		setNewAppointmentData(null)
+		setAppointmentPreview(null) // Clear preview when sidebar closes
 	}
 
 	// Handle appointment drop from waitlist or drag
@@ -984,6 +994,20 @@ export default function CalendarView({
 			setSelectedAppointment(null)
 			clearSelections()
 			showToast(`Moving appointment for ${selectedAppointment.patientName}`)
+		}
+	}
+
+	// Toggle move mode from toolbar
+	const handleToggleMoveMode = () => {
+		if (moveMode) {
+			// Exit move mode
+			setMoveMode(false)
+			setMovingAppointment(null)
+			showToast('Move mode disabled')
+		} else {
+			// Enter move mode - user will need to click an appointment to start moving
+			setMoveMode(true)
+			showToast('Click an appointment to move it')
 		}
 	}
 	
@@ -1146,7 +1170,10 @@ export default function CalendarView({
 				// Also close any open panels
 				if (selectedAppointment) setSelectedAppointment(null)
 				if (selectedBreak) setSelectedBreak(null)
-				if (showAppointmentSidebar) setShowAppointmentSidebar(false)
+				if (showAppointmentSidebar) {
+					setShowAppointmentSidebar(false)
+					setAppointmentPreview(null) // Clear preview on Escape
+				}
 				if (showShiftPanel) setShowShiftPanel(false)
 			}
 
@@ -1571,12 +1598,21 @@ export default function CalendarView({
 							today={TODAY}
 							calendarRef={calendarRef as React.RefObject<HTMLDivElement>}
 							getShiftForDate={getShiftForDate}
+							appointmentPreview={appointmentPreview}
 							doubleBookingMode={doubleBookingMode}
 							onAppointmentClick={(apt) => {
 								if (!shiftMode) {
-									setSelectedAppointment(apt)
-									setSelectedBreak(null)
-									setShowAppointmentSidebar(false)
+									if (moveMode && !movingAppointment) {
+										// In move mode, clicking an appointment starts moving it
+										setMovingAppointment(apt)
+										showToast(`Moving appointment for ${apt.patientName}`)
+									} else if (!moveMode) {
+										// Normal click - show appointment details
+										setSelectedAppointment(apt)
+										setSelectedBreak(null)
+										setShowAppointmentSidebar(false)
+										setAppointmentPreview(null) // Clear preview when viewing existing appointment
+									}
 								}
 							}}
 							onBreakClick={(brk) => {
@@ -1601,7 +1637,7 @@ export default function CalendarView({
 									setShowShiftPanel(true)
 								}
 							}}
-							onTimeSlotClick={(practitioner, date, time) => {
+							onTimeSlotClick={(practitioner, date, time, draggedDuration) => {
 								if (shiftMode) {
 									// Don't do anything on single click in shift mode
 									return
@@ -1611,6 +1647,29 @@ export default function CalendarView({
 									handleCompleteMove(practitioner.id, date, time)
 									return
 								}
+
+								// In appointment mode - always update position (even if sidebar already open)
+								if (createMode === 'appointment') {
+									// Show blue preview with EXACT drag duration - no snapping
+									const rawDuration = draggedDuration && draggedDuration >= 15 ? draggedDuration : 30
+									setAppointmentPreview({
+										practitionerId: practitioner.id,
+										startTime: time,
+										duration: rawDuration,
+										date: date
+									})
+									// Update sidebar data with dragged duration
+									// Duration will adjust ONLY when user picks a service
+									setNewAppointmentData({
+										practitioner,
+										startTime: time,
+										date: date,
+										draggedDuration: rawDuration
+									})
+									setShowAppointmentSidebar(true)
+									return
+								}
+
 								// Handle paste if there's a copied appointment
 								if (copiedAppointment) {
 									const startTime = new Date(date)
@@ -1651,15 +1710,6 @@ export default function CalendarView({
 									setCopiedAppointment(null) // Clear copied appointment
 									showToast(`✓ Appointment pasted for ${newAppointment.patientName}`)
 									return
-								}
-								if (createMode === 'appointment') {
-									clearSelections()
-									setNewAppointmentData({
-										practitioner,
-										startTime: time,
-										date: date
-									})
-									setShowAppointmentSidebar(true)
 								}
 							}}
 							onSlotClick={(slot) => {
@@ -1703,33 +1753,67 @@ export default function CalendarView({
 					</div>
 				</div>
 
-				<CalendarControls
+				<CalendarToolbar
 					selectedDate={selectedDate}
 					today={TODAY}
 					view={view}
-					createMode={createMode}
-					isShowingStaffToday={isShowingStaffToday}
-					workingTodayCount={workingTodayCount}
 					onNavigate={handleNavigate}
 					onViewChange={setView}
-					onCreateModeChange={setCreateMode}
-					onStaffToday={handleStaffToday}
 					onGoToDate={() => setShowGoToDate(true)}
-					onSettings={() => setShowSettings(true)}
-					onManageRooms={() => {
-						setShowRoomsPanel(true)
-						setShowResources(false)
-						setShowWaitlist(false)
+					selectedLocation={selectedLocationId}
+					onLocationChange={setSelectedLocationId}
+					createMode={createMode}
+					onCreateModeChange={(mode) => {
+						setCreateMode(mode)
+						// Clear preview and sidebar when exiting appointment mode
+						if (mode === 'none') {
+							setAppointmentPreview(null)
+							setShowAppointmentSidebar(false)
+							setNewAppointmentData(null)
+						}
 					}}
+					onNewAppointment={() => setCreateMode('appointment')}
 					onExpressBooking={() => {
-						// Default to first practitioner if none selected
 						const defaultPractitioner = practitioners[0]
 						setExpressBookingPractitioner(defaultPractitioner)
 						setExpressBookingTime({ hour: 10, minute: 0 })
 						setShowExpressBooking(true)
 					}}
 					onGroupBooking={() => setShowGroupBooking(true)}
+					onAddBreak={(type) => {
+						setCreateMode('break')
+						// Could add logic to set break type here
+					}}
+					moveMode={moveMode}
+					onToggleMoveMode={handleToggleMoveMode}
+					onFindSlot={() => {
+						// Could open find slot modal
+					}}
+					onSettings={() => setShowSettings(true)}
+					staffCount={workingTodayCount}
+					waitlistCount={waitlistCount}
+					isStaffPanelOpen={isShowingStaffToday}
+					isWaitlistOpen={showWaitlist}
+					isRoomsPanelOpen={showRoomsPanel}
+					isResourcesPanelOpen={showResources}
+					onToggleStaffPanel={handleStaffToday}
+					onToggleWaitlist={() => {
+						setShowWaitlist(!showWaitlist)
+						setShowResources(false)
+						setShowRoomsPanel(false)
+					}}
+					onToggleRoomsPanel={() => {
+						setShowRoomsPanel(!showRoomsPanel)
+						setShowResources(false)
+						setShowWaitlist(false)
+					}}
+					onToggleResourcesPanel={() => {
+						setShowResources(!showResources)
+						setShowRoomsPanel(false)
+						setShowWaitlist(false)
+					}}
 				/>
+				<StatusLegend />
 			</div>
 
 			{/* Appointment Details Panel */}
@@ -1766,12 +1850,26 @@ export default function CalendarView({
 						onClose={() => {
 							setShowAppointmentSidebar(false)
 							setNewAppointmentData(null)
+							setAppointmentPreview(null) // Clear preview when sidebar closes
 						}}
 					practitioner={newAppointmentData.practitioner}
 					selectedDate={newAppointmentData.date}
 					startTime={newAppointmentData.startTime}
 					selectedService={newAppointmentData.selectedService}
+					initialDuration={newAppointmentData.draggedDuration}
 					onSave={handleSaveAppointment}
+					onPreviewUpdate={(duration: number) => {
+						// Create or update preview when service is selected
+						// This is the moment the preview appears - when user picks a service
+						if (newAppointmentData) {
+							setAppointmentPreview({
+								practitionerId: newAppointmentData.practitioner.id,
+								startTime: newAppointmentData.startTime,
+								duration,
+								date: newAppointmentData.date
+							})
+						}
+					}}
 					getShiftForDate={getShiftForDate}
 					getAllShiftsForDate={getAllShiftsForDate}
 					existingAppointments={appointmentsState}

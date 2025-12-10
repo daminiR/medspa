@@ -150,6 +150,13 @@ export interface Appointment {
   isGroupCoordinator?: boolean; // True if this patient is the group coordinator
   groupPosition?: number; // Position within the group (1, 2, 3...)
   individualPaymentStatus?: 'pending' | 'paid'; // For individual payment mode
+
+  // NEW: Confirmation & Risk Tracking
+  smsConfirmedAt?: Date; // When patient confirmed via SMS reply
+  confirmationSentAt?: Date; // When confirmation SMS was sent
+  reminderSentAt?: Date; // When reminder was sent
+  isNewPatient?: boolean; // First-time patient (higher no-show risk)
+  noShowRisk?: 'low' | 'medium' | 'high'; // Calculated risk level
 }
 
 // NEW: Waiting Room Queue Entry
@@ -729,7 +736,10 @@ export const appointments: Appointment[] = [
     email: 'sarah.j@email.com',
     createdAt: new Date(2023, 7, 10),
     updatedAt: new Date(2023, 7, 17),
-    roomId: 'room-1' // Treatment Room 1
+    roomId: 'room-1', // Treatment Room 1
+    // Confirmed before arrival
+    confirmationSentAt: new Date(2023, 7, 16, 9, 0),
+    smsConfirmedAt: new Date(2023, 7, 16, 10, 30)
   },
   {
     id: '2',
@@ -746,7 +756,10 @@ export const appointments: Appointment[] = [
     phone: '(555) 234-5678',
     createdAt: new Date(2023, 7, 12),
     updatedAt: new Date(2023, 7, 16),
-    roomId: 'room-2' // Treatment Room 2
+    roomId: 'room-2', // Treatment Room 2
+    // SMS Confirmed
+    confirmationSentAt: new Date(2023, 7, 15, 10, 0),
+    smsConfirmedAt: new Date(2023, 7, 15, 12, 15)
   },
   {
     id: '3',
@@ -764,7 +777,9 @@ export const appointments: Appointment[] = [
     email: 'emma.w@email.com',
     createdAt: new Date(2023, 7, 14),
     updatedAt: new Date(2023, 7, 14),
-    roomId: 'room-1' // Treatment Room 1 (same practitioner, same room)
+    roomId: 'room-1', // Treatment Room 1 (same practitioner, same room)
+    // Unconfirmed - SMS sent but no reply
+    confirmationSentAt: new Date(2023, 7, 16, 9, 0)
   },
   {
     id: '4',
@@ -798,7 +813,11 @@ export const appointments: Appointment[] = [
     email: 'christina.s@email.com',
     createdAt: new Date(2023, 7, 15),
     updatedAt: new Date(2023, 7, 15),
-    roomId: 'room-4' // Laser Suite
+    roomId: 'room-4', // Laser Suite
+    // HIGH RISK: New patient, unconfirmed, no deposit
+    confirmationSentAt: new Date(2023, 7, 16, 9, 0),
+    isNewPatient: true,
+    noShowRisk: 'high'
   },
   
   // Example of staggered booking - Susan Lo working in multiple rooms

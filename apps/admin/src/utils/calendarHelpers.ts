@@ -320,3 +320,19 @@ export const mergeSlotsIntoContinuousBlocks = (slots: AvailableSlot[]): Continuo
 
 	return blocks
 }
+
+/**
+ * Rounds duration to the nearest 15-minute increment.
+ * Simple and predictable: 30 min drag = 30 min, 65 min drag = 60 min, 80 min drag = 75 or 90 min
+ *
+ * @param rawDuration - The raw duration in minutes from the drag gesture
+ * @param minDuration - Minimum duration to allow (default: 30 for appointments)
+ * @returns Duration rounded to nearest 15 minutes
+ */
+export const snapToServiceDuration = (rawDuration: number, minDuration: number = 30): number => {
+	// Round to nearest 15 minutes
+	const rounded = Math.round(rawDuration / 15) * 15
+
+	// Ensure minimum duration
+	return Math.max(rounded, minDuration)
+}

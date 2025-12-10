@@ -105,4 +105,4 @@ export interface CalendarViewProps {
 // View modes
 export type ViewMode = 'day' | 'week'
 export type CalendarViewType = 'practitioners' | 'rooms'
-export type CreateMode = 'appointment' | 'break'
+export type CreateMode = 'appointment' | 'break' | 'none'

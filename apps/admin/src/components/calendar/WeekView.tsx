@@ -25,6 +25,7 @@ interface WeekViewProps {
 	selectedShift: Shift | null
 	today: Date
 	isDraggingWaitlistPatient: boolean
+	dragTargetSlot: { practitionerId: string; time: { hour: number; minute: number }; date?: Date } | null
 	getShiftForDate: (practitionerId: string, date: Date) => any
 	getAllShiftsForDate?: (practitionerId: string, date: Date) => Shift[]
 	onAppointmentClick: (appointment: Appointment) => void
@@ -32,7 +33,8 @@ interface WeekViewProps {
 	onShiftClick: (shift: Shift) => void
 	onTimeSlotClick: (e: React.MouseEvent, practitionerId: string, date: Date) => void
 	onSlotClick: (slot: any) => void
-	onDragOver: (e: React.DragEvent) => void
+	onDragOver: (e: React.DragEvent, practitionerId: string, dropDate?: Date) => void
+	onDragLeave: (e: React.DragEvent) => void
 	onDrop: (e: React.DragEvent, practitionerId: string, date: Date) => void
 	onCompleteMove?: (practitionerId: string, date: Date, time: { hour: number; minute: number }) => void
 	onAppointmentDragStart?: (appointment: Appointment) => void
@@ -56,6 +58,7 @@ export default function WeekView({
 	selectedShift,
 	today,
 	isDraggingWaitlistPatient,
+	dragTargetSlot,
 	getShiftForDate,
 	getAllShiftsForDate,
 	onAppointmentClick,
@@ -64,6 +67,7 @@ export default function WeekView({
 	onTimeSlotClick,
 	onSlotClick,
 	onDragOver,
+	onDragLeave,
 	onDrop,
 	onCompleteMove,
 	onAppointmentDragStart,
@@ -118,7 +122,7 @@ export default function WeekView({
 
 						{/* Time Grid for this day */}
 						<div
-							className="relative bg-white"
+							className="relative bg-white select-none"
 							style={{ height: `${timeSlotHeight * (calendarSettings.endHour - calendarSettings.startHour)}px`, cursor: shiftMode ? 'default' : (moveMode ? 'crosshair' : 'pointer') }}
 							onClick={(e) => {
 								if (shiftMode) return
@@ -147,7 +151,19 @@ export default function WeekView({
 									}
 								}
 							}}
-							onDragOver={onDragOver}
+							onDragOver={(e) => {
+								// Determine which practitioner column is being hovered
+								const rect = e.currentTarget.getBoundingClientRect()
+								const relativeX = e.clientX - rect.left
+								const columnWidth = rect.width / safePractitioners.length
+								const practitionerIndex = Math.floor(relativeX / columnWidth)
+								const practitioner = safePractitioners[practitionerIndex]
+
+								if (practitioner) {
+									onDragOver(e, practitioner.id, date)
+								}
+							}}
+							onDragLeave={onDragLeave}
 							onDrop={(e) => {
 								// For week view, we need to determine which practitioner column was dropped on
 								const rect = e.currentTarget.getBoundingClientRect()
@@ -168,6 +184,25 @@ export default function WeekView({
 										<div className="bg-purple-600 text-white px-2 py-0.5 rounded-full text-xs inline-flex items-center shadow">
 											Drop to book
 										</div>
+									</div>
+								</div>
+							)}
+
+							{/* Appointment drag target indicator for week view */}
+							{dragTargetSlot && dragTargetSlot.date && moment(dragTargetSlot.date).isSame(date, 'day') && (
+								<div
+									className="absolute bg-purple-100 border-2 border-dashed border-purple-500 rounded-md z-50 pointer-events-none shadow-lg"
+									style={{
+										left: `${(safePractitioners.findIndex(p => p.id === dragTargetSlot.practitionerId) / safePractitioners.length) * 100}%`,
+										width: `${100 / safePractitioners.length}%`,
+										top: `${((dragTargetSlot.time.hour - calendarSettings.startHour) * 60 + dragTargetSlot.time.minute) * (timeSlotHeight / 60)}px`,
+										height: `${timeSlotHeight / 2}px`,
+									}}
+								>
+									<div className="absolute inset-x-0 top-0.5 text-center">
+										<span className="text-xs font-semibold text-purple-700 bg-white px-1.5 py-0.5 rounded shadow">
+											{dragTargetSlot.time.hour.toString().padStart(2, '0')}:{dragTargetSlot.time.minute.toString().padStart(2, '0')}
+										</span>
 									</div>
 								</div>
 							)}
