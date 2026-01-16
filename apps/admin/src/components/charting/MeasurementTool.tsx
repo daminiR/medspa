@@ -218,21 +218,17 @@ function MeasurementOverlay({
     return { distancePx, distanceMm };
   }, [pendingPoint, mousePosition, containerRef, calibration]);
 
-  // Calculate the transform to match the parent zoom/pan container
-  // This ensures measurements stay "attached to the map" when zooming/panning
-  const svgTransform = zoomState
-    ? `scale(${zoomState.scale}) translate(${zoomState.translateX / zoomState.scale}px, ${zoomState.translateY / zoomState.scale}px)`
-    : undefined;
+  // NOTE: We no longer apply svgTransform here because the MeasurementOverlay is now
+  // rendered INSIDE the FaceChartWithZoom's contentRef, which already has the zoom/pan
+  // transform applied. The overlay inherits the parent transform automatically.
+  // Measurements use percentage coordinates (0-100), which scale correctly with the container.
 
   return (
     <svg
       className="absolute inset-0 w-full h-full pointer-events-none"
       style={{
         overflow: 'visible',
-        // Apply the same transform as the parent zoom/pan container so measurements follow the chart
-        // This makes measurements "attached to the map" - when you zoom in, measurements move with the face chart
-        transform: svgTransform,
-        transformOrigin: 'center center',
+        // No transform needed - the parent container is already transformed
       }}
     >
       <defs>
@@ -266,7 +262,6 @@ function MeasurementOverlay({
               strokeWidth={isSelected ? 3 : 2}
               strokeLinecap="round"
               strokeDasharray={isSelected ? 'none' : 'none'}
-              className="transition-all duration-150"
             />
 
             {/* End caps (small circles at endpoints) */}
@@ -279,7 +274,6 @@ function MeasurementOverlay({
                 fill={isSelected ? '#EF4444' : isDark ? '#60A5FA' : '#3B82F6'}
                 stroke={isDark ? '#1F2937' : '#FFFFFF'}
                 strokeWidth={2 * pointScale}
-                className="transition-all duration-150"
               />
             ))}
 
@@ -318,7 +312,6 @@ function MeasurementOverlay({
                 fill={isSelected ? '#EF4444' : isDark ? '#374151' : '#FFFFFF'}
                 stroke={isSelected ? '#DC2626' : isDark ? '#4B5563' : '#E5E7EB'}
                 strokeWidth={1}
-                className="transition-all duration-150"
               />
 
               {/* Distance text */}
@@ -396,7 +389,6 @@ function MeasurementOverlay({
             fill={isDark ? '#60A5FA' : '#3B82F6'}
             stroke={isDark ? '#1F2937' : '#FFFFFF'}
             strokeWidth={2 * pointScale}
-            className="animate-pulse"
           />
 
           {/* End point (preview) */}
@@ -455,7 +447,6 @@ function MeasurementOverlay({
           fill={isDark ? '#60A5FA' : '#3B82F6'}
           stroke={isDark ? '#1F2937' : '#FFFFFF'}
           strokeWidth={2 * pointScale}
-          className="animate-pulse"
         />
       )}
     </svg>
@@ -464,42 +455,113 @@ function MeasurementOverlay({
 
 
 // =============================================================================
-// MINIMAL TOOLBAR - Only shows when there are measurements to clear
+// ENHANCED TOOLBAR - Shows measurement values with real-time display
 // =============================================================================
 
 interface MeasurementToolbarProps {
   onClearAll: () => void;
-  measurementCount: number;
+  measurements: Measurement[];
+  selectedId: string | null;
+  onSelect: (id: string | null) => void;
+  onDelete: (id: string) => void;
 }
 
-function MeasurementToolbar({ onClearAll, measurementCount }: MeasurementToolbarProps) {
+function MeasurementToolbar({
+  onClearAll,
+  measurements,
+  selectedId,
+  onSelect,
+  onDelete
+}: MeasurementToolbarProps) {
   const { theme } = useChartingTheme();
   const isDark = theme === 'dark';
 
   // Only show toolbar when there are measurements
-  if (measurementCount === 0) return null;
+  if (measurements.length === 0) return null;
+
+  // Calculate total distance
+  const totalMm = measurements.reduce((sum, m) => sum + m.distanceMm, 0);
 
   return (
     <div
-      className={`absolute bottom-4 left-1/2 -translate-x-1/2 z-[110] flex items-center gap-2 px-3 py-2 rounded-full shadow-lg ${
+      className={`absolute bottom-4 left-1/2 -translate-x-1/2 z-[110] flex flex-col gap-2 p-3 rounded-xl shadow-lg max-w-md ${
         isDark ? 'bg-gray-800/95 border border-gray-700' : 'bg-white/95 border border-gray-200'
       }`}
     >
-      <span className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
-        {measurementCount} measurement{measurementCount !== 1 ? 's' : ''}
-      </span>
-      <button
-        onClick={onClearAll}
-        className={`flex items-center gap-1 px-2 py-1 rounded text-xs font-medium transition-colors ${
-          isDark
-            ? 'text-red-400 hover:bg-red-500/20'
-            : 'text-red-600 hover:bg-red-50'
-        }`}
-        title="Clear all measurements"
-      >
-        <Trash2 className="w-3 h-3" />
-        Clear
-      </button>
+      {/* Header with count and clear button */}
+      <div className="flex items-center justify-between gap-4">
+        <span className={`text-xs font-medium ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+          {measurements.length} measurement{measurements.length !== 1 ? 's' : ''}
+          {measurements.length > 0 && (
+            <span className={`ml-2 ${isDark ? 'text-cyan-400' : 'text-cyan-600'}`}>
+              Total: {totalMm.toFixed(1)}mm
+            </span>
+          )}
+        </span>
+        <button
+          onClick={onClearAll}
+          className={`flex items-center gap-1 px-2 py-1 rounded text-xs font-medium transition-colors ${
+            isDark
+              ? 'text-red-400 hover:bg-red-500/20'
+              : 'text-red-600 hover:bg-red-50'
+          }`}
+          title="Clear all measurements"
+        >
+          <Trash2 className="w-3 h-3" />
+          Clear All
+        </button>
+      </div>
+
+      {/* Measurement list with actual values */}
+      {measurements.length > 0 && (
+        <div className="flex flex-wrap gap-2 max-h-32 overflow-y-auto">
+          {measurements.map((m, index) => (
+            <div
+              key={m.id}
+              onClick={() => onSelect(selectedId === m.id ? null : m.id)}
+              className={`
+                flex items-center gap-2 px-2 py-1.5 rounded-lg cursor-pointer transition-all text-xs
+                ${selectedId === m.id
+                  ? isDark
+                    ? 'bg-cyan-600/30 border border-cyan-500 text-cyan-300'
+                    : 'bg-cyan-100 border border-cyan-400 text-cyan-700'
+                  : isDark
+                    ? 'bg-gray-700/50 border border-gray-600 text-gray-300 hover:bg-gray-700'
+                    : 'bg-gray-100 border border-gray-300 text-gray-700 hover:bg-gray-200'
+                }
+              `}
+            >
+              {/* Measurement number badge */}
+              <span className={`
+                w-5 h-5 flex items-center justify-center rounded-full text-[10px] font-bold
+                ${isDark ? 'bg-cyan-600 text-white' : 'bg-cyan-500 text-white'}
+              `}>
+                {index + 1}
+              </span>
+              {/* Distance value */}
+              <span className="font-mono font-medium">
+                {m.distanceMm.toFixed(1)}mm
+              </span>
+              {/* Delete button for selected measurement */}
+              {selectedId === m.id && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onDelete(m.id);
+                  }}
+                  className={`
+                    ml-1 p-0.5 rounded transition-colors
+                    ${isDark ? 'hover:bg-red-500/30 text-red-400' : 'hover:bg-red-100 text-red-500'}
+                  `}
+                  title="Delete measurement"
+                >
+                  <Trash2 className="w-3 h-3" />
+                </button>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
@@ -520,6 +582,11 @@ export function MeasurementTool({
   readOnly = false,
   zoomState,
 }: MeasurementToolProps) {
+  // DEBUG: Track renders to detect oscillation
+  const renderCountRef = useRef(0);
+  renderCountRef.current++;
+  console.log(`[MeasurementTool] Render #${renderCountRef.current}, isActive=${isActive}, pendingPoint exists=${!!arguments}`);
+
   // Pending point state (first point of a new measurement)
   const [pendingPoint, setPendingPoint] = useState<MeasurementPoint | null>(null);
   // Mouse/touch position for live preview
@@ -528,8 +595,14 @@ export function MeasurementTool({
   const [selectedId, setSelectedId] = useState<string | null>(null);
   // Track if we're in a two-finger gesture (for passing through to parent zoom)
   const [isTwoFingerGesture, setIsTwoFingerGesture] = useState(false);
-  // Ref for the overlay div to attach native event listeners
-  const overlayRef = useRef<HTMLDivElement>(null);
+  // Track if we just handled a touch event (to prevent click from firing too)
+  const justHandledTouchRef = useRef(false);
+
+  // CRITICAL: Internal container ref for coordinate calculations
+  // This ref points to the overlay div that fills the transformed content area.
+  // Using this instead of external containerRef ensures getBoundingClientRect()
+  // returns the correct visual bounds for coordinate conversion.
+  const internalContainerRef = useRef<HTMLDivElement>(null);
 
   // Reset pending point when tool becomes inactive
   useEffect(() => {
@@ -539,14 +612,75 @@ export function MeasurementTool({
     }
   }, [isActive]);
 
-  // Convert client coordinates to percentage position
+  // =============================================================================
+  // STABILIZATION: Store zoomState in ref to avoid recreating clientToPercent
+  // =============================================================================
+  // The clientToPercent callback is used in all click/touch handlers. If it changes
+  // reference frequently (due to zoomState changing), all those handlers get recreated,
+  // which can cause subtle timing issues and potential jitter.
+  const zoomStateRef = useRef(zoomState);
+  useEffect(() => {
+    zoomStateRef.current = zoomState;
+  }, [zoomState]);
+
+  // Convert client coordinates to percentage position, accounting for zoom transform
+  //
+  // COORDINATE CONVERSION EXPLANATION:
+  // The MeasurementTool is rendered INSIDE the transformed contentRef (FaceChartWithZoom).
+  // Using internalContainerRef (which is our overlay div with absolute inset-0) ensures
+  // getBoundingClientRect() returns the SCALED visual bounds of the content area.
+  //
+  // To convert click coordinates to content-space percentages:
+  // 1. Get click position relative to container: relX = clientX - rect.left
+  // 2. The rect dimensions are SCALED, so divide by scale: contentX = relX / scale
+  // 3. Content dimensions (unscaled) = rect dimensions / scale
+  // 4. Percentage = (contentX / contentWidth) * 100
+  //
+  // STABILIZATION: Uses zoomStateRef instead of zoomState in dependencies to prevent
+  // this callback from being recreated on every zoom change. This helps prevent jitter.
   const clientToPercent = useCallback(
     (clientX: number, clientY: number): MeasurementPoint | null => {
-      if (!containerRef.current) return null;
+      // Use internal container ref (inside the transformed content) for accurate coordinates
+      const container = internalContainerRef.current;
+      if (!container) {
+        console.warn('[MeasurementTool] clientToPercent: internalContainerRef is null');
+        return null;
+      }
 
-      const rect = containerRef.current.getBoundingClientRect();
-      const x = ((clientX - rect.left) / rect.width) * 100;
-      const y = ((clientY - rect.top) / rect.height) * 100;
+      const rect = container.getBoundingClientRect();
+      const scale = zoomStateRef.current?.scale || 1;
+
+      // Get click position relative to the container's visual bounds
+      const relX = clientX - rect.left;
+      const relY = clientY - rect.top;
+
+      // DEBUG: Log all coordinate values
+      console.log('[MeasurementTool] clientToPercent:', {
+        clientX,
+        clientY,
+        rectLeft: rect.left,
+        rectTop: rect.top,
+        rectWidth: rect.width,
+        rectHeight: rect.height,
+        relX,
+        relY,
+        scale,
+        zoomState: zoomStateRef.current,
+      });
+
+      // Convert to content space by dividing by scale
+      const contentX = relX / scale;
+      const contentY = relY / scale;
+
+      // Content dimensions (unscaled)
+      const contentWidth = rect.width / scale;
+      const contentHeight = rect.height / scale;
+
+      // Calculate percentage
+      const x = (contentX / contentWidth) * 100;
+      const y = (contentY / contentHeight) * 100;
+
+      console.log('[MeasurementTool] Calculated percentage:', { x, y, contentX, contentY, contentWidth, contentHeight });
 
       // Clamp to bounds
       return {
@@ -554,7 +688,7 @@ export function MeasurementTool({
         y: Math.max(0, Math.min(100, y)),
       };
     },
-    [containerRef]
+    [] // No dependencies - uses refs
   );
 
   // Handle touch start - detect two-finger gestures early
@@ -577,9 +711,24 @@ export function MeasurementTool({
     [isActive, readOnly]
   );
 
+  // =============================================================================
+  // STABILIZATION: Track the last placed point coordinates to prevent jitter
+  // =============================================================================
+  // When clicking to place the first point, if the component re-renders (e.g., from
+  // calibration updates or other state changes), the SVG circle could briefly show
+  // at a slightly different position before settling. By storing the coordinates
+  // in a ref and checking if they match before updating state, we avoid redundant
+  // state updates that could cause visual jitter.
+  //
+  // NOTE: This ref must be declared before handleTouchEnd and handleClick since
+  // both handlers use it for stabilization.
+  const lastPlacedPointRef = useRef<MeasurementPoint | null>(null);
+
   // Handle touch end - only process single-finger taps for measurement
   const handleTouchEnd = useCallback(
     (e: React.TouchEvent) => {
+      console.log('[MeasurementTool] handleTouchEnd called, touches:', e.touches.length, 'isTwoFingerGesture:', isTwoFingerGesture);
+
       // If this was part of a two-finger gesture, reset flag and don't process
       if (isTwoFingerGesture) {
         // Check if all fingers lifted
@@ -592,19 +741,47 @@ export function MeasurementTool({
       if (!isActive || readOnly) return;
       if (e.changedTouches.length === 0) return;
 
+      // CRITICAL: Set flag to prevent click handler from also firing
+      justHandledTouchRef.current = true;
+      // Reset the flag after a short delay (click events fire ~100ms after touchend)
+      setTimeout(() => {
+        justHandledTouchRef.current = false;
+      }, 300);
+
       // Use changedTouches for the finger that was lifted
       const touch = e.changedTouches[0];
       const point = clientToPercent(touch.clientX, touch.clientY);
-      if (!point || !containerRef.current) return;
+      if (!point || !internalContainerRef.current) return;
+
+      console.log('[MeasurementTool] handleTouchEnd - placing point at:', point, 'pendingPoint:', pendingPoint);
 
       if (!pendingPoint) {
+        // STABILIZATION: Check if we're placing at the same coordinates as last time
+        // This prevents jitter from double-firing events or rapid re-renders
+        if (
+          lastPlacedPointRef.current &&
+          Math.abs(lastPlacedPointRef.current.x - point.x) < 0.1 &&
+          Math.abs(lastPlacedPointRef.current.y - point.y) < 0.1
+        ) {
+          console.log('[MeasurementTool] Skipping touch - same point as last');
+          return; // Same point, skip to prevent jitter
+        }
+        lastPlacedPointRef.current = point;
+
         // Start new measurement
+        console.log('[MeasurementTool] Setting pending point (touch):', point);
         setPendingPoint(point);
         setSelectedId(null);
       } else {
-        // Complete measurement
-        const rect = containerRef.current.getBoundingClientRect();
-        const distancePx = calculatePixelDistance(pendingPoint, point, rect.width, rect.height);
+        // Clear the last placed point ref since we're completing the measurement
+        lastPlacedPointRef.current = null;
+
+        // Complete measurement - use internal container for dimensions
+        const rect = internalContainerRef.current.getBoundingClientRect();
+        const scale = zoomStateRef.current?.scale || 1;
+        const contentWidth = rect.width / scale;
+        const contentHeight = rect.height / scale;
+        const distancePx = calculatePixelDistance(pendingPoint, point, contentWidth, contentHeight);
         const distanceMm = pxToMm(distancePx, calibration);
 
         const newMeasurement: Measurement = {
@@ -616,30 +793,63 @@ export function MeasurementTool({
           timestamp: new Date(),
         };
 
+        console.log('[MeasurementTool] Creating measurement (touch):', newMeasurement);
         onMeasurementsChange([...measurements, newMeasurement]);
         setPendingPoint(null);
         setMousePosition(null);
       }
     },
-    [isActive, readOnly, pendingPoint, clientToPercent, calibration, measurements, onMeasurementsChange, containerRef, isTwoFingerGesture]
+    [isActive, readOnly, pendingPoint, clientToPercent, calibration, measurements, onMeasurementsChange, isTwoFingerGesture]
   );
 
   // Handle mouse click (for desktop/stylus)
+  // IMPORTANT: On touch devices, both touchend AND click fire. We use justHandledTouchRef
+  // to prevent the click handler from double-processing the same tap.
   const handleClick = useCallback(
     (e: React.MouseEvent) => {
+      console.log('[MeasurementTool] handleClick called, justHandledTouch:', justHandledTouchRef.current);
+
+      // If we just handled a touch event, skip this click to prevent double-firing
+      if (justHandledTouchRef.current) {
+        console.log('[MeasurementTool] Skipping click - just handled touch');
+        justHandledTouchRef.current = false;
+        return;
+      }
+
       if (!isActive || readOnly) return;
 
       const point = clientToPercent(e.clientX, e.clientY);
-      if (!point || !containerRef.current) return;
+      if (!point || !internalContainerRef.current) return;
+
+      console.log('[MeasurementTool] handleClick - placing point at:', point, 'pendingPoint:', pendingPoint);
 
       if (!pendingPoint) {
+        // STABILIZATION: Check if we're placing at the same coordinates as last time
+        // This prevents jitter from double-firing events or rapid re-renders
+        if (
+          lastPlacedPointRef.current &&
+          Math.abs(lastPlacedPointRef.current.x - point.x) < 0.1 &&
+          Math.abs(lastPlacedPointRef.current.y - point.y) < 0.1
+        ) {
+          console.log('[MeasurementTool] Skipping - same point as last');
+          return; // Same point, skip to prevent jitter
+        }
+        lastPlacedPointRef.current = point;
+
         // Start new measurement
+        console.log('[MeasurementTool] Setting pending point:', point);
         setPendingPoint(point);
         setSelectedId(null);
       } else {
-        // Complete measurement
-        const rect = containerRef.current.getBoundingClientRect();
-        const distancePx = calculatePixelDistance(pendingPoint, point, rect.width, rect.height);
+        // Clear the last placed point ref since we're completing the measurement
+        lastPlacedPointRef.current = null;
+
+        // Complete measurement - use internal container for dimensions
+        const rect = internalContainerRef.current.getBoundingClientRect();
+        const scale = zoomStateRef.current?.scale || 1;
+        const contentWidth = rect.width / scale;
+        const contentHeight = rect.height / scale;
+        const distancePx = calculatePixelDistance(pendingPoint, point, contentWidth, contentHeight);
         const distanceMm = pxToMm(distancePx, calibration);
 
         const newMeasurement: Measurement = {
@@ -651,12 +861,13 @@ export function MeasurementTool({
           timestamp: new Date(),
         };
 
+        console.log('[MeasurementTool] Creating measurement:', newMeasurement);
         onMeasurementsChange([...measurements, newMeasurement]);
         setPendingPoint(null);
         setMousePosition(null);
       }
     },
-    [isActive, readOnly, pendingPoint, clientToPercent, calibration, measurements, onMeasurementsChange, containerRef]
+    [isActive, readOnly, pendingPoint, clientToPercent, calibration, measurements, onMeasurementsChange]
   );
 
   // Handle mouse move for live preview (desktop/stylus only)
@@ -714,6 +925,17 @@ export function MeasurementTool({
     setSelectedId(null);
   }, [onMeasurementsChange]);
 
+  // Delete a specific measurement by ID
+  const handleDeleteMeasurement = useCallback(
+    (id: string) => {
+      onMeasurementsChange(measurements.filter((m) => m.id !== id));
+      if (selectedId === id) {
+        setSelectedId(null);
+      }
+    },
+    [measurements, onMeasurementsChange, selectedId]
+  );
+
   // Cancel pending measurement on escape key
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -730,6 +952,18 @@ export function MeasurementTool({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [pendingPoint, selectedId, handleDelete]);
 
+  // =============================================================================
+  // STABILIZATION: Track previous dimensions to avoid unnecessary updates
+  // =============================================================================
+  // This is the same pattern used in ArrowTool to prevent jitter/oscillation.
+  // The key insight: Updating state (like calibration) triggers re-renders, and
+  // if we update on every ResizeObserver callback or animation frame, we can
+  // cause oscillation where the component re-renders repeatedly before settling.
+  //
+  // Solution: Track the previous width with a ref and only update if it actually
+  // changed by a meaningful amount (threshold of 1px to handle sub-pixel differences).
+  // =============================================================================
+
   // Track previous width to avoid unnecessary calibration updates
   const prevWidthRef = useRef<number | null>(null);
 
@@ -739,37 +973,79 @@ export function MeasurementTool({
     calibrationRefValueRef.current = calibration.referenceValueMm;
   }, [calibration.referenceValueMm]);
 
+  // Store the callback in a ref to avoid dependency on onCalibrationChange changing
+  const onCalibrationChangeRef = useRef(onCalibrationChange);
+  useEffect(() => {
+    onCalibrationChangeRef.current = onCalibrationChange;
+  }, [onCalibrationChange]);
+
+  // Store calibration in a ref to avoid stale closure issues
+  const calibrationRef = useRef(calibration);
+  useEffect(() => {
+    calibrationRef.current = calibration;
+  }, [calibration]);
+
   // Memoize the calibration change callback to avoid infinite loops
+  // CRITICAL: Use refs for all dependencies to prevent this callback from changing
+  // and causing the ResizeObserver effect to re-run, which would cause jitter
   const stableCalibrationChange = useCallback(
     (newWidth: number) => {
-      // Only update if width actually changed
-      if (prevWidthRef.current === newWidth) return;
+      // CRITICAL FIX: Only update if width actually changed by more than 1px
+      // This prevents oscillation from sub-pixel differences and repeated calls
+      // during initial mount (similar to ArrowTool's lastCanvasSizeRef pattern)
+      if (prevWidthRef.current !== null && Math.abs(prevWidthRef.current - newWidth) < 1) {
+        return;
+      }
       prevWidthRef.current = newWidth;
 
-      onCalibrationChange({
-        ...calibration,
+      onCalibrationChangeRef.current({
+        ...calibrationRef.current,
         referencePx: newWidth,
         pixelsPerMm: newWidth / calibrationRefValueRef.current,
       });
     },
-    [onCalibrationChange, calibration]
+    [] // No dependencies - all values read from refs
   );
 
   // Update calibration reference pixels when container resizes
+  // Using requestAnimationFrame to batch updates and prevent jitter
   useEffect(() => {
     if (!containerRef.current) return;
 
+    let rafId: number | null = null;
+
     const updateReferencePx = () => {
-      if (containerRef.current) {
-        const width = containerRef.current.getBoundingClientRect().width;
-        stableCalibrationChange(width);
+      // Cancel any pending update to prevent multiple rapid updates
+      if (rafId !== null) {
+        cancelAnimationFrame(rafId);
       }
+
+      // Use requestAnimationFrame to ensure DOM has settled before measuring
+      // This prevents jitter from measuring during layout/paint
+      rafId = requestAnimationFrame(() => {
+        if (containerRef.current) {
+          const width = containerRef.current.getBoundingClientRect().width;
+          // Only update if width is valid (container has been laid out)
+          if (width > 0) {
+            stableCalibrationChange(width);
+          }
+        }
+        rafId = null;
+      });
     };
 
     const resizeObserver = new ResizeObserver(updateReferencePx);
     resizeObserver.observe(containerRef.current);
 
-    return () => resizeObserver.disconnect();
+    // Initial update
+    updateReferencePx();
+
+    return () => {
+      if (rafId !== null) {
+        cancelAnimationFrame(rafId);
+      }
+      resizeObserver.disconnect();
+    };
   }, [containerRef, stableCalibrationChange]);
 
   // ============================================================================
@@ -815,11 +1091,13 @@ export function MeasurementTool({
   return (
     <>
       {/* Interactive overlay that captures clicks when tool is active */}
-      {/* CRITICAL: pointer-events is 'none' during two-finger gestures so touch
+      {/* CRITICAL: This div uses internalContainerRef for coordinate calculations.
+          It fills the transformed content area with absolute inset-0.
+          pointer-events is 'none' during two-finger gestures so touch
           events pass through to parent FaceChartWithZoom for zoom/pan */}
       {isActive && !readOnly && (
         <div
-          ref={overlayRef}
+          ref={internalContainerRef}
           className="absolute inset-0 z-[100] cursor-crosshair"
           onClick={handleClick}
           onMouseMove={handleMouseMove}
@@ -837,7 +1115,9 @@ export function MeasurementTool({
         />
       )}
 
-      {/* Measurement visualization overlay */}
+      {/* Measurement visualization overlay - NOTE: We pass internalContainerRef for coordinate
+          calculations when active. When not active, we still need a ref for the overlay,
+          so we pass containerRef as fallback (it's only used for distance calculation display). */}
       <MeasurementOverlay
         measurements={measurements}
         pendingPoint={pendingPoint}
@@ -848,19 +1128,15 @@ export function MeasurementTool({
         calibration={calibration}
         showCm={showCm}
         zoom={zoom}
-        containerRef={containerRef}
+        containerRef={isActive ? internalContainerRef : containerRef}
         isActive={isActive}
         readOnly={readOnly}
         zoomState={zoomState}
       />
 
-      {/* Minimal toolbar - only shows when there are measurements */}
-      {isActive && (
-        <MeasurementToolbar
-          onClearAll={handleClearAll}
-          measurementCount={measurements.length}
-        />
-      )}
+      {/* REMOVED: MeasurementToolbar - the measurements panel is now shown in LeftDock
+          instead of as an overlay on the map. This reduces visual clutter and matches
+          how other tools display their information. */}
     </>
   );
 }

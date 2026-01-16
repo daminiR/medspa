@@ -84,6 +84,16 @@ export interface ArrowToolProps {
    * When provided, arrows will transform to stay attached to the zoomed/panned chart.
    */
   zoomState?: ZoomState;
+  /**
+   * Controlled color prop - when provided, overrides internal color selection.
+   * Use this to control the arrow color from a parent component (e.g., RightDock).
+   */
+  color?: string;
+  /**
+   * Callback when color changes (only used when showColorPicker is true).
+   * Allows syncing color selection back to parent.
+   */
+  onColorChange?: (color: string) => void;
 }
 
 // =============================================================================
@@ -154,6 +164,8 @@ export const ArrowTool = forwardRef<ArrowToolRef, ArrowToolProps>(
       productId,
       showColorPicker = true,
       zoomState,
+      color: controlledColor,
+      onColorChange,
     },
     ref
   ) {
@@ -164,8 +176,33 @@ export const ArrowTool = forwardRef<ArrowToolRef, ArrowToolProps>(
     const [internalArrows, setInternalArrows] = useState<Arrow[]>([]);
     const arrows = externalArrows ?? internalArrows;
 
-    // Color selection - simple internal state with smart default
-    const [selectedColor, setSelectedColor] = useState<string>(ARROW_COLORS[0].color);
+    // Color selection - supports both controlled and uncontrolled modes
+    // When controlledColor is provided, use it; otherwise use internal state
+    // IMPORTANT: Initialize to controlledColor if provided to prevent color mismatch on first render
+    // FIX: Always use a valid default color - the default purple (#8B5CF6) ensures drawing works immediately
+    const DEFAULT_ARROW_COLOR = ARROW_COLORS[0].color; // '#8B5CF6' purple
+    const [internalColor, setInternalColor] = useState<string>(controlledColor || DEFAULT_ARROW_COLOR);
+    // FIX: Ensure selectedColor ALWAYS has a valid value by adding final fallback
+    // This fixes the bug where first-selected arrow tool wouldn't draw until color was manually selected
+    const selectedColor = controlledColor || internalColor || DEFAULT_ARROW_COLOR;
+
+    // Sync internal color state when controlled color changes from parent
+    // This ensures the internal state stays in sync for the floating color picker (when shown)
+    // FIX: Only sync if controlledColor is a non-empty string to prevent clearing the color
+    useEffect(() => {
+      if (controlledColor && controlledColor.length > 0) {
+        setInternalColor(controlledColor);
+      }
+    }, [controlledColor]);
+
+    // DEBUG: Uncomment to trace color prop changes
+    // console.log('[ArrowTool] color prop:', controlledColor, 'internal:', internalColor, 'selected:', selectedColor);
+
+    // Handler for color changes - updates internal state and notifies parent if callback provided
+    const handleColorChange = useCallback((newColor: string) => {
+      setInternalColor(newColor);
+      onColorChange?.(newColor);
+    }, [onColorChange]);
 
     // Drawing state
     const [isDrawing, setIsDrawing] = useState(false);
@@ -250,25 +287,72 @@ export const ArrowTool = forwardRef<ArrowToolRef, ArrowToolProps>(
       getArrowCount: () => arrows.length,
     }), [handleUndo, handleRedo, handleClearAll, arrows]);
 
-    // Resize canvas to match container
+    // Track last canvas dimensions to avoid unnecessary resets that cause jitter
+    const lastCanvasSizeRef = useRef<{ width: number; height: number } | null>(null);
+
+    // Resize canvas to match container UNSCALED dimensions
+    // The canvas is inside contentRef which has CSS transform applied.
+    // IMPORTANT: We use the UNSCALED dimensions because:
+    // 1. The canvas is inside the scaled contentRef
+    // 2. CSS transform will scale the canvas visually
+    // 3. If we set canvas to VISUAL size, it gets double-scaled
+    // 4. Pointer coordinates need to be converted from visual to unscaled space
     const resizeCanvas = useCallback(() => {
       const canvas = canvasRef.current;
       const container = containerRef.current;
-      if (!canvas || !container) return;
+      if (!canvas || !container) {
+        return;
+      }
 
       const rect = container.getBoundingClientRect();
       const dpr = window.devicePixelRatio || 1;
+      const scale = zoomState?.scale || 1;
 
-      canvas.width = rect.width * dpr;
-      canvas.height = rect.height * dpr;
-      canvas.style.width = `${rect.width}px`;
-      canvas.style.height = `${rect.height}px`;
+      // Calculate UNSCALED dimensions by dividing visual dimensions by scale
+      // This is the actual CSS size the canvas should be before transform is applied
+      const canvasWidth = rect.width / scale;
+      const canvasHeight = rect.height / scale;
+
+      // DEBUG: Uncomment to trace canvas resize
+      // console.log('[ArrowTool] resizeCanvas:', { visualRect: { width: rect.width, height: rect.height }, scale, unscaledSize: { width: canvasWidth, height: canvasHeight } });
+
+      // Skip if dimensions are invalid (container not laid out yet)
+      if (canvasWidth <= 0 || canvasHeight <= 0) {
+        return;
+      }
+
+      const newBufferWidth = Math.round(canvasWidth * dpr);
+      const newBufferHeight = Math.round(canvasHeight * dpr);
+
+      // CRITICAL FIX: Only resize if dimensions actually changed
+      // Setting canvas.width/height clears the canvas buffer and resets the context transform,
+      // which causes jitter/oscillation if done during the mount retry timeouts (50ms, 100ms, 200ms)
+      // while the user has already started drawing
+      if (
+        lastCanvasSizeRef.current &&
+        lastCanvasSizeRef.current.width === newBufferWidth &&
+        lastCanvasSizeRef.current.height === newBufferHeight
+      ) {
+        return;
+      }
+
+      // Set the canvas BUFFER size (pixels for drawing) at high DPI
+      canvas.width = newBufferWidth;
+      canvas.height = newBufferHeight;
+
+      // Track the new dimensions to avoid redundant resizes
+      lastCanvasSizeRef.current = { width: newBufferWidth, height: newBufferHeight };
+
+      // Set the canvas CSS display size to match UNSCALED dimensions
+      // The CSS transform on the parent will scale this up to visual size
+      canvas.style.width = `${canvasWidth}px`;
+      canvas.style.height = `${canvasHeight}px`;
 
       const ctx = canvas.getContext('2d');
       if (ctx) {
         ctx.scale(dpr, dpr);
       }
-    }, []);
+    }, [zoomState?.scale]);
 
     // Draw an arrow on the canvas
     const drawArrow = useCallback(
@@ -333,53 +417,81 @@ export const ArrowTool = forwardRef<ArrowToolRef, ArrowToolProps>(
     const redrawCanvas = useCallback(() => {
       const canvas = canvasRef.current;
       const container = containerRef.current;
-      if (!canvas || !container) return;
+      if (!canvas || !container) {
+        return;
+      }
 
       const ctx = canvas.getContext('2d');
-      if (!ctx) return;
+      if (!ctx) {
+        return;
+      }
 
       const rect = container.getBoundingClientRect();
       const dpr = window.devicePixelRatio || 1;
+      const scale = zoomState?.scale || 1;
+
+      // Use UNSCALED dimensions (same as canvas sizing)
+      const canvasWidth = rect.width / scale;
+      const canvasHeight = rect.height / scale;
 
       // Clear canvas
       ctx.clearRect(0, 0, canvas.width / dpr, canvas.height / dpr);
 
-      // Draw all saved arrows
+      // Draw all saved arrows (stored as percentages of UNSCALED dimensions)
       arrows.forEach((arrow) => {
-        const fromX = toPixels(arrow.startX, rect.width);
-        const fromY = toPixels(arrow.startY, rect.height);
-        const toX = toPixels(arrow.endX, rect.width);
-        const toY = toPixels(arrow.endY, rect.height);
+        const fromX = toPixels(arrow.startX, canvasWidth);
+        const fromY = toPixels(arrow.startY, canvasHeight);
+        const toX = toPixels(arrow.endX, canvasWidth);
+        const toY = toPixels(arrow.endY, canvasHeight);
         drawArrow(ctx, fromX, fromY, toX, toY, arrow.color, arrow.thickness);
       });
 
-      // Draw current arrow being drawn
+      // Draw current arrow being drawn (already in unscaled coordinates)
+      // Only draw preview if there's some distance between start and current points
+      // This prevents drawing a weird-looking arrowhead at a single point when first clicking
       if (isDrawing && startPoint && currentPoint) {
-        drawArrow(
-          ctx,
-          startPoint.x,
-          startPoint.y,
-          currentPoint.x,
-          currentPoint.y,
-          selectedColor,
-          DEFAULT_THICKNESS
-        );
+        const previewLength = distance(startPoint.x, startPoint.y, currentPoint.x, currentPoint.y);
+        if (previewLength > 5) {
+          drawArrow(
+            ctx,
+            startPoint.x,
+            startPoint.y,
+            currentPoint.x,
+            currentPoint.y,
+            selectedColor,
+            DEFAULT_THICKNESS
+          );
+        }
       }
-    }, [arrows, isDrawing, startPoint, currentPoint, selectedColor, drawArrow]);
+    }, [arrows, isDrawing, startPoint, currentPoint, selectedColor, drawArrow, zoomState?.scale]);
 
-    // Get pointer position relative to canvas
+    // Get pointer position relative to canvas in UNSCALED coordinates
+    // The canvas is inside a scaled container, so we need to convert visual coordinates
+    // to unscaled canvas coordinates by dividing by the scale factor.
     const getPointerPosition = useCallback(
       (e: React.PointerEvent<HTMLCanvasElement>): { x: number; y: number } => {
+        const container = containerRef.current;
         const canvas = canvasRef.current;
-        if (!canvas) return { x: 0, y: 0 };
+        if (!container) return { x: 0, y: 0 };
 
-        const rect = canvas.getBoundingClientRect();
-        return {
-          x: e.clientX - rect.left,
-          y: e.clientY - rect.top,
-        };
+        const rect = container.getBoundingClientRect();
+        const scale = zoomState?.scale || 1;
+
+        // Get position relative to container's visual bounds
+        const visualX = e.clientX - rect.left;
+        const visualY = e.clientY - rect.top;
+
+        // Convert to unscaled canvas coordinates
+        // The canvas is sized to unscaled dimensions, so we divide visual coordinates by scale
+        const x = visualX / scale;
+        const y = visualY / scale;
+
+        // DEBUG: Uncomment to trace pointer position calculation
+        // console.log('[ArrowTool] getPointerPosition:', { clientX: e.clientX, clientY: e.clientY, scale, visualPos: { visualX, visualY }, unscaledPos: { x, y } });
+
+        return { x, y };
       },
-      []
+      [zoomState]
     );
 
     // Track active touch count for two-finger gesture detection
@@ -403,7 +515,9 @@ export const ArrowTool = forwardRef<ArrowToolRef, ArrowToolProps>(
     // Two-finger gestures pass through for zoom/pan
     const handlePointerDown = useCallback(
       (e: React.PointerEvent<HTMLCanvasElement>) => {
-        if (!isActive || readOnly) return;
+        if (!isActive || readOnly) {
+          return;
+        }
 
         // Track touch count for multi-touch detection
         if (e.pointerType === 'touch') {
@@ -444,6 +558,8 @@ export const ArrowTool = forwardRef<ArrowToolRef, ArrowToolProps>(
         }
 
         const point = getPointerPosition(e);
+        // DEBUG: Uncomment to trace pointer down
+        // console.log('[ArrowTool] handlePointerDown - start point:', point);
         setIsDrawing(true);
         setStartPoint(point);
         setCurrentPoint(point);
@@ -515,21 +631,32 @@ export const ArrowTool = forwardRef<ArrowToolRef, ArrowToolProps>(
           if (!container) return;
 
           const rect = container.getBoundingClientRect();
+          const scale = zoomState?.scale || 1;
+
+          // Use UNSCALED dimensions (same as canvas sizing and pointer positions)
+          const canvasWidth = rect.width / scale;
+          const canvasHeight = rect.height / scale;
+
           const length = distance(startPoint.x, startPoint.y, currentPoint.x, currentPoint.y);
+
+          // DEBUG: Uncomment to trace pointer up
+          // console.log('[ArrowTool] handlePointerUp:', { startPoint, currentPoint, scale, canvasSize: { width: canvasWidth, height: canvasHeight }, arrowLength: length, selectedColor });
 
           // Only create arrow if it meets minimum length
           if (length >= MIN_ARROW_LENGTH) {
             const newArrow: Arrow = {
               id: generateArrowId(),
-              startX: toPercentage(startPoint.x, rect.width),
-              startY: toPercentage(startPoint.y, rect.height),
-              endX: toPercentage(currentPoint.x, rect.width),
-              endY: toPercentage(currentPoint.y, rect.height),
+              startX: toPercentage(startPoint.x, canvasWidth),
+              startY: toPercentage(startPoint.y, canvasHeight),
+              endX: toPercentage(currentPoint.x, canvasWidth),
+              endY: toPercentage(currentPoint.y, canvasHeight),
               color: selectedColor,
               thickness: DEFAULT_THICKNESS,
               productId: productId,
               timestamp: new Date(),
             };
+            // DEBUG: Uncomment to trace arrow creation
+            // console.log('[ArrowTool] Creating arrow with color:', selectedColor, 'newArrow:', newArrow);
 
             // Save current state for undo
             setUndoStack((prev) => [...prev, arrows]);
@@ -556,6 +683,7 @@ export const ArrowTool = forwardRef<ArrowToolRef, ArrowToolProps>(
         arrows,
         updateArrows,
         onArrowAdd,
+        zoomState?.scale,
       ]
     );
 
@@ -638,17 +766,43 @@ export const ArrowTool = forwardRef<ArrowToolRef, ArrowToolProps>(
       }
     }, []);
 
-    // Handle resize
+    // Handle resize - with multiple retries for initial mount
     useEffect(() => {
-      resizeCanvas();
+      // Use requestAnimationFrame to ensure DOM has been laid out before measuring
+      // This is critical when the component first appears (isActive becomes true)
+      // because getBoundingClientRect may return 0 if called before paint
+      //
+      // Use multiple retries like SmoothBrushTool to handle cases where container
+      // hasn't fully rendered yet
+      const timeouts = [0, 50, 100, 200].map((delay) =>
+        setTimeout(() => {
+          requestAnimationFrame(resizeCanvas);
+        }, delay)
+      );
 
-      const resizeObserver = new ResizeObserver(resizeCanvas);
+      const resizeObserver = new ResizeObserver(() => {
+        // Also defer resize handler to ensure accurate measurements
+        requestAnimationFrame(resizeCanvas);
+      });
       if (containerRef.current) {
         resizeObserver.observe(containerRef.current);
       }
 
-      return () => resizeObserver.disconnect();
+      return () => {
+        timeouts.forEach(clearTimeout);
+        resizeObserver.disconnect();
+      };
     }, [resizeCanvas]);
+
+    // Resize and redraw when zoom state changes (CSS transform changes visual dimensions)
+    // ResizeObserver doesn't track transform changes, so we need this separate effect
+    useEffect(() => {
+      requestAnimationFrame(() => {
+        resizeCanvas();
+        // Must redraw after resize since zoom changed the visual dimensions
+        redrawCanvas();
+      });
+    }, [zoomState?.scale, resizeCanvas, redrawCanvas]);
 
     // Redraw when state changes
     useEffect(() => {
@@ -667,10 +821,13 @@ export const ArrowTool = forwardRef<ArrowToolRef, ArrowToolProps>(
       >
         <canvas
           ref={canvasRef}
-          className={`absolute inset-0 ${
+          className={`absolute top-0 left-0 ${
             isActive && !readOnly ? 'cursor-crosshair' : 'pointer-events-none'
           }`}
           style={{
+            // Canvas dimensions are set programmatically in resizeCanvas()
+            // We use top-0 left-0 positioning instead of inset-0 so explicit
+            // width/height styles are respected.
             // IMPORTANT: Use 'pinch-zoom' instead of 'none' to allow two-finger zoom gestures
             // to pass through to the parent FaceChartWithZoom component.
             // This ensures practitioners can ALWAYS zoom in/out regardless of which tool is active.
@@ -704,7 +861,7 @@ export const ArrowTool = forwardRef<ArrowToolRef, ArrowToolProps>(
                 {ARROW_COLORS.map((colorOption) => (
                   <button
                     key={colorOption.id}
-                    onClick={() => setSelectedColor(colorOption.color)}
+                    onClick={() => handleColorChange(colorOption.color)}
                     title={colorOption.label}
                     className={`w-8 h-8 rounded-lg transition-all duration-150 ${
                       selectedColor === colorOption.color

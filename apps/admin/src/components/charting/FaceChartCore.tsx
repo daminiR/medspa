@@ -968,7 +968,7 @@ export function FaceChartCore({
                   return (
                     <div
                       className={`
-                        relative w-2.5 h-2.5 rounded-full transition-all duration-200
+                        relative w-2 h-2 rounded-full transition-all duration-200
                         ${isSelected
                           ? 'ring-2 scale-125'
                           : 'shadow-lg'
@@ -1076,8 +1076,8 @@ export function FaceChartCore({
                         className={`
                           relative rounded-full flex items-center justify-center
                           ${isDraggingThis
-                            ? 'w-5 h-5 ring-4 scale-125'
-                            : `w-4 h-4 ${isSelected
+                            ? 'w-4 h-4 ring-4 scale-125'
+                            : `w-3 h-3 ${isSelected
                                 ? 'ring-2 scale-110'
                                 : isHovered
                                   ? 'scale-105'
@@ -1103,7 +1103,7 @@ export function FaceChartCore({
                           } as React.CSSProperties : {})
                         }}
                       >
-                        <MapPin className={`text-white ${isDraggingThis ? 'w-3 h-3' : 'w-2.5 h-2.5'}`} />
+                        <MapPin className={`text-white ${isDraggingThis ? 'w-2.5 h-2.5' : 'w-2 h-2'}`} />
 
                         {/* Animated rings for freehand points - hide during drag */}
                         {hasValue && !isDraggingThis && (

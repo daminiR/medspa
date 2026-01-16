@@ -253,8 +253,17 @@ function TextLabelOverlay({
         const rect = containerRef.current?.getBoundingClientRect();
         if (!rect) return;
 
-        const newX = ((e.clientX - rect.left) / rect.width) * 100;
-        const newY = ((e.clientY - rect.top) / rect.height) * 100;
+        // COORDINATE CONVERSION (same as click handler):
+        // getBoundingClientRect() returns visual bounds after CSS transforms.
+        // Convert screen position to percentage - scale cancels out.
+
+        // Get pointer position relative to the container's visual bounds
+        const relX = e.clientX - rect.left;
+        const relY = e.clientY - rect.top;
+
+        // Convert directly to percentage
+        const newX = (relX / rect.width) * 100;
+        const newY = (relY / rect.height) * 100;
 
         // Clamp to bounds
         const clampedX = Math.max(0, Math.min(100, newX));
@@ -638,12 +647,17 @@ export function TextLabelTool({
   onActiveChange,
   zoom = 1,
   readOnly = false,
-  containerRef,
+  containerRef: externalContainerRef,
   zoomState,
 }: TextLabelToolProps) {
   // Theme
   const { theme } = useChartingTheme();
   const isDark = theme === 'dark';
+
+  // Click capture layer ref - this ref is attached to the click-capturing div
+  // that fills the content area with absolute inset-0. Using this ref ensures
+  // getBoundingClientRect() returns the correct scaled bounds for coordinate conversion.
+  const clickLayerRef = useRef<HTMLDivElement>(null);
 
   // Settings state - size is auto-calculated from zoom
   const [selectedColor, setSelectedColor] = useState(DEFAULT_COLOR);
@@ -669,9 +683,9 @@ export function TextLabelTool({
   }, [isMultiTouchActive]);
 
   // Native touch event handlers for multi-touch detection
+  // Using document-level listeners to detect two-finger gestures early
   useEffect(() => {
-    const container = containerRef.current;
-    if (!container || !isActive) return;
+    if (!isActive) return;
 
     const handleTouchStart = (e: TouchEvent) => {
       touchCountRef.current = e.touches.length;
@@ -692,48 +706,21 @@ export function TextLabelTool({
       }
     };
 
-    container.addEventListener('touchstart', handleTouchStart, { passive: true });
-    container.addEventListener('touchend', handleTouchEnd, { passive: true });
-    container.addEventListener('touchcancel', handleTouchEnd, { passive: true });
+    // Listen at document level to catch all touch events
+    document.addEventListener('touchstart', handleTouchStart, { passive: true, capture: true });
+    document.addEventListener('touchend', handleTouchEnd, { passive: true, capture: true });
+    document.addEventListener('touchcancel', handleTouchEnd, { passive: true, capture: true });
 
     return () => {
-      container.removeEventListener('touchstart', handleTouchStart);
-      container.removeEventListener('touchend', handleTouchEnd);
-      container.removeEventListener('touchcancel', handleTouchEnd);
+      document.removeEventListener('touchstart', handleTouchStart, { capture: true });
+      document.removeEventListener('touchend', handleTouchEnd, { capture: true });
+      document.removeEventListener('touchcancel', handleTouchEnd, { capture: true });
     };
-  }, [isActive, containerRef]);
+  }, [isActive]);
 
-  // Handle chart click to place new label
-  const handleChartClick = useCallback(
-    (e: MouseEvent) => {
-      if (!isActive || readOnly || !containerRef.current) return;
-
-      const rect = containerRef.current.getBoundingClientRect();
-      const x = ((e.clientX - rect.left) / rect.width) * 100;
-      const y = ((e.clientY - rect.top) / rect.height) * 100;
-
-      // Clamp to bounds
-      const clampedX = Math.max(0, Math.min(100, x));
-      const clampedY = Math.max(0, Math.min(100, y));
-
-      // Store the position and show input
-      setPendingPosition({ x: clampedX, y: clampedY });
-      setInputScreenPosition({ x: e.clientX, y: e.clientY - 10 });
-      setSelectedLabelId(null);
-    },
-    [isActive, readOnly, containerRef]
-  );
-
-  // Attach click handler when active
-  useEffect(() => {
-    const container = containerRef.current;
-    if (!container || !isActive) return;
-
-    container.addEventListener('click', handleChartClick);
-    return () => {
-      container.removeEventListener('click', handleChartClick);
-    };
-  }, [isActive, handleChartClick, containerRef]);
+  // NOTE: Click handling for new labels is now done via React's onClick handler
+  // on the interactive layer div in the render method. This provides more reliable
+  // click capture compared to addEventListener on the container ref.
 
   // Handle text input submission
   const handleTextSubmit = useCallback(
@@ -825,6 +812,19 @@ export function TextLabelTool({
     setSelectedLabelId(null);
   }, [onLabelsChange]);
 
+  // Auto-close text input when tool becomes inactive (user switches to another tool)
+  // This is standard UX - when a tool deactivates, its UI should close
+  useEffect(() => {
+    if (!isActive) {
+      // Close any pending text input
+      setPendingPosition(null);
+      setInputScreenPosition(null);
+      setUsePresetText(null);
+      // Also deselect any selected label
+      setSelectedLabelId(null);
+    }
+  }, [isActive]);
+
   // Click outside to deselect
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -840,9 +840,80 @@ export function TextLabelTool({
     return () => document.removeEventListener('click', handleClickOutside);
   }, []);
 
+  // Debug logging
+  console.log('[TextLabelTool] Rendering, isActive:', isActive, 'readOnly:', readOnly, 'labels:', labels.length);
+
   return (
-    <>
-      {/* Text Labels Overlay */}
+    <div
+      className={`absolute inset-0 ${isActive ? 'z-30' : 'z-10 pointer-events-none'}`}
+      style={{
+        // IMPORTANT: Use 'pinch-zoom' to allow two-finger zoom gestures to pass through
+        touchAction: 'pinch-zoom',
+      }}
+    >
+      {/* Interactive click capture layer - MUST be present when tool is active */}
+      {/* This layer captures clicks for placing new text labels */}
+      {/* Following the EXACT pattern from MeasurementTool for reliable click handling */}
+      {isActive && !readOnly && (
+        <div
+          ref={clickLayerRef}
+          className="absolute inset-0 z-[5] cursor-crosshair"
+          onClick={(e) => {
+            console.log('[TextLabelTool] Click captured on interactive layer');
+            // Prevent propagation to parent
+            e.stopPropagation();
+
+            // Get the click layer bounds - this div has absolute inset-0 and fills
+            // the transformed content area. getBoundingClientRect() returns the
+            // SCALED visual bounds after CSS transforms.
+            const rect = clickLayerRef.current?.getBoundingClientRect();
+            if (!rect) {
+              console.log('[TextLabelTool] No click layer rect found');
+              return;
+            }
+
+            // COORDINATE CONVERSION (same formula as ArrowTool/MeasurementTool):
+            // Since this div is INSIDE the transformed contentRef, getBoundingClientRect()
+            // returns the SCALED visual bounds. Both click position and rect dimensions
+            // are in the same coordinate space (screen pixels), so the scale cancels out.
+            //
+            // Formula: percentage = ((clientPos - rectOrigin) / rectDimension) * 100
+            const x = ((e.clientX - rect.left) / rect.width) * 100;
+            const y = ((e.clientY - rect.top) / rect.height) * 100;
+
+            // Clamp to bounds (0-100%)
+            const clampedX = Math.max(0, Math.min(100, x));
+            const clampedY = Math.max(0, Math.min(100, y));
+
+            console.log('[TextLabelTool] Click coordinates:', {
+              clientX: e.clientX,
+              clientY: e.clientY,
+              rectLeft: rect.left,
+              rectTop: rect.top,
+              rectWidth: rect.width,
+              rectHeight: rect.height,
+              percentX: clampedX,
+              percentY: clampedY,
+            });
+
+            // Store the position and show input
+            setPendingPosition({ x: clampedX, y: clampedY });
+            setInputScreenPosition({ x: e.clientX, y: e.clientY - 10 });
+            setSelectedLabelId(null);
+          }}
+          style={{
+            // Toggle pointer-events based on gesture type:
+            // - 'auto' for single-finger/mouse (label placement)
+            // - 'none' for two-finger (let parent handle zoom/pan)
+            pointerEvents: isMultiTouchActive ? 'none' : 'auto',
+            // Use pinch-zoom to hint to browser about gesture handling
+            touchAction: 'pinch-zoom',
+          }}
+        />
+      )}
+
+      {/* Text Labels Overlay - renders existing labels on top of click layer */}
+      {/* Pass clickLayerRef when active (for accurate drag coordinates), otherwise externalContainerRef */}
       <TextLabelOverlay
         labels={labels}
         onLabelSelect={handleLabelSelect}
@@ -851,7 +922,7 @@ export function TextLabelTool({
         selectedLabelId={selectedLabelId}
         zoom={zoom}
         readOnly={readOnly}
-        containerRef={containerRef}
+        containerRef={isActive ? clickLayerRef : externalContainerRef}
         isDark={isDark}
         isMultiTouchActive={isMultiTouchActive}
         isActive={isActive}
@@ -866,7 +937,7 @@ export function TextLabelTool({
         onClose={handleInputClose}
         isDark={isDark}
       />
-    </>
+    </div>
   );
 }
 

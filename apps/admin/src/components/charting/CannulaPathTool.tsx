@@ -177,9 +177,9 @@ export function getTechniqueDashPattern(technique: CannulaTechnique): string {
     case 'linear':
       return '0'; // solid
     case 'fanning':
-      return '8,4'; // dashed
+      return '6,3'; // dashed - tighter spacing
     case 'bolus':
-      return '2,4'; // dotted
+      return '2,2'; // dotted - closer together for better visibility
     default:
       return '0';
   }

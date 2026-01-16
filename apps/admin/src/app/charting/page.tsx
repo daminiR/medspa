@@ -100,7 +100,7 @@ import { MeasurementTool, useMeasurementState, DEFAULT_CALIBRATION } from '@/com
 import type { Measurement, CalibrationData } from '@/components/charting/MeasurementTool';
 // Shape tool for drawing circles, rectangles, and freeform shapes
 import { ShapeTool, useShapesState, DEFAULT_SHAPE_COLORS, DEFAULT_FILL_OPACITY, DEFAULT_STROKE_WIDTH } from '@/components/charting/ShapeTool';
-import type { ShapeAnnotation, ShapeType } from '@/components/charting/ShapeTool';
+import type { ShapeAnnotation, ShapeType, ShapeToolRef } from '@/components/charting/ShapeTool';
 // Cannula path tool for documenting cannula injection paths and fanning techniques
 import { CannulaPathTool, useCannulaPathsState } from '@/components/charting/CannulaPathTool';
 import type { CannulaPath, CannulaTechnique } from '@/components/charting/CannulaPathTool';
@@ -108,7 +108,7 @@ import type { CannulaPath, CannulaTechnique } from '@/components/charting/Cannul
 import { DangerZoneOverlay } from '@/components/charting/DangerZoneOverlay';
 // Vein drawing tool for sclerotherapy documentation
 import { VeinDrawingTool, useVeinPathsState } from '@/components/charting/VeinDrawingTool';
-import type { VeinPath, VeinType } from '@/components/charting/VeinDrawingTool';
+import type { VeinPath, VeinType, VeinDrawingToolRef } from '@/components/charting/VeinDrawingTool';
 
 // Zoom-enabled chart wrappers for 2D views
 import { FaceChartWithZoom } from '@/components/charting/FaceChartWithZoom';
@@ -741,6 +741,8 @@ function ChartingPageContent() {
   const arrowToolRef = useRef<ArrowToolRef>(null);
   const [arrowCanUndo, setArrowCanUndo] = useState(false);
   const [arrowCanRedo, setArrowCanRedo] = useState(false);
+  // Arrow color state (controlled by RightDock when active)
+  const [arrowColor, setArrowColor] = useState<string>('#8B5CF6');
 
   // Arrow undo/redo/clear handlers
   const handleArrowUndo = useCallback(() => {
@@ -753,6 +755,22 @@ function ChartingPageContent() {
 
   const handleArrowClearAll = useCallback(() => {
     arrowToolRef.current?.clearAll();
+  }, []);
+
+  // =============================================================================
+  // VEIN/SKETCH TOOL STATE - For drawing veins (sclerotherapy documentation)
+  // =============================================================================
+  const veinToolRef = useRef<VeinDrawingToolRef>(null);
+  const [veinCanUndo, setVeinCanUndo] = useState(false);
+  const [veinType, setVeinType] = useState<VeinType>('spider');
+
+  // Vein undo/clear handlers
+  const handleVeinUndo = useCallback(() => {
+    veinToolRef.current?.undo();
+  }, []);
+
+  const handleVeinClearAll = useCallback(() => {
+    veinToolRef.current?.clearAll();
   }, []);
 
   // =============================================================================
@@ -834,6 +852,22 @@ function ChartingPageContent() {
     setSelectedShapeId,
   } = shapesState;
 
+  // Shape tool ref for RightDock integration (undo/clear via ref)
+  const shapeToolRef = useRef<ShapeToolRef>(null);
+  // Shape tool settings state (controlled by RightDock when active)
+  const [shapeType, setShapeType] = useState<ShapeType>('circle');
+  const [shapeColor, setShapeColor] = useState<string>(DEFAULT_SHAPE_COLORS[0] || '#3B82F6');
+  const [shapeFilled, setShapeFilled] = useState<boolean>(false);
+
+  // Shape undo/clear handlers (via ref)
+  const handleShapeUndo = useCallback(() => {
+    shapeToolRef.current?.undo();
+  }, []);
+
+  const handleShapeClearAll = useCallback(() => {
+    shapeToolRef.current?.clearAll();
+  }, []);
+
   // =============================================================================
   // CANNULA PATH TOOL STATE - For documenting cannula injection paths
   // =============================================================================
@@ -853,6 +887,20 @@ function ChartingPageContent() {
   // Default to orange (#F97316) which is the traditional color for filler/cannula work
   const [cannulaProductColor, setCannulaProductColor] = useState('#F97316');
   const [cannulaProductId, setCannulaProductId] = useState<string | undefined>(undefined);
+  // Cannula technique state (controlled by RightDock when active)
+  const [cannulaType, setCannulaType] = useState<CannulaTechnique>('linear');
+
+  // Cannula undo/clear handlers (using the state's clearAllPaths)
+  const handleCannulaUndo = useCallback(() => {
+    // Undo by removing the last path - simple approach
+    if (cannulaPaths.length > 0) {
+      setCannulaPaths(cannulaPaths.slice(0, -1));
+    }
+  }, [cannulaPaths, setCannulaPaths]);
+
+  const handleCannulaClearAll = useCallback(() => {
+    cannulaState.clearAllPaths();
+  }, [cannulaState]);
 
   // =============================================================================
   // VEIN DRAWING TOOL STATE - For sclerotherapy documentation
@@ -2125,8 +2173,9 @@ function ChartingPageContent() {
                   onCanRedoChange={setArrowCanRedo}
                   readOnly={activeTool !== 'arrow'}
                   productId={selectedProduct?.id}
-                  showColorPicker={true}
+                  showColorPicker={false}
                   zoomState={zoomState}
+                  color={arrowColor}
                 />
                 <TextLabelTool
                   labels={currentTextLabels}
@@ -2150,13 +2199,18 @@ function ChartingPageContent() {
                   zoomState={zoomState}
                 />
                 <ShapeTool
+                  ref={shapeToolRef}
                   isActive={isShapeModeActive}
                   shapes={shapes}
                   onShapesChange={handleShapesChange}
                   selectedShapeId={selectedShapeId}
                   onSelectionChange={setSelectedShapeId}
                   readOnly={activeTool !== 'shape'}
-                  showToolbar={isShapeModeActive}
+                  shapeType={shapeType}
+                  onShapeTypeChange={setShapeType}
+                  fillColor={shapeColor}
+                  onFillColorChange={setShapeColor}
+                  showToolbar={false}
                   zoomState={zoomState}
                 />
                 <CannulaPathTool
@@ -2168,20 +2222,25 @@ function ChartingPageContent() {
                   readOnly={activeTool !== 'cannula'}
                   productColor={cannulaProductColor}
                   productId={cannulaProductId}
-                  showToolbar={isCannulaModeActive}
+                  initialTechnique={cannulaType}
+                  showToolbar={false}
                   zoom={1}
                   zoomState={zoomState}
                 />
                 <VeinDrawingTool
+                  ref={veinToolRef}
                   isActive={isVeinModeActive}
                   veinPaths={veinPaths}
                   onVeinPathsChange={handleVeinPathsChange}
                   selectedVeinId={selectedVeinId}
                   onSelectionChange={setSelectedVeinId}
                   readOnly={activeTool !== 'vein'}
-                  showToolbar={isVeinModeActive}
+                  showToolbar={false}
                   zoom={1}
                   zoomState={zoomState}
+                  veinType={veinType}
+                  onVeinTypeChange={setVeinType}
+                  onCanUndoChange={setVeinCanUndo}
                 />
                 {bodyPart === 'face' && showDangerZones && (
                   <DangerZoneOverlay
@@ -2561,6 +2620,10 @@ function ChartingPageContent() {
         onToggleAllLayers={layersState.toggleAllLayers}
         brushLayers={brushLayersState.brushLayers}
         onBrushLayerVisibilityChange={brushLayersState.setBrushLayerVisibility}
+        // Measurement mode props - show measurements panel in left dock when active
+        isMeasurementModeActive={isMeasureModeActive}
+        measurements={measurements.map(m => ({ id: m.id, length: m.distancePx, label: m.label }))}
+        onMeasurementClearAll={() => setMeasurements([])}
         // Patient context (shown in dock for quick reference)
         patient={{
           name: MOCK_PATIENT.name,
@@ -2626,8 +2689,17 @@ function ChartingPageContent() {
         // Tool palette props
         activeTool={activeTool}
         onToolChange={handleToolChange}
-        // Product picker props
-        mode={isBrushModeActive ? 'brush' : 'injection'}
+        // Product picker props - mode determines which tool settings to show
+        mode={
+          isBrushModeActive ? 'brush' :
+          isVeinModeActive ? 'sketch' :
+          isCannulaModeActive ? 'cannula' :
+          isShapeModeActive ? 'shape' :
+          isArrowModeActive ? 'arrow' :
+          isTextModeActive ? 'text' :
+          isMeasureModeActive ? 'measure' :
+          'injection'
+        }
         products={products}
         selectedProduct={selectedProduct}
         onProductChange={setSelectedProduct}
@@ -2648,6 +2720,42 @@ function ChartingPageContent() {
         onBrushUndo={handleBrushUndo}
         onBrushClearAll={handleBrushClearAll}
         canBrushUndo={brushCanUndo}
+        // Sketch mode props (for VeinDrawingTool)
+        sketchType={veinType}
+        onSketchTypeChange={setVeinType}
+        onSketchUndo={handleVeinUndo}
+        onSketchClearAll={handleVeinClearAll}
+        canSketchUndo={veinCanUndo}
+        // Cannula mode props
+        cannulaType={cannulaType as 'linear' | 'fanning'}
+        onCannulaTypeChange={(type) => setCannulaType(type as CannulaTechnique)}
+        cannulaColor={cannulaProductColor}
+        onCannulaColorChange={setCannulaProductColor}
+        onCannulaUndo={handleCannulaUndo}
+        onCannulaClearAll={handleCannulaClearAll}
+        canCannulaUndo={cannulaPaths.length > 0}
+        // Shape mode props
+        shapeType={shapeType as 'circle' | 'rectangle' | 'ellipse' | 'line'}
+        onShapeTypeChange={(type) => setShapeType(type as ShapeType)}
+        shapeColor={shapeColor}
+        onShapeColorChange={setShapeColor}
+        shapeFilled={shapeFilled}
+        onShapeFilledChange={setShapeFilled}
+        onShapeUndo={handleShapeUndo}
+        onShapeClearAll={handleShapeClearAll}
+        canShapeUndo={shapes.length > 0}
+        // Arrow mode props
+        arrowColor={arrowColor}
+        onArrowColorChange={setArrowColor}
+        onArrowUndo={handleArrowUndo}
+        onArrowClearAll={handleArrowClearAll}
+        canArrowUndo={arrowCanUndo}
+        // Text mode props
+        textColor={textLabelColor}
+        onTextColorChange={setTextLabelColor}
+        // Measure mode props
+        measurements={measurements.map(m => ({ id: m.id, length: m.distancePx, label: m.label }))}
+        onMeasurementClearAll={() => setMeasurements([])}
         // Summary props
         injectionPoints={summaryInjectionPoints}
         productsForSummary={productsForSummary}

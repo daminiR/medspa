@@ -25,7 +25,7 @@ import {
 // =============================================================================
 // DEBUG FLAG - Set to true to enable verbose logging
 // =============================================================================
-const DEBUG_VEIN_DRAWING = false;
+const DEBUG_VEIN_DRAWING = true; // Temporarily enabled to debug delete issue
 
 // =============================================================================
 // TYPES
@@ -135,6 +135,18 @@ export interface VeinDrawingToolProps {
   readOnly?: boolean;
   /** Initial vein type */
   initialVeinType?: VeinType;
+  /** Controlled vein type (when controlled externally via RightDock) */
+  veinType?: VeinType;
+  /** Callback when vein type changes (for controlled mode) */
+  onVeinTypeChange?: (type: VeinType) => void;
+  /** Callback when undo is called (for external state tracking) */
+  onUndo?: () => void;
+  /** Callback when clear all is called (for external state tracking) */
+  onClearAll?: () => void;
+  /** Report whether undo is available (for external UI) */
+  onCanUndoChange?: (canUndo: boolean) => void;
+  /** Report whether currently drawing (for external UI) */
+  onIsDrawingChange?: (isDrawing: boolean) => void;
   /** Whether to show toolbar */
   showToolbar?: boolean;
   /** Zoom level for scaling */
@@ -578,6 +590,12 @@ export const VeinDrawingTool = forwardRef<VeinDrawingToolRef, VeinDrawingToolPro
       onSelectionChange,
       readOnly = false,
       initialVeinType = 'spider',
+      veinType: controlledVeinType,
+      onVeinTypeChange: onControlledVeinTypeChange,
+      onUndo: onExternalUndo,
+      onClearAll: onExternalClearAll,
+      onCanUndoChange,
+      onIsDrawingChange,
       showToolbar = true,
       zoom = 1,
       legView = 'front',
@@ -604,13 +622,25 @@ export const VeinDrawingTool = forwardRef<VeinDrawingToolRef, VeinDrawingToolPro
     // Container dimensions
     const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
 
-    // Tool settings
-    const [veinType, setVeinType] = useState<VeinType>(initialVeinType);
+    // Tool settings - support controlled mode for external state management (RightDock)
+    const [internalVeinType, setInternalVeinType] = useState<VeinType>(initialVeinType);
+    const veinType = controlledVeinType ?? internalVeinType;
+    const setVeinType = useCallback((type: VeinType) => {
+      if (onControlledVeinTypeChange) {
+        onControlledVeinTypeChange(type);
+      } else {
+        setInternalVeinType(type);
+      }
+    }, [onControlledVeinTypeChange]);
+
     const [injectionMode, setInjectionMode] = useState(false);
     const [concentration, setConcentration] = useState('0.5%');
 
     // Ref to track current vein type (avoid stale closure)
     const veinTypeRef = useRef<VeinType>(veinType);
+
+    // Ref to track current veinPaths (avoid stale closure in delete handler)
+    const veinPathsRef = useRef<VeinPath[]>(veinPaths);
 
     const { theme } = useChartingTheme();
     const isDark = theme === 'dark';
@@ -619,6 +649,14 @@ export const VeinDrawingTool = forwardRef<VeinDrawingToolRef, VeinDrawingToolPro
     useEffect(() => {
       veinTypeRef.current = veinType;
     }, [veinType]);
+
+    // Keep veinPaths ref updated (critical for delete to work properly)
+    useEffect(() => {
+      veinPathsRef.current = veinPaths;
+      if (DEBUG_VEIN_DRAWING) {
+        console.log('[VeinDrawingTool] veinPaths updated, count:', veinPaths.length, 'ids:', veinPaths.map(v => v.id));
+      }
+    }, [veinPaths]);
 
     // Get current vein config
     const currentConfig = VEIN_TYPE_CONFIGS[veinType];
@@ -649,7 +687,12 @@ export const VeinDrawingTool = forwardRef<VeinDrawingToolRef, VeinDrawingToolPro
     const konvaStrokes = useMemo((): KonvaVeinStroke[] => {
       if (dimensions.width === 0 || dimensions.height === 0) return [];
 
-      return veinPaths
+      if (DEBUG_VEIN_DRAWING) {
+        console.log('[VeinDrawingTool] konvaStrokes memo recomputing');
+        console.log('[VeinDrawingTool] veinPaths input count:', veinPaths.length, 'ids:', veinPaths.map(v => v.id));
+      }
+
+      const strokes = veinPaths
         .filter(vein => vein.visible)
         .map(vein => {
           // If we have a stored konvaStroke, use it
@@ -678,6 +721,12 @@ export const VeinDrawingTool = forwardRef<VeinDrawingToolRef, VeinDrawingToolPro
             originalPoints,
           };
         });
+
+      if (DEBUG_VEIN_DRAWING) {
+        console.log('[VeinDrawingTool] konvaStrokes output count:', strokes.length, 'ids:', strokes.map(s => s.id));
+      }
+
+      return strokes;
     }, [veinPaths, dimensions]);
 
     // ==========================================================================
@@ -943,11 +992,12 @@ export const VeinDrawingTool = forwardRef<VeinDrawingToolRef, VeinDrawingToolPro
       const newPaths = veinPaths.slice(0, -1);
       onVeinPathsChange(newPaths);
       onSelectionChange?.(null);
+      onExternalUndo?.(); // Notify parent
 
       if (DEBUG_VEIN_DRAWING) {
         console.log('[VeinDrawingTool/Konva] Undo, veins remaining:', newPaths.length);
       }
-    }, [veinPaths, onVeinPathsChange, onSelectionChange]);
+    }, [veinPaths, onVeinPathsChange, onSelectionChange, onExternalUndo]);
 
     /**
      * Clear all veins
@@ -955,11 +1005,12 @@ export const VeinDrawingTool = forwardRef<VeinDrawingToolRef, VeinDrawingToolPro
     const handleClearAll = useCallback(() => {
       onVeinPathsChange([]);
       onSelectionChange?.(null);
+      onExternalClearAll?.(); // Notify parent
 
       if (DEBUG_VEIN_DRAWING) {
         console.log('[VeinDrawingTool/Konva] Cleared all veins');
       }
-    }, [onVeinPathsChange, onSelectionChange]);
+    }, [onVeinPathsChange, onSelectionChange, onExternalClearAll]);
 
     /**
      * Toggle treatment status of a vein
@@ -1026,18 +1077,34 @@ export const VeinDrawingTool = forwardRef<VeinDrawingToolRef, VeinDrawingToolPro
 
     /**
      * Delete selected vein
+     * Uses ref to ensure we're working with the current veinPaths, not a stale closure
      */
     const handleDeleteSelected = useCallback(() => {
       if (!selectedVeinId) return;
 
-      const remainingVeins = veinPaths.filter((vein) => vein.id !== selectedVeinId);
+      // Use ref to get current veinPaths (avoids stale closure issues)
+      const currentPaths = veinPathsRef.current;
+
+      if (DEBUG_VEIN_DRAWING) {
+        console.log('[VeinDrawingTool] handleDeleteSelected called');
+        console.log('[VeinDrawingTool] selectedVeinId:', selectedVeinId);
+        console.log('[VeinDrawingTool] veinPaths from ref BEFORE delete:', currentPaths.length, 'ids:', currentPaths.map(v => v.id));
+      }
+
+      const remainingVeins = currentPaths.filter((vein) => vein.id !== selectedVeinId);
+
+      if (DEBUG_VEIN_DRAWING) {
+        console.log('[VeinDrawingTool] veinPaths AFTER filter:', remainingVeins.length, 'ids:', remainingVeins.map(v => v.id));
+        console.log('[VeinDrawingTool] Calling onVeinPathsChange with', remainingVeins.length, 'veins');
+      }
+
       onVeinPathsChange(remainingVeins);
       onSelectionChange?.(null);
 
       if (DEBUG_VEIN_DRAWING) {
         console.log('[VeinDrawingTool/Konva] Deleted vein:', selectedVeinId);
       }
-    }, [selectedVeinId, veinPaths, onVeinPathsChange, onSelectionChange]);
+    }, [selectedVeinId, onVeinPathsChange, onSelectionChange]);
 
     /**
      * Cancel current drawing
@@ -1065,6 +1132,22 @@ export const VeinDrawingTool = forwardRef<VeinDrawingToolRef, VeinDrawingToolPro
       },
       exportPaths: () => veinPaths,
     }), [handleUndo, handleClearAll, selectedVeinId, toggleTreatmentStatus, addInjectionSiteToVein, veinPaths]);
+
+    // ==========================================================================
+    // EXTERNAL STATE CALLBACKS
+    // Report state changes to parent for RightDock integration
+    // ==========================================================================
+
+    // Report canUndo state to parent
+    const canUndo = veinPaths.length > 0;
+    useEffect(() => {
+      onCanUndoChange?.(canUndo);
+    }, [canUndo, onCanUndoChange]);
+
+    // Report isDrawing state to parent
+    useEffect(() => {
+      onIsDrawingChange?.(isDrawing);
+    }, [isDrawing, onIsDrawingChange]);
 
     // ==========================================================================
     // RENDER

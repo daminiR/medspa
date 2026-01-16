@@ -56,7 +56,7 @@ export interface TreatmentTypeOption {
   defaultOpacity: number;
 }
 
-export type ToolSettingsMode = 'injection' | 'brush';
+export type ToolSettingsMode = 'injection' | 'brush' | 'sketch' | 'cannula' | 'shape' | 'arrow' | 'text' | 'measure';
 
 // Tool visibility settings
 interface ToolVisibilitySettings {
@@ -212,6 +212,51 @@ interface RightDockProps {
   onBrushClearAll?: () => void;
   canBrushUndo?: boolean;
 
+  // Sketch mode props (for VeinDrawingTool)
+  sketchType?: 'spider' | 'reticular';
+  onSketchTypeChange?: (type: 'spider' | 'reticular') => void;
+  onSketchUndo?: () => void;
+  onSketchClearAll?: () => void;
+  canSketchUndo?: boolean;
+  isSketchDrawing?: boolean;
+
+  // Cannula mode props
+  cannulaType?: 'linear' | 'fanning';
+  onCannulaTypeChange?: (type: 'linear' | 'fanning') => void;
+  cannulaColor?: string;
+  onCannulaColorChange?: (color: string) => void;
+  onCannulaUndo?: () => void;
+  onCannulaClearAll?: () => void;
+  canCannulaUndo?: boolean;
+
+  // Shape mode props
+  shapeType?: 'circle' | 'rectangle' | 'ellipse' | 'line';
+  onShapeTypeChange?: (type: 'circle' | 'rectangle' | 'ellipse' | 'line') => void;
+  shapeColor?: string;
+  onShapeColorChange?: (color: string) => void;
+  shapeFilled?: boolean;
+  onShapeFilledChange?: (filled: boolean) => void;
+  onShapeUndo?: () => void;
+  onShapeClearAll?: () => void;
+  canShapeUndo?: boolean;
+
+  // Arrow mode props
+  arrowColor?: string;
+  onArrowColorChange?: (color: string) => void;
+  onArrowUndo?: () => void;
+  onArrowClearAll?: () => void;
+  canArrowUndo?: boolean;
+
+  // Text mode props
+  textColor?: string;
+  onTextColorChange?: (color: string) => void;
+  fontSize?: number;
+  onFontSizeChange?: (size: number) => void;
+
+  // Measure mode props
+  measurements?: Array<{ id: string; length: number; label?: string }>;
+  onMeasurementClearAll?: () => void;
+
   // Summary props
   injectionPoints?: InjectionPointForSummary[];
   productsForSummary?: ProductForSummary[];
@@ -246,6 +291,45 @@ export function RightDock({
   onBrushUndo,
   onBrushClearAll,
   canBrushUndo = false,
+  // Sketch mode
+  sketchType = 'spider',
+  onSketchTypeChange,
+  onSketchUndo,
+  onSketchClearAll,
+  canSketchUndo = false,
+  isSketchDrawing = false,
+  // Cannula mode
+  cannulaType = 'linear',
+  onCannulaTypeChange,
+  cannulaColor = '#10B981',
+  onCannulaColorChange,
+  onCannulaUndo,
+  onCannulaClearAll,
+  canCannulaUndo = false,
+  // Shape mode
+  shapeType = 'circle',
+  onShapeTypeChange,
+  shapeColor = '#3B82F6',
+  onShapeColorChange,
+  shapeFilled = false,
+  onShapeFilledChange,
+  onShapeUndo,
+  onShapeClearAll,
+  canShapeUndo = false,
+  // Arrow mode
+  arrowColor = '#8B5CF6',
+  onArrowColorChange,
+  onArrowUndo,
+  onArrowClearAll,
+  canArrowUndo = false,
+  // Text mode
+  textColor = '#1F2937',
+  onTextColorChange,
+  fontSize = 14,
+  onFontSizeChange,
+  // Measure mode
+  measurements = [],
+  onMeasurementClearAll,
   // Summary
   injectionPoints = [],
   productsForSummary = [],
@@ -391,29 +475,27 @@ export function RightDock({
   if (!isVisible) return null;
 
   return (
-    <div
-      className={`
-        fixed top-14 right-0 bottom-0 z-[1100]
-        flex flex-col
-        transition-all duration-300 ease-in-out
-        ${isCollapsed ? 'w-12' : 'w-64'}
-      `}
-    >
-      {/* Collapse Toggle Button */}
+    <>
+      {/* Collapse Toggle Button - Fixed position, separate from dock */}
       <button
         onClick={() => setIsCollapsed(!isCollapsed)}
         className={`
-          absolute left-0 top-1/2 -translate-y-1/2 -translate-x-full
+          fixed z-[1101] top-1/2
           w-6 h-16 rounded-l-lg
           flex items-center justify-center
-          transition-all duration-200
+          transition-colors duration-200
           ${isDark
-            ? 'bg-gray-800/95 hover:bg-gray-700 border-gray-700 text-gray-400'
-            : 'bg-white/95 hover:bg-gray-100 border-gray-200 text-gray-500'
+            ? 'bg-gray-800/95 hover:bg-gray-700 border-gray-700 text-gray-400 hover:text-gray-200'
+            : 'bg-white/95 hover:bg-gray-100 border-gray-200 text-gray-500 hover:text-gray-700'
           }
           border border-r-0
           shadow-lg
         `}
+        style={{
+          transform: 'translateY(-50%)',
+          right: isCollapsed ? '48px' : '256px',
+          transition: 'right 300ms ease-in-out, background-color 200ms, color 200ms',
+        }}
         aria-label={isCollapsed ? 'Expand dock' : 'Collapse dock'}
       >
         {isCollapsed ? <ChevronLeft size={16} /> : <ChevronRight size={16} />}
@@ -422,7 +504,10 @@ export function RightDock({
       {/* Main Dock Container */}
       <div
         className={`
-          flex-1 flex flex-col
+          fixed top-14 right-0 bottom-0 z-[1100]
+          flex flex-col
+          transition-[width] duration-300 ease-in-out
+          ${isCollapsed ? 'w-12' : 'w-64'}
           ${isDark
             ? 'bg-gray-800/95 backdrop-blur-md border-l border-gray-700'
             : 'bg-white/95 backdrop-blur-md border-l border-gray-200 shadow-lg'
@@ -501,10 +586,122 @@ export function RightDock({
             {/* ============================================================ */}
             <div className={`p-3 border-b ${isDark ? 'border-gray-700' : 'border-gray-200'} flex-shrink-0`}>
               <h3 className={`text-xs font-semibold uppercase tracking-wider mb-2 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
-                {mode === 'brush' ? 'Treatment' : 'Product & Dosage'}
+                {mode === 'brush' ? 'Treatment' :
+                 mode === 'sketch' ? 'Sketch Options' :
+                 mode === 'cannula' ? 'Cannula Path' :
+                 mode === 'shape' ? 'Shape Tool' :
+                 mode === 'arrow' ? 'Arrow Tool' :
+                 mode === 'text' ? 'Text Label' :
+                 mode === 'measure' ? 'Measurements' :
+                 'Product & Dosage'}
               </h3>
 
-              {mode === 'brush' ? (
+              {mode === 'sketch' ? (
+                // SKETCH MODE CONTENT
+                <>
+                  {/* Drawing indicator */}
+                  {isSketchDrawing && (
+                    <div
+                      className={`flex items-center gap-2 p-2 rounded-lg mb-3 ${
+                        isDark
+                          ? 'bg-blue-900/30 text-blue-400'
+                          : 'bg-blue-50 text-blue-700'
+                      }`}
+                    >
+                      <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
+                      <span className="text-sm font-medium">Drawing...</span>
+                    </div>
+                  )}
+
+                  {/* Sketch Type Selector */}
+                  <div className="grid grid-cols-2 gap-2 mb-3">
+                    {(['spider', 'reticular'] as const).map((type) => {
+                      const isSelected = sketchType === type;
+                      const config = type === 'spider'
+                        ? { name: 'Spider', color: '#DC2626', strokeWidth: 1.5 }
+                        : { name: 'Reticular', color: '#2563EB', strokeWidth: 2.5 };
+                      return (
+                        <button
+                          key={type}
+                          onClick={() => onSketchTypeChange?.(type)}
+                          className={`
+                            flex flex-col items-center gap-1.5 px-3 py-2 rounded-lg text-sm
+                            transition-colors
+                            ${
+                              isSelected
+                                ? isDark
+                                  ? 'bg-blue-600 text-white'
+                                  : 'bg-blue-100 text-blue-800 ring-1 ring-blue-300'
+                                : isDark
+                                ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                            }
+                          `}
+                        >
+                          {/* Sketch preview line */}
+                          <svg width="36" height="8" className="flex-shrink-0">
+                            <line
+                              x1="2"
+                              y1="4"
+                              x2="34"
+                              y2="4"
+                              stroke={config.color}
+                              strokeWidth={config.strokeWidth}
+                              strokeLinecap="round"
+                            />
+                          </svg>
+                          <span className="font-medium text-xs">{config.name}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  {/* Quick tip */}
+                  <p
+                    className={`text-xs mb-3 ${
+                      isDark ? 'text-gray-500' : 'text-gray-400'
+                    }`}
+                  >
+                    Draw to trace, click to select
+                  </p>
+
+                  {/* Undo / Clear */}
+                  <div className="flex gap-2">
+                    <button
+                      onClick={onSketchUndo}
+                      disabled={!canSketchUndo}
+                      className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-sm font-medium rounded-lg transition-colors ${
+                        canSketchUndo
+                          ? isDark
+                            ? 'bg-gray-700 text-gray-200 hover:bg-gray-600'
+                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                          : isDark
+                            ? 'bg-gray-800 text-gray-600 cursor-not-allowed'
+                            : 'bg-gray-50 text-gray-400 cursor-not-allowed'
+                      }`}
+                    >
+                      <Undo2 className="w-4 h-4" />
+                      Undo
+                    </button>
+                    <button
+                      onClick={onSketchClearAll}
+                      disabled={!canSketchUndo}
+                      className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-sm font-medium rounded-lg transition-colors ${
+                        canSketchUndo
+                          ? isDark
+                            ? 'bg-red-900/50 text-red-300 hover:bg-red-900/70'
+                            : 'bg-red-50 text-red-600 hover:bg-red-100'
+                          : isDark
+                            ? 'bg-gray-800 text-gray-600 cursor-not-allowed'
+                            : 'bg-gray-50 text-gray-400 cursor-not-allowed'
+                      }`}
+                    >
+                      <Trash2 className="w-4 h-4" />
+                      Clear
+                    </button>
+                  </div>
+                </>
+              ) : mode === 'brush' ? (
                 // BRUSH MODE CONTENT
                 <>
                   {/* Treatment Type Selector */}
@@ -647,6 +844,421 @@ export function RightDock({
                     </button>
                   </div>
                 </>
+              ) : mode === 'cannula' ? (
+                // CANNULA MODE CONTENT
+                <>
+                  {/* Cannula Type Selector */}
+                  <div className="mb-3">
+                    <label className={`text-xs font-medium uppercase tracking-wide block mb-1.5 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                      Path Type
+                    </label>
+                    <div className="grid grid-cols-2 gap-2">
+                      {(['linear', 'fanning'] as const).map((type) => {
+                        const isSelected = cannulaType === type;
+                        return (
+                          <button
+                            key={type}
+                            onClick={() => onCannulaTypeChange?.(type)}
+                            className={`
+                              flex flex-col items-center gap-1.5 px-3 py-2 rounded-lg text-sm
+                              transition-colors
+                              ${
+                                isSelected
+                                  ? isDark
+                                    ? 'bg-green-600 text-white'
+                                    : 'bg-green-100 text-green-800 ring-1 ring-green-300'
+                                  : isDark
+                                  ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                              }
+                            `}
+                          >
+                            {/* Cannula path preview */}
+                            <svg width="36" height="16" className="flex-shrink-0">
+                              {type === 'linear' ? (
+                                <line
+                                  x1="4"
+                                  y1="8"
+                                  x2="32"
+                                  y2="8"
+                                  stroke={cannulaColor}
+                                  strokeWidth={2}
+                                  strokeLinecap="round"
+                                />
+                              ) : (
+                                <>
+                                  <line x1="4" y1="8" x2="32" y2="2" stroke={cannulaColor} strokeWidth={1.5} strokeLinecap="round" />
+                                  <line x1="4" y1="8" x2="32" y2="8" stroke={cannulaColor} strokeWidth={1.5} strokeLinecap="round" />
+                                  <line x1="4" y1="8" x2="32" y2="14" stroke={cannulaColor} strokeWidth={1.5} strokeLinecap="round" />
+                                </>
+                              )}
+                            </svg>
+                            <span className="font-medium text-xs capitalize">{type}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Cannula Color Picker */}
+                  <div className="mb-3">
+                    <label className={`text-xs font-medium uppercase tracking-wide block mb-1.5 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                      Color
+                    </label>
+                    <div className="grid grid-cols-6 gap-1.5">
+                      {['#10B981', '#3B82F6', '#8B5CF6', '#EF4444', '#F59E0B', '#EC4899'].map((color) => (
+                        <button
+                          key={color}
+                          onClick={() => onCannulaColorChange?.(color)}
+                          className={`w-8 h-8 rounded-lg transition-all ${
+                            cannulaColor === color ? 'ring-2 ring-offset-2 ring-purple-500 scale-110' : 'hover:scale-105'
+                          }`}
+                          style={{ backgroundColor: color }}
+                        />
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Quick tip */}
+                  <p className={`text-xs mb-3 ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
+                    Click entry point, drag to end
+                  </p>
+
+                  {/* Undo / Clear */}
+                  <div className="flex gap-2">
+                    <button
+                      onClick={onCannulaUndo}
+                      disabled={!canCannulaUndo}
+                      className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-sm font-medium rounded-lg transition-colors ${
+                        canCannulaUndo
+                          ? isDark
+                            ? 'bg-gray-700 text-gray-200 hover:bg-gray-600'
+                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                          : isDark
+                            ? 'bg-gray-800 text-gray-600 cursor-not-allowed'
+                            : 'bg-gray-50 text-gray-400 cursor-not-allowed'
+                      }`}
+                    >
+                      <Undo2 className="w-4 h-4" />
+                      Undo
+                    </button>
+                    <button
+                      onClick={onCannulaClearAll}
+                      disabled={!canCannulaUndo}
+                      className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-sm font-medium rounded-lg transition-colors ${
+                        canCannulaUndo
+                          ? isDark
+                            ? 'bg-red-900/50 text-red-300 hover:bg-red-900/70'
+                            : 'bg-red-50 text-red-600 hover:bg-red-100'
+                          : isDark
+                            ? 'bg-gray-800 text-gray-600 cursor-not-allowed'
+                            : 'bg-gray-50 text-gray-400 cursor-not-allowed'
+                      }`}
+                    >
+                      <Trash2 className="w-4 h-4" />
+                      Clear
+                    </button>
+                  </div>
+                </>
+              ) : mode === 'shape' ? (
+                // SHAPE MODE CONTENT
+                <>
+                  {/* Shape Type Selector */}
+                  <div className="mb-3">
+                    <label className={`text-xs font-medium uppercase tracking-wide block mb-1.5 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                      Shape
+                    </label>
+                    <div className="grid grid-cols-4 gap-1.5">
+                      {(['circle', 'rectangle', 'ellipse', 'line'] as const).map((type) => {
+                        const isSelected = shapeType === type;
+                        return (
+                          <button
+                            key={type}
+                            onClick={() => onShapeTypeChange?.(type)}
+                            className={`
+                              flex flex-col items-center gap-1 px-2 py-2 rounded-lg text-xs
+                              transition-colors
+                              ${
+                                isSelected
+                                  ? isDark
+                                    ? 'bg-blue-600 text-white'
+                                    : 'bg-blue-100 text-blue-800 ring-1 ring-blue-300'
+                                  : isDark
+                                  ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                              }
+                            `}
+                          >
+                            {/* Shape preview */}
+                            <svg width="24" height="16" className="flex-shrink-0">
+                              {type === 'circle' && (
+                                <circle cx="12" cy="8" r="6" stroke={shapeColor} strokeWidth={1.5} fill={shapeFilled ? shapeColor : 'none'} fillOpacity={0.3} />
+                              )}
+                              {type === 'rectangle' && (
+                                <rect x="3" y="2" width="18" height="12" stroke={shapeColor} strokeWidth={1.5} fill={shapeFilled ? shapeColor : 'none'} fillOpacity={0.3} rx="1" />
+                              )}
+                              {type === 'ellipse' && (
+                                <ellipse cx="12" cy="8" rx="10" ry="5" stroke={shapeColor} strokeWidth={1.5} fill={shapeFilled ? shapeColor : 'none'} fillOpacity={0.3} />
+                              )}
+                              {type === 'line' && (
+                                <line x1="2" y1="14" x2="22" y2="2" stroke={shapeColor} strokeWidth={2} strokeLinecap="round" />
+                              )}
+                            </svg>
+                            <span className="font-medium capitalize">{type === 'rectangle' ? 'Rect' : type}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Shape Color Picker */}
+                  <div className="mb-3">
+                    <label className={`text-xs font-medium uppercase tracking-wide block mb-1.5 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                      Color
+                    </label>
+                    <div className="grid grid-cols-6 gap-1.5">
+                      {['#3B82F6', '#10B981', '#8B5CF6', '#EF4444', '#F59E0B', '#EC4899'].map((color) => (
+                        <button
+                          key={color}
+                          onClick={() => onShapeColorChange?.(color)}
+                          className={`w-8 h-8 rounded-lg transition-all ${
+                            shapeColor === color ? 'ring-2 ring-offset-2 ring-purple-500 scale-110' : 'hover:scale-105'
+                          }`}
+                          style={{ backgroundColor: color }}
+                        />
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Fill Toggle */}
+                  <div className="mb-3">
+                    <button
+                      onClick={() => onShapeFilledChange?.(!shapeFilled)}
+                      className={`w-full flex items-center justify-between px-3 py-2 rounded-lg transition-colors ${
+                        isDark
+                          ? 'bg-gray-700 hover:bg-gray-600'
+                          : 'bg-gray-100 hover:bg-gray-200'
+                      }`}
+                    >
+                      <span className={`text-sm ${isDark ? 'text-gray-200' : 'text-gray-700'}`}>Fill Shape</span>
+                      <div className={`w-10 h-6 rounded-full transition-colors ${
+                        shapeFilled
+                          ? 'bg-purple-600'
+                          : isDark ? 'bg-gray-600' : 'bg-gray-300'
+                      }`}>
+                        <div className={`w-5 h-5 rounded-full bg-white shadow-md transition-transform mt-0.5 ${
+                          shapeFilled ? 'translate-x-4.5 ml-0.5' : 'translate-x-0.5'
+                        }`} />
+                      </div>
+                    </button>
+                  </div>
+
+                  {/* Undo / Clear */}
+                  <div className="flex gap-2">
+                    <button
+                      onClick={onShapeUndo}
+                      disabled={!canShapeUndo}
+                      className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-sm font-medium rounded-lg transition-colors ${
+                        canShapeUndo
+                          ? isDark
+                            ? 'bg-gray-700 text-gray-200 hover:bg-gray-600'
+                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                          : isDark
+                            ? 'bg-gray-800 text-gray-600 cursor-not-allowed'
+                            : 'bg-gray-50 text-gray-400 cursor-not-allowed'
+                      }`}
+                    >
+                      <Undo2 className="w-4 h-4" />
+                      Undo
+                    </button>
+                    <button
+                      onClick={onShapeClearAll}
+                      disabled={!canShapeUndo}
+                      className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-sm font-medium rounded-lg transition-colors ${
+                        canShapeUndo
+                          ? isDark
+                            ? 'bg-red-900/50 text-red-300 hover:bg-red-900/70'
+                            : 'bg-red-50 text-red-600 hover:bg-red-100'
+                          : isDark
+                            ? 'bg-gray-800 text-gray-600 cursor-not-allowed'
+                            : 'bg-gray-50 text-gray-400 cursor-not-allowed'
+                      }`}
+                    >
+                      <Trash2 className="w-4 h-4" />
+                      Clear
+                    </button>
+                  </div>
+                </>
+              ) : mode === 'arrow' ? (
+                // ARROW MODE CONTENT
+                <>
+                  {/* Arrow Color Picker */}
+                  <div className="mb-3">
+                    <label className={`text-xs font-medium uppercase tracking-wide block mb-1.5 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                      Color
+                    </label>
+                    <div className="grid grid-cols-6 gap-1.5">
+                      {['#EF4444', '#F59E0B', '#10B981', '#3B82F6', '#8B5CF6', '#1F2937'].map((color) => (
+                        <button
+                          key={color}
+                          onClick={() => onArrowColorChange?.(color)}
+                          className={`w-8 h-8 rounded-lg transition-all ${
+                            arrowColor === color ? 'ring-2 ring-offset-2 ring-purple-500 scale-110' : 'hover:scale-105'
+                          }`}
+                          style={{ backgroundColor: color }}
+                        />
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Arrow Preview */}
+                  <div className={`mb-3 p-3 rounded-lg ${isDark ? 'bg-gray-700' : 'bg-gray-100'}`}>
+                    <svg width="100%" height="32" className="flex-shrink-0">
+                      <defs>
+                        <marker
+                          id="arrowhead-preview"
+                          markerWidth="10"
+                          markerHeight="7"
+                          refX="9"
+                          refY="3.5"
+                          orient="auto"
+                        >
+                          <polygon points="0 0, 10 3.5, 0 7" fill={arrowColor} />
+                        </marker>
+                      </defs>
+                      <line
+                        x1="20"
+                        y1="16"
+                        x2="180"
+                        y2="16"
+                        stroke={arrowColor}
+                        strokeWidth={2.5}
+                        markerEnd="url(#arrowhead-preview)"
+                      />
+                    </svg>
+                  </div>
+
+                  {/* Quick tip */}
+                  <p className={`text-xs mb-3 ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
+                    Click and drag to draw arrow
+                  </p>
+
+                  {/* Undo / Clear */}
+                  <div className="flex gap-2">
+                    <button
+                      onClick={onArrowUndo}
+                      disabled={!canArrowUndo}
+                      className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-sm font-medium rounded-lg transition-colors ${
+                        canArrowUndo
+                          ? isDark
+                            ? 'bg-gray-700 text-gray-200 hover:bg-gray-600'
+                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                          : isDark
+                            ? 'bg-gray-800 text-gray-600 cursor-not-allowed'
+                            : 'bg-gray-50 text-gray-400 cursor-not-allowed'
+                      }`}
+                    >
+                      <Undo2 className="w-4 h-4" />
+                      Undo
+                    </button>
+                    <button
+                      onClick={onArrowClearAll}
+                      disabled={!canArrowUndo}
+                      className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-sm font-medium rounded-lg transition-colors ${
+                        canArrowUndo
+                          ? isDark
+                            ? 'bg-red-900/50 text-red-300 hover:bg-red-900/70'
+                            : 'bg-red-50 text-red-600 hover:bg-red-100'
+                          : isDark
+                            ? 'bg-gray-800 text-gray-600 cursor-not-allowed'
+                            : 'bg-gray-50 text-gray-400 cursor-not-allowed'
+                      }`}
+                    >
+                      <Trash2 className="w-4 h-4" />
+                      Clear
+                    </button>
+                  </div>
+                </>
+              ) : mode === 'text' ? (
+                // TEXT MODE CONTENT
+                <>
+                  {/* Text Color Picker */}
+                  <div className="mb-3">
+                    <label className={`text-xs font-medium uppercase tracking-wide block mb-1.5 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                      Color
+                    </label>
+                    <div className="grid grid-cols-6 gap-1.5">
+                      {['#1F2937', '#EF4444', '#F59E0B', '#10B981', '#3B82F6', '#8B5CF6'].map((color) => (
+                        <button
+                          key={color}
+                          onClick={() => onTextColorChange?.(color)}
+                          className={`w-8 h-8 rounded-lg transition-all flex items-center justify-center ${
+                            textColor === color ? 'ring-2 ring-offset-2 ring-purple-500 scale-110' : 'hover:scale-105'
+                          }`}
+                          style={{ backgroundColor: color }}
+                        >
+                          <Type className="w-4 h-4 text-white" />
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Font Size */}
+                  <div className="mb-3">
+                    <div className="flex items-center justify-between mb-1.5">
+                      <label className={`text-xs font-medium uppercase tracking-wide ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                        Font Size
+                      </label>
+                      <span className={`text-xs font-medium ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
+                        {fontSize}px
+                      </span>
+                    </div>
+                    <div className="grid grid-cols-5 gap-1">
+                      {[10, 12, 14, 16, 20].map((size) => (
+                        <button
+                          key={size}
+                          onClick={() => onFontSizeChange?.(size)}
+                          className={`py-2 text-sm font-medium rounded-md transition-all ${
+                            fontSize === size
+                              ? 'bg-purple-600 text-white shadow-md'
+                              : isDark
+                                ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                          }`}
+                        >
+                          {size}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Text Preview */}
+                  <div className={`mb-3 p-3 rounded-lg ${isDark ? 'bg-gray-700' : 'bg-gray-100'}`}>
+                    <p
+                      className="text-center font-medium"
+                      style={{ color: textColor, fontSize: `${fontSize}px` }}
+                    >
+                      Sample Text
+                    </p>
+                  </div>
+
+                  {/* Quick tip */}
+                  <p className={`text-xs ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
+                    Click on chart to add text label
+                  </p>
+                </>
+              ) : mode === 'measure' ? (
+                // MEASURE MODE CONTENT - Measurements shown in Left Dock
+                <div className={`text-center py-6 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                  <Ruler className="w-8 h-8 mx-auto mb-3 opacity-50" />
+                  <p className="text-sm font-medium mb-1">Measurement Tool Active</p>
+                  <p className={`text-xs ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
+                    Click two points on the chart to measure distance.
+                  </p>
+                  <p className={`text-xs mt-2 ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
+                    View measurements in the left panel.
+                  </p>
+                </div>
               ) : (
                 // INJECTION MODE CONTENT
                 <>
@@ -849,7 +1461,7 @@ export function RightDock({
           </div>
         )}
       </div>
-    </div>
+    </>
   );
 }
 

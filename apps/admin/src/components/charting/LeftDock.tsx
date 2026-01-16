@@ -16,7 +16,9 @@ import {
   Grid3X3,
   Scan,
   Target,
-  Map
+  Map,
+  Ruler,
+  Trash2
 } from 'lucide-react';
 import { useChartingTheme } from '@/contexts/ChartingThemeContext';
 import { TreatedZonesSummary, ZoneOverlayToggle, ZoneTreatmentSummary } from './ZoneDisplay';
@@ -80,6 +82,11 @@ export interface LeftDockProps {
   // Zone Summary (new) - Shows treated zones grouped by zone
   zoneSummaries?: ZoneTreatmentSummary[];
   onZoneClick?: (zoneId: string) => void;
+
+  // Measurement Mode Props
+  isMeasurementModeActive?: boolean;
+  measurements?: Array<{ id: string; length: number; label?: string }>;
+  onMeasurementClearAll?: () => void;
 
   // Patient Context (optional - can be hidden)
   patient?: PatientInfo;
@@ -614,6 +621,10 @@ export function LeftDock({
   // Zone Summary
   zoneSummaries = [],
   onZoneClick,
+  // Measurement Mode Props
+  isMeasurementModeActive = false,
+  measurements = [],
+  onMeasurementClearAll,
   // Patient
   patient,
   // Initial state
@@ -716,6 +727,64 @@ export function LeftDock({
               isDark={isDark}
             />
           </DockSection>
+
+          {/* Measurements Section - Shows when measurement tool is active */}
+          {isMeasurementModeActive && (
+            <DockSection title="Measurements" icon={<Ruler className="w-3.5 h-3.5" />} isDark={isDark}>
+              <div className="space-y-3">
+                {/* Measurements List */}
+                {measurements.length > 0 ? (
+                  <div className="space-y-2">
+                    {measurements.map((m, index) => (
+                      <div
+                        key={m.id}
+                        className={`flex items-center justify-between px-3 py-2 rounded-lg ${
+                          isDark ? 'bg-gray-700' : 'bg-gray-100'
+                        }`}
+                      >
+                        <span className={`text-xs ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
+                          {m.label || `Measurement ${index + 1}`}
+                        </span>
+                        <span className={`text-sm font-medium ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                          {m.length.toFixed(1)} mm
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className={`text-center py-4 ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
+                    <Ruler className="w-6 h-6 mx-auto mb-2 opacity-50" />
+                    <p className="text-xs">No measurements yet</p>
+                  </div>
+                )}
+
+                {/* Quick tip */}
+                <p className={`text-[10px] ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
+                  Click two points on chart to measure distance
+                </p>
+
+                {/* Clear All Button */}
+                {onMeasurementClearAll && (
+                  <button
+                    onClick={onMeasurementClearAll}
+                    disabled={measurements.length === 0}
+                    className={`w-full flex items-center justify-center gap-1.5 py-2 text-xs font-medium rounded-lg transition-colors ${
+                      measurements.length > 0
+                        ? isDark
+                          ? 'bg-red-900/50 text-red-300 hover:bg-red-900/70'
+                          : 'bg-red-50 text-red-600 hover:bg-red-100'
+                        : isDark
+                          ? 'bg-gray-800 text-gray-600 cursor-not-allowed'
+                          : 'bg-gray-50 text-gray-400 cursor-not-allowed'
+                    }`}
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                    Clear All
+                  </button>
+                )}
+              </div>
+            </DockSection>
+          )}
 
           {/* Treated Zones Section - Shows treated zones grouped by anatomical area */}
           {zoneSummaries.length > 0 && (
