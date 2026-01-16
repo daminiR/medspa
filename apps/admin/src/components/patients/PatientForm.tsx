@@ -1,13 +1,15 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { 
-  Patient, 
-  Gender, 
-  PatientStatus, 
-  PreferredCommunication,
+import {
+  Patient,
+  Gender,
+  PatientStatus,
   FitzpatrickType,
-  EmergencyContact 
+  EmergencyContact,
+  MedicalAlert,
+  Allergy,
+  Medication
 } from '@/types/patient'
 import { 
   User, 
@@ -44,36 +46,36 @@ export default function PatientForm({
     firstName: '',
     lastName: '',
     preferredName: '',
-    dateOfBirth: '',
+    dateOfBirth: new Date(),
     gender: 'female' as Gender,
     email: '',
     phone: '',
     status: 'active' as PatientStatus,
     address: {
       street: '',
-      unit: '',
+      street2: '',
       city: '',
       state: 'CA',
-      zip: '',
+      zipCode: '',
       country: 'USA'
     },
-    preferredCommunication: 'email' as PreferredCommunication,
     emergencyContact: {
       name: '',
       relationship: '',
-      phone: '',
-      email: ''
+      phone: ''
     },
     medicalAlerts: [],
     allergies: [],
     medications: [],
-    notes: '',
+    generalNotes: '',
     // Medical spa specific
     aestheticProfile: {
-      fitzpatrickType: undefined,
+      skinType: 'I' as FitzpatrickType,
       skinConcerns: [],
       treatmentGoals: [],
-      contraindicatedTreatments: []
+      previousTreatments: [],
+      contraindications: [],
+      photoConsent: false
     },
     marketingConsent: false,
     photoConsent: false,
@@ -243,8 +245,8 @@ export default function PatientForm({
                   </label>
                   <input
                     type="date"
-                    value={formData.dateOfBirth}
-                    onChange={(e) => setFormData(prev => ({ ...prev, dateOfBirth: e.target.value }))}
+                    value={formData.dateOfBirth instanceof Date ? formData.dateOfBirth.toISOString().split('T')[0] : ''}
+                    onChange={(e) => setFormData(prev => ({ ...prev, dateOfBirth: new Date(e.target.value) }))}
                     className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 ${
                       errors.dateOfBirth ? 'border-red-500' : 'border-gray-300'
                     }`}
@@ -351,10 +353,10 @@ export default function PatientForm({
                   <div>
                     <input
                       type="text"
-                      value={formData.address?.unit}
+                      value={formData.address?.street2}
                       onChange={(e) => setFormData(prev => ({
                         ...prev,
-                        address: { ...prev.address!, unit: e.target.value }
+                        address: { ...prev.address!, street2: e.target.value }
                       }))}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
                       placeholder="Unit/Apt"
@@ -390,10 +392,10 @@ export default function PatientForm({
                   <div>
                     <input
                       type="text"
-                      value={formData.address?.zip}
+                      value={formData.address?.zipCode}
                       onChange={(e) => setFormData(prev => ({
                         ...prev,
-                        address: { ...prev.address!, zip: e.target.value }
+                        address: { ...prev.address!, zipCode: e.target.value }
                       }))}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
                       placeholder="ZIP"
@@ -412,10 +414,18 @@ export default function PatientForm({
                   Medical Alerts
                 </label>
                 <textarea
-                  value={formData.medicalAlerts?.join('\n')}
+                  value={formData.medicalAlerts?.map(a => a.description).join('\n')}
                   onChange={(e) => setFormData(prev => ({
                     ...prev,
-                    medicalAlerts: e.target.value.split('\n').filter(a => a.trim())
+                    medicalAlerts: e.target.value.split('\n').filter(a => a.trim()).map((desc, index) => ({
+                      id: `alert-${Date.now()}-${index}`,
+                      type: 'other' as const,
+                      severity: 'medium' as const,
+                      description: desc,
+                      addedDate: new Date(),
+                      addedBy: 'current-user',
+                      active: true
+                    }))
                   }))}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
                   rows={3}
@@ -429,10 +439,15 @@ export default function PatientForm({
                   Allergies
                 </label>
                 <textarea
-                  value={formData.allergies?.join('\n')}
+                  value={formData.allergies?.map(a => a.allergen).join('\n')}
                   onChange={(e) => setFormData(prev => ({
                     ...prev,
-                    allergies: e.target.value.split('\n').filter(a => a.trim())
+                    allergies: e.target.value.split('\n').filter(a => a.trim()).map((allergen, index) => ({
+                      id: `allergy-${Date.now()}-${index}`,
+                      allergen,
+                      reaction: '',
+                      severity: 'medium' as const
+                    }))
                   }))}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
                   rows={3}
@@ -446,10 +461,16 @@ export default function PatientForm({
                   Current Medications
                 </label>
                 <textarea
-                  value={formData.medications?.join('\n')}
+                  value={formData.medications?.map(m => m.name).join('\n')}
                   onChange={(e) => setFormData(prev => ({
                     ...prev,
-                    medications: e.target.value.split('\n').filter(m => m.trim())
+                    medications: e.target.value.split('\n').filter(m => m.trim()).map((name, index) => ({
+                      id: `medication-${Date.now()}-${index}`,
+                      name,
+                      dosage: '',
+                      frequency: '',
+                      startDate: new Date()
+                    }))
                   }))}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
                   rows={3}
@@ -463,8 +484,8 @@ export default function PatientForm({
                   Medical Notes
                 </label>
                 <textarea
-                  value={formData.notes}
-                  onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))}
+                  value={formData.generalNotes}
+                  onChange={(e) => setFormData(prev => ({ ...prev, generalNotes: e.target.value }))}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
                   rows={4}
                   placeholder="Any additional medical notes or history"
@@ -481,12 +502,17 @@ export default function PatientForm({
                   Fitzpatrick Skin Type
                 </label>
                 <select
-                  value={formData.aestheticProfile?.fitzpatrickType || ''}
+                  value={formData.aestheticProfile?.skinType || ''}
                   onChange={(e) => setFormData(prev => ({
                     ...prev,
                     aestheticProfile: {
                       ...prev.aestheticProfile!,
-                      fitzpatrickType: e.target.value as FitzpatrickType || undefined
+                      skinType: e.target.value as FitzpatrickType,
+                      skinConcerns: prev.aestheticProfile?.skinConcerns || [],
+                      treatmentGoals: prev.aestheticProfile?.treatmentGoals || [],
+                      previousTreatments: prev.aestheticProfile?.previousTreatments || [],
+                      contraindications: prev.aestheticProfile?.contraindications || [],
+                      photoConsent: prev.aestheticProfile?.photoConsent || false
                     }
                   }))}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
@@ -546,12 +572,12 @@ export default function PatientForm({
                   Contraindicated Treatments
                 </label>
                 <textarea
-                  value={formData.aestheticProfile?.contraindicatedTreatments?.join('\n')}
+                  value={formData.aestheticProfile?.contraindications?.join('\n')}
                   onChange={(e) => setFormData(prev => ({
                     ...prev,
                     aestheticProfile: {
                       ...prev.aestheticProfile!,
-                      contraindicatedTreatments: e.target.value.split('\n').filter(t => t.trim())
+                      contraindications: e.target.value.split('\n').filter(t => t.trim())
                     }
                   }))}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
@@ -622,20 +648,20 @@ export default function PatientForm({
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Email
+                    Alternate Phone
                   </label>
                   <input
-                    type="email"
-                    value={formData.emergencyContact?.email}
+                    type="tel"
+                    value={formData.emergencyContact?.alternatePhone}
                     onChange={(e) => setFormData(prev => ({
                       ...prev,
                       emergencyContact: {
                         ...prev.emergencyContact!,
-                        email: e.target.value
+                        alternatePhone: formatPhoneNumber(e.target.value)
                       }
                     }))}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                    placeholder="contact@email.com"
+                    placeholder="555-555-5555"
                   />
                 </div>
               </div>
@@ -645,24 +671,6 @@ export default function PatientForm({
           {/* Preferences & Consent Tab */}
           {activeTab === 'preferences' && (
             <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Preferred Communication Method
-                </label>
-                <select
-                  value={formData.preferredCommunication}
-                  onChange={(e) => setFormData(prev => ({
-                    ...prev,
-                    preferredCommunication: e.target.value as PreferredCommunication
-                  }))}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                >
-                  <option value="email">Email</option>
-                  <option value="phone">Phone</option>
-                  <option value="sms">Text Message</option>
-                  <option value="mail">Mail</option>
-                </select>
-              </div>
 
               <div className="space-y-3">
                 <label className="flex items-center">
@@ -701,8 +709,8 @@ export default function PatientForm({
                   Additional Notes
                 </label>
                 <textarea
-                  value={formData.notes}
-                  onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))}
+                  value={formData.generalNotes}
+                  onChange={(e) => setFormData(prev => ({ ...prev, generalNotes: e.target.value }))}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
                   rows={4}
                   placeholder="Any additional preferences or notes"

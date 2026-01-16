@@ -21,6 +21,8 @@ import {
   TrendingUp
 } from 'lucide-react'
 import { format, startOfDay, endOfDay } from 'date-fns'
+import { ExportButton } from '@/components/reports/ExportButton'
+import { formatters, ExportColumn } from '@/lib/export'
 
 // Mock data generation
 const generateTransactions = () => {
@@ -73,7 +75,7 @@ export default function CashReconciliationPage() {
   
   // Calculate totals by payment method
   const paymentTotals = useMemo(() => {
-    const totals = {}
+    const totals: Record<string, number> = {}
     transactions.forEach(t => {
       if (t.status === 'completed') {
         totals[t.method] = (totals[t.method] || 0) + t.amount
@@ -112,6 +114,50 @@ export default function CashReconciliationPage() {
     pendingCount: transactions.filter(t => t.status === 'pending').length
   }
 
+  // Prepare export data
+  const exportData = useMemo(() => {
+    const rows: any[] = []
+
+    // Transaction details
+    transactions.forEach(t => {
+      rows.push({
+        id: t.id,
+        time: t.time,
+        client: t.client,
+        service: t.service,
+        provider: t.provider,
+        paymentMethod: t.method,
+        amount: t.amount,
+        status: t.status
+      })
+    })
+
+    // Add summary row
+    rows.push({
+      id: 'SUMMARY',
+      time: '-',
+      client: '-',
+      service: '-',
+      provider: '-',
+      paymentMethod: 'TOTAL',
+      amount: summary.totalRevenue,
+      status: `${summary.transactionCount} completed`
+    })
+
+    return rows
+  }, [transactions, summary])
+
+  const exportColumns: ExportColumn[] = [
+    { key: 'id', header: 'Invoice ID' },
+    { key: 'time', header: 'Time' },
+    { key: 'client', header: 'Client' },
+    { key: 'service', header: 'Service' },
+    { key: 'provider', header: 'Provider' },
+    { key: 'paymentMethod', header: 'Payment Method' },
+    { key: 'amount', header: 'Amount', formatter: formatters.currency },
+    { key: 'status', header: 'Status' },
+  ]
+
   return (
     <div className="flex h-screen bg-gray-50">
       <Navigation />
@@ -144,10 +190,13 @@ export default function CashReconciliationPage() {
                   <span>Reconciled</span>
                 </button>
               )}
-              <button className="px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-700 hover:bg-gray-50 flex items-center space-x-2">
-                <Download className="h-4 w-4" />
-                <span>Export</span>
-              </button>
+              <ExportButton
+                data={exportData}
+                columns={exportColumns}
+                filename={`cash-reconciliation-${format(selectedDate, 'yyyy-MM-dd')}`}
+                title="Cash Reconciliation"
+                dateRange={{ start: format(selectedDate, 'yyyy-MM-dd'), end: format(selectedDate, 'yyyy-MM-dd') }}
+              />
             </div>
           </div>
 

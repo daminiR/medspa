@@ -1,8 +1,8 @@
 {
-  "platform": "Luke's Medical Spa",
+  "platform": "Luxe Medical Spa EMR",
   "analysis_date": "2025-10-16",
   "structural_analysis": {
-    "platform_name": "Luke's Medical Spa",
+    "platform_name": "Luxe Medical Spa EMR",
     "feature_categories": {
       "Dashboard": {
         "features": [

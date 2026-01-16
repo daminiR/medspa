@@ -2,12 +2,13 @@
 
 import { useState } from 'react'
 import { Patient } from '@/types/patient'
-import { 
-  User, 
-  Calendar, 
-  FileText, 
-  Camera, 
-  CreditCard, 
+import AppointmentHistory from './AppointmentHistory'
+import {
+  User,
+  Calendar,
+  FileText,
+  Camera,
+  CreditCard,
   Heart,
   Shield,
   AlertCircle,
@@ -19,7 +20,15 @@ import {
   Syringe,
   MessageSquare,
   Plus,
-  ChevronRight
+  ChevronRight,
+  Activity,
+  Users,
+  Pill,
+  AlertTriangle,
+  CheckCircle,
+  XCircle,
+  Info,
+  UserPlus
 } from 'lucide-react'
 import { format, differenceInDays } from 'date-fns'
 
@@ -33,6 +42,7 @@ export default function PatientDetailTabs({ patient }: PatientDetailTabsProps) {
   const tabs = [
     { id: 'overview', label: 'Overview', icon: User },
     { id: 'appointments', label: 'Appointments', icon: Calendar },
+    { id: 'medical', label: 'Medical Profile', icon: Activity },
     { id: 'treatments', label: 'Treatments', icon: Syringe },
     { id: 'documents', label: 'Documents', icon: FileText },
     { id: 'photos', label: 'Photos', icon: Camera },
@@ -40,9 +50,9 @@ export default function PatientDetailTabs({ patient }: PatientDetailTabsProps) {
     { id: 'notes', label: 'Notes', icon: MessageSquare }
   ]
 
-  const calculateAge = (dateOfBirth: string) => {
+  const calculateAge = (dateOfBirth: Date | string) => {
     const today = new Date()
-    const birthDate = new Date(dateOfBirth)
+    const birthDate = dateOfBirth instanceof Date ? dateOfBirth : new Date(dateOfBirth)
     let age = today.getFullYear() - birthDate.getFullYear()
     const monthDiff = today.getMonth() - birthDate.getMonth()
     if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
@@ -116,7 +126,7 @@ export default function PatientDetailTabs({ patient }: PatientDetailTabsProps) {
               <div className="flex-1">
                 <span className="text-sm font-medium text-red-900">Medical Alerts: </span>
                 <span className="text-sm text-red-700">
-                  {patient.medicalAlerts.join(', ')}
+                  {patient.medicalAlerts.map(alert => alert.description).join(', ')}
                 </span>
               </div>
             </div>
@@ -162,7 +172,7 @@ export default function PatientDetailTabs({ patient }: PatientDetailTabsProps) {
                 <div className="space-y-2">
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600">Total Visits</span>
-                    <span className="font-medium text-gray-900">{patient.visitCount || 0}</span>
+                    <span className="font-medium text-gray-900">{patient.totalVisits || 0}</span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600">Last Visit</span>
@@ -187,14 +197,14 @@ export default function PatientDetailTabs({ patient }: PatientDetailTabsProps) {
                     <div>
                       <p className="text-gray-600 mb-1">Address</p>
                       <p className="text-gray-900">
-                        {patient.address.street} {patient.address.unit && `, ${patient.address.unit}`}<br />
-                        {patient.address.city}, {patient.address.state} {patient.address.zip}
+                        {patient.address.street} {patient.address.street2 && `, ${patient.address.street2}`}<br />
+                        {patient.address.city}, {patient.address.state} {patient.address.zipCode}
                       </p>
                     </div>
                   )}
                   <div>
                     <p className="text-gray-600 mb-1">Preferred Contact Method</p>
-                    <p className="text-gray-900 capitalize">{patient.preferredCommunication}</p>
+                    <p className="text-gray-900 capitalize">{patient.communicationPreferences.preferredMethod}</p>
                   </div>
                 </div>
               </div>
@@ -225,7 +235,7 @@ export default function PatientDetailTabs({ patient }: PatientDetailTabsProps) {
                         {patient.allergies.map((allergy, index) => (
                           <li key={index} className="text-gray-900 flex items-start">
                             <span className="text-gray-400 mr-2">•</span>
-                            {allergy}
+                            {allergy.allergen}
                           </li>
                         ))}
                       </ul>
@@ -239,7 +249,7 @@ export default function PatientDetailTabs({ patient }: PatientDetailTabsProps) {
                         {patient.medications.map((med, index) => (
                           <li key={index} className="text-gray-900 flex items-start">
                             <span className="text-gray-400 mr-2">•</span>
-                            {med}
+                            {med.name}
                           </li>
                         ))}
                       </ul>
@@ -258,10 +268,10 @@ export default function PatientDetailTabs({ patient }: PatientDetailTabsProps) {
                 <div>
                   <h3 className="text-sm font-medium text-gray-900 mb-3">Aesthetic Profile</h3>
                   <div className="bg-gray-50 rounded-lg p-4 space-y-3 text-sm">
-                    {patient.aestheticProfile.fitzpatrickType && (
+                    {patient.aestheticProfile.skinType && (
                       <div>
                         <p className="text-gray-600 mb-1">Fitzpatrick Skin Type</p>
-                        <p className="text-gray-900">Type {patient.aestheticProfile.fitzpatrickType}</p>
+                        <p className="text-gray-900">Type {patient.aestheticProfile.skinType}</p>
                       </div>
                     )}
                     
@@ -297,11 +307,11 @@ export default function PatientDetailTabs({ patient }: PatientDetailTabsProps) {
                       </span>
                     </div>
                     
-                    {patient.insurance && (
+                    {patient.insurance && patient.insurance.length > 0 && (
                       <div className="pt-3 border-t">
                         <p className="text-sm text-gray-600 mb-1">Insurance</p>
-                        <p className="text-sm font-medium text-gray-900">{patient.insurance.provider}</p>
-                        <p className="text-xs text-gray-500">ID: {patient.insurance.memberId}</p>
+                        <p className="text-sm font-medium text-gray-900">{patient.insurance[0].provider}</p>
+                        <p className="text-xs text-gray-500">ID: {patient.insurance[0].policyNumber}</p>
                       </div>
                     )}
                   </div>
@@ -360,99 +370,302 @@ export default function PatientDetailTabs({ patient }: PatientDetailTabsProps) {
           </div>
         )}
 
-        {/* Appointments Tab */}
+        {/* Appointments Tab - Using AppointmentHistory Component */}
         {activeTab === 'appointments' && (
-          <div>
-            <div className="flex justify-between items-center mb-6">
-              <h3 className="text-lg font-medium text-gray-900">Appointment History</h3>
-              <button className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 text-sm">
-                <Plus className="h-4 w-4" />
-                Book Appointment
-              </button>
-            </div>
-            
-            <div className="space-y-3">
-              {/* Upcoming appointment */}
-              <div className="border border-purple-200 bg-purple-50 rounded-lg p-4 hover:shadow-sm transition-shadow">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <p className="font-medium text-gray-900">Botox Touch-up</p>
-                    <p className="text-sm text-gray-600 mt-1">Dr. Sarah Johnson • 30 minutes</p>
+          <AppointmentHistory patientId={patient.id} />
+        )}
+
+        {/* Medical Profile Tab - Deep Profile Details */}
+        {activeTab === 'medical' && (
+          <div className="space-y-6">
+            {/* Medical Alerts Banner */}
+            {patient.medicalAlerts && patient.medicalAlerts.length > 0 && (
+              <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                <div className="flex items-start gap-3">
+                  <AlertTriangle className="h-5 w-5 text-red-600 mt-0.5 flex-shrink-0" />
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-red-900 mb-2">Active Medical Alerts</h3>
+                    <div className="space-y-2">
+                      {patient.medicalAlerts.map((alert, index) => (
+                        <div key={index} className="flex items-center gap-2">
+                          <span className="px-2 py-0.5 bg-red-100 text-red-800 text-xs font-medium rounded">{alert.severity.toUpperCase()}</span>
+                          <span className="text-sm text-red-800">{alert.description}</span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                  <div className="text-right">
-                    <p className="text-sm font-medium text-gray-900">Jan 20, 2025</p>
-                    <p className="text-sm text-gray-600">2:30 PM</p>
-                    <span className="inline-block mt-2 px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-700">
-                      Upcoming
-                    </span>
+                </div>
+              </div>
+            )}
+
+            <div className="grid grid-cols-2 gap-6">
+              {/* Left Column - Medical History */}
+              <div className="space-y-6">
+                {/* Allergies Section */}
+                <div className="bg-white border border-gray-200 rounded-lg p-6">
+                  <h3 className="text-lg font-medium text-gray-900 mb-4 flex items-center gap-2">
+                    <AlertCircle className="h-5 w-5 text-orange-500" />
+                    Allergies
+                  </h3>
+                  {patient.allergies && patient.allergies.length > 0 ? (
+                    <div className="space-y-3">
+                      {patient.allergies.map((allergy, index) => (
+                        <div key={index} className="flex items-start justify-between p-3 bg-orange-50 border border-orange-200 rounded-lg">
+                          <div>
+                            <p className="font-medium text-gray-900">{allergy.allergen}</p>
+                            <p className="text-sm text-gray-600 mt-1">Reaction: {allergy.reaction}</p>
+                          </div>
+                          <span className="px-2 py-1 bg-orange-100 text-orange-800 text-xs font-medium rounded-full">
+                            {allergy.severity}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-sm text-gray-500 italic">No known allergies on file</p>
+                  )}
+                  <button className="mt-4 text-sm text-purple-600 hover:text-purple-700 font-medium flex items-center gap-1">
+                    <Plus className="h-4 w-4" />
+                    Add Allergy
+                  </button>
+                </div>
+
+                {/* Current Medications */}
+                <div className="bg-white border border-gray-200 rounded-lg p-6">
+                  <h3 className="text-lg font-medium text-gray-900 mb-4 flex items-center gap-2">
+                    <Pill className="h-5 w-5 text-blue-500" />
+                    Current Medications
+                  </h3>
+                  {patient.medications && patient.medications.length > 0 ? (
+                    <div className="space-y-3">
+                      {patient.medications.map((medication, index) => (
+                        <div key={index} className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                          <p className="font-medium text-gray-900">{medication.name}</p>
+                          <p className="text-sm text-gray-600 mt-1">{medication.dosage} - {medication.frequency}</p>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-sm text-gray-500 italic">No medications on file</p>
+                  )}
+                  <button className="mt-4 text-sm text-purple-600 hover:text-purple-700 font-medium flex items-center gap-1">
+                    <Plus className="h-4 w-4" />
+                    Add Medication
+                  </button>
+                </div>
+
+                {/* Medical History Timeline */}
+                <div className="bg-white border border-gray-200 rounded-lg p-6">
+                  <h3 className="text-lg font-medium text-gray-900 mb-4 flex items-center gap-2">
+                    <Activity className="h-5 w-5 text-purple-500" />
+                    Medical History
+                  </h3>
+                  <div className="space-y-4">
+                    <div className="relative pl-6 pb-4 border-l-2 border-gray-200">
+                      <div className="absolute -left-1.5 top-0 w-3 h-3 bg-purple-500 rounded-full"></div>
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <p className="font-medium text-gray-900">Initial Consultation</p>
+                          <p className="text-sm text-gray-600">Full medical history review completed</p>
+                        </div>
+                        <span className="text-xs text-gray-500">{patient.createdAt ? format(new Date(patient.createdAt), 'MMM yyyy') : 'N/A'}</span>
+                      </div>
+                    </div>
+                    <div className="relative pl-6 pb-4 border-l-2 border-gray-200">
+                      <div className="absolute -left-1.5 top-0 w-3 h-3 bg-green-500 rounded-full"></div>
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <p className="font-medium text-gray-900">Consent Forms Signed</p>
+                          <p className="text-sm text-gray-600">Treatment consent, photo release</p>
+                        </div>
+                        <span className="text-xs text-gray-500">{patient.createdAt ? format(new Date(patient.createdAt), 'MMM yyyy') : 'N/A'}</span>
+                      </div>
+                    </div>
+                    {patient.lastVisit && (
+                      <div className="relative pl-6">
+                        <div className="absolute -left-1.5 top-0 w-3 h-3 bg-blue-500 rounded-full"></div>
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <p className="font-medium text-gray-900">Last Visit</p>
+                            <p className="text-sm text-gray-600">Most recent treatment</p>
+                          </div>
+                          <span className="text-xs text-gray-500">{format(new Date(patient.lastVisit), 'MMM d, yyyy')}</span>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
 
-              {/* Recent appointments - newest first */}
-              <div className="border border-gray-200 rounded-lg p-4 hover:shadow-sm transition-shadow">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <p className="font-medium text-gray-900">Botox Treatment</p>
-                    <p className="text-sm text-gray-600 mt-1">Dr. Sarah Johnson • 45 minutes</p>
-                    <p className="text-xs text-gray-500 mt-1">20 units - forehead and crow's feet</p>
+              {/* Right Column - Aesthetic Profile & Preferences */}
+              <div className="space-y-6">
+                {/* Contraindications Checklist */}
+                <div className="bg-white border border-gray-200 rounded-lg p-6">
+                  <h3 className="text-lg font-medium text-gray-900 mb-4 flex items-center gap-2">
+                    <Shield className="h-5 w-5 text-red-500" />
+                    Contraindications Checklist
+                  </h3>
+                  <div className="grid grid-cols-2 gap-3">
+                    {[
+                      { label: 'Pregnancy', checked: false },
+                      { label: 'Breastfeeding', checked: false },
+                      { label: 'Active Infection', checked: false },
+                      { label: 'Autoimmune Disease', checked: false },
+                      { label: 'Blood Thinners', checked: patient.medications?.some((m) => m.name.toLowerCase().includes('aspirin') || m.name.toLowerCase().includes('warfarin')) || false },
+                      { label: 'Keloid Scarring', checked: false },
+                      { label: 'Recent Sun Exposure', checked: false },
+                      { label: 'Isotretinoin (Accutane)', checked: false }
+                    ].map((item, index) => (
+                      <div key={index} className={`flex items-center gap-2 p-2 rounded ${item.checked ? 'bg-red-50' : 'bg-gray-50'}`}>
+                        {item.checked ? (
+                          <XCircle className="h-4 w-4 text-red-500" />
+                        ) : (
+                          <CheckCircle className="h-4 w-4 text-green-500" />
+                        )}
+                        <span className={`text-sm ${item.checked ? 'text-red-700 font-medium' : 'text-gray-700'}`}>
+                          {item.label}
+                        </span>
+                      </div>
+                    ))}
                   </div>
-                  <div className="text-right">
-                    <p className="text-sm font-medium text-gray-900">Dec 15, 2024</p>
-                    <p className="text-sm text-gray-600">2:30 PM</p>
-                    <span className="inline-block mt-2 px-2 py-1 text-xs rounded-full bg-green-100 text-green-700">
-                      Completed
-                    </span>
+                  <p className="text-xs text-gray-500 mt-3">Last updated: {patient.updatedAt ? format(new Date(patient.updatedAt), 'MMM d, yyyy') : 'Not available'}</p>
+                </div>
+
+                {/* Aesthetic Profile */}
+                <div className="bg-white border border-gray-200 rounded-lg p-6">
+                  <h3 className="text-lg font-medium text-gray-900 mb-4 flex items-center gap-2">
+                    <Heart className="h-5 w-5 text-pink-500" />
+                    Aesthetic Profile
+                  </h3>
+                  <div className="space-y-4">
+                    {/* Skin Type */}
+                    {patient.aestheticProfile?.skinType && (
+                      <div className="p-3 bg-gray-50 rounded-lg">
+                        <p className="text-sm text-gray-600 mb-1">Fitzpatrick Skin Type</p>
+                        <div className="flex items-center gap-2">
+                          <span className="text-lg font-semibold text-gray-900">Type {patient.aestheticProfile.skinType}</span>
+                          <span className="text-sm text-gray-500">
+                            {patient.aestheticProfile.skinType === 'I' && '- Always burns, never tans'}
+                            {patient.aestheticProfile.skinType === 'II' && '- Usually burns, tans minimally'}
+                            {patient.aestheticProfile.skinType === 'III' && '- Sometimes burns, tans uniformly'}
+                            {patient.aestheticProfile.skinType === 'IV' && '- Burns minimally, always tans'}
+                            {patient.aestheticProfile.skinType === 'V' && '- Very rarely burns, tans darkly'}
+                            {patient.aestheticProfile.skinType === 'VI' && '- Never burns, deeply pigmented'}
+                          </span>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Skin Concerns */}
+                    {patient.aestheticProfile?.skinConcerns && patient.aestheticProfile.skinConcerns.length > 0 && (
+                      <div>
+                        <p className="text-sm text-gray-600 mb-2">Skin Concerns</p>
+                        <div className="flex flex-wrap gap-2">
+                          {patient.aestheticProfile.skinConcerns.map((concern: string, index: number) => (
+                            <span key={index} className="px-3 py-1 bg-pink-100 text-pink-800 text-sm rounded-full">
+                              {concern}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Treatment Goals */}
+                    {patient.aestheticProfile?.treatmentGoals && patient.aestheticProfile.treatmentGoals.length > 0 && (
+                      <div>
+                        <p className="text-sm text-gray-600 mb-2">Treatment Goals</p>
+                        <div className="flex flex-wrap gap-2">
+                          {patient.aestheticProfile.treatmentGoals.map((goal: string, index: number) => (
+                            <span key={index} className="px-3 py-1 bg-purple-100 text-purple-800 text-sm rounded-full">
+                              {goal}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Photo Consent Status */}
+                    <div className="p-3 bg-gray-50 rounded-lg">
+                      <p className="text-sm text-gray-600 mb-1">Photo Documentation Consent</p>
+                      <div className="flex items-center gap-2">
+                        {patient.photoConsent ? (
+                          <>
+                            <CheckCircle className="h-5 w-5 text-green-500" />
+                            <span className="font-medium text-green-700">Consent Granted</span>
+                          </>
+                        ) : (
+                          <>
+                            <XCircle className="h-5 w-5 text-red-500" />
+                            <span className="font-medium text-red-700">Not Consented</span>
+                          </>
+                        )}
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <div className="border border-gray-200 rounded-lg p-4 hover:shadow-sm transition-shadow">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <p className="font-medium text-gray-900">Chemical Peel</p>
-                    <p className="text-sm text-gray-600 mt-1">RN Jessica Martinez • 60 minutes</p>
-                    <p className="text-xs text-gray-500 mt-1">VI Peel - moderate depth</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-sm font-medium text-gray-900">Nov 20, 2024</p>
-                    <p className="text-sm text-gray-600">11:00 AM</p>
-                    <span className="inline-block mt-2 px-2 py-1 text-xs rounded-full bg-green-100 text-green-700">
-                      Completed
-                    </span>
+                {/* Treatment Preferences */}
+                <div className="bg-white border border-gray-200 rounded-lg p-6">
+                  <h3 className="text-lg font-medium text-gray-900 mb-4 flex items-center gap-2">
+                    <Info className="h-5 w-5 text-blue-500" />
+                    Treatment Preferences
+                  </h3>
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                      <span className="text-sm text-gray-600">Preferred Days</span>
+                      <span className="text-sm font-medium text-gray-900">Weekdays</span>
+                    </div>
+                    <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                      <span className="text-sm text-gray-600">Preferred Times</span>
+                      <span className="text-sm font-medium text-gray-900">Afternoon</span>
+                    </div>
+                    <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                      <span className="text-sm text-gray-600">Primary Provider</span>
+                      <span className="text-sm font-medium text-gray-900">Dr. Sarah Johnson</span>
+                    </div>
+                    <div className="flex justify-between items-center py-2">
+                      <span className="text-sm text-gray-600">Numbing Preference</span>
+                      <span className="text-sm font-medium text-gray-900">Topical only</span>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <div className="border border-gray-200 rounded-lg p-4 hover:shadow-sm transition-shadow">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <p className="font-medium text-gray-900">HydraFacial</p>
-                    <p className="text-sm text-gray-600 mt-1">Emma Thompson, LE • 50 minutes</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-sm font-medium text-gray-900">Oct 5, 2024</p>
-                    <p className="text-sm text-gray-600">3:00 PM</p>
-                    <span className="inline-block mt-2 px-2 py-1 text-xs rounded-full bg-green-100 text-green-700">
-                      Completed
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="border border-gray-200 rounded-lg p-4 hover:shadow-sm transition-shadow">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <p className="font-medium text-gray-900">Initial Consultation</p>
-                    <p className="text-sm text-gray-600 mt-1">Dr. Michael Chen • 60 minutes</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-sm font-medium text-gray-900">Sep 1, 2024</p>
-                    <p className="text-sm text-gray-600">10:00 AM</p>
-                    <span className="inline-block mt-2 px-2 py-1 text-xs rounded-full bg-green-100 text-green-700">
-                      Completed
-                    </span>
-                  </div>
+                {/* Family Members / Linked Accounts */}
+                <div className="bg-white border border-gray-200 rounded-lg p-6">
+                  <h3 className="text-lg font-medium text-gray-900 mb-4 flex items-center gap-2">
+                    <Users className="h-5 w-5 text-green-500" />
+                    Family Members
+                    <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full ml-2">For Group Bookings</span>
+                  </h3>
+                  {patient.familyMembers && patient.familyMembers.length > 0 ? (
+                    <div className="space-y-3">
+                      {patient.familyMembers.map((member: any, index: number) => (
+                        <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
+                              <User className="h-5 w-5 text-purple-600" />
+                            </div>
+                            <div>
+                              <p className="font-medium text-gray-900">{member.patientName || 'Family Member'}</p>
+                              <p className="text-sm text-gray-500 capitalize">{member.relationship}</p>
+                            </div>
+                          </div>
+                          <button className="text-sm text-purple-600 hover:text-purple-700">
+                            View Profile
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-4">
+                      <Users className="h-8 w-8 text-gray-300 mx-auto mb-2" />
+                      <p className="text-sm text-gray-500 mb-3">No linked family members</p>
+                      <button className="text-sm text-purple-600 hover:text-purple-700 font-medium flex items-center gap-1 mx-auto">
+                        <UserPlus className="h-4 w-4" />
+                        Link Family Member
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -808,13 +1021,13 @@ export default function PatientDetailTabs({ patient }: PatientDetailTabsProps) {
             
             <div className="space-y-3">
               {/* General notes */}
-              {patient.notes && (
+              {patient.generalNotes && (
                 <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
                   <div className="flex items-start gap-2">
                     <MessageSquare className="h-4 w-4 text-yellow-600 mt-0.5" />
                     <div>
                       <p className="text-sm font-medium text-gray-900 mb-1">General Notes</p>
-                      <p className="text-sm text-gray-700">{patient.notes}</p>
+                      <p className="text-sm text-gray-700">{patient.generalNotes}</p>
                     </div>
                   </div>
                 </div>

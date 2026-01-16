@@ -1,4 +1,4 @@
-# Luke's Medical Spa - Master Product Roadmap
+# Luxe Medical Spa EMR - Master Product Roadmap
 
 **Last Updated**: 2025-10-17
 **Focus**: Injectables & Lasers Med Spa

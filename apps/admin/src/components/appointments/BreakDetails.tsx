@@ -9,7 +9,7 @@ interface Break {
 	id: string
 	practitionerId: string
 	practitionerName: string
-	type: 'lunch' | 'personal' | 'meeting' | 'training' | 'other'
+	type: 'lunch' | 'personal' | 'meeting' | 'training' | 'out_of_office' | 'other'
 	startTime: Date
 	endTime: Date
 	duration: number
@@ -27,11 +27,12 @@ interface BreakDetailsProps {
 }
 
 const breakTypes = [
-	{ id: 'lunch', label: 'Lunch Break', icon: '🍽️' },
-	{ id: 'personal', label: 'Personal Time', icon: '👤' },
-	{ id: 'meeting', label: 'Team Meeting', icon: '👥' },
-	{ id: 'training', label: 'Training', icon: '📚' },
-	{ id: 'other', label: 'Other', icon: '📝' }
+	{ id: 'lunch', label: 'Lunch Break', icon: '🍽️', color: '#FFB74D' },
+	{ id: 'meeting', label: 'Team Meeting', icon: '👥', color: '#64B5F6' },
+	{ id: 'personal', label: 'Personal Time', icon: '👤', color: '#BA68C8' },
+	{ id: 'out_of_office', label: 'Out of Office', icon: '🏖️', color: '#E57373' },
+	{ id: 'training', label: 'Training', icon: '📚', color: '#81C784' },
+	{ id: 'other', label: 'Other', icon: '📝', color: '#9E9E9E' }
 ]
 
 export default function BreakDetails({ breakItem: initialBreak, onClose, onUpdate, onDelete }: BreakDetailsProps) {
@@ -39,9 +40,10 @@ export default function BreakDetails({ breakItem: initialBreak, onClose, onUpdat
 	const [breakData, setBreakData] = useState(initialBreak)
 	const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
 
-	const breakType = breakTypes.find(t => t.id === breakData.type) || breakTypes[4]
+	const breakType = breakTypes.find(t => t.id === breakData.type) || breakTypes[5]
 	const formatTime = (date: Date) => moment(date).format('h:mm A')
 	const formatDate = (date: Date) => moment(date).format('ddd, MMM D')
+	const headerColor = breakType.color || '#6B7280'
 
 	const handleSave = () => {
 		onUpdate?.(breakData.id, breakData)
@@ -58,7 +60,7 @@ export default function BreakDetails({ breakItem: initialBreak, onClose, onUpdat
 	return (
 		<div className="h-full flex flex-col bg-white">
 			{/* Header */}
-			<div className="bg-gray-600 text-white p-4">
+			<div className="text-white p-4" style={{ backgroundColor: headerColor }}>
 				<div className="flex items-center justify-between mb-3">
 					<div className="flex items-center space-x-2">
 						<span className="text-2xl">{breakType.icon}</span>

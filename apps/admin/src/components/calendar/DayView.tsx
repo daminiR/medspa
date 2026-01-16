@@ -22,7 +22,7 @@ interface DayViewProps {
 	calendarSettings: CalendarSettings
 	timeSlotHeight: number
 	showShiftsOnly: boolean
-	createMode: 'appointment' | 'break'
+	createMode: 'appointment' | 'break' | 'none'
 	shiftMode: boolean
 	moveMode: boolean
 	movingAppointment: Appointment | null
@@ -113,8 +113,29 @@ export default function DayView({
 	const safeShifts = shifts || []
 	const safeContinuousSlotBlocks = continuousSlotBlocks || []
 
+	// Calculate current time indicator position (only once, for today)
+	const isToday = moment(selectedDate).isSame(today, 'day')
+	const currentHour = new Date().getHours()
+	const currentMinute = new Date().getMinutes()
+	const showCurrentTime = isToday && currentHour >= calendarSettings.startHour && currentHour < calendarSettings.endHour
+	const currentTimeOffset = showCurrentTime
+		? ((currentHour - calendarSettings.startHour) * timeSlotHeight + (currentMinute / 60) * timeSlotHeight)
+		: 0
+
 	return (
-		<div className="flex flex-1">
+		<div className="flex flex-1 relative">
+			{/* Unified current time indicator - ONE line spanning all columns */}
+			{showCurrentTime && (
+				<div
+					className="absolute left-0 right-0 pointer-events-none z-30"
+					style={{ top: `${currentTimeOffset}px` }}
+				>
+					{/* Indicator dot on the far left */}
+					<div className="absolute -left-1 -top-1.5 w-3 h-3 bg-slate-500 rounded-full border-2 border-white shadow-sm" />
+					{/* Line spanning all columns */}
+					<div className="absolute left-0 right-0 h-0.5 bg-slate-500" />
+				</div>
+			)}
 			{visiblePractitioners.map((practitioner) => {
 				const hasStaggerBooking = practitioner.staggerOnlineBooking && practitioner.staggerOnlineBooking > 0
 				
@@ -205,17 +226,22 @@ export default function DayView({
 							</div>
 						)}
 
-						{/* Grid lines - every 15 minutes */}
-						{Array.from({ length: (calendarSettings.endHour - calendarSettings.startHour) * 4 }, (_, i) => (
-							<div
-								key={i}
-								className="absolute left-0 right-0 border-b"
-								style={{
-									top: `${i * (timeSlotHeight / 4)}px`,
-									borderColor: i % 4 === 0 ? '#e5e7eb' : '#f3f4f6'
-								}}
-							/>
-						))}
+						{/* Grid lines - every 15 minutes with improved hierarchy */}
+						{Array.from({ length: (calendarSettings.endHour - calendarSettings.startHour) * 4 }, (_, i) => {
+							const isHourLine = i % 4 === 0
+							const isHalfHour = i % 2 === 0 && !isHourLine
+							return (
+								<div
+									key={i}
+									className="absolute left-0 right-0"
+									style={{
+										top: `${i * (timeSlotHeight / 4)}px`,
+										height: isHourLine ? '1px' : '1px',
+										backgroundColor: isHourLine ? '#d1d5db' : isHalfHour ? '#e5e7eb' : '#f3f4f6'
+									}}
+								/>
+							)
+						})}
 
 						{/* Non-shift hours overlay (gray out times outside shift) */}
 						{(() => {
@@ -342,56 +368,42 @@ export default function DayView({
 							if (shiftsToRender.length === 0) return null
 
 							return shiftsToRender.map((shift, index) => {
-								const shiftStyle = getShiftBlockStyle(shift, timeSlotHeight, 0.05, calendarSettings.startHour)
-								const startTime = shift.startAt ? moment(shift.startAt).format('h:mm A') :
-									`${(shift as any).startHour}:${((shift as any).startMinute || 0).toString().padStart(2, '0')} AM`
-								const endTime = shift.endAt ? moment(shift.endAt).format('h:mm A') :
-									`${(shift as any).endHour}:${((shift as any).endMinute || 0).toString().padStart(2, '0')} PM`
+								const shiftStyle = getShiftBlockStyle(shift, timeSlotHeight, 0.08, calendarSettings.startHour)
 
 								return (
-									<div
-										key={`shift-bg-${index}`}
-										className="absolute left-0 right-0 pointer-events-none"
-										style={{
-											...shiftStyle,
-											zIndex: 1
-										}}
-									>
-										{/* Shift Start Indicator - subtle line with time */}
-										<div className="absolute top-0 left-0 right-0 flex items-center">
-											<div className="flex-1 h-[2px] bg-green-400 opacity-60"></div>
-											<div className="absolute left-1 -top-0.5 bg-green-100 text-green-700 text-[9px] px-1 py-0.5 rounded-sm font-medium shadow-sm border border-green-200">
-												{startTime}
-											</div>
-										</div>
-										{/* Shift End Indicator - subtle line with time */}
-										<div className="absolute bottom-0 left-0 right-0 flex items-center">
-											<div className="flex-1 h-[2px] bg-red-400 opacity-60"></div>
-											<div className="absolute left-1 -bottom-0.5 bg-red-100 text-red-700 text-[9px] px-1 py-0.5 rounded-sm font-medium shadow-sm border border-red-200">
-												{endTime}
-											</div>
-										</div>
-									</div>
+									<React.Fragment key={`shift-bg-${index}`}>
+										{/* Shift background - very subtle */}
+										<div
+											className="absolute left-0 right-0 pointer-events-none"
+											style={{
+												...shiftStyle,
+												zIndex: 1,
+												borderLeft: '3px solid #a78bfa'
+											}}
+										/>
+										{/* Shift Start line - darker purple (brand-aligned) */}
+										<div
+											className="absolute left-0 right-0 pointer-events-none"
+											style={{
+												top: shiftStyle.top,
+												height: '2px',
+												backgroundColor: '#7c3aed',
+												zIndex: 5
+											}}
+										/>
+										{/* Shift End line - lighter lavender (brand-aligned) */}
+										<div
+											className="absolute left-0 right-0 pointer-events-none"
+											style={{
+												top: `calc(${shiftStyle.top} + ${shiftStyle.height} - 2px)`,
+												height: '2px',
+												backgroundColor: '#c4b5fd',
+												zIndex: 5
+											}}
+										/>
+									</React.Fragment>
 								)
 							})
-						})()}
-
-						{/* Current time indicator (only for today) */}
-						{moment(selectedDate).isSame(today, 'day') && (() => {
-							const currentHour = 14
-							const currentMinute = 30
-							if (currentHour >= calendarSettings.startHour && currentHour < calendarSettings.endHour) {
-								const topOffset = ((currentHour - calendarSettings.startHour) * timeSlotHeight + (currentMinute / 60) * timeSlotHeight)
-								return (
-									<div
-										className="absolute left-0 right-0 h-0.5 bg-red-500 pointer-events-none z-20"
-										style={{ top: `${topOffset}px` }}
-									>
-										<div className="absolute -left-2 -top-1 w-2 h-2 bg-red-500 rounded-full" />
-									</div>
-								)
-							}
-							return null
 						})()}
 
 						{/* Continuous slot blocks overlay for day view */}

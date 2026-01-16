@@ -10,7 +10,7 @@ interface RoomsPanelProps {
 	isOpen: boolean
 	onClose: () => void
 	selectedDate: Date
-	view: 'day' | 'week'
+	view: 'day' | 'week' | 'month'
 	weekDates: Date[]
 }
 
@@ -103,7 +103,7 @@ export default function RoomsPanel({
 		setEditingRoom(room)
 		setRoomForm({
 			name: room.name,
-			capacity: room.capacity
+			capacity: room.capacity ?? 1
 		})
 	}
 
@@ -113,7 +113,7 @@ export default function RoomsPanel({
 	}
 
 	return (
-		<div className={`fixed right-0 top-0 h-full w-[400px] bg-white shadow-2xl transform transition-transform duration-300 z-40 ${
+		<div className={`fixed right-0 top-0 h-full w-full max-w-[400px] bg-white shadow-2xl transform transition-transform duration-300 z-40 ${
 			isOpen ? 'translate-x-0' : 'translate-x-full'
 		}`}>
 			<div className="h-full flex flex-col">

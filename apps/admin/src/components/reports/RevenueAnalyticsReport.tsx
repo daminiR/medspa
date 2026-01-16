@@ -1,13 +1,12 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import {
   DollarSign,
   TrendingUp,
   TrendingDown,
   Calendar,
   Filter,
-  Download,
   ChevronRight,
   Package,
   Users,
@@ -17,6 +16,8 @@ import {
   BarChart3,
   PieChart
 } from 'lucide-react'
+import { ExportButton } from './ExportButton'
+import { ExportColumn, formatters } from '@/lib/export'
 import {
   LineChart,
   Line,
@@ -110,7 +111,41 @@ export function RevenueAnalyticsReport() {
   const currentTotal = 285200
   const previousTotal = 245800
   const percentChange = ((currentTotal - previousTotal) / previousTotal) * 100
-  
+
+  // Prepare export data
+  const exportData = useMemo(() => {
+    const revenueData = monthlyData.map(d => ({
+      period: d.period,
+      services: d.services,
+      products: d.products,
+      packages: d.packages,
+      memberships: d.memberships,
+      total: d.total,
+    }))
+
+    const categoryData = serviceCategories.map(c => ({
+      period: c.name,
+      services: c.revenue,
+      products: 0,
+      packages: 0,
+      memberships: 0,
+      total: c.revenue,
+      percentage: c.percentage,
+      growth: c.growth,
+    }))
+
+    return [...revenueData, ...categoryData]
+  }, [monthlyData, serviceCategories])
+
+  const exportColumns: ExportColumn[] = [
+    { key: 'period', header: 'Period/Category' },
+    { key: 'services', header: 'Services', formatter: formatters.currency },
+    { key: 'products', header: 'Products', formatter: formatters.currency },
+    { key: 'packages', header: 'Packages', formatter: formatters.currency },
+    { key: 'memberships', header: 'Memberships', formatter: formatters.currency },
+    { key: 'total', header: 'Total', formatter: formatters.currency },
+  ]
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -136,10 +171,12 @@ export function RevenueAnalyticsReport() {
               <Filter className="w-4 h-4 inline mr-2" />
               Filters
             </button>
-            <button className="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
-              <Download className="w-4 h-4 inline mr-2" />
-              Export
-            </button>
+            <ExportButton
+              data={exportData}
+              columns={exportColumns}
+              filename="revenue-analytics"
+              title="Revenue Analytics Report"
+            />
           </div>
         </div>
       </div>

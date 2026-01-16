@@ -29,6 +29,7 @@ export enum TreatmentGoal {
   HAIR_RESTORATION = 'hair_restoration',
   VEIN_TREATMENT = 'vein_treatment',
   REJUVENATION = 'rejuvenation',
+  PREVENTATIVE = 'preventative',
 }
 
 // Plan status
@@ -157,7 +158,7 @@ export const TreatmentPlanSchema = z.object({
   results: z.object({
     beforePhotos: z.array(z.string()),
     afterPhotos: z.array(z.string()),
-    measurements: z.record(z.number()).optional(),
+    measurements: z.record(z.string(), z.number()).optional(),
     patientSatisfaction: z.number().min(1).max(5).optional(),
     providerAssessment: z.string().optional(),
     complications: z.array(z.string()).optional(),

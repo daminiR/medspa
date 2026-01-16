@@ -210,7 +210,7 @@ export default function ShiftEditPanel({
 											repeatUntil: e.target.value ? new Date(e.target.value) : undefined
 										})}
 										className="w-full p-2 border rounded-md"
-										required={formData.repeat !== 'no-repeat'}
+										required
 									/>
 								</div>
 							)}

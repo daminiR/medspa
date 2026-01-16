@@ -1,0 +1,27 @@
+{
+  "name": "@medical-spa/db",
+  "version": "1.0.0",
+  "description": "Database schema and client for Medical Spa Platform",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "generate": "drizzle-kit generate",
+    "migrate": "drizzle-kit migrate",
+    "push": "drizzle-kit push",
+    "studio": "drizzle-kit studio",
+    "introspect": "drizzle-kit introspect"
+  },
+  "dependencies": {
+    "drizzle-orm": "^0.38.2",
+    "pg": "^8.13.1",
+    "@neondatabase/serverless": "^0.10.4"
+  },
+  "devDependencies": {
+    "drizzle-kit": "^0.30.1",
+    "@types/pg": "^8.11.10",
+    "typescript": "^5.3.3"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  }
+}

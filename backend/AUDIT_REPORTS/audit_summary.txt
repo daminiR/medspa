@@ -1,0 +1,198 @@
+================================================================================
+PRISMA AUDIT REPORT - EXECUTIVE SUMMARY
+================================================================================
+Date: 2025-12-22
+Scope: /backend/src/routes/ (40 files analyzed)
+Total Lines: ~43,153
+
+================================================================================
+CRITICAL FINDINGS
+================================================================================
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ MAP STORAGE STATUS (Data Persistence)                                      │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ ✅ NO MAPS (Prisma only)         │ 20 files │ 50.0% │ ████████████████████  │
+│ ❌ USING MAPS (In-memory)        │ 18 files │ 45.0% │ ██████████████████    │
+│ ⚠️  USING DRIZZLE (Wrong ORM)    │  3 files │  7.5% │ ███                   │
+│ ⚠️  AUTH/CACHE MAPS (OK)         │  6 files │ 15.0% │ ███████               │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+================================================================================
+DATABASE ARCHITECTURE
+================================================================================
+
+Current State:
+  🔴 CRITICAL: Mixed architecture (3 different patterns)
+     ├─ Prisma ORM:        20 files (CORRECT ✅)
+     ├─ Drizzle ORM:        3 files (WRONG ❌)
+     └─ In-Memory Maps:    18 files (WRONG ❌)
+
+Target State:
+  🟢 Prisma ORM:          40 files (100%)
+  🟢 Drizzle ORM:          0 files
+  🟢 In-Memory Maps:       0 files (for data storage)
+  🟢 Cache/Session Maps:   As needed (acceptable)
+
+================================================================================
+MAP REMOVAL BREAKDOWN
+================================================================================
+
+Files Still Using Maps for Data Storage:
+
+CRITICAL PRIORITY (Migrate Immediately)
+├─ inventory-adjustments.ts    │  9 Maps │ 2,437 lines │ Transaction tracking
+├─ inventory-reports.ts        │ 31 Maps │ 2,116 lines │ Report data (5) + aggregation (26)
+├─ inventory-lots.ts           │  4 Maps │ 2,084 lines │ Lot/alert/vial tracking
+├─ purchase-orders.ts          │  5 Maps │ 1,862 lines │ PO/vendor management
+└─ group-bookings.ts           │  2 Maps │ 1,625 lines │ Group booking logic
+
+HIGH PRIORITY
+├─ financial-reports.ts        │  6 Maps │ 1,601 lines │ Cache + aggregation
+├─ photos.ts                   │  4 Maps │ 1,277 lines │ Photo/annotation storage
+└─ payments.ts                 │  3 Maps │ 1,163 lines │ Payment tracking
+
+MEDIUM PRIORITY
+├─ treatment-templates.ts      │  2 Maps │   ~800 lines │ Template storage
+├─ charting-settings.ts        │  1 Map  │   ~400 lines │ Settings storage
+└─ recurring.ts                │  1 Map  │ 1,353 lines │ Recurring patterns
+
+ACCEPTABLE (Auth/Session/Cache)
+├─ kiosk-auth.ts              │  4 Maps │ QR tokens, sessions (ephemeral) ✅
+├─ patient-auth.ts            │  6 Maps │ Magic links, OTP (ephemeral) ✅
+├─ staff-auth.ts              │  2 Maps │ PINs (should be DB), sessions ⚠️
+├─ express-booking.ts         │  1 Map  │ Rate limiting only ✅
+├─ messaging-templates.ts     │  1 Map  │ Transient aggregation ✅
+└─ products.ts                │  1 Map  │ Transient aggregation ✅
+
+================================================================================
+DRIZZLE ORM ISSUES (Must Remove)
+================================================================================
+
+Files Using Wrong ORM (Drizzle instead of Prisma):
+
+1. appointments.ts              │ 1,549 lines │ import { db } from '@medical-spa/db'
+2. services.ts                  │   ~900 lines │ import { db } from '@medical-spa/db'
+3. products.ts                  │   ~900 lines │ import { db } from '@medical-spa/db'
+                                                  + Stale "Drizzle ORM" documentation
+
+================================================================================
+CODE QUALITY SCORES
+================================================================================
+
+Type Safety:           ⭐⭐⭐⭐⭐ Excellent (minimal `any` usage)
+Audit Logging:         ⭐⭐⭐⭐☆ Good (most routes covered)
+Error Handling:        ⭐⭐⭐⭐☆ Good (consistent patterns)
+Code Duplication:      ⭐⭐☆☆☆ Poor (needs shared utilities)
+Architecture:          ⭐⭐☆☆☆ Poor (mixed ORM usage)
+File Size:             ⭐⭐⭐☆☆ Moderate (5 files >1,500 lines)
+
+Overall Score:         ⭐⭐⭐☆☆ (3.3/5)
+
+================================================================================
+COMMON CODE PATTERNS (Need Shared Utilities)
+================================================================================
+
+Duplicate Code Found:
+
+1. getClientIP(c: any)          │ 25+ files │ Extract to middleware/request-utils.ts
+2. Pagination logic             │ 15+ files │ Extract to lib/prisma-utils.ts
+3. Soft delete filters          │ 12+ files │ Extract to lib/prisma-utils.ts
+4. Date range queries           │ 10+ files │ Extract to lib/prisma-utils.ts
+5. Enum conversions             │  8+ files │ Extract to lib/enum-converters.ts
+
+Estimated Code Reduction: ~500-800 lines
+
+================================================================================
+SECURITY ISSUES
+================================================================================
+
+🔴 CRITICAL: staff-auth.ts uses weak PIN hashing
+   ├─ Current: SHA-256 with static salt
+   ├─ Required: bcrypt with per-user salt
+   └─ Fix: Replace hashPIN() and verifyPIN() functions
+
+⚠️  WARNING: Some audit logging gaps in sensitive operations
+
+================================================================================
+LARGEST FILES (Complexity Risk)
+================================================================================
+
+File                          Lines    Complexity  Action Required
+──────────────────────────────────────────────────────────────────────────────
+inventory-adjustments.ts      2,437    Very High   Split into services
+inventory-reports.ts          2,116    Very High   Extract report generators
+inventory-lots.ts             2,084    Very High   Split into services
+purchase-orders.ts            1,862    High        Separate PO/vendor routes
+group-bookings.ts             1,625    High        Acceptable for now
+financial-reports.ts          1,601    High        Already well-structured
+invoices.ts                   1,598    High        Acceptable
+appointments.ts               1,549    High        Consider splitting
+
+Files >1,500 lines: 8 files (20%)
+Recommendation: Refactor into routes + services + helpers
+
+================================================================================
+MIGRATION ESTIMATE
+================================================================================
+
+Phase 1: Remove Drizzle Imports          │ 1-2 days   │ 3 files
+Phase 2: Create Shared Utilities         │ 1 day      │ New files
+Phase 3: Migrate Inventory Routes        │ 3-5 days   │ 3 files
+Phase 4: Migrate Other Map-Based Routes  │ 2-3 days   │ 8 files
+Phase 5: Refactor Large Files            │ 3-5 days   │ 5 files
+
+Total Estimated Effort: 2-3 weeks
+
+================================================================================
+SUCCESS CRITERIA
+================================================================================
+
+✅ Phase 1 Complete:
+   ├─ Zero Drizzle imports
+   ├─ All routes use Prisma or acceptable Maps
+   └─ Shared utilities created
+
+✅ Phase 2 Complete:
+   ├─ All inventory routes migrated
+   ├─ Purchase orders migrated
+   └─ Group bookings migrated
+
+✅ Phase 3 Complete:
+   ├─ All Map-based data storage migrated
+   ├─ Only ephemeral/cache Maps remain
+   └─ 100% Prisma ORM for data persistence
+
+================================================================================
+PRIORITY ACTIONS (Start Today)
+================================================================================
+
+1. ⚡ Remove Drizzle from appointments.ts, services.ts, products.ts
+2. ⚡ Create shared request-utils.ts (getClientIP, getUserAgent)
+3. ⚡ Create shared prisma-utils.ts (pagination, soft delete)
+4. ⚡ Fix staff-auth.ts PIN hashing security issue
+5. ⚡ Update stale "Drizzle ORM" documentation
+
+================================================================================
+VERIFICATION COMMANDS
+================================================================================
+
+# Find remaining Drizzle imports (should be 0 after Phase 1)
+grep -r "from '@medical-spa/db'" src/routes/
+
+# Find Map data storage (should only be cache/session after migration)
+grep -r "new Map<string, Stored" src/routes/
+
+# Find initMockData calls (should be 0 after migration)
+grep -r "initMockData()" src/routes/
+
+# Count Prisma usage (should be 40 files)
+grep -l "prisma\." src/routes/*.ts | wc -l
+
+================================================================================
+REPORT GENERATED: 2025-12-22
+REPORT FILES:
+  - code_quality_audit.md        (Full detailed report)
+  - immediate_action_items.md    (Step-by-step migration guide)
+  - audit_summary.txt            (This file)
+================================================================================

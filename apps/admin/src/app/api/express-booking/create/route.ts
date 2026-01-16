@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { appointments, practitioners, type Appointment } from '@/lib/data';
 import { sendSMS, smsTemplates, formatPhoneNumber } from '@/lib/twilio';
-import { v4 as uuidv4 } from 'crypto';
 
 // Generate a simple unique token
 function generateToken(): string {

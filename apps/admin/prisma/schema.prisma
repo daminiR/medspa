@@ -1,0 +1,1599 @@
+// Medical Spa Platform - Prisma Schema
+// This schema defines the database structure for the patient portal API
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================================================
+// USER & AUTHENTICATION
+// ============================================================================
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  phone         String?   @unique
+  passwordHash  String?   // Optional - users can use passkey only
+  firstName     String
+  lastName      String
+  fullName      String    @default("")
+  avatarUrl     String?
+  dateOfBirth   DateTime?
+  gender        Gender?
+  role          UserRole  @default(PATIENT)
+
+  // Account status
+  emailVerified   Boolean   @default(false)
+  phoneVerified   Boolean   @default(false)
+  active          Boolean   @default(true)
+
+  // Timestamps
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  lastLoginAt   DateTime?
+
+  // Relations
+  patient                  Patient?
+  sessions                 Session[]
+  passkeys                 Passkey[]
+  pushTokens               PushToken[]
+  notificationPreference   NotificationPreference?
+  notificationLogs         NotificationLog[]
+
+  @@index([email])
+  @@index([phone])
+}
+
+enum UserRole {
+  PATIENT
+  STAFF
+  PROVIDER
+  ADMIN
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+  PREFER_NOT_TO_SAY
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  accessToken  String   @unique
+  refreshToken String   @unique
+
+  userAgent    String?
+  ipAddress    String?
+  deviceName   String?
+
+  expiresAt    DateTime
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([userId])
+  @@index([accessToken])
+  @@index([refreshToken])
+}
+
+model Passkey {
+  id              String   @id @default(cuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  credentialId    String   @unique
+  publicKey       String
+  counter         BigInt   @default(0)
+  deviceName      String?
+  deviceType      String?  // platform, cross-platform
+  transports      String[] // usb, ble, nfc, internal
+
+  createdAt       DateTime @default(now())
+  lastUsedAt      DateTime?
+
+  @@index([userId])
+  @@index([credentialId])
+}
+
+// ============================================================================
+// PATIENT PROFILE
+// ============================================================================
+
+model Patient {
+  id              String   @id @default(cuid())
+  userId          String   @unique
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Medical Info
+  allergies       String[]
+  medications     String[]
+  conditions      String[]
+
+  // Emergency Contact
+  emergencyContactName         String?
+  emergencyContactPhone        String?
+  emergencyContactRelationship String?
+
+  // Preferences
+  preferredLocationId   String?
+  preferredProviderId   String?
+  marketingOptIn        Boolean  @default(false)
+  smsOptIn              Boolean  @default(true)
+
+  // Membership
+  membershipId          String?
+
+  // Address
+  addressStreet    String?
+  addressCity      String?
+  addressState     String?
+  addressZipCode   String?
+  addressCountry   String?
+
+  // Timestamps
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relations
+  appointments     Appointment[]
+  paymentMethods   PaymentMethod[]
+  payments         Payment[]
+  invoices         Invoice[]
+  referralProgram  ReferralProgram?
+  referralsGiven   Referral[]       @relation("Referrer")
+  referralsReceived Referral[]      @relation("Referee")
+  photos           PatientPhoto[]
+  messages         Message[]
+  consentForms     ConsentForm[]
+  walletPasses     WalletPass[]
+  notificationPreferences NotificationPreferences?
+
+  @@index([userId])
+}
+
+model ConsentForm {
+  id          String      @id @default(cuid())
+  patientId   String
+  patient     Patient     @relation(fields: [patientId], references: [id], onDelete: Cascade)
+
+  type        ConsentType
+  version     String
+  signedAt    DateTime    @default(now())
+  ipAddress   String?
+  signature   String?     // Base64 encoded signature image
+
+  @@index([patientId])
+}
+
+enum ConsentType {
+  HIPAA
+  TREATMENT
+  PHOTO
+  MARKETING
+}
+
+// ============================================================================
+// PROVIDERS & LOCATIONS
+// ============================================================================
+
+model Provider {
+  id            String   @id @default(cuid())
+  name          String
+  title         String?  // e.g., "MD", "NP", "PA"
+  specialization String?
+  bio           String?
+  avatarUrl     String?
+  email         String?
+  phone         String?
+  active        Boolean  @default(true)
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  appointments  Appointment[]
+  services      ProviderService[]
+  availability  ProviderAvailability[]
+
+  @@index([active])
+}
+
+model Location {
+  id          String   @id @default(cuid())
+  name        String
+  address     String
+  city        String
+  state       String
+  zipCode     String
+  phone       String?
+  email       String?
+  timezone    String   @default("America/Los_Angeles")
+  active      Boolean  @default(true)
+
+  // Coordinates for maps
+  latitude    Float?
+  longitude   Float?
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  appointments Appointment[]
+
+  @@index([active])
+}
+
+model Service {
+  id            String   @id @default(cuid())
+  name          String
+  description   String?
+  category      String
+  duration      Int      // minutes
+  price         Float
+  depositRequired Boolean @default(false)
+  depositAmount   Float?
+  active        Boolean  @default(true)
+
+  // HSA/FSA eligibility
+  hsaFsaEligible Boolean @default(false)
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  providers     ProviderService[]
+  appointments  Appointment[]
+
+  @@index([active])
+  @@index([category])
+}
+
+model ProviderService {
+  id         String   @id @default(cuid())
+  providerId String
+  provider   Provider @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  serviceId  String
+  service    Service  @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+
+  // Provider-specific pricing override
+  customPrice Float?
+
+  @@unique([providerId, serviceId])
+}
+
+model ProviderAvailability {
+  id          String   @id @default(cuid())
+  providerId  String
+  provider    Provider @relation(fields: [providerId], references: [id], onDelete: Cascade)
+
+  dayOfWeek   Int      // 0-6 (Sunday-Saturday)
+  startTime   String   // "09:00"
+  endTime     String   // "17:00"
+
+  // For specific date overrides
+  specificDate DateTime?
+  isAvailable  Boolean  @default(true)
+
+  @@index([providerId, dayOfWeek])
+}
+
+// ============================================================================
+// APPOINTMENTS
+// ============================================================================
+
+model Appointment {
+  id          String   @id @default(cuid())
+
+  // Relations
+  patientId   String
+  patient     Patient  @relation(fields: [patientId], references: [id])
+  providerId  String
+  provider    Provider @relation(fields: [providerId], references: [id])
+  serviceId   String
+  service     Service  @relation(fields: [serviceId], references: [id])
+  locationId  String
+  location    Location @relation(fields: [locationId], references: [id])
+
+  // Timing
+  startTime   DateTime
+  endTime     DateTime
+  duration    Int      // minutes
+  timezone    String   @default("America/Los_Angeles")
+
+  // Status
+  status          AppointmentStatus @default(PENDING)
+  confirmedAt     DateTime?
+  checkedInAt     DateTime?
+  completedAt     DateTime?
+  cancelledAt     DateTime?
+  cancellationReason String?
+
+  // Booking info
+  bookedAt        DateTime @default(now())
+  bookedBy        BookedBy @default(PATIENT)
+  bookingSource   BookingSource @default(APP)
+
+  // Payment
+  price           Float
+  depositRequired Boolean @default(false)
+  depositAmount   Float?
+  depositPaid     Boolean @default(false)
+  paymentStatus   PaymentStatus @default(PENDING)
+
+  // Notes
+  patientNotes    String?
+  staffNotes      String?
+
+  // Wallet
+  walletPassId    String?
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  reminders       AppointmentReminder[]
+  payments        Payment[]
+  invoice         Invoice?
+  beforePhotos    PatientPhoto[] @relation("BeforePhotos")
+  afterPhotos     PatientPhoto[] @relation("AfterPhotos")
+
+  @@index([patientId])
+  @@index([providerId])
+  @@index([startTime])
+  @@index([status])
+}
+
+enum AppointmentStatus {
+  PENDING
+  CONFIRMED
+  CHECKED_IN
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+  NO_SHOW
+}
+
+enum BookedBy {
+  PATIENT
+  STAFF
+}
+
+enum BookingSource {
+  APP
+  WEB
+  PHONE
+  WALK_IN
+}
+
+enum PaymentStatus {
+  PENDING
+  PARTIAL
+  PAID
+  REFUNDED
+}
+
+model AppointmentReminder {
+  id            String      @id @default(cuid())
+  appointmentId String
+  appointment   Appointment @relation(fields: [appointmentId], references: [id], onDelete: Cascade)
+
+  type          ReminderType
+  scheduledFor  DateTime
+  sentAt        DateTime?
+
+  @@index([appointmentId])
+}
+
+enum ReminderType {
+  EMAIL
+  SMS
+  PUSH
+}
+
+// ============================================================================
+// PAYMENTS
+// ============================================================================
+
+model PaymentMethod {
+  id          String   @id @default(cuid())
+  patientId   String
+  patient     Patient  @relation(fields: [patientId], references: [id], onDelete: Cascade)
+
+  type        PaymentMethodType
+
+  // Stripe
+  stripePaymentMethodId String? @unique
+  stripeCustomerId      String?
+
+  // Card details (from Stripe, for display)
+  cardBrand     String?
+  cardLast4     String?
+  cardExpMonth  Int?
+  cardExpYear   Int?
+
+  // Bank details
+  bankName      String?
+  bankLast4     String?
+
+  // HSA/FSA
+  hsaFsaProvider    String?
+  hsaFsaAccountLast4 String?
+  hsaFsaVerified    Boolean @default(false)
+
+  // Status
+  isDefault     Boolean @default(false)
+  active        Boolean @default(true)
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  payments      Payment[]
+
+  @@index([patientId])
+  @@index([stripePaymentMethodId])
+}
+
+enum PaymentMethodType {
+  CARD
+  BANK_ACCOUNT
+  HSA
+  FSA
+  APPLE_PAY
+  GOOGLE_PAY
+}
+
+model Payment {
+  id          String   @id @default(cuid())
+  patientId   String
+  patient     Patient  @relation(fields: [patientId], references: [id])
+
+  appointmentId String?
+  appointment   Appointment? @relation(fields: [appointmentId], references: [id])
+  invoiceId     String?
+  invoice       Invoice?     @relation(fields: [invoiceId], references: [id])
+
+  paymentMethodId String?
+  paymentMethod   PaymentMethod? @relation(fields: [paymentMethodId], references: [id])
+
+  // Amount
+  amount        Float
+  currency      String  @default("USD")
+  tip           Float?
+
+  // Payment method details (for audit trail)
+  method        String?  // 'cash', 'credit_card', 'debit_card', 'check', 'gift_card', 'package_credit', 'financing'
+
+  // Card details (if applicable)
+  cardDetails   Json?    // { last4, brand, expiryMonth, expiryYear }
+
+  // Check details (if applicable)
+  checkDetails  Json?    // { checkNumber, bankName }
+
+  // Gift card details (if applicable)
+  giftCardDetails Json?  // { giftCardId, giftCardCode }
+
+  // Financing details (if applicable)
+  financingDetails Json? // { provider, applicationId, approvalCode }
+
+  // Transaction reference
+  transactionId String?
+  reference     String?
+
+  // Payment status
+  status        TransactionStatus @default(PENDING)
+
+  // HSA/FSA
+  isHsaFsa              Boolean @default(false)
+  hsaFsaEligibleAmount  Float?
+  iiasApproved          Boolean?
+
+  // Stripe
+  stripePaymentIntentId String? @unique
+  stripeChargeId        String?
+  stripeCustomerId      String?
+
+  // Refund
+  refundedAmount Float?
+  refundedAt     DateTime?
+  refundReason   String?
+
+  // Receipt
+  receiptUrl     String?
+  receiptSentAt  DateTime?
+
+  // Audit
+  processedAt    DateTime @default(now())
+  processedBy    String?
+  notes          String?
+
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  // Relations
+  refunds        PaymentRefund[]
+
+  @@index([patientId])
+  @@index([appointmentId])
+  @@index([stripePaymentIntentId])
+  @@index([method])
+}
+
+enum TransactionStatus {
+  PENDING
+  PROCESSING
+  SUCCEEDED
+  FAILED
+  REFUNDED
+  DISPUTED
+}
+
+model Invoice {
+  id          String   @id @default(cuid())
+  invoiceNumber String @unique
+  patientId   String
+  patient     Patient  @relation(fields: [patientId], references: [id])
+
+  appointmentId String? @unique
+  appointment   Appointment? @relation(fields: [appointmentId], references: [id])
+
+  providerId  String?
+  providerName String?
+  locationId  String?
+
+  // Dates
+  invoiceDate DateTime @default(now())
+  dueDate     DateTime?
+  serviceDate DateTime?
+
+  // Amounts
+  subtotal    Float
+  taxTotal    Float    @default(0)
+  discountTotal Float  @default(0)
+  total       Float
+  amountPaid  Float    @default(0)
+  balance     Float
+
+  // Status
+  status      InvoiceStatus @default(DRAFT)
+  paidAt      DateTime?
+  sentAt      DateTime?
+  cancelledAt DateTime?
+  voidedAt    DateTime?
+  voidedBy    String?
+
+  // Notes
+  internalNotes String?
+  patientNotes  String?
+
+  // PDF
+  pdfUrl      String?
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  createdBy   String
+
+  // Relations
+  items       InvoiceItem[]
+  lineItems   InvoiceLineItem[] @relation("InvoiceLineItems")
+  payments    Payment[]
+
+  @@index([patientId])
+  @@index([status])
+  @@index([invoiceNumber])
+  @@index([invoiceDate])
+}
+
+enum InvoiceStatus {
+  DRAFT
+  SENT
+  VIEWED
+  PAID
+  PARTIALLY_PAID
+  OVERDUE
+  CANCELLED
+  REFUNDED
+}
+
+model InvoiceItem {
+  id          String   @id @default(cuid())
+  invoiceId   String
+  invoice     Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+
+  type        InvoiceItemType
+  name        String
+  description String?
+  quantity    Int      @default(1)
+  unitPrice   Float
+  total       Float
+  taxable     Boolean  @default(true)
+  hsaFsaEligible Boolean @default(false)
+
+  @@index([invoiceId])
+}
+
+enum InvoiceItemType {
+  SERVICE
+  PRODUCT
+  PACKAGE
+  DEPOSIT
+  ADJUSTMENT
+}
+
+// ============================================================================
+// REFERRALS
+// ============================================================================
+
+model ReferralProgram {
+  id              String   @id @default(cuid())
+  patientId       String   @unique
+  patient         Patient  @relation(fields: [patientId], references: [id], onDelete: Cascade)
+
+  referralCode    String   @unique
+  shareUrl        String
+
+  // Stats
+  totalReferrals      Int @default(0)
+  pendingReferrals    Int @default(0)
+  successfulReferrals Int @default(0)
+  totalEarnings       Float @default(0)
+  availableCredits    Float @default(0)
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relations
+  milestones      ReferralMilestone[]
+  shareEvents     ReferralShare[]
+
+  @@index([referralCode])
+}
+
+model ReferralMilestone {
+  id                String   @id @default(cuid())
+  referralProgramId String
+  referralProgram   ReferralProgram @relation(fields: [referralProgramId], references: [id], onDelete: Cascade)
+
+  count             Int
+  title             String
+  description       String
+  reward            Float
+  icon              String
+  achieved          Boolean  @default(false)
+  achievedAt        DateTime?
+
+  @@index([referralProgramId])
+}
+
+model Referral {
+  id           String   @id @default(cuid())
+
+  referrerId   String
+  referrer     Patient  @relation("Referrer", fields: [referrerId], references: [id])
+
+  refereeId    String?
+  referee      Patient? @relation("Referee", fields: [refereeId], references: [id])
+
+  refereeEmail String?
+  refereePhone String?
+  refereeName  String?
+
+  status       ReferralStatus @default(PENDING)
+
+  referrerReward Float @default(25)
+  refereeReward  Float @default(25)
+
+  statusChangedAt      DateTime?
+  firstAppointmentDate DateTime?
+  completedAt          DateTime?
+  expiresAt            DateTime?
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([referrerId])
+  @@index([refereeId])
+  @@index([status])
+}
+
+enum ReferralStatus {
+  PENDING
+  SIGNED_UP
+  FIRST_VISIT
+  COMPLETED
+  EXPIRED
+  CANCELLED
+}
+
+model ReferralShare {
+  id                String   @id @default(cuid())
+  referralProgramId String
+  referralProgram   ReferralProgram @relation(fields: [referralProgramId], references: [id], onDelete: Cascade)
+
+  method            ShareMethod
+  trackingUrl       String
+  clickCount        Int @default(0)
+
+  createdAt         DateTime @default(now())
+
+  @@index([referralProgramId])
+}
+
+enum ShareMethod {
+  SMS
+  EMAIL
+  WHATSAPP
+  INSTAGRAM
+  FACEBOOK
+  TWITTER
+  COPY
+}
+
+// ============================================================================
+// WALLET PASSES
+// ============================================================================
+
+model WalletPass {
+  id          String   @id @default(cuid())
+  patientId   String
+  patient     Patient  @relation(fields: [patientId], references: [id], onDelete: Cascade)
+
+  appointmentId String?
+
+  type          WalletType
+  serialNumber  String   @unique
+
+  // Apple Wallet specific
+  applePassTypeId String?
+  appleTeamId     String?
+
+  // Google Wallet specific
+  googleIssuerId  String?
+  googleClassId   String?
+  googleObjectId  String?
+
+  // Pass data
+  passData        Json?
+
+  // Status
+  status          WalletPassStatus @default(ACTIVE)
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([patientId])
+  @@index([appointmentId])
+  @@index([serialNumber])
+}
+
+enum WalletType {
+  APPLE
+  GOOGLE
+}
+
+enum WalletPassStatus {
+  ACTIVE
+  UPDATED
+  REVOKED
+  EXPIRED
+}
+
+// ============================================================================
+// NOTIFICATIONS
+// ============================================================================
+
+model PushToken {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  token       String   @unique
+  platform    String   // web, ios, android
+  deviceId    String?
+  appVersion  String?
+  osVersion   String?
+  deviceModel String?  // Legacy field for backwards compatibility
+
+  isActive    Boolean  @default(true)
+  lastUsedAt  DateTime @default(now())
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  logs        NotificationLog[]
+
+  @@index([userId])
+  @@index([isActive, lastUsedAt])
+}
+
+model NotificationPreference {
+  id                    String   @id @default(cuid())
+  userId                String   @unique
+  user                  User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Notification types
+  appointmentReminders  Boolean  @default(true)
+  treatmentUpdates      Boolean  @default(true)
+  messageAlerts         Boolean  @default(true)
+  promotionalMessages   Boolean  @default(false)
+
+  // Quiet Hours
+  quietHoursEnabled     Boolean  @default(false)
+  quietHoursStart       String?  // "21:00"
+  quietHoursEnd         String?  // "08:00"
+
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+}
+
+// Legacy model - kept for backwards compatibility with Patient relation
+model NotificationPreferences {
+  id          String   @id @default(cuid())
+  patientId   String   @unique
+  patient     Patient  @relation(fields: [patientId], references: [id], onDelete: Cascade)
+
+  enabled                Boolean @default(true)
+
+  // Notification types
+  appointmentReminders   Boolean @default(true)
+  appointmentReminder24h Boolean @default(true)
+  appointmentReminder2h  Boolean @default(true)
+  promotions             Boolean @default(true)
+  rewards                Boolean @default(true)
+  messages               Boolean @default(true)
+
+  // Sound & Badge
+  sound                  Boolean @default(true)
+  badge                  Boolean @default(true)
+  vibration              Boolean @default(true)
+
+  // Quiet Hours
+  quietHoursEnabled      Boolean @default(false)
+  quietHoursStart        String  @default("22:00")
+  quietHoursEnd          String  @default("08:00")
+
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+}
+
+model NotificationLog {
+  id               String    @id @default(cuid())
+  userId           String
+  user             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  pushTokenId      String?
+  pushToken        PushToken? @relation(fields: [pushTokenId], references: [id], onDelete: SetNull)
+
+  messageId        String?   // FCM message ID
+  notificationType String    // appointment_reminder, message, treatment_update, etc.
+  title            String
+  body             String
+  data             Json?     // Additional payload data
+
+  // Status tracking
+  status           String    @default("sent") // sent, delivered, failed, opened
+  errorMessage     String?
+
+  // Timestamps
+  sentAt           DateTime  @default(now())
+  deliveredAt      DateTime?
+  openedAt         DateTime?
+
+  @@index([userId, sentAt])
+  @@index([status])
+  @@index([pushTokenId])
+  @@index([notificationType])
+}
+
+enum NotificationType {
+  APPOINTMENT_REMINDER
+  APPOINTMENT_CONFIRMED
+  APPOINTMENT_CANCELLED
+  APPOINTMENT_RESCHEDULED
+  NEW_MESSAGE
+  POINTS_EARNED
+  REWARD_AVAILABLE
+  REFERRAL_SIGNUP
+  PROMOTION
+  SYSTEM
+}
+
+// ============================================================================
+// MESSAGES
+// ============================================================================
+
+model Message {
+  id          String   @id @default(cuid())
+  patientId   String
+  patient     Patient  @relation(fields: [patientId], references: [id])
+
+  threadId    String
+
+  direction   MessageDirection
+  content     String
+  contentType ContentType @default(TEXT)
+
+  // Sender info (if from provider/staff)
+  senderName  String?
+  senderId    String?
+
+  // Status
+  sentAt      DateTime @default(now())
+  deliveredAt DateTime?
+  readAt      DateTime?
+
+  // Attachments
+  attachments MessageAttachment[]
+
+  @@index([patientId])
+  @@index([threadId])
+  @@index([sentAt])
+}
+
+enum MessageDirection {
+  INBOUND   // From patient
+  OUTBOUND  // To patient
+}
+
+enum ContentType {
+  TEXT
+  IMAGE
+  DOCUMENT
+}
+
+model MessageAttachment {
+  id          String   @id @default(cuid())
+  messageId   String
+  message     Message  @relation(fields: [messageId], references: [id], onDelete: Cascade)
+
+  filename    String
+  mimeType    String
+  size        Int
+  url         String
+
+  @@index([messageId])
+}
+
+// ============================================================================
+// QUICK REPLIES & MESSAGE TEMPLATES
+// ============================================================================
+
+model QuickReply {
+  id          String   @id @default(cuid())
+  category    String   // appointment, postCare, general, custom
+  content     String
+  order       Int      @default(0) // For ordering within category
+
+  // Ownership
+  isSystem    Boolean  @default(false) // System-provided vs user-created
+  createdById String?  // Staff member who created it (null for system)
+
+  // Usage tracking
+  useCount    Int      @default(0)
+  lastUsedAt  DateTime?
+
+  // Timestamps
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([category])
+  @@index([isSystem])
+}
+
+model QuickReplyCategory {
+  id          String   @id @default(cuid())
+  name        String   @unique // e.g., "appointment", "postCare", "general"
+  displayName String   // e.g., "Appointment", "Post-Care", "General"
+  description String?
+  order       Int      @default(0)
+  icon        String?  // Icon name for UI
+
+  // Ownership
+  isSystem    Boolean  @default(false) // System-provided vs user-created
+
+  // Timestamps
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model MessageTemplate {
+  id           String   @id @default(cuid())
+  name         String
+  category     MessageTemplateCategory
+  channel      MessageChannel @default(SMS)
+
+  // Content with variable placeholders
+  subject      String?  // For email templates
+  body         String   // Template content with {{variables}}
+
+  // Variables metadata (stored as JSON array of variable names)
+  variables    String[] // e.g., ["firstName", "appointmentDate", "serviceName"]
+
+  // Settings
+  isSystem     Boolean  @default(false) // System templates cannot be deleted
+  isActive     Boolean  @default(true)
+  requiresOptIn Boolean @default(false) // Marketing templates require opt-in
+
+  // Usage tracking
+  useCount     Int      @default(0)
+  lastUsedAt   DateTime?
+
+  // Tags for filtering
+  tags         String[]
+
+  // Timestamps
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  createdById  String?  // Staff member who created it
+
+  @@index([category])
+  @@index([channel])
+  @@index([isActive])
+}
+
+enum MessageTemplateCategory {
+  APPOINTMENT      // Confirmations, reminders, cancellations
+  TREATMENT        // Aftercare instructions
+  FOLLOWUP         // Post-treatment check-ins
+  MARKETING        // Promotions, birthday, referrals
+  FINANCIAL        // Payment reminders, receipts
+  MEMBERSHIP       // Welcome, credits, renewal
+  REVIEW           // Review requests
+  EMERGENCY        // Clinic closure, provider absence
+  ADMINISTRATIVE   // Forms, insurance updates
+}
+
+enum MessageChannel {
+  SMS
+  EMAIL
+  PUSH
+  ALL
+}
+
+// ============================================================================
+// PHOTOS
+// ============================================================================
+
+model PatientPhoto {
+  id          String   @id @default(cuid())
+  patientId   String
+  patient     Patient  @relation(fields: [patientId], references: [id], onDelete: Cascade)
+
+  type        PhotoType
+  url         String
+  thumbnailUrl String?
+
+  // Metadata
+  caption     String?
+  takenAt     DateTime?
+  uploadedAt  DateTime @default(now())
+
+  // HIPAA compliance
+  consentGiven Boolean @default(false)
+
+  // Relations to appointments
+  beforeAppointmentId String?
+  beforeAppointment   Appointment? @relation("BeforePhotos", fields: [beforeAppointmentId], references: [id])
+
+  afterAppointmentId  String?
+  afterAppointment    Appointment? @relation("AfterPhotos", fields: [afterAppointmentId], references: [id])
+
+  @@index([patientId])
+  @@index([type])
+}
+
+enum PhotoType {
+  BEFORE
+  AFTER
+  PROGRESS
+  PROFILE
+}
+
+// ============================================================================
+// PACKAGES
+// ============================================================================
+
+model Package {
+  id                    String   @id @default(cuid())
+  name                  String
+  description           String?
+  category              String?
+  imageUrl              String?
+
+  // Pricing
+  regularPrice          Float
+  salePrice             Float
+  savings               Float    @default(0)
+  savingsPercent        Int      @default(0)
+
+  // Validity
+  validityDays          Int      @default(365)
+
+  // Restrictions
+  restrictions          Json?    // PackageRestrictions object
+
+  // Status
+  isActive              Boolean  @default(true)
+  availableForPurchase  Boolean  @default(true)
+  displayOrder          Int      @default(0)
+
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+  createdBy             String
+
+  // Relations
+  contents              PackageItem[]
+  purchases             PackagePurchase[]
+
+  @@index([isActive])
+  @@index([availableForPurchase])
+  @@index([displayOrder])
+}
+
+model PackageItem {
+  id          String   @id @default(cuid())
+  packageId   String
+  package     Package  @relation(fields: [packageId], references: [id], onDelete: Cascade)
+
+  type        PackageItemType
+  itemId      String
+  itemName    String
+  quantity    Int
+  unitValue   Float
+
+  @@index([packageId])
+}
+
+enum PackageItemType {
+  SERVICE
+  PRODUCT
+}
+
+model PackagePurchase {
+  id                String   @id @default(cuid())
+  packageId         String
+  package           Package  @relation(fields: [packageId], references: [id])
+  patientId         String
+
+  packageName       String
+  purchaseDate      DateTime @default(now())
+  purchasePrice     Float
+
+  // Validity
+  validFrom         DateTime
+  validUntil        DateTime
+
+  // Payment tracking
+  invoiceId         String?
+  paymentId         String?
+
+  // Status
+  status            PackagePurchaseStatus @default(ACTIVE)
+  notes             String?
+
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  createdBy         String
+
+  // Relations
+  items             PackagePurchaseItem[]
+
+  @@index([patientId])
+  @@index([packageId])
+  @@index([status])
+  @@index([validUntil])
+}
+
+enum PackagePurchaseStatus {
+  ACTIVE
+  PARTIALLY_USED
+  FULLY_USED
+  EXPIRED
+  CANCELLED
+  REFUNDED
+}
+
+model PackagePurchaseItem {
+  id                String   @id @default(cuid())
+  purchaseId        String
+  purchase          PackagePurchase @relation(fields: [purchaseId], references: [id], onDelete: Cascade)
+
+  type              PackageItemType
+  itemId            String
+  itemName          String
+  quantityTotal     Int
+  quantityUsed      Int      @default(0)
+  quantityRemaining Int
+
+  // Relations
+  redemptions       PackageRedemption[]
+
+  @@index([purchaseId])
+}
+
+model PackageRedemption {
+  id          String   @id @default(cuid())
+  purchaseItemId String
+  purchaseItem   PackagePurchaseItem @relation(fields: [purchaseItemId], references: [id], onDelete: Cascade)
+
+  itemId         String
+  quantity       Int
+  appointmentId  String?
+  invoiceId      String?
+  notes          String?
+
+  redeemedAt     DateTime @default(now())
+  redeemedBy     String
+
+  @@index([purchaseItemId])
+  @@index([appointmentId])
+}
+
+// ============================================================================
+// MEMBERSHIPS
+// ============================================================================
+
+model MembershipTier {
+  id                      String   @id @default(cuid())
+  name                    String
+  description             String?
+  tier                    MembershipLevel
+  imageUrl                String?
+
+  // Billing
+  billingCycle            BillingCycle
+  price                   Float
+  setupFee                Float    @default(0)
+
+  // Benefits
+  benefits                Json     // Benefits object with discounts, services, perks
+
+  // Terms
+  minimumTermMonths       Int      @default(0)
+  cancellationNoticeDays  Int      @default(30)
+
+  // Status
+  isActive                Boolean  @default(true)
+  acceptingNewMembers     Boolean  @default(true)
+  displayOrder            Int      @default(0)
+
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
+
+  // Relations
+  memberships             PatientMembership[]
+
+  @@index([isActive])
+  @@index([acceptingNewMembers])
+  @@index([displayOrder])
+}
+
+enum MembershipLevel {
+  BRONZE
+  SILVER
+  GOLD
+  PLATINUM
+  VIP
+}
+
+enum BillingCycle {
+  MONTHLY
+  QUARTERLY
+  ANNUAL
+}
+
+model PatientMembership {
+  id                  String   @id @default(cuid())
+  patientId           String
+  tierId              String
+  tier                MembershipTier @relation(fields: [tierId], references: [id])
+
+  tierName            String
+  enrolledAt          DateTime @default(now())
+
+  // Billing period
+  currentPeriodStart  DateTime
+  currentPeriodEnd    DateTime
+  nextBillingDate     DateTime?
+
+  // Status
+  status              MembershipStatus @default(ACTIVE)
+  pausedAt            DateTime?
+  resumeAt            DateTime?
+  cancelledAt         DateTime?
+
+  // Benefits tracking
+  currentPeriodBenefits Json   // Array of included services with usage tracking
+
+  // Payment
+  paymentMethodId     String?
+  lastPaymentDate     DateTime?
+  lastPaymentAmount   Float?
+
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  createdBy           String
+
+  // Relations
+  redemptions         BenefitRedemption[]
+
+  @@index([patientId])
+  @@index([tierId])
+  @@index([status])
+  @@index([nextBillingDate])
+}
+
+enum MembershipStatus {
+  ACTIVE
+  PAUSED
+  CANCELLED
+  PAST_DUE
+  EXPIRED
+}
+
+model BenefitRedemption {
+  id              String   @id @default(cuid())
+  membershipId    String
+  membership      PatientMembership @relation(fields: [membershipId], references: [id], onDelete: Cascade)
+
+  patientId       String
+  serviceId       String
+  serviceName     String
+  appointmentId   String?
+
+  redeemedAt      DateTime @default(now())
+  redeemedBy      String
+
+  @@index([membershipId])
+  @@index([patientId])
+  @@index([appointmentId])
+}
+
+// ============================================================================
+// GIFT CARDS
+// ============================================================================
+
+model GiftCard {
+  id                    String   @id @default(cuid())
+  code                  String   @unique
+
+  // Amounts
+  originalValue         Float
+  currentBalance        Float
+
+  // Purchaser
+  purchaserId           String?
+  purchaserName         String
+  purchaserEmail        String
+
+  // Recipient
+  recipientName         String?
+  recipientEmail        String?
+  recipientMessage      String?
+
+  // Dates
+  purchaseDate          DateTime @default(now())
+  activationDate        DateTime?
+  expirationDate        DateTime?
+  scheduledDeliveryDate DateTime?
+
+  // Status
+  status                GiftCardStatus @default(PENDING)
+
+  // Design
+  designTemplate        String?
+
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+  createdBy             String
+
+  // Relations
+  transactions          GiftCardTransaction[]
+
+  @@index([code])
+  @@index([status])
+  @@index([purchaserEmail])
+  @@index([recipientEmail])
+  @@index([expirationDate])
+}
+
+enum GiftCardStatus {
+  PENDING
+  ACTIVE
+  PARTIALLY_USED
+  DEPLETED
+  EXPIRED
+  CANCELLED
+}
+
+model GiftCardTransaction {
+  id            String   @id @default(cuid())
+  giftCardId    String
+  giftCard      GiftCard @relation(fields: [giftCardId], references: [id], onDelete: Cascade)
+
+  type          GiftCardTransactionType
+  amount        Float    // Positive for purchase/refund, negative for redemption
+  balanceAfter  Float
+
+  // References
+  invoiceId     String?
+  paymentId     String?
+  notes         String?
+
+  processedAt   DateTime @default(now())
+  processedBy   String
+
+  @@index([giftCardId])
+  @@index([type])
+  @@index([processedAt])
+}
+
+enum GiftCardTransactionType {
+  PURCHASE
+  REDEMPTION
+  REFUND
+  ADJUSTMENT
+  EXPIRATION
+}
+
+// ============================================================================
+// CREDITS
+// ============================================================================
+
+model Credit {
+  id            String   @id @default(cuid())
+  patientId     String
+
+  type          CreditType
+  amount        Float
+  balance       Float
+
+  // Source
+  source        CreditSource
+  referenceId   String?  // Invoice ID, referral ID, etc.
+  description   String?
+
+  // Validity
+  expiresAt     DateTime?
+  isActive      Boolean  @default(true)
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  createdBy     String
+
+  // Relations
+  transactions  CreditTransaction[]
+
+  @@index([patientId])
+  @@index([type])
+  @@index([isActive])
+  @@index([expiresAt])
+}
+
+enum CreditType {
+  GENERAL
+  REFERRAL
+  PROMOTIONAL
+  REFUND
+  ADJUSTMENT
+}
+
+enum CreditSource {
+  REFERRAL
+  PROMOTION
+  REFUND
+  PACKAGE_CANCELLATION
+  ADJUSTMENT
+  LOYALTY
+}
+
+model CreditTransaction {
+  id            String   @id @default(cuid())
+  creditId      String
+  credit        Credit   @relation(fields: [creditId], references: [id], onDelete: Cascade)
+
+  type          CreditTransactionType
+  amount        Float    // Positive for credit, negative for redemption
+  balanceAfter  Float
+
+  // References
+  invoiceId     String?
+  paymentId     String?
+  notes         String?
+
+  processedAt   DateTime @default(now())
+  processedBy   String
+
+  @@index([creditId])
+  @@index([type])
+  @@index([processedAt])
+}
+
+enum CreditTransactionType {
+  ISSUED
+  REDEEMED
+  EXPIRED
+  REFUNDED
+  ADJUSTED
+}
+
+// ============================================================================
+// ENHANCED PAYMENT & INVOICE MODELS
+// ============================================================================
+
+// Update existing Invoice model with additional fields
+model InvoiceLineItem {
+  id            String   @id @default(cuid())
+  invoiceId     String
+  invoice       Invoice  @relation("InvoiceLineItems", fields: [invoiceId], references: [id], onDelete: Cascade)
+
+  type          InvoiceItemType
+  itemId        String?
+  name          String
+  description   String?
+
+  // Quantities and pricing
+  quantity      Int      @default(1)
+  unitPrice     Float
+  unitType      String?  // For injectables: 'unit', 'syringe', 'vial', 'ml'
+
+  // Lot tracking (for injectables)
+  lotNumber     String?
+
+  // Discounts
+  discountType  DiscountType?
+  discountValue Float?
+  discountAmount Float   @default(0)
+
+  // Tax
+  taxRate       Float    @default(0)
+  taxAmount     Float    @default(0)
+
+  // Total
+  lineTotal     Float
+
+  // Provider tracking
+  providerId    String?
+
+  @@index([invoiceId])
+  @@index([type])
+}
+
+enum DiscountType {
+  PERCENTAGE
+  FIXED
+}
+
+// Additional payment fields (extend existing Payment model)
+model PaymentRefund {
+  id            String   @id @default(cuid())
+  paymentId     String
+
+  amount        Float
+  reason        String
+  status        RefundStatus @default(PENDING)
+
+  transactionId String?
+  processedAt   DateTime?
+  processedBy   String
+
+  createdAt     DateTime @default(now())
+
+  @@index([paymentId])
+  @@index([status])
+}
+
+enum RefundStatus {
+  PENDING
+  COMPLETED
+  FAILED
+}

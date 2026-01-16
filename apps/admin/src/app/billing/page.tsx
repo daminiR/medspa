@@ -9,6 +9,7 @@ import { JaneStyleBillingView } from '@/components/billing/JaneStyleBillingView'
 import { PackageSellModal } from '@/components/packages/PackageSellModal'
 import { MembershipEnrollmentModal } from '@/components/memberships/MembershipEnrollmentModal'
 import { GiftCardManager } from '@/components/payments/GiftCardManager'
+import PaymentPlanManagement from '@/components/billing/PaymentPlanManagement'
 import { useInvoice } from '@/contexts/InvoiceContext'
 import {
   Search,
@@ -47,7 +48,7 @@ export default function BillingPage() {
   const [showFilters, setShowFilters] = useState(false)
   const [dateRange, setDateRange] = useState<'today' | 'week' | 'month' | 'custom'>('month')
   const [selectedInvoices, setSelectedInvoices] = useState<string[]>([])
-  const [activeTab, setActiveTab] = useState<'invoices' | 'packages' | 'memberships' | 'gift-cards'>('invoices')
+  const [activeTab, setActiveTab] = useState<'invoices' | 'packages' | 'memberships' | 'gift-cards' | 'payment-plans'>('invoices')
   const [showInjectableBilling, setShowInjectableBilling] = useState(false)
   const [showInvoiceView, setShowInvoiceView] = useState(false)
   const [selectedPatient] = useState({ id: 'PT-001', name: 'Sarah Johnson' }) // Mock patient
@@ -317,6 +318,17 @@ export default function BillingPage() {
           >
             <Gift className="w-4 h-4 inline mr-2" />
             Gift Cards
+          </button>
+          <button
+            onClick={() => setActiveTab('payment-plans')}
+            className={`py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
+              activeTab === 'payment-plans'
+                ? 'border-purple-600 text-purple-600'
+                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+            }`}
+          >
+            <Calendar className="w-4 h-4 inline mr-2" />
+            Payment Plans
           </button>
         </nav>
       </div>
@@ -644,6 +656,10 @@ export default function BillingPage() {
       
       {activeTab === 'gift-cards' && (
         <GiftCardManager />
+      )}
+
+      {activeTab === 'payment-plans' && (
+        <PaymentPlanManagement />
       )}
 
       {/* Patient Checkout Flow */}

@@ -1,0 +1,216 @@
+            <div class="section">
+                <h2 class="section-title">Billing & Payment Workflows</h2>
+
+                <h3 class="section-subtitle">Checkout Flow</h3>
+                <div class="workflow-container">
+                    <div class="workflow-row">
+                        <div class="box action">
+                            <div class="box-title">Treatment Complete</div>
+                            <div class="box-subtitle">Practitioner marks done on iPad</div>
+                        </div>
+                        <span class="arrow">→</span>
+                        <div class="box automation">
+                            <div class="box-title">Invoice Auto-Created</div>
+                            <div class="box-subtitle">Services + Products added</div>
+                        </div>
+                        <span class="arrow">→</span>
+                        <div class="box automation">
+                            <div class="box-title">Notification to Front Desk</div>
+                            <div class="box-subtitle">"Sarah ready for checkout"</div>
+                        </div>
+                    </div>
+
+                    <div class="workflow-row" style="margin-top: 20px;">
+                        <div class="box action">
+                            <div class="box-title">Patient Arrives at Front</div>
+                        </div>
+                        <span class="arrow">→</span>
+                        <div class="box action">
+                            <div class="box-title">Front Desk Opens Invoice</div>
+                            <div class="box-subtitle">Auto-populated with treatment details</div>
+                        </div>
+                        <span class="arrow">→</span>
+                        <div class="box action">
+                            <div class="box-title">Review with Patient</div>
+                            <div class="box-subtitle">"Your Botox today is $400"</div>
+                        </div>
+                    </div>
+
+                    <div class="workflow-row" style="margin-top: 20px;">
+                        <div class="box action">
+                            <div class="box-title">Payment Method</div>
+                            <div class="box-subtitle">Card, Cash, Package, Membership</div>
+                        </div>
+                        <span class="arrow">→</span>
+                        <div class="box action">
+                            <div class="box-title">Process Payment</div>
+                            <div class="box-subtitle">Stripe/Square integration</div>
+                        </div>
+                        <span class="arrow">→</span>
+                        <div class="box automation">
+                            <div class="box-title">Receipt SMS + Email</div>
+                            <div class="box-subtitle">Instant delivery</div>
+                        </div>
+                    </div>
+
+                    <div class="workflow-row" style="margin-top: 20px;">
+                        <div class="box automation">
+                            <div class="box-title">Update Patient Balance</div>
+                        </div>
+                        <span class="arrow">→</span>
+                        <div class="box automation">
+                            <div class="box-title">Deduct Membership Credits</div>
+                            <div class="box-subtitle">If applicable</div>
+                        </div>
+                        <span class="arrow">→</span>
+                        <div class="box automation">
+                            <div class="box-title">Log to Accounting</div>
+                            <div class="box-subtitle">QuickBooks sync</div>
+                        </div>
+                    </div>
+                </div>
+
+                <h3 class="section-subtitle">Payment Options Matrix</h3>
+                <div class="integration-grid">
+                    <div class="integration-card">
+                        <h4>1. Credit/Debit Card</h4>
+                        <div class="trigger"><strong>Process:</strong> Swipe/tap/chip reader</div>
+                        <div class="trigger"><strong>Fees:</strong> 2.9% + 30¢</div>
+                        <div class="trigger"><strong>Settlement:</strong> Next day</div>
+                        <div class="trigger"><strong>Receipt:</strong> Auto SMS + Email</div>
+                    </div>
+
+                    <div class="integration-card">
+                        <h4>2. Cash</h4>
+                        <div class="trigger"><strong>Process:</strong> Manual entry in system</div>
+                        <div class="trigger"><strong>Fees:</strong> None</div>
+                        <div class="trigger"><strong>Reconciliation:</strong> End of day cash count</div>
+                        <div class="trigger"><strong>Receipt:</strong> Printed + optional email</div>
+                    </div>
+
+                    <div class="integration-card">
+                        <h4>3. Package/Membership Credits</h4>
+                        <div class="trigger"><strong>Process:</strong> Auto-deduct from balance</div>
+                        <div class="trigger"><strong>Validation:</strong> Check expiration date</div>
+                        <div class="trigger"><strong>Remaining:</strong> Show balance after payment</div>
+                        <div class="trigger"><strong>Alert:</strong> If credits low, offer refill</div>
+                    </div>
+
+                    <div class="integration-card">
+                        <h4>4. Payment Plan</h4>
+                        <div class="trigger"><strong>Setup:</strong> Split into installments</div>
+                        <div class="trigger"><strong>Auto-charge:</strong> Saved card on file</div>
+                        <div class="trigger"><strong>Reminders:</strong> Before each charge</div>
+                        <div class="trigger"><strong>Tracking:</strong> Payment status dashboard</div>
+                    </div>
+                </div>
+
+                <h3 class="section-subtitle">Invoicing & Collections</h3>
+                <div class="workflow-container">
+                    <div class="workflow-row">
+                        <div class="box gap">
+                            <div class="box-title">Unpaid Invoice Created</div>
+                            <div class="box-subtitle">Patient left without paying</div>
+                        </div>
+                        <span class="arrow">→</span>
+                        <div class="box automation">
+                            <div class="box-title">T+24hrs: Reminder SMS</div>
+                            <div class="box-subtitle">"You have an outstanding balance"</div>
+                        </div>
+                        <span class="arrow">→</span>
+                        <div class="box automation">
+                            <div class="box-title">T+7 days: Email Invoice</div>
+                            <div class="box-subtitle">With payment link</div>
+                        </div>
+                    </div>
+
+                    <div class="workflow-row" style="margin-top: 20px;">
+                        <div class="box automation">
+                            <div class="box-title">T+14 days: Phone Call</div>
+                            <div class="box-subtitle">Staff manually reaches out</div>
+                        </div>
+                        <span class="arrow">→</span>
+                        <div class="box action">
+                            <div class="box-title">T+30 days: Collections</div>
+                            <div class="box-subtitle">Send to collections agency or write off</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="edge-cases-container">
+                    <div class="edge-cases-header collapsed">
+                        ⚠️ REALITY CHECK: What Can Go Wrong with Billing & Payments? (Click to expand)
+                    </div>
+                    <div class="edge-cases-content">
+                        <div class="edge-case-item">
+                            <h5>🔴 Card Declined at Checkout <span class="reality-badge common">Happens 3-5x per week</span></h5>
+                            <p class="problem">Problem: Patient's treatment complete. Total is $650. Front desk swipes card. DECLINED. Patient says "That's weird, I just used this card." Awkward situation.</p>
+                            <p class="solution">System shows specific decline reason: "Insufficient funds", "Card expired", "Call issuer", or generic "Declined". Front desk offers options: (1) Try another card, (2) Try debit card, (3) Call bank to approve, (4) Pay half now, half later (payment plan), (5) Invoice and pay online within 24hrs. Don't shame patient. If card works after calling bank, process it. If truly no payment method, create invoice with 24hr due date.</p>
+                            <p class="human-needed">Front desk handles with empathy: "Cards get declined all the time! Let's try another one or you can call your bank real quick." If patient has no other payment method, manager decides: Let them go with invoice, or require payment plan setup before leaving. For VIP/regular patients, may allow invoice. New patients may need to setup payment plan immediately.</p>
+                        </div>
+
+                        <div class="edge-case-item">
+                            <h5>🔴 Patient Disputes Charges <span class="reality-badge common">1-2x per month</span></h5>
+                            <p class="problem">Problem: Patient gets invoice for $850. Says "I thought it was only $400!" or "You charged me for filler I didn't get!" Angry, refuses to pay full amount.</p>
+                            <p class="solution">Front desk pulls up treatment chart on screen. Shows exactly what practitioner documented: "52 units Botox ($520) + 1 syringe Juvederm ($330) = $850". Explains each line item. If patient still disputes, check if pricing was clearly communicated before treatment. Review consent form for pricing acknowledgment. If legitimate error (practitioner logged wrong amount), manager can adjust invoice. If patient's memory vs documentation, offer to call practitioner for clarification.</p>
+                            <p class="human-needed">Manager reviews dispute immediately. If clinic error: Apologize profusely, adjust invoice, offer discount on next visit. If patient error/misunderstanding: Show documentation respectfully, explain pricing, offer payment plan if needed. If patient refuses to pay despite documentation, may escalate to: (1) Send to collections, (2) Write off bad debt, (3) Ban patient if fraud suspected. Document everything for legal protection.</p>
+                        </div>
+
+                        <div class="edge-case-item">
+                            <h5>🟡 Patient Wants Refund After Treatment <span class="reality-badge rare">Delicate situation</span></h5>
+                            <p class="problem">Problem: Patient paid $600 for Botox yesterday. Today texts: "I'm not happy with results, I want a full refund." Treatment already performed and paid for.</p>
+                            <p class="solution">System flags: "Refund request after treatment - Manager approval required". Manager must: (1) Review treatment chart and photos, (2) Determine if results are medically appropriate or if mistake made, (3) Call patient to discuss concerns. Policy should be clear: "Cosmetic treatments are final sale unless practitioner error." But for customer service, may offer: Free touch-up, Partial credit toward future treatment, or Discount on next visit. Full refunds typically only if: Practitioner error, Medical complication, or Treatment never performed.</p>
+                            <p class="human-needed">Manager personally calls patient to understand concern. Often: Patient has unrealistic expectations or results not yet visible (Botox takes 7-14 days). Manager educates, offers free follow-up appointment for practitioner to assess. If legitimate complaint, may offer partial refund or service credit. Document all customer service actions. If patient threatens lawsuit, refer to practice attorney.</p>
+                        </div>
+
+                        <div class="edge-case-item">
+                            <h5>🔴 Patient Leaves Without Paying <span class="reality-badge rare">Walkout</span></h5>
+                            <p class="problem">Problem: Treatment complete. Patient says "I need to run to my car to get my wallet." Never comes back. Just left without paying $750 invoice.</p>
+                            <p class="solution">PREVENTION: Front desk should collect card on file before treatment. For new patients or high-value treatments, require payment or preauth before treatment. If patient leaves without paying: (1) Call immediately, (2) Send invoice via SMS/Email immediately, (3) Flag account: "UNPAID INVOICE - Do not book future appointments", (4) Start collections sequence: 24hr reminder, 7-day email, 14-day phone call, 30-day collections agency.</p>
+                            <p class="human-needed">Front desk calls patient immediately (while they're probably still in car). Often honest mistake: "Oh I'm so sorry, I got a call and forgot! I'll come back right now." If patient ignores calls, manager sends formal invoice. After 30 days unpaid, decide: Send to collections or write off. For patients who "forget" repeatedly, require prepayment for all future services.</p>
+                        </div>
+
+                        <div class="edge-case-item">
+                            <h5>🟡 Membership Credits Expired <span class="reality-badge">Frustrating for patient</span></h5>
+                            <p class="problem">Problem: Patient bought $2,000 membership package 13 months ago. Policy says credits expire after 12 months. Patient shows up for treatment expecting to use credits. "What do you mean they expired?! I paid for those!"</p>
+                            <p class="solution">PREVENTION: System auto-alerts patients 60 days, 30 days, and 7 days before credits expire. "You have $800 in credits expiring on March 31. Book now!" Track if patient never used credits - may indicate they forgot about membership. If credits expire: Check if patient ever received expiration warnings (delivery confirmation). Manager decides: (1) Strict policy - credits gone, (2) One-time extension as courtesy, (3) Partial credit recovery (50% of expired amount). Policy should be clearly stated in membership agreement with signature.</p>
+                            <p class="human-needed">Manager reviews: Did we send expiration warnings? Did patient acknowledge them? If system failure (emails went to spam, patient changed number), consider courtesy extension. If patient simply didn't book despite reminders, enforce policy but offer compromise: "I can give you 30 more days as a one-time courtesy." Document exception. If patient becomes hostile, may need to maintain boundary and explain signed agreement.</p>
+                        </div>
+
+                        <div class="edge-case-item">
+                            <h5>🔴 System Double-Charges Patient <span class="reality-badge rare">Technical error</span></h5>
+                            <p class="problem">Problem: Front desk swipes card for $400. System lags. They swipe again thinking it didn't work. Patient charged $800 total - twice for same transaction.</p>
+                            <p class="solution">System should prevent: After successful charge, disable payment button for 30 seconds with message: "Processing... Please wait." If double charge occurs: Front desk sees two transactions in system immediately. MUST void second charge within 24hrs (easier than refund). If patient already left, call immediately: "We accidentally charged you twice. We're voiding the second charge right now. You'll see $400 credit in 3-5 business days." Send email confirmation of void.</p>
+                            <p class="human-needed">Front desk voids second charge immediately via payment processor dashboard. Manager personally calls patient to apologize and confirm void. If patient already contacted bank to dispute, work with bank to resolve. Send written confirmation of void via email. If void window passed, process refund instead (takes 7-10 days). Offer discount on next visit for inconvenience.</p>
+                        </div>
+
+                        <div class="edge-case-item">
+                            <h5>🟡 Payment Plan Autopay Fails <span class="reality-badge common">Monthly payments</span></h5>
+                            <p class="problem">Problem: Patient on $2,000 payment plan ($400/month for 5 months). Month 3 autopay scheduled. Card declined. Patient doesn't realize, thinks they're paid up.</p>
+                            <p class="solution">System auto-detects failed payment. Actions: (1) Retry charge after 3 days (maybe temporary insufficient funds), (2) Send SMS: "Your payment plan charge of $400 was declined. Please update your payment method at [link]", (3) Email invoice with pay now button, (4) If not paid within 7 days, suspend account: "Cannot book new appointments until payment plan current", (5) After 14 days, flag for collections.</p>
+                            <p class="human-needed">Front desk calls patient after first failed attempt: "Hi Sarah, just letting you know your $400 payment didn't go through. Can we try a different card?" Often patient says "Oh that card expired, here's my new one." Update payment method and reprocess. If patient avoiding payment, manager discusses: Continue payment plan with new card, or pay remaining balance in full. If repeated failures, may require upfront payment for future treatments.</p>
+                        </div>
+
+                        <div class="edge-case-item">
+                            <h5>🔴 Cash Drawer Doesn't Balance at End of Day <span class="reality-badge common">Weekly occurrence</span></h5>
+                            <p class="problem">Problem: Front desk closes cash drawer. System says should be $450 cash. Drawer has $475 - $25 over. Or $425 - $25 short. Where's the discrepancy?</p>
+                            <p class="solution">System shows all cash transactions for the day with timestamps and staff member names. Front desk reviews: (1) Check if cash transaction was logged as card or vice versa, (2) Check if someone gave wrong change, (3) Check if refund was given in cash but logged as card, (4) Review security camera if large discrepancy. Document overage/shortage: "Cash drawer over $25 - investigating." If under $5 discrepancy, often write off as counting error. If over $20, requires investigation.</p>
+                            <p class="human-needed">Manager reviews all cash transactions. Common issues: Staff member accepted $100 bill, gave change, but logged as exact amount. Or patient paid $100 for $85 treatment, change given but system shows $100 received. If recurring shortages for same staff member, may indicate theft or training issue. For overages, check if patient overpaid and left (need to refund). Balancing issues addressed in weekly staff meeting.</p>
+                        </div>
+
+                        <div class="edge-case-item">
+                            <h5>🟡 Patient Wants to Use FSA/HSA Card <span class="reality-badge">Compliance issue</span></h5>
+                            <p class="problem">Problem: Patient wants to pay with HSA card for Botox. Cosmetic Botox is NOT HSA-eligible (must be medical necessity). System accepts card (just looks like a debit card), but patient's HSA administrator may reject and audit clinic.</p>
+                            <p class="solution">Train staff: Cosmetic treatments NOT eligible for FSA/HSA. Medical treatments (Botox for TMJ, laser for acne scarring) ARE eligible. At checkout, staff must ask: "Is this a Health Savings Account card? This treatment is cosmetic so it won't be covered." If patient insists, make them sign waiver: "I understand this is not HSA-eligible and I'm responsible if my HSA administrator rejects this charge." System flags: "HSA used for cosmetic - patient waiver required".</p>
+                            <p class="human-needed">Front desk trained to identify FSA/HSA cards and explain eligibility. For medical treatments, provide superbill/documentation for patient's HSA. If patient's HSA rejects charge later and chargesback, clinic may need to refund and collect payment via different method. Keep all waivers for audit protection. Manager reviews HSA transactions quarterly to ensure compliance.</p>
+                        </div>
+
+                        <div class="edge-case-item">
+                            <h5>🔴 Patient Tip Added to Card (Staff Compensation) <span class="reality-badge">Gratuity complexity</span></h5>
+                            <p class="problem">Problem: Patient wants to tip nurse/practitioner for excellent service. Adds $50 tip to $400 charge. How is tip tracked, distributed, and taxed?</p>
+                            <p class="solution">System must separate: Service charge ($400) vs Gratuity ($50). Invoice shows: "Services: $400, Gratuity: $50, Total: $450". Tip automatically allocated to practitioner who performed service. At end of day, system generates: "Tips received by practitioner" report. Tips must be: (1) Given to practitioner in next paycheck (or cash if allowed), (2) Reported to IRS as income, (3) Tracked separately from commission/wages. Some practices pool tips, others give directly to practitioner.</p>
+                            <p class="human-needed">Manager ensures tips properly distributed and reported. Payroll system tracks: Base pay + Commission + Tips = Total compensation (for tax reporting). Some states have rules about tip sharing. If patient tips via cash, staff must log it immediately for tax compliance. Year-end: All tips reported on W-2 for practitioners. Clinic doesn't keep any portion of tips (illegal in most states).</p>
+                        </div>
+                    </div>
+                </div>
+            </div>

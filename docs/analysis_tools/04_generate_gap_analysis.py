@@ -50,7 +50,7 @@ def perform_gap_analysis(competitor_data, current_platform_data):
 COMPETITOR (Mango Mint):
 {json.dumps(competitor_data, indent=2)[:50000]}
 
-CURRENT PLATFORM (Luke's Medical Spa):
+CURRENT PLATFORM (Luxe Medical Spa EMR):
 {json.dumps(current_platform_data, indent=2)[:20000]}
 
 Perform a comprehensive gap analysis and provide detailed JSON:
@@ -124,11 +124,11 @@ def generate_markdown_report(gap_analysis):
     category_analysis = gap_analysis.get('category_analysis', {})
     recommendations = gap_analysis.get('priority_recommendations', [])
 
-    md_content = f"""# Competitive Gap Analysis: Mango Mint vs Luke's Medical Spa
+    md_content = f"""# Competitive Gap Analysis: Mango Mint vs Luxe Medical Spa EMR
 
 **Analysis Date**: 2025-10-16
 **Competitor**: Mango Mint
-**Current Platform**: Luke's Medical Spa
+**Current Platform**: Luxe Medical Spa EMR
 
 ---
 

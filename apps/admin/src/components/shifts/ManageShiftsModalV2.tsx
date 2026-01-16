@@ -178,7 +178,7 @@ export default function ManageShiftsModalV2({
     
     // Auto-select the day if not already selected
     if (!selectedDays.has(targetDay)) {
-      setSelectedDays(new Set([...selectedDays, targetDay]))
+      setSelectedDays(new Set([...Array.from(selectedDays), targetDay]))
     }
   }
 
@@ -652,7 +652,7 @@ export default function ManageShiftsModalV2({
                                 </div>
                                 <div className="text-left">
                                   <div className="text-sm font-medium text-gray-900">{practitioner.name}</div>
-                                  <div className="text-xs text-gray-500">{practitioner.title}</div>
+                                  <div className="text-xs text-gray-500">{practitioner.discipline}</div>
                                 </div>
                               </div>
                             </button>

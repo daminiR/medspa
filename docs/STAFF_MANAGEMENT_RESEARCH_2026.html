@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Staff Management Research - January 2026</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #1a1a1a; max-width: 1200px; margin: 0 auto; padding: 40px 20px; background: #f8f9fa; }
+        h1 { font-size: 2rem; margin-bottom: 8px; color: #111; }
+        .subtitle { color: #666; margin-bottom: 32px; font-size: 0.95rem; }
+        .key-insight { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 24px; border-radius: 12px; margin-bottom: 32px; }
+        .key-insight h2 { font-size: 1.1rem; margin-bottom: 8px; opacity: 0.9; }
+        .key-insight p { font-size: 1.25rem; font-weight: 600; }
+        .section { background: white; border-radius: 12px; padding: 24px; margin-bottom: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .section h2 { font-size: 1.25rem; color: #333; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 2px solid #eee; }
+        .section h3 { font-size: 1rem; color: #555; margin: 16px 0 8px 0; }
+        table { width: 100%; border-collapse: collapse; margin: 12px 0; }
+        th, td { text-align: left; padding: 12px; border-bottom: 1px solid #eee; }
+        th { background: #f8f9fa; font-weight: 600; color: #555; font-size: 0.85rem; text-transform: uppercase; }
+        td { font-size: 0.95rem; }
+        .problem { color: #c0392b; }
+        .evidence { color: #666; font-size: 0.9rem; }
+        .verdict { background: #e8f5e9; border-left: 4px solid #4caf50; padding: 16px; margin: 16px 0; border-radius: 0 8px 8px 0; }
+        .verdict.no { background: #fff3e0; border-left-color: #ff9800; }
+        .future-idea { background: #e3f2fd; border-radius: 8px; padding: 16px; margin: 12px 0; }
+        .future-idea h4 { color: #1565c0; margin-bottom: 8px; }
+        ul { padding-left: 20px; }
+        li { margin: 8px 0; }
+        .tag { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; margin-right: 8px; }
+        .tag.high { background: #ffebee; color: #c62828; }
+        .tag.medium { background: #fff3e0; color: #e65100; }
+        .tag.low { background: #e8f5e9; color: #2e7d32; }
+        .competitor { display: inline-block; background: #f5f5f5; padding: 2px 8px; border-radius: 4px; font-size: 0.8rem; color: #666; margin: 2px; }
+        .sources { font-size: 0.85rem; color: #888; margin-top: 24px; padding-top: 16px; border-top: 1px solid #eee; }
+    </style>
+</head>
+<body>
+    <h1>Staff Management Research Insights</h1>
+    <p class="subtitle">Competitive analysis from Mangomint, Boulevard, Zenoti, Vagaro reviews + industry forums | January 2026</p>
+
+    <div class="key-insight">
+        <h2>KEY FINDING</h2>
+        <p>"People don't need more features, they just need more speed."</p>
+    </div>
+
+    <!-- SELF-SERVICE VERDICT -->
+    <div class="section">
+        <h2>Should We Build Staff Self-Service Portal?</h2>
+
+        <div class="verdict no">
+            <strong>Verdict: Probably Not (as a separate thing)</strong>
+            <p style="margin-top: 8px;">Nobody explicitly asks for "self-service portal" - zero search results. It's table stakes, not a differentiator.</p>
+        </div>
+
+        <h3>What Staff Actually Want</h3>
+        <table>
+            <tr>
+                <th>Want</th>
+                <th>Evidence</th>
+            </tr>
+            <tr>
+                <td>See their schedule on phone</td>
+                <td class="evidence">"Staff want to see their schedule 24/7" - multiple sources</td>
+            </tr>
+            <tr>
+                <td>Know their commission/pay</td>
+                <td class="evidence">Payroll transparency reduces HR questions</td>
+            </tr>
+            <tr>
+                <td>Request time off easily</td>
+                <td class="evidence">Current: scattered across systems, texts, emails</td>
+            </tr>
+        </table>
+
+        <h3>What Staff DON'T Want</h3>
+        <ul>
+            <li>Fill out their own onboarding forms (admin does this faster)</li>
+            <li>Update their own profile info (they just want to work)</li>
+            <li>Learn another app/portal</li>
+        </ul>
+
+        <div class="future-idea">
+            <h4>Future Idea: Simple Staff Mobile App</h4>
+            <p>Read-only view of: My Schedule | My Commission | My Upcoming Shifts</p>
+            <p style="margin-top: 8px; font-size: 0.9rem; color: #666;">Not for onboarding or data entry - just visibility. Could be PWA, not native.</p>
+        </div>
+    </div>
+
+    <!-- SPEED & FRICTION -->
+    <div class="section">
+        <h2>Speed & Friction Problems <span class="tag high">HIGH PRIORITY</span></h2>
+        <p style="margin-bottom: 16px; color: #666;">Universal complaint across ALL competitors</p>
+
+        <table>
+            <tr>
+                <th>Problem</th>
+                <th>Evidence</th>
+                <th>Platform</th>
+            </tr>
+            <tr>
+                <td class="problem">Pages load too slow</td>
+                <td class="evidence">"Line-ups at front desk waiting for software to load"</td>
+                <td><span class="competitor">Vagaro</span></td>
+            </tr>
+            <tr>
+                <td class="problem">Too many clicks for simple tasks</td>
+                <td class="evidence">"A lot of clicks to get a simple thing"</td>
+                <td><span class="competitor">Mindbody</span></td>
+            </tr>
+            <tr>
+                <td class="problem">Mobile apps are buggy</td>
+                <td class="evidence">"Downright buggy", "really glitchy"</td>
+                <td><span class="competitor">Boulevard</span> <span class="competitor">Zenoti</span></td>
+            </tr>
+            <tr>
+                <td class="problem">Checkout takes too long</td>
+                <td class="evidence">"Takes way too long to check clients out"</td>
+                <td><span class="competitor">Mindbody</span></td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- SCHEDULING -->
+    <div class="section">
+        <h2>Schedule Management Problems <span class="tag high">HIGH PRIORITY</span></h2>
+
+        <table>
+            <tr>
+                <th>Problem</th>
+                <th>Evidence</th>
+                <th>Platform</th>
+            </tr>
+            <tr>
+                <td class="problem">No batch editing</td>
+                <td class="evidence">"Cannot edit schedules in batches - must edit each staff member individually"</td>
+                <td><span class="competitor">Mangomint</span></td>
+            </tr>
+            <tr>
+                <td class="problem">No schedule templates</td>
+                <td class="evidence">"Cannot apply schedule templates to new staff"</td>
+                <td><span class="competitor">Mangomint</span></td>
+            </tr>
+            <tr>
+                <td class="problem">Can't modify existing patterns</td>
+                <td class="evidence">"Must start over from scratch"</td>
+                <td><span class="competitor">Boulevard</span></td>
+            </tr>
+            <tr>
+                <td class="problem">Manual scheduling takes 15+ hrs/week</td>
+                <td class="evidence">Industry research finding</td>
+                <td><span class="competitor">All</span></td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- COMMISSION & PAYROLL -->
+    <div class="section">
+        <h2>Commission & Payroll Problems <span class="tag high">HIGH PRIORITY</span></h2>
+        <p style="margin-bottom: 16px; color: #666;">Biggest mess across all platforms</p>
+
+        <table>
+            <tr>
+                <th>Problem</th>
+                <th>Evidence</th>
+            </tr>
+            <tr>
+                <td class="problem">Tiered commissions confuse everyone</td>
+                <td class="evidence">$27K sales ≠ 10% of $27K - involves 3 tiers of calculation</td>
+            </tr>
+            <tr>
+                <td class="problem">Settling tips takes forever</td>
+                <td class="evidence">"One by one" for larger teams - Mangomint</td>
+            </tr>
+            <tr>
+                <td class="problem">No tip prompt for memberships</td>
+                <td class="evidence">When package total is $0, provider must awkwardly ask</td>
+            </tr>
+            <tr>
+                <td class="problem">Cash vs card tips confusing</td>
+                <td class="evidence">Different payout timing, different tracking</td>
+            </tr>
+            <tr>
+                <td class="problem">Fee-splitting is legally risky</td>
+                <td class="evidence">Medical staff can't get volume-based commission</td>
+            </tr>
+            <tr>
+                <td class="problem">Manual spreadsheets persist</td>
+                <td class="evidence">15% fully manual, 31% use software AND spreadsheets</td>
+            </tr>
+            <tr>
+                <td class="problem">Payroll errors cost $1,600/employee/year</td>
+                <td class="evidence">Industry average</td>
+            </tr>
+            <tr>
+                <td class="problem">Half quit after 2 payroll mistakes</td>
+                <td class="evidence">Research finding</td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- LICENSE TRACKING -->
+    <div class="section">
+        <h2>License & Credential Tracking <span class="tag medium">MEDIUM PRIORITY</span></h2>
+
+        <table>
+            <tr>
+                <th>Problem</th>
+                <th>Evidence</th>
+            </tr>
+            <tr>
+                <td class="problem">Licenses expire silently</td>
+                <td class="evidence">"Without reliable tracking, expired licenses slip through"</td>
+            </tr>
+            <tr>
+                <td class="problem">58% still use spreadsheets</td>
+                <td class="evidence">For something that can shut down your practice</td>
+            </tr>
+            <tr>
+                <td class="problem">Multi-state complexity</td>
+                <td class="evidence">Each state: different regs, different renewal cycles</td>
+            </tr>
+            <tr>
+                <td class="problem">No automatic alerts</td>
+                <td class="evidence">"Changes in provider status go undetected"</td>
+            </tr>
+            <tr>
+                <td class="problem">$50K-$100K fines possible</td>
+                <td class="evidence">For practicing with expired credentials</td>
+            </tr>
+        </table>
+
+        <div class="future-idea">
+            <h4>Future Idea: License Scan with Gemini</h4>
+            <p>Upload photo of license → Vertex AI extracts: name, number, expiry, state</p>
+            <p style="margin-top: 8px; font-size: 0.9rem; color: #666;">Simple image upload, auto-populate fields. Already have Vertex AI enabled.</p>
+        </div>
+    </div>
+
+    <!-- ONBOARDING -->
+    <div class="section">
+        <h2>Staff Onboarding Problems <span class="tag medium">MEDIUM PRIORITY</span></h2>
+
+        <table>
+            <tr>
+                <th>Problem</th>
+                <th>Evidence</th>
+            </tr>
+            <tr>
+                <td class="problem">88% think employer did poor job</td>
+                <td class="evidence">Gallup 2017 poll - still cited in 2025</td>
+            </tr>
+            <tr>
+                <td class="problem">33% look for new job within 6 months</td>
+                <td class="evidence">Due to poor onboarding experience</td>
+            </tr>
+            <tr>
+                <td class="problem">Zero training beyond generic videos</td>
+                <td class="evidence">Zenoti: "nothing customized to your setup"</td>
+            </tr>
+            <tr>
+                <td class="problem">Can't practice before launch</td>
+                <td class="evidence">Zenoti: "staff feels incredibly unprepared"</td>
+            </tr>
+            <tr>
+                <td class="problem">OSHA training required in 10 days</td>
+                <td class="evidence">Most miss this → $2,500 fines</td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- PERMISSIONS -->
+    <div class="section">
+        <h2>Permissions & Access Control <span class="tag low">LOWER PRIORITY</span></h2>
+
+        <table>
+            <tr>
+                <th>Problem</th>
+                <th>Evidence</th>
+            </tr>
+            <tr>
+                <td class="problem">Permissions don't actually work</td>
+                <td class="evidence">Vagaro: "Removed view options but employee still sees customer data"</td>
+            </tr>
+            <tr>
+                <td class="problem">Former employees steal client data</td>
+                <td class="evidence">"Past employees calling customers to recruit them"</td>
+            </tr>
+            <tr>
+                <td class="problem">Too complex to set up</td>
+                <td class="evidence">Zenoti: "features buried in layers of nested menus"</td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- MULTI-LOCATION -->
+    <div class="section">
+        <h2>Multi-Location Problems <span class="tag low">LOWER PRIORITY</span></h2>
+
+        <table>
+            <tr>
+                <th>Problem</th>
+                <th>Evidence</th>
+            </tr>
+            <tr>
+                <td class="problem">Can't see both locations at once</td>
+                <td class="evidence">Vagaro: "cannot merge or see simultaneously"</td>
+            </tr>
+            <tr>
+                <td class="problem">Policies blur between sites</td>
+                <td class="evidence">"Instructions skipped, chart notes incomplete"</td>
+            </tr>
+            <tr>
+                <td class="problem">No travel time factoring</td>
+                <td class="evidence">When staff floats between locations</td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- SUPPORT -->
+    <div class="section">
+        <h2>Support Is Terrible Everywhere</h2>
+
+        <table>
+            <tr>
+                <th>Problem</th>
+                <th>Evidence</th>
+            </tr>
+            <tr>
+                <td class="problem">Hours-long wait times</td>
+                <td class="evidence">DaySmart: "2.5 to 5 hours on hold"</td>
+            </tr>
+            <tr>
+                <td class="problem">Re-explaining issues every time</td>
+                <td class="evidence">Zenoti: "Each time feels like starting from scratch"</td>
+            </tr>
+            <tr>
+                <td class="problem">AI chat gives wrong answers</td>
+                <td class="evidence">Zenoti: "often provides incorrect information"</td>
+            </tr>
+            <tr>
+                <td class="problem">Tickets never resolved</td>
+                <td class="evidence">"Tickets open since first day still not resolved"</td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- WHAT CAUSES QUIT -->
+    <div class="section">
+        <h2>What Makes Staff Quit</h2>
+
+        <ul>
+            <li><strong>Schedule ignores their requests</strong> - placed on shifts they didn't want</li>
+            <li><strong>No control over schedule</strong> - 39% say manageable schedule would reduce burnout</li>
+            <li><strong>Unfair hours distribution</strong> - newer employees sometimes get more hours</li>
+            <li><strong>Payroll mistakes</strong> - nearly half leave after two mistakes</li>
+            <li><strong>No training/development</strong> - 94% would stay if company invested in learning</li>
+        </ul>
+    </div>
+
+    <!-- SOURCES -->
+    <div class="sources">
+        <strong>Sources:</strong> G2, Capterra, Software Advice, GetApp reviews for Mangomint, Boulevard, Zenoti, Vagaro, Mindbody, Booker, GlossGenius. Industry research from American Med Spa Association, Pabau, AestheticsPro, Gallup, various spa industry publications. Research conducted January 2026.
+    </div>
+</body>
+</html>

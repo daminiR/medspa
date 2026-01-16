@@ -1,0 +1,173 @@
+// Firestore Security Rules for Medical Spa Platform
+//
+// HYBRID APPROACH: PostgreSQL is the source of truth, Firestore is for real-time sync only.
+// Write operations should ONLY come from Cloud Functions or Admin SDK (server-side).
+// Clients can read their authorized data in real-time.
+//
+// Deploy with: firebase deploy --only firestore:rules
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ===================
+    // Helper Functions
+    // ===================
+
+    // Check if the user is authenticated
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Get the user's custom claims
+    function getUserClaims() {
+      return request.auth.token;
+    }
+
+    // Check if user has a specific role
+    function hasRole(role) {
+      return isAuthenticated() && getUserClaims().role == role;
+    }
+
+    // Check if user is staff (any staff role)
+    function isStaff() {
+      return isAuthenticated() && getUserClaims().role in ['admin', 'manager', 'provider', 'front_desk', 'staff'];
+    }
+
+    // Check if user is admin
+    function isAdmin() {
+      return hasRole('admin');
+    }
+
+    // Check if user is a patient
+    function isPatient() {
+      return hasRole('patient');
+    }
+
+    // Get the patient ID from claims
+    function getPatientId() {
+      return getUserClaims().patientId;
+    }
+
+    // Check if user owns this patient data
+    function isOwnPatientData(patientId) {
+      return isPatient() && getPatientId() == patientId;
+    }
+
+    // Check if this is a server-side request (Cloud Functions/Admin SDK)
+    // Note: Admin SDK bypasses security rules entirely, but this is for
+    // client SDK requests that might have admin-level tokens
+    function isServerRequest() {
+      return request.auth.token.admin == true;
+    }
+
+    // ===================
+    // Appointments Collection
+    // /appointments/{appointmentId}
+    // ===================
+
+    match /appointments/{appointmentId} {
+      // Staff can read all appointments
+      // Patients can read their own appointments
+      allow read: if isStaff() ||
+                     (isPatient() && resource.data.patientId == getPatientId());
+
+      // Write operations only from Admin SDK (server-side)
+      // This ensures PostgreSQL remains the source of truth
+      allow write: if false; // All writes must go through Admin SDK
+    }
+
+    // ===================
+    // Messages Collection
+    // /messages/{conversationId}/items/{messageId}
+    // ===================
+
+    match /messages/{conversationId} {
+      // Conversation metadata
+      // Staff can read all conversations
+      // Patients can read their own conversations
+      allow read: if isStaff() ||
+                     (isPatient() && resource.data.patientId == getPatientId());
+
+      // Write operations only from Admin SDK
+      allow write: if false;
+
+      // Message items subcollection
+      match /items/{messageId} {
+        // Same read rules as parent conversation
+        allow read: if isStaff() ||
+                       (isPatient() && get(/databases/$(database)/documents/messages/$(conversationId)).data.patientId == getPatientId());
+
+        // Write operations only from Admin SDK
+        allow write: if false;
+      }
+    }
+
+    // ===================
+    // Waiting Room Collection
+    // /waitingRoom/{locationId}/queue/{patientId}
+    // ===================
+
+    match /waitingRoom/{locationId} {
+      // Location metadata
+      // Staff can read waiting room for their locations
+      allow read: if isStaff();
+
+      // Write operations only from Admin SDK
+      allow write: if false;
+
+      // Queue entries subcollection
+      match /queue/{patientId} {
+        // Staff can read all queue entries
+        // Patients can read their own queue entry
+        allow read: if isStaff() ||
+                       (isPatient() && patientId == getPatientId());
+
+        // Write operations only from Admin SDK
+        allow write: if false;
+      }
+    }
+
+    // ===================
+    // Notifications Collection
+    // /notifications/{userId}/items/{notificationId}
+    // ===================
+
+    match /notifications/{userId} {
+      // User notification metadata (unread count, etc.)
+      // Users can only read their own notification metadata
+      allow read: if isAuthenticated() && request.auth.uid == userId;
+
+      // Write operations only from Admin SDK
+      allow write: if false;
+
+      // Notification items subcollection
+      match /items/{notificationId} {
+        // Users can only read their own notifications
+        allow read: if isAuthenticated() && request.auth.uid == userId;
+
+        // Users can mark their own notifications as read
+        // This is the ONLY client-side write allowed
+        allow update: if isAuthenticated() &&
+                         request.auth.uid == userId &&
+                         // Only allow updating 'read' and 'readAt' fields
+                         request.resource.data.diff(resource.data).affectedKeys()
+                           .hasOnly(['read', 'readAt']) &&
+                         // 'read' must be set to true
+                         request.resource.data.read == true;
+
+        // Create and delete only from Admin SDK
+        allow create, delete: if false;
+      }
+    }
+
+    // ===================
+    // Fallback Rule
+    // Deny all other access
+    // ===================
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

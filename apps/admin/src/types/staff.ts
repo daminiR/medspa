@@ -69,6 +69,88 @@ export interface Commission {
   type: 'percentage' | 'fixed';
 }
 
+// Notification preferences for staff members
+export interface NotificationPreferences {
+  // Appointment notifications
+  newAppointmentEmail: boolean;
+  newAppointmentSms: boolean;
+  newAppointmentPush: boolean;
+  appointmentCancelledEmail: boolean;
+  appointmentCancelledSms: boolean;
+  appointmentCancelledPush: boolean;
+  appointmentRescheduledEmail: boolean;
+  appointmentRescheduledPush: boolean;
+  // Daily updates
+  dailyScheduleSummary: boolean;
+  patientArrivals: boolean;
+  // Messages
+  newMessagePush: boolean;
+  // Quiet hours
+  quietHoursEnabled: boolean;
+  quietHoursStart: string; // e.g., "21:00"
+  quietHoursEnd: string;   // e.g., "07:00"
+}
+
+// Service assignment for a staff member
+export interface ServiceAssignment {
+  serviceId: string;
+  serviceName: string;
+  category: string;
+  enabled: boolean;
+  customDuration?: number; // in minutes, overrides default
+  customPrice?: number; // overrides default
+  defaultDuration: number;
+  defaultPrice: number;
+  requiresCertification?: string; // certification required to perform
+}
+
+// Granular permissions (Mangomint-style)
+export interface StaffPermissions {
+  // Calendar permissions
+  viewOwnCalendar: boolean;
+  editOwnCalendar: boolean;
+  viewAllCalendars: boolean;
+  editAllCalendars: boolean;
+  manageTimeBlocks: boolean;
+  manageWaitlist: boolean;
+  // Client permissions
+  viewClientContactDetails: boolean;
+  viewClientHistory: boolean;
+  editClientRecords: boolean;
+  // Sales permissions
+  viewOwnSales: boolean;
+  viewAllSales: boolean;
+  processCheckout: boolean;
+  processRefunds: boolean;
+  reopenSales: boolean;
+  accessCashDrawer: boolean;
+  // Messages permissions
+  viewOwnMessages: boolean;
+  viewAllMessages: boolean;
+  sendMessages: boolean;
+  // Reporting
+  viewReports: boolean;
+  exportReports: boolean;
+  // Products & inventory
+  manageProducts: boolean;
+  managePurchaseOrders: boolean;
+  // Gift cards & memberships
+  manageGiftCards: boolean;
+  manageMemberships: boolean;
+  // Administrative
+  manageStaff: boolean;
+  manageServices: boolean;
+  manageSettings: boolean;
+  accessBilling: boolean;
+  // Time clock
+  useTimeClock: boolean;
+  manageTimeCards: boolean;
+  // Forms
+  viewFormSubmissions: boolean;
+  viewAllFormSubmissions: boolean;
+  manageFormTemplates: boolean;
+}
+
 export interface Schedule {
   id: string;
   dayOfWeek: number;
@@ -112,11 +194,18 @@ export interface StaffMember {
   phone: string;
   alternatePhone?: string;
   profilePhoto?: string;
-  
+
   role: StaffRole;
   accessLevel: AccessLevel;
   status: StaffStatus;
   specializations: Specialization[];
+
+  // New fields for enhanced staff management
+  isServiceProvider: boolean; // Can they provide services? (affects subscription count)
+  availableInOnlineBooking: boolean; // Show in online booking?
+  permissions?: StaffPermissions; // Granular permissions
+  notificationPreferences?: NotificationPreferences;
+  serviceAssignments?: ServiceAssignment[];
   
   hireDate: string;
   birthDate?: string;

@@ -1,6 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { appointments, practitioners } from '@/lib/data';
 import { sendSMS, smsTemplates, formatPhoneNumber } from '@/lib/twilio';
+import { autoSendFormsOnBooking } from '@/services/forms/formService';
+import Stripe from 'stripe';
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
+  apiVersion: '2025-08-27.basil' as const
+});
 
 export async function POST(
   request: NextRequest,
@@ -15,7 +21,7 @@ export async function POST(
       email,
       phone,
       acceptedPolicy,
-      paymentMethodId, // Stripe payment method ID (card on file)
+      paymentIntentId, // Stripe PaymentIntent ID from frontend
     } = body;
 
     // Find appointment by token
@@ -55,24 +61,46 @@ export async function POST(
       );
     }
 
-    // If deposit is required, handle Stripe payment
+    // If deposit is required, verify Stripe payment
     if (appointment.requireDeposit && appointment.depositAmount && appointment.depositAmount > 0) {
-      if (!paymentMethodId) {
+      if (!paymentIntentId) {
         return NextResponse.json(
-          { error: 'Payment method required for deposit' },
+          { error: 'Payment required for deposit', code: 'PAYMENT_REQUIRED' },
           { status: 400 }
         );
       }
 
-      // In production, you would:
-      // 1. Create a Stripe PaymentIntent
-      // 2. Confirm the payment
-      // 3. Store the payment details
+      try {
+        // Verify payment intent is successful
+        const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
 
-      // For now, we'll simulate successful payment
-      appointment.depositPaid = true;
-      appointment.cardOnFileId = paymentMethodId;
-      console.log(`[Stripe] Would charge $${appointment.depositAmount / 100} deposit with payment method ${paymentMethodId}`);
+        if (paymentIntent.status !== 'succeeded') {
+          return NextResponse.json(
+            { error: 'Payment not completed. Please try again.', code: 'PAYMENT_FAILED' },
+            { status: 400 }
+          );
+        }
+
+        // Verify amount matches expected deposit
+        if (paymentIntent.amount !== appointment.depositAmount) {
+          console.error(`Amount mismatch: expected ${appointment.depositAmount}, got ${paymentIntent.amount}`);
+          return NextResponse.json(
+            { error: 'Payment amount mismatch', code: 'AMOUNT_MISMATCH' },
+            { status: 400 }
+          );
+        }
+
+        // Mark deposit as paid and store payment reference
+        appointment.depositPaid = true;
+        appointment.stripePaymentIntentId = paymentIntentId;
+
+      } catch (stripeError: any) {
+        console.error('Stripe verification error:', stripeError);
+        return NextResponse.json(
+          { error: 'Unable to verify payment', code: 'STRIPE_ERROR' },
+          { status: 500 }
+        );
+      }
     }
 
     // Update appointment with patient details
@@ -109,6 +137,19 @@ export async function POST(
     const formattedPhone = formatPhoneNumber(appointment.phone || phone);
     const smsResult = await sendSMS(formattedPhone, confirmationSms);
 
+    // Auto-send required forms for this service
+    const formResult = await autoSendFormsOnBooking(
+      appointment.patientId || appointment.id, // Use patient ID if available, fallback to appointment ID
+      `${firstName} ${lastName}`,
+      formattedPhone,
+      appointment.serviceName,
+      appointment.id
+    );
+
+    if (formResult.formsSent.length > 0) {
+      console.log(`[ExpressBooking] Auto-sent ${formResult.formsSent.length} forms for ${appointment.serviceName}`);
+    }
+
     return NextResponse.json({
       success: true,
       appointment: {
@@ -124,6 +165,11 @@ export async function POST(
       confirmation: {
         smsSent: smsResult.success,
         message: 'Your appointment has been confirmed!',
+      },
+      forms: {
+        sent: formResult.formsSent.length > 0,
+        count: formResult.formsSent.length,
+        formIds: formResult.formsSent,
       },
     });
   } catch (error) {

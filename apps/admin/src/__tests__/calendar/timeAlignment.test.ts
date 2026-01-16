@@ -1,4 +1,3 @@
-import { describe, it, expect } from '@jest/globals'
 import moment from 'moment'
 import { getShiftBlockStyle, getAppointmentStyle } from '@/utils/calendarHelpers'
 

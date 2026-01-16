@@ -22,6 +22,8 @@ import {
   Receipt
 } from 'lucide-react'
 import { format, startOfWeek, endOfWeek, startOfMonth, endOfMonth, subDays, subMonths, isWithinInterval } from 'date-fns'
+import { ExportButton } from '@/components/reports/ExportButton'
+import { formatters, ExportColumn } from '@/lib/export'
 
 // Mock data generation
 const generateSalesData = (startDate: Date, endDate: Date) => {
@@ -114,6 +116,7 @@ export default function SalesReportPage() {
     packages: salesData.packages.reduce((sum, p) => sum + p.revenue, 0),
     products: salesData.products.reduce((sum, p) => sum + p.revenue, 0),
     giftCards: salesData.giftCards.reduce((sum, g) => sum + g.revenue, 0),
+    total: 0
   }
   totals.total = totals.services + totals.packages + totals.products + totals.giftCards
 
@@ -125,6 +128,70 @@ export default function SalesReportPage() {
     products: -2.1,
     giftCards: 18.7
   }
+
+  // Prepare export data
+  const exportData = useMemo(() => {
+    const rows: any[] = []
+
+    // Services
+    salesData.services.forEach(s => {
+      rows.push({
+        category: 'Service',
+        name: s.name,
+        unitPrice: s.unitPrice,
+        quantity: s.units,
+        revenue: s.revenue,
+        clients: s.clients
+      })
+    })
+
+    // Packages
+    salesData.packages.forEach(p => {
+      rows.push({
+        category: 'Package',
+        name: p.name,
+        unitPrice: p.price,
+        quantity: p.sold,
+        revenue: p.revenue,
+        clients: p.redemptions
+      })
+    })
+
+    // Products
+    salesData.products.forEach(p => {
+      rows.push({
+        category: 'Product',
+        name: p.name,
+        unitPrice: p.price,
+        quantity: p.sold,
+        revenue: p.revenue,
+        clients: '-'
+      })
+    })
+
+    // Gift Cards
+    salesData.giftCards.forEach(g => {
+      rows.push({
+        category: 'Gift Card',
+        name: `$${g.amount} Gift Card`,
+        unitPrice: g.amount === 'Custom' ? '-' : g.amount,
+        quantity: g.sold,
+        revenue: g.revenue,
+        clients: '-'
+      })
+    })
+
+    return rows
+  }, [salesData])
+
+  const exportColumns: ExportColumn[] = [
+    { key: 'category', header: 'Category' },
+    { key: 'name', header: 'Item Name' },
+    { key: 'unitPrice', header: 'Unit Price', formatter: (v) => typeof v === 'number' ? formatters.currency(v) : String(v) },
+    { key: 'quantity', header: 'Quantity Sold', formatter: formatters.number },
+    { key: 'revenue', header: 'Revenue', formatter: formatters.currency },
+    { key: 'clients', header: 'Clients/Redemptions' },
+  ]
 
   return (
     <div className="flex h-screen bg-gray-50">
@@ -147,10 +214,13 @@ export default function SalesReportPage() {
             </div>
             
             <div className="flex space-x-3">
-              <button className="px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-700 hover:bg-gray-50 flex items-center space-x-2">
-                <Download className="h-4 w-4" />
-                <span>Export</span>
-              </button>
+              <ExportButton
+                data={exportData}
+                columns={exportColumns}
+                filename="sales-report"
+                title="Sales Report"
+                dateRange={{ start: startDate, end: endDate }}
+              />
             </div>
           </div>
 

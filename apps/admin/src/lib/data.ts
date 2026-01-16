@@ -1,6 +1,7 @@
 // Centralized data source for user/patient/practitioner information
 // Single source of truth for all user-related data
 import { Shift } from '@/types/calendar'
+import { User, UserRole, UserStatus, UserFormData, UserFilter } from '@/types/users'
 // Add these types to your @/lib/data.ts file
 
 export interface Location {
@@ -89,7 +90,6 @@ export interface Patient {
   };
   medicalHistory?: string[];
   allergies?: string[];
-  notes?: string;
   status: 'active' | 'inactive';
   createdAt: Date;
   lastVisit?: Date;
@@ -126,6 +126,10 @@ export interface Appointment {
   cancelledAt?: Date; // When the appointment was cancelled
   cancelledBy?: string; // Who cancelled the appointment
   deletedAt?: Date; // When appointment was deleted
+
+  // NEW: Booking Type & Check-In Time (Walk-In Support)
+  bookingType?: 'scheduled' | 'walk_in' | 'express_booking' | 'from_waitlist';
+  checkInTime?: Date; // When patient checked in (especially for walk-ins)
 
   // NEW: Virtual Waiting Room fields
   waitingRoomStatus?: 'not_arrived' | 'in_car' | 'room_ready' | 'checked_in';
@@ -197,6 +201,41 @@ export interface GroupBookingParticipant {
   status: 'pending' | 'confirmed' | 'arrived' | 'completed' | 'cancelled' | 'no_show';
   paymentStatus: 'pending' | 'paid';
   roomId?: string;
+  // SMS tracking
+  confirmationSentAt?: Date;
+  reminderSentAt?: Date;
+  smsConfirmedAt?: Date;
+  checkedInAt?: Date;
+}
+
+// Activity log for group bookings
+export type GroupActivityType =
+  | 'created'
+  | 'participant_added'
+  | 'participant_removed'
+  | 'sms_sent'
+  | 'checked_in'
+  | 'check_in_all'
+  | 'payment_updated'
+  | 'rescheduled'
+  | 'cancelled'
+  | 'notes_updated'
+  | 'status_changed';
+
+export interface GroupBookingActivity {
+  id: string;
+  groupBookingId: string;
+  type: GroupActivityType;
+  description: string;
+  performedBy: string; // User ID or name
+  performedAt: Date;
+  metadata?: {
+    participantId?: string;
+    participantName?: string;
+    smsType?: string;
+    oldValue?: string;
+    newValue?: string;
+  };
 }
 
 export interface GroupBooking {
@@ -233,6 +272,15 @@ export interface GroupBooking {
   createdAt: Date;
   updatedAt: Date;
   createdBy?: string;
+
+  // SMS tracking at group level
+  confirmationSentAt?: Date;
+  reminderSentAt?: Date;
+  lastSmsType?: 'confirmation' | 'reminder' | 'checkin' | 'cancellation';
+  lastSmsSentAt?: Date;
+
+  // Activity history (embedded for simplicity)
+  activities?: GroupBookingActivity[];
 }
 
 // Group discount tiers
@@ -272,13 +320,17 @@ export interface Service {
   
   // LEGACY: Keep for backward compatibility
   tags?: string[]; // Tags that must match shift tags for this service to be bookable
+
+  // Deposit/Payment settings
+  depositRequired?: boolean;
+  depositAmount?: number;
 }
 
 export interface Break {
   id: string;
   practitionerId: string;
   practitionerName: string;
-  type: 'lunch' | 'personal' | 'meeting' | 'training';
+  type: 'lunch' | 'personal' | 'meeting' | 'training' | 'out_of_office' | 'other';
   startTime: Date;
   endTime: Date;
   duration: number; // minutes
@@ -288,18 +340,14 @@ export interface Break {
   notes?: string;
 }
 
-export interface Break {
-  id: string;
-  practitionerId: string;
-  practitionerName: string;
-  type: 'lunch' | 'personal' | 'meeting' | 'training';
-  startTime: Date;
-  endTime: Date;
-  duration: number; // minutes
-  isRecurring: boolean;
-  recurringDays?: number[]; // 0-6 (Sunday-Saturday)
-  availableForEmergencies?: boolean;
-  notes?: string;
+// Time block color scheme by type
+export const BREAK_COLORS: Record<Break['type'], { bg: string; stripe: string; label: string }> = {
+  lunch: { bg: '#FFE0B2', stripe: '#FFB74D', label: 'Lunch' },           // Orange
+  meeting: { bg: '#BBDEFB', stripe: '#64B5F6', label: 'Meeting' },       // Blue
+  personal: { bg: '#E1BEE7', stripe: '#BA68C8', label: 'Personal' },     // Purple
+  out_of_office: { bg: '#FFCDD2', stripe: '#E57373', label: 'Out of Office' }, // Red
+  training: { bg: '#C8E6C9', stripe: '#81C784', label: 'Training' },     // Green
+  other: { bg: '#E0E0E0', stripe: '#9E9E9E', label: 'Other' }            // Gray
 }
 
 // NEW: Available capabilities and equipment (moved here to be available before use)
@@ -1067,8 +1115,7 @@ export const appointments: Appointment[] = [
     assignedResources: [{
       resourceId: 'res-1',
       resourceName: 'CO2 Laser 1',
-      resourcePoolId: 'pool-1',
-      resourcePoolName: 'CO2 Lasers'
+      resourcePoolId: 'pool-1'
     }],
     postTreatmentTime: 20
   },
@@ -1291,6 +1338,44 @@ export const getGroupInfoForAppointment = (appointmentId: string): {
 };
 
 /**
+ * Add an activity entry to a group booking
+ */
+export const addGroupActivity = (
+  groupId: string,
+  type: GroupActivityType,
+  description: string,
+  performedBy: string = 'System',
+  metadata?: GroupBookingActivity['metadata']
+): void => {
+  const group = groupBookings.find(g => g.id === groupId);
+  if (!group) return;
+
+  const activity: GroupBookingActivity = {
+    id: `activity-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+    groupBookingId: groupId,
+    type,
+    description,
+    performedBy,
+    performedAt: new Date(),
+    metadata
+  };
+
+  if (!group.activities) {
+    group.activities = [];
+  }
+  group.activities.unshift(activity); // Add to beginning (newest first)
+  group.updatedAt = new Date();
+};
+
+/**
+ * Get activity history for a group booking
+ */
+export const getGroupActivities = (groupId: string): GroupBookingActivity[] => {
+  const group = groupBookings.find(g => g.id === groupId);
+  return group?.activities || [];
+};
+
+/**
  * Create a new group booking and its associated appointments
  */
 export const createGroupBooking = (
@@ -1354,6 +1439,16 @@ export const createGroupBooking = (
     return appointment;
   });
 
+  // Initialize activities array with creation event
+  group.activities = [{
+    id: `activity-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+    groupBookingId: groupId,
+    type: 'created',
+    description: `Group booking created with ${participantCount} participants`,
+    performedBy: groupData.createdBy || 'System',
+    performedAt: new Date()
+  }];
+
   // Add to mock data
   groupBookings.push(group);
   appointments.push(...createdAppointments);
@@ -1387,6 +1482,14 @@ export const cancelGroupBooking = (
   group.status = 'cancelled';
   group.updatedAt = new Date();
 
+  // Log cancellation activity
+  addGroupActivity(
+    groupId,
+    'cancelled',
+    `Group booking cancelled. ${cancelledCount} appointments affected.${reason ? ` Reason: ${reason}` : ''}`,
+    'Current User'
+  );
+
   return { success: true, cancelledCount };
 };
 
@@ -1395,7 +1498,9 @@ export const cancelGroupBooking = (
  */
 export const checkInGroup = (groupId: string): { success: boolean; checkedInCount: number } => {
   const groupAppointments = getAppointmentsByGroupId(groupId);
+  const group = getGroupBookingById(groupId);
   let checkedInCount = 0;
+  const checkedInNames: string[] = [];
 
   groupAppointments.forEach(apt => {
     if (apt.status === 'scheduled' || apt.status === 'confirmed') {
@@ -1403,8 +1508,27 @@ export const checkInGroup = (groupId: string): { success: boolean; checkedInCoun
       apt.arrivalTime = new Date();
       apt.updatedAt = new Date();
       checkedInCount++;
+      checkedInNames.push(apt.patientName);
     }
   });
+
+  // Also update participant status in group
+  if (group) {
+    group.participants.forEach(p => {
+      if (p.status === 'pending' || p.status === 'confirmed') {
+        p.status = 'arrived';
+        p.checkedInAt = new Date();
+      }
+    });
+
+    // Log activity
+    addGroupActivity(
+      groupId,
+      'check_in_all',
+      `All ${checkedInCount} participants checked in`,
+      'Current User'
+    );
+  }
 
   return { success: true, checkedInCount };
 };
@@ -1428,4 +1552,855 @@ export const getGroupBookingsForDate = (date: Date): GroupBooking[] => {
  */
 export const getGroupsByCoordinator = (patientId: string): GroupBooking[] => {
   return groupBookings.filter(group => group.coordinatorPatientId === patientId);
+};
+
+/**
+ * Get all group bookings with optional filters
+ */
+export const getAllGroupBookings = (filters?: {
+  status?: GroupBookingStatus;
+  startDate?: Date;
+  endDate?: Date;
+  locationId?: string;
+}): GroupBooking[] => {
+  let result = [...groupBookings];
+
+  if (filters?.status) {
+    result = result.filter(g => g.status === filters.status);
+  }
+
+  if (filters?.startDate) {
+    const start = new Date(filters.startDate);
+    start.setHours(0, 0, 0, 0);
+    result = result.filter(g => new Date(g.date) >= start);
+  }
+
+  if (filters?.endDate) {
+    const end = new Date(filters.endDate);
+    end.setHours(23, 59, 59, 999);
+    result = result.filter(g => new Date(g.date) <= end);
+  }
+
+  if (filters?.locationId) {
+    result = result.filter(g => g.locationId === filters.locationId);
+  }
+
+  // Sort by date descending (most recent first)
+  return result.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+};
+
+/**
+ * Update a group booking
+ */
+export const updateGroupBooking = (
+  groupId: string,
+  updates: Partial<Pick<GroupBooking, 'name' | 'notes' | 'paymentMode' | 'paymentStatus'>>
+): GroupBooking | null => {
+  const groupIndex = groupBookings.findIndex(g => g.id === groupId);
+  if (groupIndex === -1) return null;
+
+  const group = groupBookings[groupIndex];
+
+  if (updates.name !== undefined) group.name = updates.name;
+  if (updates.notes !== undefined) group.notes = updates.notes;
+  if (updates.paymentMode !== undefined) group.paymentMode = updates.paymentMode;
+  if (updates.paymentStatus !== undefined) group.paymentStatus = updates.paymentStatus;
+
+  group.updatedAt = new Date();
+
+  return group;
+};
+
+/**
+ * Record that an SMS was sent to a group
+ */
+export const recordGroupSms = (
+  groupId: string,
+  smsType: 'confirmation' | 'reminder' | 'checkin' | 'cancellation',
+  recipientCount: number
+): void => {
+  const group = getGroupBookingById(groupId);
+  if (!group) return;
+
+  const now = new Date();
+  group.lastSmsType = smsType;
+  group.lastSmsSentAt = now;
+  group.updatedAt = now;
+
+  // Update specific tracking fields
+  if (smsType === 'confirmation') {
+    group.confirmationSentAt = now;
+  } else if (smsType === 'reminder') {
+    group.reminderSentAt = now;
+  }
+
+  // Log activity
+  const smsTypeLabels = {
+    confirmation: 'Confirmation',
+    reminder: 'Reminder',
+    checkin: 'Check-in request',
+    cancellation: 'Cancellation'
+  };
+
+  addGroupActivity(
+    groupId,
+    'sms_sent',
+    `${smsTypeLabels[smsType]} SMS sent to ${recipientCount} recipient(s)`,
+    'Current User',
+    { smsType }
+  );
+};
+
+/**
+ * Add a participant to an existing group booking
+ */
+export const addParticipantToGroup = (
+  groupId: string,
+  participant: Omit<GroupBookingParticipant, 'appointmentId' | 'status' | 'paymentStatus'>
+): { success: boolean; appointment?: Appointment; error?: string } => {
+  const group = getGroupBookingById(groupId);
+  if (!group) return { success: false, error: 'Group not found' };
+  if (group.status === 'cancelled') return { success: false, error: 'Cannot add to cancelled group' };
+
+  // Check if participant is already in group
+  if (group.participants.some(p => p.patientId === participant.patientId)) {
+    return { success: false, error: 'Participant already in group' };
+  }
+
+  // Create new participant
+  const newParticipant: GroupBookingParticipant = {
+    ...participant,
+    status: 'pending',
+    paymentStatus: 'pending'
+  };
+
+  // Create appointment for the new participant
+  const appointmentId = `apt-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+  const position = group.participants.length + 1;
+
+  const newAppointment: Appointment = {
+    id: appointmentId,
+    patientId: participant.patientId,
+    patientName: participant.patientName,
+    serviceName: participant.serviceName,
+    serviceCategory: 'aesthetics',
+    practitionerId: participant.practitionerId,
+    startTime: participant.startTime,
+    endTime: participant.endTime,
+    status: 'scheduled',
+    color: '#8B5CF6',
+    duration: participant.duration,
+    phone: participant.phone,
+    email: participant.email,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    roomId: participant.roomId,
+    groupBookingId: groupId,
+    isGroupCoordinator: false,
+    groupPosition: position,
+    individualPaymentStatus: 'pending'
+  };
+
+  // Update participant with appointmentId
+  newParticipant.appointmentId = appointmentId;
+
+  // Add to group
+  group.participants.push(newParticipant);
+
+  // Recalculate pricing
+  const newTotal = group.participants.reduce((sum, p) => sum + p.servicePrice, 0);
+  const newDiscount = calculateGroupDiscount(group.participants.length);
+  group.totalOriginalPrice = newTotal;
+  group.discountPercent = newDiscount;
+  group.totalDiscountAmount = (newTotal * newDiscount) / 100;
+  group.totalDiscountedPrice = newTotal - group.totalDiscountAmount;
+  group.updatedAt = new Date();
+
+  // Add appointment to global list
+  appointments.push(newAppointment);
+
+  return { success: true, appointment: newAppointment };
+};
+
+/**
+ * Remove a participant from a group booking
+ */
+export const removeParticipantFromGroup = (
+  groupId: string,
+  patientId: string
+): { success: boolean; error?: string } => {
+  const group = getGroupBookingById(groupId);
+  if (!group) return { success: false, error: 'Group not found' };
+
+  // Can't remove coordinator
+  if (patientId === group.coordinatorPatientId) {
+    return { success: false, error: 'Cannot remove coordinator. Cancel the group instead.' };
+  }
+
+  // Find participant
+  const participantIndex = group.participants.findIndex(p => p.patientId === patientId);
+  if (participantIndex === -1) return { success: false, error: 'Participant not found in group' };
+
+  const participant = group.participants[participantIndex];
+
+  // Cancel the associated appointment
+  if (participant.appointmentId) {
+    const aptIndex = appointments.findIndex(a => a.id === participant.appointmentId);
+    if (aptIndex !== -1) {
+      appointments[aptIndex].status = 'cancelled';
+      appointments[aptIndex].cancellationReason = 'Removed from group booking';
+      appointments[aptIndex].cancelledAt = new Date();
+      appointments[aptIndex].updatedAt = new Date();
+    }
+  }
+
+  // Remove from group
+  group.participants.splice(participantIndex, 1);
+
+  // Check if group still has minimum participants
+  if (group.participants.length < 2) {
+    // Automatically cancel the group if below minimum
+    cancelGroupBooking(groupId, 'Group below minimum participants');
+    return { success: true, error: 'Group cancelled - below minimum participants' };
+  }
+
+  // Recalculate pricing
+  const newTotal = group.participants.reduce((sum, p) => sum + p.servicePrice, 0);
+  const newDiscount = calculateGroupDiscount(group.participants.length);
+  group.totalOriginalPrice = newTotal;
+  group.discountPercent = newDiscount;
+  group.totalDiscountAmount = (newTotal * newDiscount) / 100;
+  group.totalDiscountedPrice = newTotal - group.totalDiscountAmount;
+  group.updatedAt = new Date();
+
+  // Update positions for remaining participants
+  group.participants.forEach((p, index) => {
+    if (p.appointmentId) {
+      const apt = appointments.find(a => a.id === p.appointmentId);
+      if (apt) {
+        apt.groupPosition = index + 1;
+        apt.updatedAt = new Date();
+      }
+    }
+  });
+
+  return { success: true };
+};
+
+/**
+ * Reschedule a participant in a group booking
+ */
+export const rescheduleGroupParticipant = (
+  groupId: string,
+  patientId: string,
+  newStartTime: Date,
+  newEndTime: Date
+): { success: boolean; error?: string } => {
+  const group = getGroupBookingById(groupId);
+  if (!group) return { success: false, error: 'Group not found' };
+
+  const participant = group.participants.find(p => p.patientId === patientId);
+  if (!participant) return { success: false, error: 'Participant not found in group' };
+
+  // Update participant times
+  participant.startTime = newStartTime;
+  participant.endTime = newEndTime;
+
+  // Update associated appointment
+  if (participant.appointmentId) {
+    const apt = appointments.find(a => a.id === participant.appointmentId);
+    if (apt) {
+      apt.startTime = newStartTime;
+      apt.endTime = newEndTime;
+      apt.updatedAt = new Date();
+    }
+  }
+
+  group.updatedAt = new Date();
+  return { success: true };
+};
+
+/**
+ * Reschedule entire group to a new date
+ */
+export const rescheduleGroup = (
+  groupId: string,
+  newDate: Date,
+  preserveTimeOffsets: boolean = true
+): { success: boolean; error?: string } => {
+  const group = getGroupBookingById(groupId);
+  if (!group) return { success: false, error: 'Group not found' };
+
+  const oldDate = new Date(group.date);
+  const dayDiff = Math.floor((newDate.getTime() - oldDate.getTime()) / (1000 * 60 * 60 * 24));
+
+  // Update each participant's times
+  group.participants.forEach(participant => {
+    const newStart = new Date(participant.startTime);
+    newStart.setDate(newStart.getDate() + dayDiff);
+
+    const newEnd = new Date(participant.endTime);
+    newEnd.setDate(newEnd.getDate() + dayDiff);
+
+    participant.startTime = newStart;
+    participant.endTime = newEnd;
+
+    // Update associated appointment
+    if (participant.appointmentId) {
+      const apt = appointments.find(a => a.id === participant.appointmentId);
+      if (apt) {
+        apt.startTime = newStart;
+        apt.endTime = newEnd;
+        apt.updatedAt = new Date();
+      }
+    }
+  });
+
+  group.date = newDate;
+  group.updatedAt = new Date();
+
+  return { success: true };
+};
+
+/**
+ * Update individual participant check-in status
+ */
+export const checkInGroupParticipant = (
+  groupId: string,
+  patientId: string
+): { success: boolean; error?: string } => {
+  const group = getGroupBookingById(groupId);
+  if (!group) return { success: false, error: 'Group not found' };
+
+  const participant = group.participants.find(p => p.patientId === patientId);
+  if (!participant) return { success: false, error: 'Participant not found' };
+
+  participant.status = 'arrived';
+
+  // Update associated appointment
+  if (participant.appointmentId) {
+    const apt = appointments.find(a => a.id === participant.appointmentId);
+    if (apt) {
+      apt.status = 'arrived';
+      apt.arrivalTime = new Date();
+      apt.updatedAt = new Date();
+    }
+  }
+
+  // Check if all participants have arrived
+  const allArrived = group.participants.every(p => p.status === 'arrived' || p.status === 'completed');
+  if (allArrived) {
+    group.status = 'confirmed';
+  } else {
+    group.status = 'partially_confirmed';
+  }
+
+  group.updatedAt = new Date();
+  return { success: true };
+};
+
+/**
+ * Update individual participant payment status
+ */
+export const updateParticipantPaymentStatus = (
+  groupId: string,
+  patientId: string,
+  paymentStatus: 'pending' | 'paid'
+): { success: boolean; error?: string } => {
+  const group = getGroupBookingById(groupId);
+  if (!group) return { success: false, error: 'Group not found' };
+
+  const participant = group.participants.find(p => p.patientId === patientId);
+  if (!participant) return { success: false, error: 'Participant not found' };
+
+  participant.paymentStatus = paymentStatus;
+
+  // Update associated appointment
+  if (participant.appointmentId) {
+    const apt = appointments.find(a => a.id === participant.appointmentId);
+    if (apt) {
+      apt.individualPaymentStatus = paymentStatus;
+      apt.updatedAt = new Date();
+    }
+  }
+
+  // Update group payment status
+  const allPaid = group.participants.every(p => p.paymentStatus === 'paid');
+  const somePaid = group.participants.some(p => p.paymentStatus === 'paid');
+
+  if (allPaid) {
+    group.paymentStatus = 'paid';
+  } else if (somePaid) {
+    group.paymentStatus = 'partial';
+  } else {
+    group.paymentStatus = 'pending';
+  }
+
+  group.updatedAt = new Date();
+  return { success: true };
+};
+
+// ============================================================================
+// USER MANAGEMENT DATA
+// ============================================================================
+
+// Mock users data
+export const users: User[] = [
+  {
+    id: 'user-1',
+    firstName: 'Amanda',
+    lastName: 'Reynolds',
+    email: 'amanda@luxemedicalspa.com',
+    phone: '(555) 100-0001',
+    role: 'Owner',
+    status: 'active',
+    lastLogin: new Date(2024, 11, 14, 9, 30),
+    createdAt: new Date(2023, 0, 1),
+    updatedAt: new Date(2024, 11, 14),
+    locationIds: ['loc-1', 'loc-2', 'loc-3'],
+  },
+  {
+    id: 'user-2',
+    firstName: 'David',
+    lastName: 'Chen',
+    email: 'david@luxemedicalspa.com',
+    phone: '(555) 100-0002',
+    role: 'Admin',
+    status: 'active',
+    lastLogin: new Date(2024, 11, 14, 8, 15),
+    createdAt: new Date(2023, 2, 15),
+    updatedAt: new Date(2024, 11, 14),
+    locationIds: ['loc-1', 'loc-2', 'loc-3'],
+  },
+  {
+    id: 'user-3',
+    firstName: 'Susan',
+    lastName: 'Lo',
+    email: 'susan@luxemedicalspa.com',
+    phone: '(555) 100-0003',
+    role: 'Provider',
+    status: 'active',
+    lastLogin: new Date(2024, 11, 13, 17, 45),
+    createdAt: new Date(2023, 3, 1),
+    updatedAt: new Date(2024, 11, 13),
+    locationIds: ['loc-1'],
+  },
+  {
+    id: 'user-4',
+    firstName: 'Marcus',
+    lastName: 'Gregory',
+    email: 'marcus@luxemedicalspa.com',
+    phone: '(555) 100-0004',
+    role: 'Provider',
+    status: 'active',
+    lastLogin: new Date(2024, 11, 12, 14, 20),
+    createdAt: new Date(2023, 4, 10),
+    updatedAt: new Date(2024, 11, 12),
+    locationIds: ['loc-1', 'loc-2'],
+  },
+  {
+    id: 'user-5',
+    firstName: 'Emily',
+    lastName: 'Martinez',
+    email: 'emily@luxemedicalspa.com',
+    phone: '(555) 100-0005',
+    role: 'Manager',
+    status: 'active',
+    lastLogin: new Date(2024, 11, 14, 7, 50),
+    createdAt: new Date(2023, 5, 20),
+    updatedAt: new Date(2024, 11, 14),
+    locationIds: ['loc-1'],
+  },
+  {
+    id: 'user-6',
+    firstName: 'Jennifer',
+    lastName: 'Williams',
+    email: 'jennifer@luxemedicalspa.com',
+    phone: '(555) 100-0006',
+    role: 'Front Desk',
+    status: 'active',
+    lastLogin: new Date(2024, 11, 14, 8, 0),
+    createdAt: new Date(2023, 6, 15),
+    updatedAt: new Date(2024, 11, 14),
+    locationIds: ['loc-1'],
+  },
+  {
+    id: 'user-7',
+    firstName: 'Robert',
+    lastName: 'Kim',
+    email: 'robert@luxemedicalspa.com',
+    phone: '(555) 100-0007',
+    role: 'Billing',
+    status: 'active',
+    lastLogin: new Date(2024, 11, 13, 16, 30),
+    createdAt: new Date(2023, 7, 1),
+    updatedAt: new Date(2024, 11, 13),
+    locationIds: ['loc-1', 'loc-2', 'loc-3'],
+  },
+  {
+    id: 'user-8',
+    firstName: 'Sarah',
+    lastName: 'Thompson',
+    email: 'sarah.t@luxemedicalspa.com',
+    phone: '(555) 100-0008',
+    role: 'Front Desk',
+    status: 'inactive',
+    lastLogin: new Date(2024, 8, 15, 17, 0),
+    createdAt: new Date(2023, 8, 10),
+    updatedAt: new Date(2024, 9, 1),
+    locationIds: ['loc-2'],
+  },
+  {
+    id: 'user-9',
+    firstName: 'Michael',
+    lastName: 'Brown',
+    email: 'michael.b@luxemedicalspa.com',
+    phone: '(555) 100-0009',
+    role: 'Provider',
+    status: 'active',
+    lastLogin: new Date(2024, 11, 11, 10, 15),
+    createdAt: new Date(2023, 9, 5),
+    updatedAt: new Date(2024, 11, 11),
+    locationIds: ['loc-2', 'loc-3'],
+  },
+  {
+    id: 'user-10',
+    firstName: 'Lisa',
+    lastName: 'Anderson',
+    email: 'lisa@luxemedicalspa.com',
+    phone: '(555) 100-0010',
+    role: 'Manager',
+    status: 'active',
+    lastLogin: new Date(2024, 11, 14, 9, 0),
+    createdAt: new Date(2023, 10, 15),
+    updatedAt: new Date(2024, 11, 14),
+    locationIds: ['loc-2'],
+  },
+];
+
+// User management utility functions
+export const getAllUsers = (): User[] => {
+  return [...users];
+};
+
+export const getUserById = (id: string): User | undefined => {
+  return users.find(user => user.id === id);
+};
+
+export const getUsersByRole = (role: UserRole): User[] => {
+  return users.filter(user => user.role === role);
+};
+
+export const getActiveUsers = (): User[] => {
+  return users.filter(user => user.status === 'active');
+};
+
+export const filterUsers = (filters: UserFilter): User[] => {
+  let result = [...users];
+
+  if (filters.search) {
+    const query = filters.search.toLowerCase();
+    result = result.filter(user =>
+      user.firstName.toLowerCase().includes(query) ||
+      user.lastName.toLowerCase().includes(query) ||
+      user.email.toLowerCase().includes(query)
+    );
+  }
+
+  if (filters.role && filters.role !== 'all') {
+    result = result.filter(user => user.role === filters.role);
+  }
+
+  if (filters.status && filters.status !== 'all') {
+    result = result.filter(user => user.status === filters.status);
+  }
+
+  return result;
+};
+
+export const addUser = (data: UserFormData): User => {
+  const newUser: User = {
+    id: `user-${Date.now()}`,
+    ...data,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    locationIds: ['loc-1'], // Default location
+  };
+  users.push(newUser);
+  return newUser;
+};
+
+export const updateUser = (id: string, data: Partial<UserFormData>): User | null => {
+  const userIndex = users.findIndex(u => u.id === id);
+  if (userIndex === -1) return null;
+
+  users[userIndex] = {
+    ...users[userIndex],
+    ...data,
+    updatedAt: new Date(),
+  };
+
+  return users[userIndex];
+};
+
+export const deleteUser = (id: string): boolean => {
+  const userIndex = users.findIndex(u => u.id === id);
+  if (userIndex === -1) return false;
+
+  users.splice(userIndex, 1);
+  return true;
+};
+
+export const toggleUserStatus = (id: string): User | null => {
+  const user = users.find(u => u.id === id);
+  if (!user) return null;
+
+  user.status = user.status === 'active' ? 'inactive' : 'active';
+  user.updatedAt = new Date();
+
+  return user;
+};
+
+// ============================================
+// RESCHEDULE INTELLIGENCE HELPERS
+// ============================================
+
+/**
+ * Normalize phone number for comparison
+ * Handles: (555) 123-4567, 555-123-4567, 5551234567, +15551234567
+ */
+const normalizePhone = (phone: string): string => {
+  const digits = phone.replace(/\D/g, '');
+  // Handle US country code
+  if (digits.length === 11 && digits.startsWith('1')) {
+    return digits.slice(1);
+  }
+  return digits;
+};
+
+/**
+ * Find the next upcoming appointment for a phone number
+ * Returns the soonest scheduled/confirmed appointment that hasn't started yet
+ */
+export const findUpcomingAppointmentByPhone = (phone: string): Appointment | undefined => {
+  const normalizedPhone = normalizePhone(phone);
+  const now = new Date();
+
+  // Find all upcoming appointments for this phone number
+  const upcomingAppointments = appointments
+    .filter(apt => {
+      // Match by phone (normalize both)
+      const aptPhone = apt.phone ? normalizePhone(apt.phone) : '';
+      const phoneMatch = aptPhone === normalizedPhone;
+
+      // Only scheduled or confirmed appointments
+      const validStatus = apt.status === 'scheduled' || apt.status === 'confirmed';
+
+      // Must be in the future
+      const isFuture = new Date(apt.startTime) > now;
+
+      return phoneMatch && validStatus && isFuture;
+    })
+    .sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime());
+
+  return upcomingAppointments[0];
+};
+
+/**
+ * Get available time slots for a provider on a specific date
+ * Returns slots based on their shift schedule minus booked appointments
+ */
+export const getProviderAvailability = (
+  practitionerId: string,
+  date: Date,
+  slotDurationMinutes: number = 30
+): Array<{ startTime: Date; endTime: Date; available: boolean }> => {
+  const slots: Array<{ startTime: Date; endTime: Date; available: boolean }> = [];
+
+  // Get the day of week (0 = Sunday, 1 = Monday, etc.)
+  const dayOfWeek = date.getDay();
+
+  // Find provider's shift for this day
+  const shift = practitionerShifts.find(
+    s => s.practitionerId === practitionerId && s.dayOfWeek === dayOfWeek
+  );
+
+  if (!shift) {
+    return slots; // Provider doesn't work this day
+  }
+
+  // Get all appointments for this provider on this date
+  const providerAppointments = appointments.filter(apt => {
+    const aptDate = new Date(apt.startTime);
+    return (
+      apt.practitionerId === practitionerId &&
+      aptDate.toDateString() === date.toDateString() &&
+      apt.status !== 'cancelled' &&
+      apt.status !== 'deleted'
+    );
+  });
+
+  // Generate slots within the shift
+  const shiftStart = new Date(date);
+  shiftStart.setHours(shift.startHour, shift.startMinute, 0, 0);
+
+  const shiftEnd = new Date(date);
+  shiftEnd.setHours(shift.endHour, shift.endMinute, 0, 0);
+
+  let currentTime = new Date(shiftStart);
+  const now = new Date();
+
+  while (currentTime < shiftEnd) {
+    const slotEnd = new Date(currentTime.getTime() + slotDurationMinutes * 60 * 1000);
+
+    // Skip if slot end goes past shift end
+    if (slotEnd > shiftEnd) break;
+
+    // Skip past slots
+    if (currentTime < now) {
+      currentTime = new Date(currentTime.getTime() + slotDurationMinutes * 60 * 1000);
+      continue;
+    }
+
+    // Check for conflicts with existing appointments
+    const hasConflict = providerAppointments.some(apt => {
+      const aptStart = new Date(apt.startTime);
+      const aptEnd = new Date(apt.endTime);
+      // Overlap check: slot starts before apt ends AND slot ends after apt starts
+      return currentTime < aptEnd && slotEnd > aptStart;
+    });
+
+    slots.push({
+      startTime: new Date(currentTime),
+      endTime: new Date(slotEnd),
+      available: !hasConflict
+    });
+
+    currentTime = new Date(currentTime.getTime() + slotDurationMinutes * 60 * 1000);
+  }
+
+  return slots;
+};
+
+/**
+ * Get next N available slots for a provider within a date range
+ * Useful for offering reschedule options via SMS
+ */
+export const getNextAvailableSlots = (
+  practitionerId: string,
+  startDate: Date,
+  maxSlots: number = 5,
+  daysToSearch: number = 14,
+  slotDurationMinutes: number = 30
+): Array<{ startTime: Date; endTime: Date; dayLabel: string; timeLabel: string }> => {
+  const availableSlots: Array<{ startTime: Date; endTime: Date; dayLabel: string; timeLabel: string }> = [];
+  const currentDate = new Date(startDate);
+
+  for (let day = 0; day < daysToSearch && availableSlots.length < maxSlots; day++) {
+    const dateToCheck = new Date(currentDate);
+    dateToCheck.setDate(currentDate.getDate() + day);
+
+    const daySlots = getProviderAvailability(practitionerId, dateToCheck, slotDurationMinutes);
+    const freeSlots = daySlots.filter(slot => slot.available);
+
+    for (const slot of freeSlots) {
+      if (availableSlots.length >= maxSlots) break;
+
+      // Format for display
+      const dayLabel = slot.startTime.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+      const timeLabel = slot.startTime.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+
+      availableSlots.push({
+        startTime: slot.startTime,
+        endTime: slot.endTime,
+        dayLabel,
+        timeLabel
+      });
+    }
+  }
+
+  return availableSlots;
+};
+
+/**
+ * Reschedule an appointment in-place (matches API pattern)
+ * Updates existing appointment with new time rather than creating a new one
+ * Returns: { success, appointment, lateFee, isLateReschedule }
+ */
+export const rescheduleAppointment = (
+  appointmentId: string,
+  newStartTime: Date,
+  reason?: string
+): {
+  success: boolean;
+  appointment?: Appointment;
+  lateFee?: number;
+  isLateReschedule: boolean;
+  error?: string;
+} => {
+  const appointment = appointments.find(apt => apt.id === appointmentId);
+
+  if (!appointment) {
+    return { success: false, isLateReschedule: false, error: 'Appointment not found' };
+  }
+
+  // Check if can be rescheduled
+  if (appointment.status === 'cancelled' || appointment.status === 'completed') {
+    return { success: false, isLateReschedule: false, error: 'Cannot reschedule cancelled or completed appointment' };
+  }
+
+  if (appointment.status === 'in_progress' || appointment.status === 'arrived') {
+    return { success: false, isLateReschedule: false, error: 'Cannot reschedule appointment in progress' };
+  }
+
+  // Calculate new end time based on duration
+  const duration = appointment.duration || 30;
+  const newEndTime = new Date(newStartTime.getTime() + duration * 60 * 1000);
+
+  // Check for late reschedule (within 24 hours)
+  const now = new Date();
+  const originalTime = new Date(appointment.startTime);
+  const hoursUntilOriginal = (originalTime.getTime() - now.getTime()) / (1000 * 60 * 60);
+  const isLateReschedule = hoursUntilOriginal < 24 && hoursUntilOriginal > 0;
+
+  // Calculate late fee if applicable (25% of service price)
+  let lateFee = 0;
+  if (isLateReschedule) {
+    const service = services.find(s => s.name === appointment.serviceName);
+    lateFee = (service?.price || 0) * 0.25;
+  }
+
+  // Store original time for notes
+  const originalDateStr = originalTime.toLocaleDateString();
+
+  // Update appointment in-place (matching API pattern)
+  appointment.startTime = newStartTime;
+  appointment.endTime = newEndTime;
+  appointment.status = 'scheduled'; // Reset to scheduled
+  appointment.updatedAt = new Date();
+  appointment.notes = reason
+    ? `${appointment.notes || ''}\n[Rescheduled from ${originalDateStr}: ${reason}]`.trim()
+    : `${appointment.notes || ''}\n[Rescheduled from ${originalDateStr}]`.trim();
+
+  return {
+    success: true,
+    appointment,
+    lateFee: lateFee > 0 ? lateFee : undefined,
+    isLateReschedule
+  };
+};
+
+/**
+ * Check if an appointment would trigger late reschedule fee
+ * Returns true if appointment is within 24 hours
+ */
+export const isLateReschedule = (appointmentId: string): boolean => {
+  const appointment = appointments.find(apt => apt.id === appointmentId);
+  if (!appointment) return false;
+
+  const now = new Date();
+  const originalTime = new Date(appointment.startTime);
+  const hoursUntilOriginal = (originalTime.getTime() - now.getTime()) / (1000 * 60 * 60);
+
+  return hoursUntilOriginal < 24 && hoursUntilOriginal > 0;
 };

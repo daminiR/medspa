@@ -55,6 +55,7 @@ export interface NewAppointmentData {
 	date: Date
 	selectedService?: Service
 	existingAppointment?: any
+	draggedDuration?: number
 }
 
 // Drag state interface
@@ -100,9 +101,22 @@ export interface CalendarViewProps {
 	onClearServiceSelection?: () => void
 	createMode?: CreateMode
 	onCreateModeChange?: (mode: CreateMode) => void
+	breakType?: BreakType
+	onBreakTypeChange?: (type: BreakType) => void
 }
 
 // View modes
-export type ViewMode = 'day' | 'week'
+export type ViewMode = 'day' | 'week' | 'month'
+
+// Month view specific types
+export interface MonthViewDayCell {
+	date: Date
+	isCurrentMonth: boolean
+	isToday: boolean
+	isWeekend: boolean
+	appointments: Appointment[]
+	breaks: Break[]
+}
 export type CalendarViewType = 'practitioners' | 'rooms'
 export type CreateMode = 'appointment' | 'break' | 'none'
+export type BreakType = 'lunch' | 'personal' | 'meeting' | 'training' | 'out_of_office' | 'other'

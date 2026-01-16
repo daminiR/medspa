@@ -1,6 +1,6 @@
 // src/utils/appointmentConflicts.ts
 
-import { Appointment, practitioners } from '@/lib/data'
+import { Appointment, Break, practitioners, BREAK_COLORS } from '@/lib/data'
 import moment from 'moment'
 
 interface TimeSlot {
@@ -210,7 +210,82 @@ export function isRoomAvailable(
 	return {
 		available: conflicts.length === 0,
 		conflicts,
-		message: conflicts.length > 0 ? 
+		message: conflicts.length > 0 ?
 			`Room is already booked during this time for ${conflicts.map(c => c.patientName).join(', ')}` : ''
+	}
+}
+
+/**
+ * Find break/time block conflicts for a proposed appointment
+ */
+export function findBreakConflicts(
+	proposedAppointment: {
+		practitionerId: string
+		startTime: Date
+		endTime: Date
+		postTreatmentTime?: number
+	},
+	breaks: Break[]
+): Break[] {
+	return breaks.filter(brk => {
+		// Skip if different practitioner
+		if (brk.practitionerId !== proposedAppointment.practitionerId) return false
+
+		// If the break allows emergencies, we might want to skip (future use case)
+		// For now, all breaks block appointments
+
+		// Calculate effective end time with post-treatment buffer
+		let effectiveEndTime = proposedAppointment.endTime
+		if (proposedAppointment.postTreatmentTime) {
+			effectiveEndTime = new Date(proposedAppointment.endTime)
+			effectiveEndTime.setMinutes(effectiveEndTime.getMinutes() + proposedAppointment.postTreatmentTime)
+		}
+
+		// Check for time overlap using existing utility
+		return timeSlotsOverlap(
+			{ startTime: proposedAppointment.startTime, endTime: effectiveEndTime },
+			{ startTime: brk.startTime, endTime: brk.endTime }
+		)
+	})
+}
+
+/**
+ * Get a user-friendly message for break conflicts
+ */
+export function getBreakConflictMessage(breakConflicts: Break[]): string {
+	if (breakConflicts.length === 0) return ''
+
+	const firstBreak = breakConflicts[0]
+	const breakLabel = BREAK_COLORS[firstBreak.type]?.label || 'Time Block'
+	const time = moment(firstBreak.startTime).format('h:mm A')
+
+	if (breakConflicts.length === 1) {
+		return `${breakLabel} is scheduled at ${time}`
+	}
+
+	return `${breakConflicts.length} time blocks scheduled during this time`
+}
+
+/**
+ * Check if a time slot has any break conflicts
+ */
+export function hasBreakConflicts(
+	practitionerId: string,
+	startTime: Date,
+	duration: number,
+	breaks: Break[]
+): { hasConflict: boolean; conflicts: Break[]; message: string } {
+	const endTime = new Date(startTime)
+	endTime.setMinutes(endTime.getMinutes() + duration)
+
+	const conflicts = findBreakConflicts(
+		{ practitionerId, startTime, endTime },
+		breaks
+	)
+
+	return {
+		hasConflict: conflicts.length > 0,
+		conflicts,
+		message: getBreakConflictMessage(conflicts)
 	}
 }

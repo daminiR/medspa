@@ -3,7 +3,7 @@
  * Advanced AI-powered messaging system for Luxe Medical Spa
  */
 
-import { OpenAI } from 'openai';
+import { OpenAI } from '@/lib/openai-stub';
 import { z } from 'zod';
 
 // Initialize OpenAI (can be swapped with Claude or other models)
@@ -102,7 +102,7 @@ export const AnalysisResultSchema = z.object({
     type: z.string(),
     label: z.string(),
     description: z.string().optional(),
-    data: z.record(z.any()).optional(),
+    data: z.record(z.string(), z.any()).optional(),
   })),
   keywords: z.array(z.string()),
   riskFactors: z.array(z.string()),
@@ -236,7 +236,7 @@ export class AIConversationEngine {
         responses.push(
           'I understand you need to reschedule. What dates and times work better for you?',
           'No problem! Let me help you find a new time. When would you prefer?',
-          'I'll help you reschedule. What are your preferred dates and times?'
+          "I'll help you reschedule. What are your preferred dates and times?"
         );
         break;
         
@@ -245,11 +245,11 @@ export class AIConversationEngine {
           const lastTreatment = context.patientProfile.recentTreatments[0];
           responses.push(
             `I see you recently had ${lastTreatment.treatment}. How can I help with your question?`,
-            'I'd be happy to answer your treatment question. What would you like to know?'
+            "I'd be happy to answer your treatment question. What would you like to know?"
           );
         } else {
           responses.push(
-            'I'd be happy to answer your treatment question. What would you like to know?',
+            "I'd be happy to answer your treatment question. What would you like to know?",
             'Great question! Let me provide you with information about our treatments.',
             'I can help with treatment information. What specific details are you looking for?'
           );
@@ -268,7 +268,7 @@ export class AIConversationEngine {
         responses.push(
           'I can help with pricing information. Which treatment are you interested in?',
           'Our pricing varies by treatment. What service would you like pricing for?',
-          'I'd be happy to provide pricing. Which treatment are you considering?'
+          "I'd be happy to provide pricing. Which treatment are you considering?"
         );
         break;
         
@@ -276,7 +276,7 @@ export class AIConversationEngine {
       case IntentCategory.URGENT_CONCERN:
         responses.push(
           'This sounds urgent. A staff member will contact you immediately. If this is a medical emergency, please call 911.',
-          'I'm alerting our medical team right away. Someone will call you within minutes.',
+          "I'm alerting our medical team right away. Someone will call you within minutes.",
           'Your message has been marked as urgent. Our team is being notified immediately.'
         );
         break;
@@ -284,8 +284,8 @@ export class AIConversationEngine {
       default:
         responses.push(
           'Thank you for your message. How can I assist you today?',
-          'I've received your message. Let me help you with that.',
-          'Thanks for reaching out! I'm here to help.'
+          "I've received your message. Let me help you with that.",
+          "Thanks for reaching out! I'm here to help."
         );
     }
     
@@ -702,7 +702,7 @@ export class AIConversationEngine {
       !['the', 'and', 'for', 'with', 'have', 'this', 'that', 'from', 'what', 'when', 'where'].includes(word)
     );
     
-    return [...new Set(importantWords)].slice(0, 10);
+    return Array.from(new Set(importantWords)).slice(0, 10);
   }
 }
 

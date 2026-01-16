@@ -1,0 +1,1263 @@
+/**
+ * Charting System - Responsive Styles
+ * Optimized for iPad/Tablet charting workflows
+ *
+ * Breakpoints:
+ * - Phone: < 640px (sm)
+ * - Tablet Portrait: 640px - 1024px (md-lg)
+ * - Tablet Landscape: 1024px - 1366px (lg-xl)
+ * - Desktop: > 1366px (xl+)
+ */
+
+/* ========================================================================== */
+/* GLOBAL CHARTING CONTAINER                                                  */
+/* ========================================================================== */
+
+.charting-container {
+  @apply w-full h-full overflow-hidden;
+}
+
+.charting-main-grid {
+  @apply grid w-full h-full;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ========================================================================== */
+/* PHONE LAYOUT (< 640px)                                                     */
+/* Full screen chart, bottom sheet for tools                                  */
+/* ========================================================================== */
+
+@media (max-width: 639px) {
+  /* Main layout - vertical stack */
+  .charting-main-grid {
+    @apply grid-rows-[auto_1fr_auto];
+    @apply grid-cols-1;
+    @apply h-screen;
+    grid-template-areas:
+      "header"
+      "chart"
+      "controls";
+  }
+
+  /* Minimal header */
+  .charting-header {
+    @apply h-14 px-3 py-2;
+    @apply border-b border-gray-200;
+    @apply bg-white sticky top-0 z-30;
+    grid-area: header;
+  }
+
+  .charting-header-title {
+    @apply text-sm font-semibold truncate;
+  }
+
+  .charting-header-actions {
+    @apply flex gap-2;
+  }
+
+  .charting-header-actions > button {
+    @apply p-2 min-w-[40px] min-h-[40px];
+  }
+
+  /* Chart takes full available height */
+  .charting-chart-area {
+    @apply w-full h-full relative overflow-auto;
+    @apply bg-white;
+    grid-area: chart;
+    /* Full screen on phone */
+    min-height: 0;
+  }
+
+  .charting-face-chart-wrapper {
+    @apply w-full h-full flex items-center justify-center;
+    @apply p-4;
+  }
+
+  .charting-face-chart-svg {
+    @apply w-full h-auto max-w-md;
+    /* Chart fills screen width with padding */
+  }
+
+  /* Hide sidebars on phone */
+  .charting-sidebar-left,
+  .charting-sidebar-right {
+    display: none;
+  }
+
+  /* Bottom controls - bottom sheet style */
+  .charting-controls-wrapper {
+    grid-area: controls;
+    @apply bg-white border-t border-gray-200;
+    @apply fixed bottom-0 left-0 right-0 z-40;
+    transform: translateY(0);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .charting-controls-wrapper.hidden {
+    transform: translateY(100%);
+  }
+
+  /* Bottom navigation */
+  .charting-bottom-nav {
+    @apply flex items-center justify-around;
+    @apply h-16 px-2;
+    @apply bg-white;
+  }
+
+  .charting-bottom-nav-item {
+    @apply flex flex-col items-center justify-center gap-1;
+    @apply min-w-[56px] min-h-[56px];
+    @apply text-xs font-medium text-gray-600;
+    @apply rounded-lg;
+    @apply transition-colors duration-150;
+    /* Apple HIG 44x44 minimum touch target */
+  }
+
+  .charting-bottom-nav-item.active {
+    @apply text-purple-600 bg-purple-50;
+  }
+
+  .charting-bottom-nav-item:active {
+    @apply scale-95 bg-gray-100;
+  }
+
+  /* Bottom sheet for tools */
+  .charting-bottom-sheet {
+    @apply fixed bottom-0 left-0 right-0 z-50;
+    @apply bg-white rounded-t-2xl;
+    @apply shadow-2xl;
+    transform: translateY(100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    max-height: 75vh;
+    @apply overflow-y-auto;
+  }
+
+  .charting-bottom-sheet.open {
+    transform: translateY(0);
+  }
+
+  .charting-bottom-sheet-handle {
+    @apply w-10 h-1 bg-gray-300 rounded-full;
+    @apply mx-auto my-3;
+  }
+
+  .charting-bottom-sheet-content {
+    @apply px-4 pb-6;
+  }
+
+  /* Totals panel - compact on phone */
+  .charting-totals-panel {
+    @apply fixed top-16 right-0 left-0;
+    @apply bg-white border-b border-gray-200;
+    @apply px-4 py-2 z-20;
+    @apply flex items-center justify-between;
+    @apply text-sm;
+  }
+
+  .charting-totals-panel.collapsed {
+    @apply h-10;
+  }
+}
+
+/* ========================================================================== */
+/* TABLET PORTRAIT (640px - 1024px)                                           */
+/* Chart 85% height, minimal header, collapsed footer                         */
+/* ========================================================================== */
+
+@media (min-width: 640px) and (max-width: 1023px) and (orientation: portrait) {
+  /* Main layout */
+  .charting-main-grid {
+    @apply grid-rows-[auto_1fr_auto];
+    @apply grid-cols-1;
+    @apply h-screen;
+    grid-template-areas:
+      "header"
+      "chart"
+      "footer";
+  }
+
+  /* Minimal header - 15% or less */
+  .charting-header {
+    @apply h-16 px-6 py-3;
+    @apply border-b border-gray-200;
+    @apply bg-white sticky top-0 z-30;
+    @apply flex items-center justify-between;
+    grid-area: header;
+    /* ~7-8% of screen */
+  }
+
+  .charting-header-content {
+    @apply flex items-center gap-4 flex-1;
+  }
+
+  .charting-header-title {
+    @apply text-lg font-semibold;
+  }
+
+  .charting-header-meta {
+    @apply flex items-center gap-3 text-sm text-gray-600;
+  }
+
+  .charting-header-actions {
+    @apply flex items-center gap-2;
+  }
+
+  /* Chart area - 85% height */
+  .charting-chart-area {
+    grid-area: chart;
+    @apply w-full relative;
+    @apply bg-gray-50;
+    @apply flex items-center justify-center;
+    /* 85% of viewport height achieved through flex layout */
+    min-height: 0;
+    height: 100%;
+  }
+
+  .charting-face-chart-wrapper {
+    @apply w-full h-full max-w-3xl mx-auto;
+    @apply flex items-center justify-center;
+    @apply p-6;
+    /* Chart takes 85% of available height */
+    max-height: 85vh;
+  }
+
+  .charting-face-chart-svg {
+    @apply w-full h-auto;
+    max-width: 600px;
+    /* Ensure chart doesn't overflow */
+    max-height: calc(85vh - 4rem);
+  }
+
+  /* Hide sidebars on tablet portrait */
+  .charting-sidebar-left,
+  .charting-sidebar-right {
+    display: none;
+  }
+
+  /* Collapsed footer - minimal height */
+  .charting-footer {
+    grid-area: footer;
+    @apply bg-white border-t border-gray-200;
+    @apply px-6 py-3;
+    @apply h-16;
+    /* ~7-8% of screen */
+    @apply flex items-center justify-between;
+  }
+
+  .charting-footer.collapsed {
+    @apply h-12 py-2;
+  }
+
+  .charting-footer-summary {
+    @apply flex items-center gap-6 text-sm;
+  }
+
+  .charting-footer-actions {
+    @apply flex items-center gap-3;
+  }
+
+  /* Floating toolbar for iPad */
+  .charting-floating-toolbar {
+    @apply fixed bottom-6 left-1/2;
+    transform: translateX(-50%);
+    @apply z-40;
+    @apply bg-white/95 backdrop-blur-md;
+    @apply rounded-2xl shadow-xl;
+    @apply px-5 py-3;
+    @apply flex items-center gap-3;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .charting-floating-toolbar.auto-hidden {
+    @apply opacity-0 pointer-events-none;
+    transform: translateX(-50%) translateY(10px);
+  }
+
+  .charting-floating-toolbar-button {
+    @apply flex flex-col items-center gap-1;
+    @apply px-4 py-2 min-w-[60px] min-h-[60px];
+    @apply rounded-xl;
+    @apply text-xs font-medium text-gray-700;
+    @apply transition-all duration-150;
+    /* 44pt minimum touch target for iPad */
+  }
+
+  .charting-floating-toolbar-button:active {
+    @apply scale-95 bg-gray-100;
+  }
+
+  .charting-floating-toolbar-button.active {
+    @apply bg-purple-100 text-purple-700;
+  }
+
+  /* Side panels - appear as overlays/modals */
+  .charting-side-panel-overlay {
+    @apply fixed inset-0 bg-black/30 z-40;
+    @apply opacity-0 pointer-events-none;
+    @apply transition-opacity duration-300;
+  }
+
+  .charting-side-panel-overlay.visible {
+    @apply opacity-100 pointer-events-auto;
+  }
+
+  .charting-side-panel {
+    @apply fixed right-0 top-0 bottom-0 z-50;
+    @apply w-80 bg-white;
+    @apply shadow-2xl;
+    @apply overflow-y-auto;
+    transform: translateX(100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .charting-side-panel.visible {
+    transform: translateX(0);
+  }
+
+  /* Totals summary - compact */
+  .charting-totals-compact {
+    @apply flex items-center gap-4;
+    @apply px-3 py-2 bg-purple-50 rounded-lg;
+    @apply text-sm font-medium;
+  }
+
+  .charting-totals-compact-item {
+    @apply flex items-center gap-2;
+  }
+}
+
+/* ========================================================================== */
+/* TABLET LANDSCAPE (1024px - 1366px)                                         */
+/* Chart 90% width, side tools if needed                                      */
+/* ========================================================================== */
+
+@media (min-width: 1024px) and (max-width: 1365px) and (orientation: landscape) {
+  /* 3-column layout */
+  .charting-main-grid {
+    @apply grid-rows-[auto_1fr_auto];
+    @apply h-screen;
+    grid-template-columns: 15% 1fr 20%;
+    grid-template-areas:
+      "header header header"
+      "left chart right"
+      "footer footer footer";
+  }
+
+  /* Header */
+  .charting-header {
+    grid-area: header;
+    @apply h-20 px-6 py-4;
+    @apply border-b border-gray-200 bg-white;
+    @apply flex items-center justify-between;
+  }
+
+  .charting-header-content {
+    @apply flex items-center gap-6;
+  }
+
+  .charting-header-title {
+    @apply text-xl font-semibold;
+  }
+
+  .charting-header-meta {
+    @apply flex items-center gap-4 text-sm text-gray-600;
+  }
+
+  /* Left sidebar - tools/zones */
+  .charting-sidebar-left {
+    grid-area: left;
+    @apply bg-white border-r border-gray-200;
+    @apply overflow-y-auto;
+    @apply flex flex-col;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .charting-sidebar-left.collapsed {
+    @apply w-16;
+    grid-template-columns: 60px 1fr 20%;
+  }
+
+  .charting-sidebar-left-header {
+    @apply px-4 py-3 border-b border-gray-200;
+    @apply font-semibold text-sm;
+  }
+
+  .charting-sidebar-left-content {
+    @apply flex-1 overflow-y-auto p-3;
+  }
+
+  /* Chart area - 90% width of center column */
+  .charting-chart-area {
+    grid-area: chart;
+    @apply bg-gray-50;
+    @apply flex items-center justify-center;
+    @apply overflow-auto;
+    min-height: 0;
+  }
+
+  .charting-face-chart-wrapper {
+    @apply w-[90%] h-full mx-auto;
+    @apply flex items-center justify-center;
+    @apply py-6;
+    max-width: 900px;
+  }
+
+  .charting-face-chart-svg {
+    @apply w-full h-auto;
+    /* 90% width constraint */
+    max-height: calc(100vh - 200px);
+  }
+
+  /* Right sidebar - patient info, totals */
+  .charting-sidebar-right {
+    grid-area: right;
+    @apply bg-white border-l border-gray-200;
+    @apply overflow-y-auto;
+    @apply flex flex-col;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .charting-sidebar-right.collapsed {
+    transform: translateX(100%);
+  }
+
+  .charting-sidebar-right-header {
+    @apply px-4 py-3 border-b border-gray-200;
+    @apply font-semibold text-sm;
+  }
+
+  .charting-sidebar-right-content {
+    @apply flex-1 overflow-y-auto p-4;
+  }
+
+  /* Footer */
+  .charting-footer {
+    grid-area: footer;
+    @apply h-16 px-6 py-3;
+    @apply bg-white border-t border-gray-200;
+    @apply flex items-center justify-between;
+  }
+
+  .charting-footer-actions {
+    @apply flex items-center gap-3;
+  }
+
+  /* Sidebar toggle buttons */
+  .charting-sidebar-toggle {
+    @apply absolute top-1/2 -translate-y-1/2;
+    @apply w-6 h-12;
+    @apply bg-white border border-gray-200 rounded-lg;
+    @apply flex items-center justify-center;
+    @apply cursor-pointer shadow-md;
+    @apply transition-all duration-200;
+    @apply z-10;
+  }
+
+  .charting-sidebar-toggle:hover {
+    @apply bg-gray-50 shadow-lg;
+  }
+
+  .charting-sidebar-toggle.left {
+    @apply -right-3;
+  }
+
+  .charting-sidebar-toggle.right {
+    @apply -left-3;
+  }
+}
+
+/* ========================================================================== */
+/* DESKTOP (> 1366px)                                                         */
+/* More UI elements, full toolbars, detailed info                             */
+/* ========================================================================== */
+
+@media (min-width: 1366px) {
+  /* Full 3-column layout with expanded features */
+  .charting-main-grid {
+    @apply grid-rows-[auto_1fr_auto];
+    @apply h-screen;
+    grid-template-columns: 12% 1fr 25%;
+    grid-template-areas:
+      "header header header"
+      "left chart right"
+      "footer footer footer";
+  }
+
+  /* Expanded header */
+  .charting-header {
+    grid-area: header;
+    @apply h-24 px-8 py-5;
+    @apply border-b border-gray-200 bg-white;
+    @apply flex items-center justify-between;
+  }
+
+  .charting-header-content {
+    @apply flex items-center gap-8;
+  }
+
+  .charting-header-patient-info {
+    @apply flex items-center gap-4;
+  }
+
+  .charting-header-avatar {
+    @apply w-14 h-14 rounded-full;
+    @apply bg-gradient-to-br from-purple-500 to-pink-500;
+    @apply flex items-center justify-center;
+    @apply text-white font-bold text-lg;
+  }
+
+  .charting-header-details {
+    @apply flex flex-col gap-1;
+  }
+
+  .charting-header-title {
+    @apply text-xl font-bold;
+  }
+
+  .charting-header-meta {
+    @apply flex items-center gap-4 text-sm text-gray-600;
+  }
+
+  /* Left sidebar - full tools */
+  .charting-sidebar-left {
+    grid-area: left;
+    @apply bg-white border-r border-gray-200;
+    @apply overflow-y-auto;
+    @apply flex flex-col;
+  }
+
+  .charting-sidebar-left-header {
+    @apply px-5 py-4 border-b border-gray-200;
+    @apply font-semibold;
+  }
+
+  .charting-sidebar-left-content {
+    @apply flex-1 overflow-y-auto p-4;
+  }
+
+  /* Chart area - centered with max width */
+  .charting-chart-area {
+    grid-area: chart;
+    @apply bg-gray-50;
+    @apply flex items-center justify-center;
+    @apply overflow-auto;
+    @apply px-8 py-6;
+  }
+
+  .charting-face-chart-wrapper {
+    @apply w-full h-full max-w-5xl mx-auto;
+    @apply flex items-center justify-center;
+  }
+
+  .charting-face-chart-svg {
+    @apply w-full h-auto;
+    max-width: 1000px;
+    max-height: calc(100vh - 240px);
+  }
+
+  /* Right sidebar - full patient details */
+  .charting-sidebar-right {
+    grid-area: right;
+    @apply bg-white border-l border-gray-200;
+    @apply overflow-y-auto;
+    @apply flex flex-col;
+  }
+
+  .charting-sidebar-right-header {
+    @apply px-5 py-4 border-b border-gray-200;
+    @apply font-semibold;
+  }
+
+  .charting-sidebar-right-content {
+    @apply flex-1 overflow-y-auto p-5;
+    @apply space-y-6;
+  }
+
+  /* Footer - full actions */
+  .charting-footer {
+    grid-area: footer;
+    @apply h-20 px-8 py-4;
+    @apply bg-white border-t border-gray-200;
+    @apply flex items-center justify-between;
+  }
+
+  .charting-footer-summary {
+    @apply flex items-center gap-8;
+  }
+
+  .charting-footer-summary-item {
+    @apply flex items-center gap-2 text-sm;
+  }
+
+  .charting-footer-actions {
+    @apply flex items-center gap-4;
+  }
+
+  /* Desktop-specific features */
+  .charting-keyboard-shortcuts {
+    display: block;
+  }
+
+  .charting-advanced-tools {
+    display: block;
+  }
+}
+
+/* ========================================================================== */
+/* TOUCH & STYLUS OPTIMIZATIONS                                              */
+/* ========================================================================== */
+
+/* Touch target minimums */
+.charting-touch-target {
+  @apply min-w-[44px] min-h-[44px];
+  /* Apple HIG minimum */
+  @apply touch-manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Enhanced touch targets for coarse pointers (finger) */
+@media (hover: none) and (pointer: coarse) {
+  .charting-touch-target {
+    @apply min-w-[48px] min-h-[48px];
+  }
+
+  .charting-zone-button {
+    @apply min-w-[52px] min-h-[52px];
+    @apply text-base;
+  }
+
+  .charting-injection-marker {
+    @apply w-8 h-8;
+    /* Larger markers for finger touch */
+  }
+}
+
+/* Fine pointer (stylus/Apple Pencil) optimizations */
+@media (pointer: fine) {
+  .charting-chart-area {
+    cursor: crosshair;
+  }
+
+  .charting-injection-marker {
+    @apply w-4 h-4;
+    /* Precise markers for stylus */
+  }
+
+  .charting-zone-button {
+    @apply text-sm;
+  }
+
+  /* Custom cursor for precision */
+  .charting-stylus-mode {
+    cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="2" fill="rgba(139, 92, 246, 0.8)"/><circle cx="8" cy="8" r="6" fill="none" stroke="rgba(139, 92, 246, 0.4)" stroke-width="1"/></svg>') 8 8, crosshair;
+  }
+}
+
+/* Prevent zoom on chart interactions */
+.charting-no-zoom {
+  @apply touch-manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+/* ========================================================================== */
+/* ANIMATION & TRANSITIONS                                                   */
+/* ========================================================================== */
+
+/* Smooth layout transitions */
+.charting-transition-layout {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Focus mode transition */
+.charting-focus-mode-enter {
+  animation: chartingFocusEnter 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.charting-focus-mode-exit {
+  animation: chartingFocusExit 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes chartingFocusEnter {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.95);
+    pointer-events: none;
+  }
+}
+
+@keyframes chartingFocusExit {
+  0% {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Toolbar slide animations */
+.charting-toolbar-slide-up {
+  animation: chartingToolbarSlideUp 0.2s cubic-bezier(0.4, 0, 1, 1) forwards;
+}
+
+.charting-toolbar-slide-down {
+  animation: chartingToolbarSlideDown 0.2s cubic-bezier(0, 0, 0.2, 1) forwards;
+}
+
+@keyframes chartingToolbarSlideUp {
+  0% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+}
+
+@keyframes chartingToolbarSlideDown {
+  0% {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Number counter pulse */
+.charting-number-pulse {
+  animation: chartingNumberPulse 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes chartingNumberPulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.15);
+    @apply text-purple-600;
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* ========================================================================== */
+/* INJECTION MARKER STYLES                                                   */
+/* ========================================================================== */
+
+.charting-injection-marker {
+  @apply rounded-full border-2 border-white;
+  @apply shadow-lg cursor-pointer;
+  @apply transition-all duration-150;
+}
+
+.charting-injection-marker:hover {
+  @apply scale-125 shadow-xl;
+}
+
+.charting-injection-marker:active {
+  @apply scale-110;
+}
+
+.charting-injection-marker.neurotoxin {
+  @apply bg-purple-500;
+}
+
+.charting-injection-marker.filler {
+  @apply bg-pink-500;
+}
+
+.charting-injection-marker.selected {
+  @apply scale-125 border-4;
+  box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.3);
+}
+
+/* ========================================================================== */
+/* UTILITY CLASSES                                                           */
+/* ========================================================================== */
+
+/* Visibility helpers */
+.hide-on-phone {
+  display: none;
+}
+@media (min-width: 640px) {
+  .hide-on-phone {
+    display: block;
+  }
+}
+
+.hide-on-tablet {
+  display: none;
+}
+@media (min-width: 1024px) {
+  .hide-on-tablet {
+    display: block;
+  }
+}
+
+.show-on-phone {
+  display: block;
+}
+@media (min-width: 640px) {
+  .show-on-phone {
+    display: none;
+  }
+}
+
+.show-on-tablet {
+  display: none;
+}
+@media (min-width: 768px) {
+  .show-on-tablet {
+    display: block;
+  }
+}
+@media (min-width: 1024px) {
+  .show-on-tablet {
+    display: none;
+  }
+}
+
+/* Auto-save indicator */
+.charting-auto-save-indicator {
+  @apply flex items-center gap-2 px-3 py-1.5 rounded-lg;
+  @apply text-xs font-medium;
+  @apply transition-all duration-200;
+}
+
+.charting-auto-save-indicator.saving {
+  @apply bg-amber-50 text-amber-700 border border-amber-200;
+}
+
+.charting-auto-save-indicator.saved {
+  @apply bg-green-50 text-green-700 border border-green-200;
+}
+
+.charting-auto-save-indicator.error {
+  @apply bg-red-50 text-red-700 border border-red-200;
+}
+
+/* Loading skeleton */
+.charting-skeleton {
+  @apply bg-gray-200 rounded animate-pulse;
+}
+
+.charting-skeleton-text {
+  @apply h-4 bg-gray-200 rounded animate-pulse;
+}
+
+.charting-skeleton-avatar {
+  @apply w-12 h-12 bg-gray-200 rounded-full animate-pulse;
+}
+
+/* Focus mode overlay */
+.charting-focus-overlay {
+  @apply fixed bottom-6 left-1/2 -translate-x-1/2 z-50;
+  @apply bg-white/95 backdrop-blur-xl rounded-2xl;
+  @apply px-6 py-3 shadow-2xl;
+  @apply opacity-0 pointer-events-none;
+  @apply transition-opacity duration-200;
+}
+
+.charting-focus-overlay.visible {
+  @apply opacity-100 pointer-events-auto;
+}
+
+/* Backdrop for overlays */
+.charting-backdrop {
+  @apply fixed inset-0 bg-black/50 z-30;
+  @apply opacity-0 pointer-events-none;
+  @apply transition-opacity duration-300;
+}
+
+.charting-backdrop.visible {
+  @apply opacity-100 pointer-events-auto;
+}
+
+/* ========================================================================== */
+/* SPECIFIC IPAD PRO OPTIMIZATIONS                                           */
+/* ========================================================================== */
+
+/* iPad Pro 11" and 12.9" */
+@media (min-width: 1024px) and (max-width: 1366px) and (-webkit-min-device-pixel-ratio: 2) {
+  .charting-face-chart-wrapper {
+    @apply max-w-4xl;
+  }
+
+  .charting-face-chart-svg {
+    max-width: 850px;
+  }
+
+  /* Optimized for Apple Pencil */
+  .charting-injection-marker {
+    @apply w-5 h-5;
+  }
+
+  .charting-zone-button {
+    @apply min-w-[48px] min-h-[48px];
+  }
+}
+
+/* ========================================================================== */
+/* PRINT STYLES                                                              */
+/* ========================================================================== */
+
+@media print {
+  /* Hide UI elements */
+  .charting-header,
+  .charting-footer,
+  .charting-sidebar-left,
+  .charting-sidebar-right,
+  .charting-floating-toolbar,
+  .charting-bottom-nav,
+  .charting-bottom-sheet,
+  .charting-controls-wrapper {
+    display: none;
+  }
+
+  /* Full page chart */
+  .charting-chart-area {
+    @apply w-full h-full;
+    @apply m-0 p-0;
+  }
+
+  .charting-face-chart-wrapper {
+    @apply w-full max-w-full h-full;
+    @apply p-0;
+  }
+
+  .charting-face-chart-svg {
+    @apply w-full max-w-full;
+    page-break-inside: avoid;
+  }
+
+  /* Ensure colors print */
+  .charting-injection-marker {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    color-adjust: exact;
+  }
+}
+
+/* ========================================================================== */
+/* DARK MODE SUPPORT (Future)                                                */
+/* ========================================================================== */
+
+@media (prefers-color-scheme: dark) {
+  /* Optional dark mode styles for charting */
+  /* Uncomment when implementing dark mode */
+  /*
+  .charting-container {
+    @apply bg-gray-900;
+  }
+
+  .charting-header,
+  .charting-footer,
+  .charting-sidebar-left,
+  .charting-sidebar-right {
+    @apply bg-gray-800 border-gray-700;
+  }
+
+  .charting-chart-area {
+    @apply bg-gray-900;
+  }
+  */
+}
+
+/* ========================================================================== */
+/* PSYCHOLOGY-BASED DOCKED LAYOUT                                            */
+/* Based on PRACTITIONER_CONTEXT.md guidelines:                              */
+/* - LEFT: Reference (layers, view options, read-only data)                  */
+/* - CENTER: Canvas (maximum space for chart)                                */
+/* - RIGHT: Actions (tools, products, summary)                               */
+/* - BOTTOM: Global actions (undo/redo, zoom, save)                          */
+/* ========================================================================== */
+
+.charting-docked-layout {
+  display: grid;
+  width: 100%;
+  /* Use explicit height calculation for fixed positioning.
+     When position:fixed with top and bottom set, height is auto-calculated,
+     but we need to ensure the grid has proper height context.
+     The 48px is the nav bar height (h-12).
+     We use both vh (fallback) and dvh (dynamic, for mobile browsers with address bars). */
+  height: calc(100vh - 48px);
+  /* Left dock uses position:fixed via LeftDock component and overlays on top of the canvas.
+     Grid only needs canvas, right-dock, and bottom-bar. */
+  grid-template-columns: 1fr auto;
+  grid-template-rows: 1fr auto;
+  grid-template-areas:
+    "canvas right-dock"
+    "bottom-bar bottom-bar";
+  overflow: hidden;
+}
+
+/* Modern browsers: Use dynamic viewport height for proper mobile support */
+@supports (height: 100dvh) {
+  .charting-docked-layout {
+    height: calc(100dvh - 48px);
+  }
+}
+
+/* Left Dock - Reference panels (Layers, View options) */
+.charting-left-dock {
+  grid-area: left-dock;
+  width: 220px;
+  min-width: 200px;
+  max-width: 280px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  overflow-y: auto;
+  overflow-x: hidden;
+  z-index: 100;
+  transition: width 0.2s ease, transform 0.2s ease;
+}
+
+.charting-left-dock.collapsed {
+  width: 0;
+  min-width: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+/* Light mode styling for left dock */
+.charting-left-dock.light-mode {
+  background: rgba(255, 255, 255, 0.85);
+  border-right: 1px solid rgba(0, 0, 0, 0.08);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/* Dark mode styling for left dock */
+.charting-left-dock.dark-mode {
+  background: rgba(17, 24, 39, 0.9);
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/* Center Canvas - Maximum space for chart */
+.charting-center-canvas {
+  grid-area: canvas;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* Right Dock - Action panels (Tools, Products, Summary) */
+.charting-right-dock {
+  grid-area: right-dock;
+  width: 280px;
+  min-width: 250px;
+  max-width: 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  overflow-y: auto;
+  overflow-x: hidden;
+  z-index: 100;
+  transition: width 0.2s ease, transform 0.2s ease;
+}
+
+.charting-right-dock.collapsed {
+  width: 0;
+  min-width: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+/* Light mode styling for right dock */
+.charting-right-dock.light-mode {
+  background: rgba(255, 255, 255, 0.85);
+  border-left: 1px solid rgba(0, 0, 0, 0.08);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/* Dark mode styling for right dock */
+.charting-right-dock.dark-mode {
+  background: rgba(17, 24, 39, 0.9);
+  border-left: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/* Bottom Bar - Global actions (Undo/Redo, Zoom, Save) */
+.charting-bottom-bar {
+  grid-area: bottom-bar;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1rem;
+  gap: 1rem;
+  z-index: 100;
+}
+
+/* Light mode styling for bottom bar */
+.charting-bottom-bar.light-mode {
+  background: rgba(255, 255, 255, 0.92);
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* Dark mode styling for bottom bar */
+.charting-bottom-bar.dark-mode {
+  background: rgba(17, 24, 39, 0.95);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* Bottom bar sections */
+.charting-bottom-bar-left {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.charting-bottom-bar-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  flex: 1;
+}
+
+.charting-bottom-bar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Dock section headers */
+.charting-dock-section {
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.charting-dock-section.light-mode {
+  background: rgba(0, 0, 0, 0.03);
+}
+
+.charting-dock-section.dark-mode {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.charting-dock-section-title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.25rem 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.charting-dock-section-title.light-mode {
+  color: #6b7280;
+}
+
+.charting-dock-section-title.dark-mode {
+  color: #9ca3af;
+}
+
+/* Tablet Portrait: Collapse docks to icons or hide */
+@media (max-width: 1023px) and (orientation: portrait) {
+  .charting-docked-layout {
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr auto;
+    grid-template-areas:
+      "canvas"
+      "bottom-bar";
+  }
+
+  .charting-left-dock,
+  .charting-right-dock {
+    position: fixed;
+    top: 48px; /* Below nav bar */
+    bottom: 60px; /* Above bottom bar */
+    z-index: 200;
+    width: 280px;
+    transform: translateX(-100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .charting-left-dock {
+    left: 0;
+  }
+
+  .charting-right-dock {
+    right: 0;
+    transform: translateX(100%);
+  }
+
+  .charting-left-dock.expanded {
+    transform: translateX(0);
+  }
+
+  .charting-right-dock.expanded {
+    transform: translateX(0);
+  }
+
+  .charting-bottom-bar {
+    height: 64px;
+  }
+}
+
+/* Phone: Bottom bar becomes larger, docks become bottom sheets */
+@media (max-width: 639px) {
+  .charting-bottom-bar {
+    height: 72px;
+    padding: 0.5rem;
+  }
+
+  .charting-left-dock,
+  .charting-right-dock {
+    width: 100%;
+    max-width: 100%;
+    top: auto;
+    bottom: 72px;
+    left: 0;
+    right: 0;
+    max-height: 60vh;
+    border-radius: 1rem 1rem 0 0;
+    transform: translateY(100%);
+  }
+
+  .charting-left-dock.expanded,
+  .charting-right-dock.expanded {
+    transform: translateY(0);
+  }
+}
+
+/* Large Desktop: Slightly wider docks */
+@media (min-width: 1536px) {
+  .charting-left-dock {
+    width: 260px;
+    max-width: 300px;
+  }
+
+  .charting-right-dock {
+    width: 320px;
+    max-width: 360px;
+  }
+}

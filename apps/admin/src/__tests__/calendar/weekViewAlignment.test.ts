@@ -1,4 +1,3 @@
-import { describe, it, expect } from '@jest/globals'
 import { getShiftBlockStyle, getAppointmentStyle } from '@/utils/calendarHelpers'
 
 describe('Week View Time Alignment', () => {

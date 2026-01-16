@@ -5,6 +5,7 @@ import { Navigation } from '@/components/Navigation'
 import { PackageList } from '@/components/packages/PackageList'
 import { GiftCardManager } from '@/components/payments/GiftCardManager'
 import { CreditsRefunds } from '@/components/payments/CreditsRefunds'
+import { UserManagement } from '@/components/users'
 import {
   Settings,
   Package,
@@ -38,11 +39,12 @@ import {
   Edit2,
   Trash2,
   Gift,
-  RefreshCw
+  RefreshCw,
+  Palette
 } from 'lucide-react'
 
 export default function SettingsPage() {
-  const [activeSection, setActiveSection] = useState<'general' | 'packages' | 'giftcards' | 'credits' | 'users' | 'security' | 'billing' | 'integrations' | 'quickreplies'>('general')
+  const [activeSection, setActiveSection] = useState<'general' | 'packages' | 'giftcards' | 'credits' | 'users' | 'security' | 'billing' | 'integrations' | 'quickreplies' | 'automatedmessages' | 'charting'>('general')
 
   const sections = [
     {
@@ -56,6 +58,18 @@ export default function SettingsPage() {
       title: 'Quick Replies',
       icon: MessageSquare,
       description: 'Customize quick reply templates for messaging'
+    },
+    {
+      id: 'automatedmessages',
+      title: 'Automated Messages',
+      icon: MessageSquare,
+      description: 'Configure automated messaging workflows and templates'
+    },
+    {
+      id: 'charting',
+      title: 'Charting Settings',
+      icon: Palette,
+      description: 'Configure charting appearance, presets, and clinical documentation'
     },
     {
       id: 'packages',
@@ -372,11 +386,7 @@ export default function SettingsPage() {
             )}
             
             {activeSection === 'users' && (
-              <div className="bg-white rounded-lg border border-gray-200 p-8 text-center">
-                <Users className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-                <h3 className="text-lg font-semibold mb-2">Users & Roles</h3>
-                <p className="text-gray-500">User management coming soon</p>
-              </div>
+              <UserManagement />
             )}
             
             {activeSection === 'security' && (
@@ -401,12 +411,46 @@ export default function SettingsPage() {
                   <MessageSquare className="w-12 h-12 text-purple-600 mx-auto mb-4" />
                   <h3 className="text-lg font-semibold mb-2">Quick Reply Templates</h3>
                   <p className="text-gray-500 mb-6">Manage quick reply messages for faster patient communication</p>
-                  <a 
+                  <a
                     href="/settings/quick-replies"
                     className="inline-flex items-center gap-2 px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
                   >
                     <Settings className="w-4 h-4" />
                     Manage Quick Replies
+                  </a>
+                </div>
+              </div>
+            )}
+
+            {activeSection === 'automatedmessages' && (
+              <div className="bg-white rounded-lg border border-gray-200 p-6">
+                <div className="text-center py-8">
+                  <MessageSquare className="w-12 h-12 text-purple-600 mx-auto mb-4" />
+                  <h3 className="text-lg font-semibold mb-2">Automated Messages</h3>
+                  <p className="text-gray-500 mb-6">Configure automated messaging workflows and templates</p>
+                  <a
+                    href="/settings/automated-messages"
+                    className="inline-flex items-center gap-2 px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+                  >
+                    <Settings className="w-4 h-4" />
+                    Manage Automated Messages
+                  </a>
+                </div>
+              </div>
+            )}
+
+            {activeSection === 'charting' && (
+              <div className="bg-white rounded-lg border border-gray-200 p-6">
+                <div className="text-center py-8">
+                  <Palette className="w-12 h-12 text-purple-600 mx-auto mb-4" />
+                  <h3 className="text-lg font-semibold mb-2">Charting Settings</h3>
+                  <p className="text-gray-500 mb-6">Configure charting appearance, presets, and clinical documentation</p>
+                  <a
+                    href="/settings/charting"
+                    className="inline-flex items-center gap-2 px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+                  >
+                    <Settings className="w-4 h-4" />
+                    Manage Charting Settings
                   </a>
                 </div>
               </div>

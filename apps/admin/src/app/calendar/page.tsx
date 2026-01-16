@@ -15,7 +15,8 @@ export default function CalendarPage() {
   const [viewMode, setViewMode] = useState<'all' | 'single'>('all')
   const [singlePractitionerId, setSinglePractitionerId] = useState<string | null>(null)
   const [selectedLocation, setSelectedLocation] = useState(locations[0]?.id || '1')
-  const [calendarCreateMode, setCalendarCreateMode] = useState<'appointment' | 'break'>('appointment')
+  const [calendarCreateMode, setCalendarCreateMode] = useState<'appointment' | 'break' | 'none'>('appointment')
+  const [calendarBreakType, setCalendarBreakType] = useState<'lunch' | 'personal' | 'meeting' | 'training' | 'out_of_office' | 'other'>('personal')
   
   // Keep sidebar closed by default now that we have command bar
   useEffect(() => {
@@ -138,7 +139,13 @@ export default function CalendarPage() {
   }
 
   const handleQuickBreak = (type: 'lunch' | 'break' | 'meeting') => {
-    // Simply set the calendar to break mode
+    // Map toolbar types to actual break types
+    const breakTypeMap: Record<string, typeof calendarBreakType> = {
+      'lunch': 'lunch',
+      'break': 'personal',
+      'meeting': 'meeting'
+    }
+    setCalendarBreakType(breakTypeMap[type] || 'personal')
     setCalendarCreateMode('break')
   }
 
@@ -157,7 +164,7 @@ export default function CalendarPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="h-screen bg-gray-50 flex flex-col overflow-hidden">
       <Navigation />
       
       {/* Schedule Command Bar - New approach */}
@@ -174,7 +181,7 @@ export default function CalendarPage() {
       />
       
       {/* Main calendar area with optional sidebar */}
-      <div className="flex flex-1 h-[calc(100vh-120px)] overflow-hidden">
+      <div className="flex flex-1 min-h-0 overflow-hidden">
         {/* Sidebar - Responsive width, properly slides in/out */}
         <div className={`${
           sidebarOpen ? 'w-72 xl:w-80 2xl:w-96' : 'w-0'
@@ -214,7 +221,7 @@ export default function CalendarPage() {
         </div>
 
         {/* Calendar - Takes remaining space */}
-        <main className="flex-1 min-w-0 bg-gray-50 relative">
+        <main className="flex-1 min-w-0 min-h-0 bg-gray-50 relative overflow-hidden">
           {/* Floating sidebar toggle - less prominent, bottom right */}
           {!sidebarOpen && (
             <button
@@ -235,6 +242,8 @@ export default function CalendarPage() {
             onClearServiceSelection={handleClearServiceSelection}
             createMode={calendarCreateMode}
             onCreateModeChange={setCalendarCreateMode}
+            breakType={calendarBreakType}
+            onBreakTypeChange={setCalendarBreakType}
           />
         </main>
       </div>

@@ -330,7 +330,7 @@ For issues or questions:
 
 ## License
 
-Internal tool for Luke's Medical Spa competitive analysis.
+Internal tool for Luxe Medical Spa EMR competitive analysis.
 
 ---
 

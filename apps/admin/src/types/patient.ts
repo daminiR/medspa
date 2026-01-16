@@ -244,7 +244,11 @@ export interface Patient {
   generalNotes?: string
   internalNotes?: string // Staff-only notes
   importantNotes?: string // Shows as alert
-  
+
+  // Consent Status (Top-level for easy access)
+  photoConsent?: boolean
+  marketingConsent?: boolean
+
   // Metadata
   tags?: string[]
   customFields?: Record<string, any>

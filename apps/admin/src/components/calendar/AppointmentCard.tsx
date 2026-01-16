@@ -164,8 +164,9 @@ export default function DayView({
 								<div
 									className="absolute left-0 right-0 pointer-events-none"
 									style={{
-										...getShiftBlockStyle(shift, timeSlotHeight, showShiftsOnly ? 1 : 0.1),
-										zIndex: 1
+										...getShiftBlockStyle(shift, timeSlotHeight, showShiftsOnly ? 1 : 0.08),
+										zIndex: 1,
+										borderLeft: '3px solid #a78bfa'
 									}}
 								>
 									{showShiftsOnly && (

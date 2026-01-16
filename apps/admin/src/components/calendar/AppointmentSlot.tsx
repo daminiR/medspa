@@ -2,7 +2,7 @@ import React from 'react'
 import { Appointment, services, getGroupInfoForAppointment } from '@/lib/data'
 import { CalendarSettings } from '@/types/calendar'
 import { getAppointmentStyle } from '@/utils/calendarHelpers'
-import { AlertTriangle, MapPin, Layers, Zap, UsersRound, Clock, Send, CheckCircle2, CircleAlert } from 'lucide-react'
+import { AlertTriangle, MapPin, Layers, Zap, UsersRound, Clock, Send, CheckCircle2, CircleAlert, Footprints } from 'lucide-react'
 import { mockRooms } from '@/lib/mockResources'
 
 interface AppointmentSlotProps {
@@ -47,6 +47,13 @@ export default function AppointmentSlot({
 	if (appointment.expressBookingStatus === 'pending') {
 		defaultStyle.backgroundColor = '#F59E0B' // amber-500
 		;(defaultStyle as any).border = '2px dashed #FCD34D' // amber dashed border
+	}
+
+	// Override styling for walk-in appointments
+	const isWalkIn = appointment.bookingType === 'walk_in'
+	if (isWalkIn && appointment.status !== 'cancelled' && appointment.status !== 'deleted') {
+		defaultStyle.backgroundColor = '#F97316' // orange-500
+		;(defaultStyle as any).border = '2px dashed #FB923C' // orange dashed border for walk-in
 	}
 	
 	// Apply double booking mode styling
@@ -95,6 +102,8 @@ export default function AppointmentSlot({
 	// Check if this is a group booking
 	const groupInfo = appointment.groupBookingId ? getGroupInfoForAppointment(appointment.id) : null
 	const isGroupBooking = !!groupInfo
+	const isFirstInGroup = isGroupBooking && groupInfo?.position === 1
+	const isCoordinatorAppointment = appointment.isGroupCoordinator
 
 	// Check if this is a pending express booking
 	const isPendingExpressBooking = appointment.expressBookingStatus === 'pending'
@@ -134,15 +143,20 @@ export default function AppointmentSlot({
 				data-appointment="true"
 				draggable={appointment.status !== 'cancelled'}
 				className={`absolute rounded-md ${appointment.status === 'cancelled' ? 'text-gray-400' : 'text-white'} ${isNarrow ? 'p-1' : calendarSettings.compactView ? 'p-1' : 'p-2'
-					} ${appointment.status === 'cancelled' ? 'cursor-not-allowed' : 'cursor-move'} hover:opacity-90 overflow-hidden transition-all duration-200 ease-in-out ${isOverlapping ? 'shadow-md hover:shadow-lg hover:-translate-y-0.5' : 'shadow-sm'} ${appointment.status === 'arrived' ? 'ring-2 ring-green-400 ring-offset-1' : ''
+					} ${appointment.status === 'cancelled' ? 'cursor-not-allowed' : 'cursor-move'} overflow-hidden transition-all duration-150 ease-out ${isOverlapping ? 'shadow-md hover:shadow-xl hover:-translate-y-0.5 hover:scale-[1.02]' : 'shadow-sm hover:shadow-md hover:brightness-105'} ${appointment.status === 'arrived' ? 'ring-2 ring-green-400 ring-offset-1' : ''
 					} ${appointment.status === 'no_show' ? 'opacity-50 line-through' : ''} ${appointment.status === 'cancelled' ? 'opacity-60' : ''} ${!isOverlapping ? getConfirmationBorderClass() : ''} ${isOverlapping && !getConfirmationBorderClass() ? 'border-l-4 border-white border-opacity-50' : ''} ${appointment.assignedResources && appointment.assignedResources.length > 0 ? 'border-2 border-green-400 border-opacity-40' : ''} ${isGroupBooking ? 'ring-2 ring-indigo-400 ring-offset-1' : ''} ${isPendingExpressBooking ? 'ring-2 ring-amber-400 ring-offset-1' : ''} ${isHighRisk ? 'ring-2 ring-red-400 ring-offset-1' : ''}`}
 				style={{ ...defaultStyle, ...style }}
 				onClick={(e) => onClick(e, appointment)}
 				onDragStart={handleDragStart}
 				onDragEnd={handleDragEnd}
-				title={isPendingExpressBooking ? 'Pending Express Booking - Awaiting patient confirmation' : isGroupBooking ? `Part of: ${groupInfo?.group?.name || 'Group'} (${groupInfo?.position}/${groupInfo?.totalInGroup})` : undefined}
+				title={isWalkIn ? 'Walk-In Appointment' : isPendingExpressBooking ? 'Pending Express Booking - Awaiting patient confirmation' : isGroupBooking ? `Part of: ${groupInfo?.group?.name || 'Group'} (${groupInfo?.position}/${groupInfo?.totalInGroup})` : undefined}
 			>
 			<div className="text-xs font-medium truncate flex items-center gap-1">
+				{isWalkIn && (
+					<span title={`Walk-In - Checked in at ${appointment.checkInTime ? new Date(appointment.checkInTime).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }) : 'now'}`} className="flex items-center">
+						<Footprints className="h-3 w-3 text-orange-200 flex-shrink-0" />
+					</span>
+				)}
 				{isHighRisk && (
 					<span title="High no-show risk - New patient, unconfirmed, no deposit" className="flex items-center">
 						<CircleAlert className="h-3 w-3 text-red-300 flex-shrink-0" />
@@ -166,7 +180,11 @@ export default function AppointmentSlot({
 				{isGroupBooking && (
 					<span title={`Group: ${groupInfo?.group?.name} (${groupInfo?.position}/${groupInfo?.totalInGroup})`} className="flex items-center">
 						<UsersRound className="h-3 w-3 text-indigo-300 flex-shrink-0" />
-						{!isNarrow && <span className="text-[10px] text-indigo-200 ml-0.5">{groupInfo?.position}/{groupInfo?.totalInGroup}</span>}
+						{!isNarrow && (
+							<span className={`text-[10px] ml-0.5 px-1 rounded ${isCoordinatorAppointment ? 'bg-indigo-500/50 text-white' : 'text-indigo-200'}`}>
+								{isCoordinatorAppointment ? '★' : ''}{groupInfo?.position}/{groupInfo?.totalInGroup}
+							</span>
+						)}
 					</span>
 				)}
 				{appointment.overriddenConflicts && (
@@ -182,6 +200,11 @@ export default function AppointmentSlot({
 				{appointment.assignedResources && appointment.assignedResources.length > 0 && (
 					<span title={`Uses: ${appointment.assignedResources.map(r => r.resourceName).join(', ')}`}>
 						<Zap className="h-3 w-3 text-green-300 flex-shrink-0" />
+					</span>
+				)}
+				{appointment.roomId && (
+					<span title={`Room: ${mockRooms.find(r => r.id === appointment.roomId)?.name || 'Assigned'}`}>
+						<MapPin className="h-3 w-3 text-purple-300 flex-shrink-0" />
 					</span>
 				)}
 				<span className="truncate">{appointment.patientName}</span>
@@ -215,6 +238,18 @@ export default function AppointmentSlot({
 			)}
 			{isPendingExpressBooking && (
 				<div className="text-xs mt-1 font-semibold text-amber-900 bg-amber-200 px-2 py-0.5 rounded inline-block">⏳ PENDING</div>
+			)}
+			{isWalkIn && !isNarrow && (
+				<div className="text-xs mt-1 font-semibold text-orange-900 bg-orange-200 px-2 py-0.5 rounded inline-block">W WALK-IN</div>
+			)}
+			{isWalkIn && isNarrow && (
+				<div className="text-xs mt-1 font-semibold text-orange-900 bg-orange-200 px-1.5 py-0.5 rounded inline-block">W</div>
+			)}
+			{/* Group Name Badge - only show on first appointment or if not too narrow */}
+			{isGroupBooking && isFirstInGroup && !isNarrow && groupInfo?.group?.name && (
+				<div className="text-[9px] mt-1 text-indigo-200 bg-indigo-600/40 px-1.5 py-0.5 rounded truncate max-w-full">
+					{groupInfo.group.name}
+				</div>
 			)}
 			{appointment.roomId && (
 				<div className="text-xs opacity-75 flex items-center gap-1 mt-1">

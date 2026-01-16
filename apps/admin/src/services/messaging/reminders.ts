@@ -6,12 +6,19 @@
 import { messagingService } from './core';
 import { TEMPLATES, generateMessage } from './templates';
 import { aiEngine } from './ai-engine';
+import { getPrepInstructions, getPrepSMSTemplate, PrepInstruction } from '@/lib/data/preVisitPrep';
+import { sendFormReminder, sendAftercareInstructions } from '@/services/forms/formService';
+import { getIncompleteForms, getFormRemindersSent } from '@/lib/data/patientForms';
+import { getFormDisplayName } from '@/lib/data/formServiceMapping';
 
 // Reminder types and timing
 export enum ReminderType {
   CONFIRMATION = 'confirmation',      // Immediate after booking
+  PREP_REMINDER = 'prep_reminder',    // Treatment-specific prep (3-7 days before)
+  FORM_REMINDER_72HR = 'form_reminder_72hr', // 72 hours before - form completion reminder
+  FORM_REMINDER_24HR = 'form_reminder_24hr', // 24 hours before - urgent form reminder
   REMINDER_48HR = 'reminder_48hr',    // 48 hours before
-  REMINDER_24HR = 'reminder_24hr',    // 24 hours before  
+  REMINDER_24HR = 'reminder_24hr',    // 24 hours before
   REMINDER_2HR = 'reminder_2hr',      // 2 hours before
   FOLLOWUP_24HR = 'followup_24hr',    // 24 hours after
   FOLLOWUP_3DAY = 'followup_3day',    // 3 days after
@@ -37,6 +44,7 @@ export interface Appointment {
   emailOptIn: boolean;
   reminders: {
     confirmation?: Date;
+    prepReminder?: Date;
     reminder48hr?: Date;
     reminder24hr?: Date;
     reminder2hr?: Date;
@@ -53,10 +61,14 @@ export interface Appointment {
 export interface ReminderConfig {
   enabled: boolean;
   sendConfirmation: boolean;
+  sendPrepReminder: boolean;
+  prepReminderDays: number; // Days before appointment to send prep reminder
+  sendFormReminders: boolean; // Form completion reminders at 72hr and 24hr
   send48hrReminder: boolean;
   send24hrReminder: boolean;
   send2hrReminder: boolean;
   sendFollowUps: boolean;
+  sendAftercareInstructions: boolean; // Auto-send aftercare forms post-treatment
   businessHours: {
     start: string; // "09:00"
     end: string;   // "18:00"
@@ -71,10 +83,14 @@ export interface ReminderConfig {
 const defaultConfig: ReminderConfig = {
   enabled: true,
   sendConfirmation: true,
+  sendPrepReminder: true,
+  prepReminderDays: 3,
+  sendFormReminders: true,
   send48hrReminder: true,
   send24hrReminder: true,
   send2hrReminder: true,
   sendFollowUps: true,
+  sendAftercareInstructions: true,
   businessHours: {
     start: '09:00',
     end: '18:00',
@@ -183,6 +199,60 @@ export class AppointmentRemindersService {
     }
   }
   
+  /**
+   * Send pre-visit preparation reminder with treatment-specific instructions
+   */
+  async sendPrepReminder(appointment: Appointment): Promise<void> {
+    if (!this.config.sendPrepReminder || !appointment.smsOptIn) {
+      return;
+    }
+
+    const treatmentType = appointment.treatmentType || appointment.service;
+    const prepInstructions = getPrepInstructions(treatmentType);
+
+    if (!prepInstructions) {
+      // No prep instructions available for this treatment
+      console.log(`No prep instructions found for: ${treatmentType}`);
+      return;
+    }
+
+    try {
+      const message = getPrepSMSTemplate(treatmentType, {
+        patientFirstName: appointment.patientName.split(' ')[0],
+        appointmentDate: this.formatDate(appointment.date),
+        appointmentTime: appointment.time,
+      });
+
+      if (message) {
+        await messagingService.sendSMS({
+          to: appointment.patientPhone,
+          body: message,
+          patientId: appointment.patientId,
+          metadata: {
+            type: 'prep_reminder',
+            appointmentId: appointment.id,
+            treatment: treatmentType,
+            prepInstructionsId: prepInstructions.id,
+          },
+        });
+
+        await this.markReminderSent(appointment.id, 'prepReminder');
+
+        // Log for compliance and tracking
+        console.log('[PREP_REMINDER_SENT]', {
+          timestamp: new Date().toISOString(),
+          appointmentId: appointment.id,
+          patientId: appointment.patientId,
+          treatment: treatmentType,
+          prepInstructionsId: prepInstructions.id,
+          instructionCount: prepInstructions.instructions.length,
+        });
+      }
+    } catch (error) {
+      console.error('Error sending prep reminder:', error);
+    }
+  }
+
   /**
    * Send 48-hour reminder
    */
@@ -387,20 +457,105 @@ export class AppointmentRemindersService {
   private async processAppointmentReminders(appointment: Appointment, now: Date): Promise<void> {
     const appointmentTime = new Date(appointment.date);
     const hoursUntilAppointment = (appointmentTime.getTime() - now.getTime()) / (1000 * 60 * 60);
-    
+    const daysUntilAppointment = hoursUntilAppointment / 24;
+
+    // Pre-visit prep reminder (configurable days before, default 3)
+    const prepReminderDays = this.config.prepReminderDays;
+    if (
+      daysUntilAppointment <= prepReminderDays &&
+      daysUntilAppointment > prepReminderDays - 1 &&
+      !appointment.reminders.prepReminder
+    ) {
+      await this.sendPrepReminder(appointment);
+    }
+
+    // Form completion reminders (72hr and 24hr)
+    if (this.config.sendFormReminders) {
+      await this.processFormReminders(appointment, hoursUntilAppointment);
+    }
+
     // 48-hour reminder
     if (hoursUntilAppointment <= 48 && hoursUntilAppointment > 47 && !appointment.reminders.reminder48hr) {
       await this.send48HourReminder(appointment);
     }
-    
+
     // 24-hour reminder
     if (hoursUntilAppointment <= 24 && hoursUntilAppointment > 23 && !appointment.reminders.reminder24hr) {
       await this.send24HourReminder(appointment);
     }
-    
+
     // 2-hour reminder
     if (hoursUntilAppointment <= 2 && hoursUntilAppointment > 1.5 && !appointment.reminders.reminder2hr) {
       await this.send2HourReminder(appointment);
+    }
+  }
+
+  /**
+   * Process form completion reminders for an appointment
+   * Sends 72hr (gentle) and 24hr (urgent) reminders if forms are incomplete
+   */
+  private async processFormReminders(appointment: Appointment, hoursUntilAppointment: number): Promise<void> {
+    // Skip cancelled or no-show appointments
+    if (appointment.status === 'cancelled' || appointment.status === 'no_show') {
+      return;
+    }
+
+    if (!appointment.smsOptIn) {
+      return;
+    }
+
+    // Get incomplete forms for this appointment
+    const serviceName = appointment.treatmentType || appointment.service;
+    const incompleteForms = getIncompleteForms(appointment.patientId, serviceName);
+
+    // If all forms are complete, no reminder needed
+    if (incompleteForms.length === 0) {
+      return;
+    }
+
+    // Check which reminders have already been sent
+    const remindersSent = getFormRemindersSent(appointment.id);
+
+    // 72-hour reminder (between 72 and 24 hours before)
+    if (
+      hoursUntilAppointment <= 72 &&
+      hoursUntilAppointment > 24 &&
+      !remindersSent.includes('72hr')
+    ) {
+      const result = await sendFormReminder(
+        appointment.patientId,
+        appointment.patientName,
+        appointment.patientPhone,
+        serviceName,
+        appointment.id,
+        appointment.time,
+        '72hr'
+      );
+
+      if (result.success) {
+        console.log(`[FormReminder] Sent 72hr reminder for ${appointment.patientName}`);
+      }
+    }
+
+    // 24-hour urgent reminder (between 24 and 2 hours before)
+    if (
+      hoursUntilAppointment <= 24 &&
+      hoursUntilAppointment > 2 &&
+      !remindersSent.includes('24hr')
+    ) {
+      const result = await sendFormReminder(
+        appointment.patientId,
+        appointment.patientName,
+        appointment.patientPhone,
+        serviceName,
+        appointment.id,
+        appointment.time,
+        '24hr'
+      );
+
+      if (result.success) {
+        console.log(`[FormReminder] Sent 24hr urgent reminder for ${appointment.patientName}`);
+      }
     }
   }
   
@@ -408,22 +563,44 @@ export class AppointmentRemindersService {
     const treatmentTime = new Date(appointment.date);
     const hoursSinceTreatment = (now.getTime() - treatmentTime.getTime()) / (1000 * 60 * 60);
     const daysSinceTreatment = hoursSinceTreatment / 24;
-    
+
+    // Immediate aftercare instructions (within 2 hours of completion)
+    // Only send if treatment is completed and instructions haven't been sent
+    if (
+      this.config.sendAftercareInstructions &&
+      hoursSinceTreatment >= 0 &&
+      hoursSinceTreatment < 2 &&
+      appointment.status === 'completed'
+    ) {
+      const serviceName = appointment.treatmentType || appointment.service;
+      const result = await sendAftercareInstructions(
+        appointment.patientId,
+        appointment.patientName,
+        appointment.patientPhone,
+        serviceName,
+        appointment.id
+      );
+
+      if (result.success) {
+        console.log(`[Aftercare] Sent aftercare instructions for ${appointment.patientName} (${serviceName})`);
+      }
+    }
+
     // 24-hour follow-up
     if (hoursSinceTreatment >= 24 && hoursSinceTreatment < 25 && !appointment.reminders.followup24hr) {
       await this.sendPostTreatmentFollowUp(appointment, 'followup_24hr');
     }
-    
+
     // 3-day follow-up
     if (daysSinceTreatment >= 3 && daysSinceTreatment < 3.5 && !appointment.reminders.followup3day) {
       await this.sendPostTreatmentFollowUp(appointment, 'followup_3day');
     }
-    
+
     // 1-week follow-up
     if (daysSinceTreatment >= 7 && daysSinceTreatment < 7.5 && !appointment.reminders.followup1week) {
       await this.sendPostTreatmentFollowUp(appointment, 'followup_1week');
     }
-    
+
     // 2-week follow-up
     if (daysSinceTreatment >= 14 && daysSinceTreatment < 14.5 && !appointment.reminders.followup2week) {
       await this.sendPostTreatmentFollowUp(appointment, 'followup_2week');

@@ -117,10 +117,10 @@ export const AuditLogSchema = z.object({
     region: z.string().optional(),
     city: z.string().optional(),
   }).optional(),
-  details: z.record(z.any()).optional(),
+  details: z.record(z.string(), z.any()).optional(),
   changesMade: z.object({
-    before: z.record(z.any()).optional(),
-    after: z.record(z.any()).optional(),
+    before: z.record(z.string(), z.any()).optional(),
+    after: z.record(z.string(), z.any()).optional(),
     fieldsModified: z.array(z.string()).optional(),
   }).optional(),
   riskScore: z.number().min(0).max(100).optional(),
@@ -491,14 +491,14 @@ export class AuditTrailService {
   }
   
   private detectAnomalies(logs: AuditLog[]): any[] {
-    const anomalies = [];
-    
+    const anomalies: any[] = [];
+
     // Detect unusual patterns
     // - Excessive access by single user
     // - Access outside normal patterns
     // - Failed login attempts
     // - Data export patterns
-    
+
     return anomalies;
   }
   

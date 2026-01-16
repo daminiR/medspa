@@ -1,0 +1,248 @@
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                    PHONE NUMBER MANAGEMENT UI - QUICK REFERENCE             │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+═══════════════════════════════════════════════════════════════════════════════
+📍 LOCATION
+═══════════════════════════════════════════════════════════════════════════════
+Page: /settings/sms
+Section: Business Phone Number (top section of the page)
+
+═══════════════════════════════════════════════════════════════════════════════
+🎯 MAIN FEATURES
+═══════════════════════════════════════════════════════════════════════════════
+
+1. CURRENT NUMBER DISPLAY
+   ┌────────────────────────────────────────────┐
+   │ Current Twilio Number                      │
+   │ +1 (555) 123-4567  [Copy]  ● Active       │
+   └────────────────────────────────────────────┘
+
+2. ACTION BUTTONS
+   [Change Number]  [Release Number]
+   
+3. CHANGE NUMBER FLOW
+   Click "Change Number" →
+   
+   MODAL 1: Select Phone Number
+   ┌─────────────────────────────────────────────────────────────┐
+   │ 📱 Select Phone Number                                 [X]  │
+   │ Choose a new Twilio number for SMS communication           │
+   ├─────────────────────────────────────────────────────────────┤
+   │ 📍 Select Area Code                                         │
+   │ ┌───┐ ┌───┐ ┌───┐ ┌───┐ ┌───┐                            │
+   │ │310│ │212│ │415│ │305│ │512│                            │
+   │ │LA │ │NY │ │SF │ │MIA│ │ATX│                            │
+   │ └───┘ └───┘ └───┘ └───┘ └───┘                            │
+   │ (Selected area code highlighted in purple)                 │
+   ├─────────────────────────────────────────────────────────────┤
+   │ 🔍 [Search by number or city...]                           │
+   ├─────────────────────────────────────────────────────────────┤
+   │ Available Numbers (8)                        $1.00/month    │
+   │                                                             │
+   │ ┌─────────────────────────────────────────────────────┐   │
+   │ │ 📱 +1 (310) 555-1234                      [Select]  │   │
+   │ │ 📍 Los Angeles, CA                                   │   │
+   │ │ [Voice] [SMS] [MMS]                                 │   │
+   │ └─────────────────────────────────────────────────────┘   │
+   │                                                             │
+   │ (Hover over a number card to see Select button)            │
+   └─────────────────────────────────────────────────────────────┘
+   
+   Click "Select" →
+   
+   MODAL 2: Confirm Change
+   ┌─────────────────────────────────────────────────────────────┐
+   │ ⚠️  Confirm Phone Number Change                        [X]  │
+   │ Please review the change carefully before confirming        │
+   ├─────────────────────────────────────────────────────────────┤
+   │ ┌─────────────────────────────────────────────────────┐   │
+   │ │ 📱 Current Number (Will be released)                │   │
+   │ │    +1 (555) 123-4567                                │   │
+   │ └─────────────────────────────────────────────────────┘   │
+   │                          ↓                                  │
+   │ ┌─────────────────────────────────────────────────────┐   │
+   │ │ ✅ New Number (Will be activated)                   │   │
+   │ │    +1 (310) 555-1234                                │   │
+   │ └─────────────────────────────────────────────────────┘   │
+   │                                                             │
+   │ ⚠️  Important Notes:                                        │
+   │ • Your current number will be released                      │
+   │ • All patients will need to be notified                     │
+   │ • Message history will be preserved                         │
+   │ • The change may take a few minutes                         │
+   │ • You will be charged $1.00/month                           │
+   │                                                             │
+   │                         [Cancel]  [Confirm Change]          │
+   └─────────────────────────────────────────────────────────────┘
+   
+   Click "Confirm Change" →
+   
+   ✅ "Phone number change initiated. This may take a few minutes..."
+   (Status changes to "Pending" → then "Active" after 2 seconds)
+   ✅ "Phone number activated successfully!"
+
+═══════════════════════════════════════════════════════════════════════════════
+🎨 VISUAL DESIGN
+═══════════════════════════════════════════════════════════════════════════════
+
+COLORS:
+- Primary: Purple (#9333EA - purple-600)
+- Success: Green
+- Warning: Yellow
+- Danger: Red
+- Neutral: Gray
+
+AREA CODE BUTTONS:
+- Unselected: White background, gray border
+- Selected: Purple background, purple border
+- Popular: Green "Popular" badge
+
+NUMBER CARDS:
+- Default: White background, gray border
+- Hover: Purple background, purple border, Select button appears
+
+STATUS BADGES:
+- Active: Green with checkmark ✓
+- Pending: Yellow with clock ⏰
+- Inactive: Red with alert ⚠️
+
+CONFIRMATION MODAL:
+- Current number: Red box
+- New number: Green box
+- Warnings: Yellow box
+
+═══════════════════════════════════════════════════════════════════════════════
+⌨️  INTERACTIONS
+═══════════════════════════════════════════════════════════════════════════════
+
+OPENING MODALS:
+- Click "Change Number" → Opens selection modal
+- Click area code → Loads numbers for that area code
+- Type in search → Filters numbers in real-time
+- Hover over number → Reveals "Select" button
+- Click "Select" → Opens confirmation modal
+
+CLOSING MODALS:
+- Click X button → Closes modal
+- Click backdrop (dark overlay) → Closes modal
+- Click "Cancel" → Closes modal
+- Press Escape key → Closes modal (browser default)
+
+BUTTONS:
+- All buttons have hover states
+- Disabled buttons are grayed out
+- Purple buttons for primary actions
+- Gray buttons for secondary actions
+
+═══════════════════════════════════════════════════════════════════════════════
+📊 MOCK DATA
+═══════════════════════════════════════════════════════════════════════════════
+
+10 AREA CODES:
+310 - Los Angeles, CA (Popular)
+212 - New York, NY (Popular)
+415 - San Francisco, CA (Popular)
+305 - Miami, FL (Popular)
+512 - Austin, TX (Popular)
+646 - New York, NY
+213 - Los Angeles, CA
+858 - San Diego, CA
+617 - Boston, MA
+702 - Las Vegas, NV
+
+CAPABILITIES:
+- Voice: Always available
+- SMS: Always available
+- MMS: 70% of numbers (randomly generated)
+
+PRICING:
+- All numbers: $1.00/month
+
+═══════════════════════════════════════════════════════════════════════════════
+🔧 TECHNICAL DETAILS
+═══════════════════════════════════════════════════════════════════════════════
+
+FILES:
+/src/components/settings/PhoneNumberSelectionModal.tsx
+/src/components/settings/PhoneNumberConfirmationModal.tsx
+/src/app/settings/sms/page.tsx (modified)
+
+STATE:
+- showPhoneNumberModal: boolean
+- showConfirmationModal: boolean
+- selectedNewNumber: string
+- twilioNumber: string
+- numberStatus: 'active' | 'inactive' | 'pending'
+
+HANDLERS:
+- handleChangeNumber()
+- handleSelectNumber(phoneNumber)
+- handleConfirmNumberChange()
+- handleReleaseNumber()
+
+TOAST NOTIFICATIONS:
+- Success: Green toast
+- Uses react-hot-toast library
+
+═══════════════════════════════════════════════════════════════════════════════
+✅ TESTING CHECKLIST
+═══════════════════════════════════════════════════════════════════════════════
+
+Modal Opening/Closing:
+☑ Click "Change Number" opens selection modal
+☑ Click X closes modal
+☑ Click backdrop closes modal
+☑ Click Cancel closes modal
+
+Area Code Selection:
+☑ Click area code loads new numbers
+☑ Loading spinner shows during load
+☑ Selected area code is highlighted
+☑ All 10 area codes are clickable
+
+Search Functionality:
+☑ Type in search filters numbers
+☑ Search by phone number works
+☑ Search by city name works
+☑ Empty state shows when no results
+
+Number Selection:
+☑ Hover shows Select button
+☑ Click Select opens confirmation modal
+☑ Selected number appears in confirmation
+
+Confirmation Flow:
+☑ Current number displays correctly
+☑ New number displays correctly
+☑ Warnings are visible
+☑ Click Confirm applies change
+☑ Status updates to Pending
+☑ Status updates to Active after delay
+☑ Toast notifications appear
+
+Release Number:
+☑ Click shows browser confirmation
+☑ Confirm releases number
+☑ Status changes to Inactive
+☑ Button becomes disabled
+
+No Console Errors:
+☑ No TypeScript errors
+☑ No runtime errors
+☑ No React warnings
+☑ Clean browser console
+
+═══════════════════════════════════════════════════════════════════════════════
+🚀 NEXT STEPS (Backend Integration)
+═══════════════════════════════════════════════════════════════════════════════
+
+1. Replace mock number generation with Twilio API
+2. Implement actual number purchase logic
+3. Add error handling for API failures
+4. Store number changes in database
+5. Implement patient notification system
+6. Add validation and rate limiting
+7. Handle edge cases and errors
+
+═══════════════════════════════════════════════════════════════════════════════

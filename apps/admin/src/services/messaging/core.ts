@@ -4,8 +4,7 @@
  */
 
 import twilio from 'twilio';
-import { Redis } from '@upstash/redis';
-import { Ratelimit } from '@upstash/ratelimit';
+import { Redis, Ratelimit } from '@/lib/redis-stub';
 import { z } from 'zod';
 
 // Environment configuration
@@ -57,11 +56,11 @@ export const MessageSchema = z.object({
   body: z.string().min(1).max(1600), // SMS limit
   mediaUrl: z.array(z.string().url()).optional(),
   scheduledAt: z.date().optional(),
-  metadata: z.record(z.any()).optional(),
+  metadata: z.record(z.string(), z.any()).optional(),
   patientId: z.string().optional(),
   conversationId: z.string().optional(),
   templateId: z.string().optional(),
-  priority: z.enum(['high', 'normal', 'low']).default('normal'),
+  priority: z.enum(['high', 'normal', 'low']).optional().default('normal'),
 });
 
 export const BulkMessageSchema = z.object({
@@ -69,7 +68,7 @@ export const BulkMessageSchema = z.object({
   body: z.string().min(1).max(1600),
   templateId: z.string().optional(),
   campaignId: z.string().optional(),
-  metadata: z.record(z.any()).optional(),
+  metadata: z.record(z.string(), z.any()).optional(),
   scheduled: z.boolean().default(false),
   scheduledAt: z.date().optional(),
 });
@@ -124,7 +123,7 @@ export class MessagingService {
   /**
    * Send a single SMS message
    */
-  async sendSMS(message: Message): Promise<MessageStatus> {
+  async sendSMS(message: Omit<Message, 'priority'> & { priority?: Message['priority'] }): Promise<MessageStatus> {
     try {
       // Validate input
       const validated = MessageSchema.parse(message);
@@ -317,7 +316,7 @@ export class MessagingService {
           to: message.from,
           body: aiAnalysis.suggestedResponse,
           conversationId: conversation.id,
-          patientId,
+          patientId: patientId ?? undefined,
           metadata: {
             autoResponse: true,
             intent: aiAnalysis.intent,

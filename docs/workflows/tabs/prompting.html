@@ -1,0 +1,224 @@
+<div class="tab-section">
+    <h2>Claude Code Prompting Guide</h2>
+    <p class="subtitle">Best practices for deploying agents and managing large tasks without context issues</p>
+
+    <!-- Quick Reference Card -->
+    <div class="card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; margin-bottom: 30px;">
+        <h3 style="color: white; border: none;">Pro Tips</h3>
+        <ul style="font-size: 1.1em;">
+            <li><strong>Always say:</strong> "Don't read agent outputs until I say - tell me when they're done"</li>
+            <li><strong>Read outputs 2-3 at a time</strong> to prevent context overflow</li>
+            <li><strong>Use synthesis agents</strong> to distill research before implementation</li>
+            <li><strong>Parallel = independent tasks</strong>, Sequential = dependent tasks</li>
+        </ul>
+    </div>
+
+    <!-- Key Rules Table -->
+    <h3>Agent Deployment Rules</h3>
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Phase</th>
+                <th>Agents</th>
+                <th>Parallelism</th>
+                <th>Purpose</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><span class="status-badge" style="background: #3b82f6;">Research</span></td>
+                <td>5-15</td>
+                <td>All parallel</td>
+                <td>Web search, codebase exploration, docs reading</td>
+            </tr>
+            <tr>
+                <td><span class="status-badge" style="background: #8b5cf6;">Synthesis</span></td>
+                <td>2-3</td>
+                <td>All parallel</td>
+                <td>Each reads 3-5 research outputs, returns distilled findings</td>
+            </tr>
+            <tr>
+                <td><span class="status-badge" style="background: #f59e0b;">Planning</span></td>
+                <td>1</td>
+                <td>Sequential</td>
+                <td>Create implementation plan from synthesis (needs approval)</td>
+            </tr>
+            <tr>
+                <td><span class="status-badge" style="background: #10b981;">Coding</span></td>
+                <td>3-10</td>
+                <td>Parallel if independent files</td>
+                <td>Actual implementation work</td>
+            </tr>
+            <tr>
+                <td><span class="status-badge" style="background: #ec4899;">Testing</span></td>
+                <td>1-2</td>
+                <td>After coding</td>
+                <td>Run tests, verify integration</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- Template Section -->
+    <h3>Best Prompt Structure for Large Tasks</h3>
+    <div class="code-block" style="background: #1e1e1e; color: #d4d4d4; padding: 20px; border-radius: 8px; font-family: monospace; white-space: pre-wrap; line-height: 1.6;">
+"I want to implement <span style="color: #ce9178;">[FEATURE]</span>. Please:
+
+<span style="color: #569cd6;">1. RESEARCH</span> (5-10 agents, parallel)
+   - Deploy agents to research: <span style="color: #ce9178;">[specific topics]</span>
+   - Web search for 2025/2026 best practices
+   - Read relevant codebase files
+
+<span style="color: #569cd6;">2. SYNTHESIZE</span> (2-3 agents, after research completes)
+   - Each synthesis agent reads 3-5 research outputs
+   - Return ranked recommendations
+
+<span style="color: #569cd6;">3. PLAN</span> (1 agent or main thread)
+   - Create implementation plan from synthesis
+   - Get my approval before coding
+
+<span style="color: #569cd6;">4. IMPLEMENT</span> (3-10 agents, parallel where possible)
+   - Independent files = parallel agents
+   - Dependent files = sequential
+
+<span style="color: #569cd6;">5. VERIFY</span> (1-2 agents)
+   - Run tests, check integration"
+    </div>
+
+    <!-- Real Example -->
+    <h3>Real-World Example Prompts</h3>
+
+    <div class="workflow-step">
+        <div class="step-number">1</div>
+        <div class="step-content">
+            <h4>Feature Implementation</h4>
+            <div class="note" style="background: #f0f9ff; border-color: #3b82f6;">
+                <p>"Add voice charting to the app. Deploy <strong>8 research agents</strong> (Whisper API pricing, competitors, HIPAA voice requirements, existing charting code, WebSocket streaming, medical terminology, error handling patterns, UI/UX best practices), then <strong>2 synthesis agents</strong> to distill findings, show me the plan, then implement with however many coding agents make sense."</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="workflow-step">
+        <div class="step-number">2</div>
+        <div class="step-content">
+            <h4>Bug Investigation</h4>
+            <div class="note" style="background: #fefce8; border-color: #eab308;">
+                <p>"The calendar is showing wrong times. Deploy <strong>5 research agents</strong> to: read all calendar components, check timezone handling, review appointment data flow, search for similar bugs in issues, check test files. Don't read outputs yet - tell me when done."</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="workflow-step">
+        <div class="step-number">3</div>
+        <div class="step-content">
+            <h4>Architecture Decision</h4>
+            <div class="note" style="background: #f0fdf4; border-color: #22c55e;">
+                <p>"We need real-time updates. Deploy <strong>10 research agents</strong>: WebSocket vs SSE vs polling (3 agents), Firebase realtime options (2 agents), competitor implementations (2 agents), our current codebase patterns (2 agents), cost analysis (1 agent). Then <strong>3 synthesis agents</strong> to compare approaches and recommend."</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Anti-Patterns -->
+    <h3>What NOT To Do</h3>
+    <div class="card" style="background: #fef2f2; border: 2px solid #ef4444;">
+        <ul>
+            <li><strong>Don't read all agent outputs at once</strong> - will cause context overflow/compaction</li>
+            <li><strong>Don't skip synthesis</strong> - raw research is too verbose for implementation</li>
+            <li><strong>Don't run dependent tasks in parallel</strong> - one will fail or use stale data</li>
+            <li><strong>Don't start coding without a plan</strong> - wastes tokens on wrong approaches</li>
+            <li><strong>Don't deploy 20+ agents</strong> - diminishing returns, hard to synthesize</li>
+        </ul>
+    </div>
+
+    <!-- Context Management -->
+    <h3>Managing Context & Avoiding Compaction</h3>
+    <div class="two-column-grid">
+        <div class="card">
+            <h4>When Context Gets Low</h4>
+            <ol>
+                <li>Stop reading new agent outputs</li>
+                <li>Ask Claude to write findings to a file</li>
+                <li>Use <code>/compact</code> if available</li>
+                <li>Start fresh conversation with file reference</li>
+            </ol>
+        </div>
+        <div class="card">
+            <h4>Checkpoint Strategy</h4>
+            <ol>
+                <li>After research: save to <code>RESEARCH_FINDINGS.md</code></li>
+                <li>After planning: save to <code>IMPLEMENTATION_PLAN.md</code></li>
+                <li>After each feature: commit to git</li>
+                <li>Reference files in new conversations</li>
+            </ol>
+        </div>
+    </div>
+
+    <!-- Quick Commands -->
+    <h3>Useful Phrases</h3>
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Say This</th>
+                <th>Effect</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><code>"Deploy X agents in parallel"</code></td>
+                <td>Forces parallel execution in single message</td>
+            </tr>
+            <tr>
+                <td><code>"Don't read outputs until I say"</code></td>
+                <td>Prevents auto-reading that fills context</td>
+            </tr>
+            <tr>
+                <td><code>"Read 2 at a time, wait for 'next'"</code></td>
+                <td>Controlled output consumption</td>
+            </tr>
+            <tr>
+                <td><code>"Write findings to a file before continuing"</code></td>
+                <td>Persists info outside context</td>
+            </tr>
+            <tr>
+                <td><code>"Use haiku for simple research"</code></td>
+                <td>Faster, cheaper agents for simple tasks</td>
+            </tr>
+            <tr>
+                <td><code>"Use opus for complex analysis"</code></td>
+                <td>Smarter agents for hard problems</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- Model Selection -->
+    <h3>Choosing the Right Model</h3>
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Model</th>
+                <th>Best For</th>
+                <th>Cost</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Haiku</strong></td>
+                <td>Simple searches, file reading, quick lookups</td>
+                <td>Lowest</td>
+            </tr>
+            <tr>
+                <td><strong>Sonnet</strong></td>
+                <td>Most coding tasks, moderate research, implementation</td>
+                <td>Medium</td>
+            </tr>
+            <tr>
+                <td><strong>Opus</strong></td>
+                <td>Complex architecture, deep analysis, synthesis</td>
+                <td>Highest</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="note" style="margin-top: 20px;">
+        <strong>Remember:</strong> The goal is to get maximum value from each conversation while avoiding context limits. Plan your agent strategy before starting large tasks!
+    </div>
+</div>

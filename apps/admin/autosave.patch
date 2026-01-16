@@ -1,0 +1,197 @@
+diff --git a/src/components/charting/InteractiveFaceChart.tsx b/src/components/charting/InteractiveFaceChart.tsx
+index existing..modified 100644
+--- a/src/components/charting/InteractiveFaceChart.tsx
++++ b/src/components/charting/InteractiveFaceChart.tsx
+@@ -250,6 +250,11 @@ export function InteractiveFaceChart({
+   const chartRef = useRef<HTMLDivElement>(null)
+   const containerRef = useRef<HTMLDivElement>(null)
+
++  // Auto-save state
++  const [autoSaveStatus, setAutoSaveStatus] = useState<'saved' | 'saving' | 'idle'>('idle')
++  const autoSaveKey = 'charting-autosave-draft'
++  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null)
++
+   // Get active items from settings
+   const activeZones = useMemo(() => getActiveZones('face'), [getActiveZones])
+   const activeDepths = useMemo(() => getActiveDepths(), [getActiveDepths])
+@@ -512,9 +517,142 @@ export function InteractiveFaceChart({
+     setMultiSelectedZones(new Set())
+     setMultiSelectedFreehand(new Set())
+     setQuickEdit({ isOpen: false, zoneId: null, position: { x: 0, y: 0 } })
++    // Clear auto-save when user explicitly clears all
++    localStorage.removeItem(autoSaveKey)
++    setAutoSaveStatus('idle')
+     toast.success('Cleared all', { duration: 1000 })
+-  }, [onInjectionPointsChange, setFreehandPoints, triggerHaptic])
++  }, [onInjectionPointsChange, setFreehandPoints, triggerHaptic, autoSaveKey])
+
++  // ==========================================================================
++  // AUTO-SAVE HANDLERS
++  // ==========================================================================
++
++  // Debounced save to localStorage
++  const saveToLocalStorage = useCallback(() => {
++    if (readOnly) return
++
++    // Clear existing timeout
++    if (saveTimeoutRef.current) {
++      clearTimeout(saveTimeoutRef.current)
++    }
++
++    // Set saving status
++    setAutoSaveStatus('saving')
++
++    // Debounce save by 1 second
++    saveTimeoutRef.current = setTimeout(() => {
++      try {
++        // Convert Maps to arrays for JSON serialization
++        const data = {
++          injectionPoints: Array.from(injectionPoints.entries()).map(([zoneId, point]) => ({
++            zoneId,
++            ...point,
++            timestamp: point.timestamp.toISOString()
++          })),
++          freehandPoints: Array.from(freehandPoints.entries()).map(([pointId, point]) => ({
++            pointId,
++            ...point,
++            timestamp: point.timestamp.toISOString()
++          })),
++          timestamp: Date.now(),
++          productType,
++          gender
++        }
++
++        localStorage.setItem(autoSaveKey, JSON.stringify(data))
++        setAutoSaveStatus('saved')
++
++        // Reset to idle after 2 seconds
++        setTimeout(() => {
++          setAutoSaveStatus('idle')
++        }, 2000)
++      } catch (e) {
++        console.error('Failed to auto-save chart data:', e)
++        setAutoSaveStatus('idle')
++      }
++    }, 1000)
++  }, [injectionPoints, freehandPoints, readOnly, autoSaveKey, productType, gender])
++
++  // Trigger save on changes
++  useEffect(() => {
++    if (!readOnly && (injectionPoints.size > 0 || freehandPoints.size > 0)) {
++      saveToLocalStorage()
++    }
++  }, [injectionPoints, freehandPoints, readOnly, saveToLocalStorage])
++
++  // Load saved data on mount
++  useEffect(() => {
++    if (readOnly) return
++
++    const saved = localStorage.getItem(autoSaveKey)
++    if (saved) {
++      try {
++        const data = JSON.parse(saved)
++        // Only restore if recent (within last hour) and matches current context
++        const hourAgo = Date.now() - 3600000
++        if (data.timestamp > hourAgo && data.productType === productType && data.gender === gender) {
++          // Show restore prompt
++          toast((t) => (
++            <div className="flex flex-col gap-2">
++              <p className="font-medium text-gray-900">Restore unsaved chart?</p>
++              <p className="text-sm text-gray-600">
++                From {new Date(data.timestamp).toLocaleTimeString()}
++              </p>
++              <div className="flex gap-2 mt-1">
++                <button
++                  onClick={() => {
++                    // Restore injection points
++                    const restoredInjectionPoints = new Map(
++                      data.injectionPoints.map((item: any) => [
++                        item.zoneId,
++                        {
++                          ...item,
++                          timestamp: new Date(item.timestamp)
++                        }
++                      ])
++                    )
++                    onInjectionPointsChange(restoredInjectionPoints)
++
++                    // Restore freehand points
++                    const restoredFreehandPoints = new Map(
++                      data.freehandPoints.map((item: any) => [
++                        item.pointId,
++                        {
++                          ...item,
++                          timestamp: new Date(item.timestamp)
++                        }
++                      ])
++                    )
++                    setFreehandPoints(restoredFreehandPoints)
++
++                    toast.dismiss(t.id)
++                    toast.success('Chart restored', { icon: '✓' })
++                  }}
++                  className="px-3 py-1.5 bg-purple-600 text-white text-sm rounded-lg hover:bg-purple-700 transition-colors"
++                >
++                  Restore
++                </button>
++                <button
++                  onClick={() => {
++                    localStorage.removeItem(autoSaveKey)
++                    toast.dismiss(t.id)
++                    toast('Discarded auto-save', { icon: 'ℹ️' })
++                  }}
++                  className="px-3 py-1.5 bg-gray-200 text-gray-700 text-sm rounded-lg hover:bg-gray-300 transition-colors"
++                >
++                  Discard
++                </button>
++              </div>
++            </div>
++          ), {
++            duration: 10000,
++            position: 'top-center'
++          })
++        } else {
++          // Remove stale data
++          localStorage.removeItem(autoSaveKey)
++        }
++      } catch (e) {
++        console.error('Failed to parse saved chart data:', e)
++        localStorage.removeItem(autoSaveKey)
++      }
++    }
++    // eslint-disable-next-line react-hooks/exhaustive-deps
++  }, []) // Only run on mount
++
++  // Cleanup timeout on unmount
++  useEffect(() => {
++    return () => {
++      if (saveTimeoutRef.current) {
++        clearTimeout(saveTimeoutRef.current)
++      }
++    }
++  }, [])
++
+   // ==========================================================================
+   // MULTI-SELECT MODE HANDLERS (Speed Charting)
+   // ==========================================================================
+@@ -995,6 +1133,19 @@ export function InteractiveFaceChart({
+               Templates
+             </button>
+
++            {/* Auto-save indicator */}
++            {autoSaveStatus === 'saved' && (
++              <div className="flex items-center gap-1.5 px-2 py-1 bg-green-50 text-green-700 rounded-lg text-xs">
++                <Check className="w-3 h-3" />
++                Saved
++              </div>
++            )}
++            {autoSaveStatus === 'saving' && (
++              <div className="flex items-center gap-1.5 px-2 py-1 bg-blue-50 text-blue-700 rounded-lg text-xs">
++                <Clock className="w-3 h-3 animate-spin" />
++                Saving...
++              </div>
++            )}
++
+             {/* Copy Last */}
+             {patientLastTreatment && patientLastTreatment.size > 0 && (
+               <button

@@ -3,7 +3,8 @@
   "private": true,
   "workspaces": [
     "apps/*",
-    "packages/*"
+    "packages/*",
+    "backend"
   ],
   "scripts": {
     "dev": "turbo dev",
@@ -22,5 +23,13 @@
   },
   "dependencies": {
     "recharts": "^3.1.2"
+  },
+  "overrides": {
+    "react": "19.1.1",
+    "react-dom": "19.1.1",
+    "ajv": "8.17.1",
+    "ajv-keywords": {
+      "ajv": "8.17.1"
+    }
   }
 }

@@ -133,15 +133,14 @@ export const isWithinShift = (shift: Shift | null, hour: number, minute: number)
 	let shiftStartInMinutes, shiftEndInMinutes
 
 	// Handle new format (with startAt/endAt)
-	if (shift.startAt && shift.endAt) {
-		shiftStartInMinutes = shift.startAt.getHours() * 60 + shift.startAt.getMinutes()
-		shiftEndInMinutes = shift.endAt.getHours() * 60 + shift.endAt.getMinutes()
+	if ((shift as any).startAt && (shift as any).endAt) {
+		shiftStartInMinutes = (shift as any).startAt.getHours() * 60 + (shift as any).startAt.getMinutes()
+		shiftEndInMinutes = (shift as any).endAt.getHours() * 60 + (shift as any).endAt.getMinutes()
 	}
 	// Handle old format
-	else if ((shift as any).startHour !== undefined) {
-		const oldShift = shift as any
-		shiftStartInMinutes = oldShift.startHour * 60 + (oldShift.startMinute || 0)
-		shiftEndInMinutes = oldShift.endHour * 60 + (oldShift.endMinute || 0)
+	else if (shift.startHour !== undefined) {
+		shiftStartInMinutes = shift.startHour * 60 + (shift.startMinute || 0)
+		shiftEndInMinutes = shift.endHour * 60 + (shift.endMinute || 0)
 	} else {
 		return false
 	}
@@ -160,21 +159,20 @@ export const adjustTimeToShift = (
 	let shiftStartMinutes, shiftEndMinutes, shiftStartHour, shiftStartMinute, shiftEndHour, shiftEndMinute
 
 	// Handle new format (with startAt/endAt)
-	if (shift.startAt && shift.endAt) {
-		shiftStartHour = shift.startAt.getHours()
-		shiftStartMinute = shift.startAt.getMinutes()
-		shiftEndHour = shift.endAt.getHours()
-		shiftEndMinute = shift.endAt.getMinutes()
+	if ((shift as any).startAt && (shift as any).endAt) {
+		shiftStartHour = (shift as any).startAt.getHours()
+		shiftStartMinute = (shift as any).startAt.getMinutes()
+		shiftEndHour = (shift as any).endAt.getHours()
+		shiftEndMinute = (shift as any).endAt.getMinutes()
 		shiftStartMinutes = shiftStartHour * 60 + shiftStartMinute
 		shiftEndMinutes = shiftEndHour * 60 + shiftEndMinute
 	}
 	// Handle old format
-	else if ((shift as any).startHour !== undefined) {
-		const oldShift = shift as any
-		shiftStartHour = oldShift.startHour
-		shiftStartMinute = oldShift.startMinute || 0
-		shiftEndHour = oldShift.endHour
-		shiftEndMinute = oldShift.endMinute || 0
+	else if (shift.startHour !== undefined) {
+		shiftStartHour = shift.startHour
+		shiftStartMinute = shift.startMinute || 0
+		shiftEndHour = shift.endHour
+		shiftEndMinute = shift.endMinute || 0
 		shiftStartMinutes = shiftStartHour * 60 + shiftStartMinute
 		shiftEndMinutes = shiftEndHour * 60 + shiftEndMinute
 	} else {

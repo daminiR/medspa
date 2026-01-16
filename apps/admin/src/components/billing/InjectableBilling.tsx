@@ -33,6 +33,13 @@ import {
 } from 'lucide-react'
 import { DocumentationFaceChart } from './DocumentationFaceChart'
 import { INJECTION_ZONES } from './EnhancedFaceChart'
+import {
+  InjectionTechniqueSelector,
+  InlineInjectionTechnique,
+  InjectionTechnique,
+  InjectionDepth,
+  DeliveryMethod
+} from '@/components/charting/InjectionTechniqueSelector'
 
 interface InjectableProduct {
   id: string
@@ -214,7 +221,29 @@ export function InjectableBilling({ onClose, patientId, patientName }: Injectabl
   const [showPhotoCapture, setShowPhotoCapture] = useState(false)
   const [photoConsentSigned, setPhotoConsentSigned] = useState(false)
   const [inventoryDeduction, setInventoryDeduction] = useState(true)
-  
+
+  // Injection technique state - per zone
+  const [zoneTechniques, setZoneTechniques] = useState<Map<string, InjectionTechnique>>(new Map())
+  const [defaultTechnique, setDefaultTechnique] = useState<InjectionTechnique>({
+    depth: 'intramuscular',
+    deliveryMethod: 'needle',
+    gauge: '30G'
+  })
+  const [showTechniquePanel, setShowTechniquePanel] = useState(false)
+  const [selectedZoneForTechnique, setSelectedZoneForTechnique] = useState<string | null>(null)
+
+  // Get technique for a specific zone
+  const getZoneTechnique = (zoneId: string): InjectionTechnique => {
+    return zoneTechniques.get(zoneId) || defaultTechnique
+  }
+
+  // Update technique for a specific zone
+  const updateZoneTechnique = (zoneId: string, technique: InjectionTechnique) => {
+    const newTechniques = new Map(zoneTechniques)
+    newTechniques.set(zoneId, technique)
+    setZoneTechniques(newTechniques)
+  }
+
   const handleAreaClick = (zone: any) => {
     if (!selectedProduct) {
       alert('Please select a product first')
@@ -334,13 +363,18 @@ export function InjectableBilling({ onClose, patientId, patientName }: Injectabl
       invoice = createInvoice(patientId, patientName)
     }
     
-    // Prepare zones data
+    // Prepare zones data with injection technique
     const zonesData = Array.from(selectedAreas.entries()).map(([zoneId, units]) => {
       const zone = INJECTION_ZONES.find(z => z.id === zoneId)
+      const technique = getZoneTechnique(zoneId)
       return {
         id: zoneId,
         name: zone?.name || zoneId,
-        units
+        units,
+        depth: technique.depth,
+        deliveryMethod: technique.deliveryMethod,
+        gauge: technique.gauge,
+        techniqueNotes: technique.techniqueNotes
       }
     })
     
@@ -811,59 +845,81 @@ export function InjectableBilling({ onClose, patientId, patientName }: Injectabl
                       const zoneUnits = zone.recommendedUnits?.[selectedProduct?.type || 'neurotoxin']
                       if (!zoneUnits) return null
                       
+                      const zoneTech = getZoneTechnique(zoneId)
+
                       return (
                         <div
                           key={zoneId}
-                          className="flex items-center justify-between p-3 bg-white rounded-lg border border-gray-200"
+                          className="p-3 bg-white rounded-lg border border-gray-200 space-y-3"
                         >
-                          <div className="flex items-center gap-3">
-                            <Target className="w-4 h-4 text-purple-500" />
-                            <div>
-                              <p className="font-medium text-gray-900">{zone.name}</p>
-                              {zone.muscle && (
-                                <p className="text-xs text-gray-400 italic">{zone.muscle}</p>
-                              )}
-                              <p className="text-xs text-gray-500">
-                                Recommended: {zoneUnits.min}-{zoneUnits.max} 
-                                {selectedProduct?.type === 'neurotoxin' ? ' units' : ' ml'}
-                              </p>
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                              <Target className="w-4 h-4 text-purple-500" />
+                              <div>
+                                <p className="font-medium text-gray-900">{zone.name}</p>
+                                {zone.muscle && (
+                                  <p className="text-xs text-gray-400 italic">{zone.muscle}</p>
+                                )}
+                                <p className="text-xs text-gray-500">
+                                  Recommended: {zoneUnits.min}-{zoneUnits.max}
+                                  {selectedProduct?.type === 'neurotoxin' ? ' units' : ' ml'}
+                                </p>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <button
+                                onClick={() => adjustUnits(zoneId, selectedProduct?.type === 'neurotoxin' ? -1 : -0.1)}
+                                className="p-1 hover:bg-gray-100 rounded"
+                              >
+                                <Minus className="w-4 h-4" />
+                              </button>
+                              <input
+                                type="number"
+                                value={units}
+                                onChange={(e) => {
+                                  const newValue = parseFloat(e.target.value) || 0
+                                  if (newValue === 0) {
+                                    const newAreas = new Map(selectedAreas)
+                                    newAreas.delete(zoneId)
+                                    setSelectedAreas(newAreas)
+                                  } else {
+                                    const zone = INJECTION_ZONES.find(z => z.id === zoneId)
+                                    const zoneUnits = zone?.recommendedUnits?.[selectedProduct?.type || 'neurotoxin']
+                                    const clampedValue = Math.max(0, Math.min(zoneUnits?.max || newValue, newValue))
+                                    setSelectedAreas(new Map(selectedAreas).set(zoneId, clampedValue))
+                                  }
+                                }}
+                                step={selectedProduct?.type === 'neurotoxin' ? '1' : '0.1'}
+                                className="w-16 text-center font-semibold border border-gray-200 rounded px-1 py-0.5 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                              />
+                              <span className="text-sm text-gray-600">
+                                {selectedProduct?.type === 'neurotoxin' ? 'u' : 'ml'}
+                              </span>
+                              <button
+                                onClick={() => adjustUnits(zoneId, selectedProduct?.type === 'neurotoxin' ? 1 : 0.1)}
+                                className="p-1 hover:bg-gray-100 rounded"
+                              >
+                                <Plus className="w-4 h-4" />
+                              </button>
                             </div>
                           </div>
-                          <div className="flex items-center gap-2">
-                            <button
-                              onClick={() => adjustUnits(zoneId, selectedProduct?.type === 'neurotoxin' ? -1 : -0.1)}
-                              className="p-1 hover:bg-gray-100 rounded"
-                            >
-                              <Minus className="w-4 h-4" />
-                            </button>
-                            <input
-                              type="number"
-                              value={units}
-                              onChange={(e) => {
-                                const newValue = parseFloat(e.target.value) || 0
-                                if (newValue === 0) {
-                                  const newAreas = new Map(selectedAreas)
-                                  newAreas.delete(zoneId)
-                                  setSelectedAreas(newAreas)
-                                } else {
-                                  const zone = INJECTION_ZONES.find(z => z.id === zoneId)
-                                  const zoneUnits = zone?.recommendedUnits?.[selectedProduct?.type || 'neurotoxin']
-                                  const clampedValue = Math.max(0, Math.min(zoneUnits?.max || newValue, newValue))
-                                  setSelectedAreas(new Map(selectedAreas).set(zoneId, clampedValue))
-                                }
-                              }}
-                              step={selectedProduct?.type === 'neurotoxin' ? '1' : '0.1'}
-                              className="w-16 text-center font-semibold border border-gray-200 rounded px-1 py-0.5 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+
+                          {/* Injection Technique for this zone */}
+                          <div className="pt-2 border-t border-gray-100">
+                            <div className="flex items-center justify-between mb-2">
+                              <span className="text-xs font-medium text-gray-600">Injection Technique</span>
+                              <InlineInjectionTechnique
+                                depth={zoneTech.depth}
+                                deliveryMethod={zoneTech.deliveryMethod}
+                                gauge={zoneTech.gauge}
+                              />
+                            </div>
+                            <InjectionTechniqueSelector
+                              value={zoneTech}
+                              onChange={(tech) => updateZoneTechnique(zoneId, tech)}
+                              productType={selectedProduct?.type || 'neurotoxin'}
+                              compact={true}
                             />
-                            <span className="text-sm text-gray-600">
-                              {selectedProduct?.type === 'neurotoxin' ? 'u' : 'ml'}
-                            </span>
-                            <button
-                              onClick={() => adjustUnits(zoneId, selectedProduct?.type === 'neurotoxin' ? 1 : 0.1)}
-                              className="p-1 hover:bg-gray-100 rounded"
-                            >
-                              <Plus className="w-4 h-4" />
-                            </button>
                           </div>
                         </div>
                       )

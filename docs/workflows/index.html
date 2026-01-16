@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Luxe Medical Spa - Complete System Workflows</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <style>
+        .loading-spinner {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 60px;
+            color: #667eea;
+            font-size: 1.2em;
+        }
+        .loading-spinner::before {
+            content: '';
+            width: 24px;
+            height: 24px;
+            border: 3px solid #e0e0e0;
+            border-top-color: #667eea;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-right: 12px;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Luxe Medical Spa EMR</h1>
+            <p>Complete System Blueprint: Architecture - Workflows - Voice AI Strategy</p>
+        </header>
+
+        <!-- Parent Tabs -->
+        <div class="nav-tabs">
+            <button class="nav-tab active" data-group="group-strategy">Strategy</button>
+            <button class="nav-tab" data-group="group-workflows">Workflows</button>
+            <button class="nav-tab" data-group="group-architecture">Architecture</button>
+            <button class="nav-tab" data-group="group-features">Features</button>
+            <button class="nav-tab" data-group="group-progress">Progress</button>
+            <button class="nav-tab" data-group="group-guides">Guides</button>
+        </div>
+
+        <!-- Strategy Subtabs -->
+        <div class="subtabs-container active" id="group-strategy">
+            <div class="subtabs">
+                <button class="subtab active" data-tab="strategy">Strategy & Research</button>
+                <button class="subtab" data-tab="competitors">Competitive Analysis</button>
+                <button class="subtab" data-tab="gaps">Opportunities & Gaps</button>
+                <button class="subtab" data-tab="medspa-insights">MedSpa Insights</button>
+            </div>
+        </div>
+
+        <!-- Workflows Subtabs -->
+        <div class="subtabs-container" id="group-workflows">
+            <div class="subtabs">
+                <button class="subtab" data-tab="patient-journey">Patient Journey</button>
+                <button class="subtab" data-tab="booking">Booking Flows</button>
+                <button class="subtab" data-tab="treatment">Treatment Flow</button>
+                <button class="subtab" data-tab="billing">Billing & Payments</button>
+            </div>
+        </div>
+
+        <!-- Architecture Subtabs -->
+        <div class="subtabs-container" id="group-architecture">
+            <div class="subtabs">
+                <button class="subtab" data-tab="overview">System Overview</button>
+                <button class="subtab" data-tab="integrations">Integrations</button>
+                <button class="subtab" data-tab="backend">Backend Status</button>
+            </div>
+        </div>
+
+        <!-- Features Subtabs -->
+        <div class="subtabs-container" id="group-features">
+            <div class="subtabs">
+                <button class="subtab" data-tab="voice-ai">Voice AI Strategy</button>
+                <button class="subtab" data-tab="patient-portal">Patient Portal</button>
+                <button class="subtab" data-tab="wow-features">Wow Features</button>
+            </div>
+        </div>
+
+        <!-- Progress Subtabs -->
+        <div class="subtabs-container" id="group-progress">
+            <div class="subtabs">
+                <button class="subtab" data-tab="feature-checklist">Feature Checklist</button>
+                <button class="subtab" data-tab="testing">Testing Checklist</button>
+            </div>
+        </div>
+
+        <!-- Guides Subtabs -->
+        <div class="subtabs-container" id="group-guides">
+            <div class="subtabs">
+                <button class="subtab" data-tab="prompting">Claude Prompting</button>
+            </div>
+        </div>
+
+        <!-- Single content area - content loaded dynamically -->
+        <div class="tab-content active" id="tab-content-area" style="display: block;">
+            <!-- Content loaded via fetch -->
+        </div>
+    </div>
+
+    <script src="scripts/main.js"></script>
+</body>
+</html>

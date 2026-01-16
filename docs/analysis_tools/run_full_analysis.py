@@ -41,7 +41,7 @@ def main():
 ╔═══════════════════════════════════════════════════════════════════╗
 ║                                                                    ║
 ║        COMPETITIVE ANALYSIS AUTOMATION SYSTEM                      ║
-║        Luke's Medical Spa vs Competitors                          ║
+║        Luxe Medical Spa EMR vs Competitors                        ║
 ║                                                                    ║
 ╚═══════════════════════════════════════════════════════════════════╝
     """)

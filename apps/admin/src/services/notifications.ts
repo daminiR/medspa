@@ -1,34 +1,39 @@
 // Notification Service for Desktop Alerts
+// Now connected to real Firestore notification events
 
 import { websocketService, WebSocketEvent } from './websocket'
 import toast from 'react-hot-toast'
+import type {
+  ToastNotification,
+  CreateToastNotification,
+  NotificationServiceSettings,
+  RealtimeNotificationEvent,
+} from '@/types/notifications'
 
-export interface Notification {
-  id: string
-  type: 'success' | 'info' | 'warning' | 'error'
-  title: string
-  message: string
-  timestamp: Date
-  action?: {
-    label: string
-    onClick: () => void
-  }
-  persistent?: boolean
-}
+// Re-export the toast notification type as Notification for backwards compatibility
+export type Notification = ToastNotification
 
 class NotificationService {
   private notifications: Notification[] = []
   private listeners: Set<(notifications: Notification[]) => void> = new Set()
   private soundEnabled: boolean = true
   private desktopEnabled: boolean = false
+  private currentStaffUserId: string = ''
+  private initialized: boolean = false
 
   constructor() {
-    this.init()
+    // Defer initialization to avoid issues with SSR
+    if (typeof window !== 'undefined') {
+      this.init()
+    }
   }
 
   private async init() {
+    if (this.initialized) return
+    this.initialized = true
+
     // Request permission for desktop notifications
-    if (typeof window !== 'undefined' && 'Notification' in window) {
+    if ('Notification' in window) {
       if (Notification.permission === 'default') {
         const permission = await Notification.requestPermission()
         this.desktopEnabled = permission === 'granted'
@@ -37,22 +42,39 @@ class NotificationService {
       }
     }
 
-    // Subscribe to important WebSocket events
+    // Subscribe to Firestore notification events via the real-time service
     this.subscribeToEvents()
   }
 
+  // Set the current staff user ID to listen for their notifications
+  setStaffUserId(userId: string) {
+    if (this.currentStaffUserId !== userId) {
+      this.currentStaffUserId = userId
+      // Subscribe to notifications for this user
+      websocketService.subscribeToNotifications(userId)
+    }
+  }
+
   private subscribeToEvents() {
+    // Listen for new notifications from Firestore
+    websocketService.on('notification.received', (data) => {
+      this.handleFirestoreNotification(data)
+    })
+
     // Treatment ready for payment
     websocketService.on('treatment.ready_for_payment', (data) => {
       this.notify({
         type: 'success',
         title: 'Treatment Complete',
-        message: `${data.patientName} is ready for checkout in ${data.roomNumber}`,
+        message: `${data.patientName || 'Patient'} is ready for checkout${data.roomNumber ? ` in ${data.roomNumber}` : ''}`,
         action: {
           label: 'Process Payment',
           onClick: () => {
             // Navigate to payment or open payment modal
             console.log('Navigate to payment for', data.patientId)
+            if (typeof window !== 'undefined') {
+              window.dispatchEvent(new CustomEvent('openCheckout', { detail: data }))
+            }
           }
         }
       })
@@ -63,7 +85,7 @@ class NotificationService {
       this.notify({
         type: 'info',
         title: 'Documentation Received',
-        message: `${data.providerName} completed documentation for ${data.patientName}`,
+        message: `${data.providerName || 'Provider'} completed documentation for ${data.patientName || 'patient'}`,
       })
     })
 
@@ -72,12 +94,15 @@ class NotificationService {
       this.notify({
         type: 'warning',
         title: 'Provider Assistance Needed',
-        message: `${data.providerName} in ${data.roomNumber} needs help`,
+        message: `${data.providerName || 'Provider'} in ${data.roomNumber || 'room'} needs help`,
         persistent: true,
         action: {
           label: 'Acknowledge',
           onClick: () => {
             console.log('Assistance acknowledged for', data.providerId)
+            if (typeof window !== 'undefined') {
+              window.dispatchEvent(new CustomEvent('acknowledgeAssistance', { detail: data }))
+            }
           }
         }
       })
@@ -88,7 +113,7 @@ class NotificationService {
       this.notify({
         type: 'error',
         title: 'Sync Error',
-        message: `Failed to sync treatment data for ${data.patientName}`,
+        message: `Failed to sync treatment data${data.patientName ? ` for ${data.patientName}` : ''}`,
         persistent: true
       })
     })
@@ -99,16 +124,92 @@ class NotificationService {
         this.notify({
           type: 'warning',
           title: 'Low Stock Alert',
-          message: `${data.productName} is below reorder point (${data.remaining} ${data.unit} remaining)`,
+          message: `${data.productName || 'Product'} is below reorder point (${data.remaining || 0} ${data.unit || 'units'} remaining)`,
         })
       }
     })
+
+    // Waiting room updates
+    websocketService.on('waitingRoom.patient_checked_in', (data) => {
+      this.notify({
+        type: 'info',
+        title: 'Patient Checked In',
+        message: `${data.patientName || 'Patient'} has checked in for their appointment`,
+      })
+    })
+
+    websocketService.on('waitingRoom.patient_called', (data) => {
+      this.notify({
+        type: 'success',
+        title: 'Patient Called',
+        message: `${data.patientName || 'Patient'} has been notified that their room is ready`,
+      })
+    })
+
+    // Appointment updates
+    websocketService.on('appointment.created', (data) => {
+      // Only notify for same-day appointments
+      const today = new Date()
+      const appointmentDate = new Date(data.scheduledTime)
+      if (appointmentDate.toDateString() === today.toDateString()) {
+        this.notify({
+          type: 'info',
+          title: 'New Appointment',
+          message: `${data.patientName || 'Patient'} booked for today at ${appointmentDate.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}`,
+        })
+      }
+    })
+
+    websocketService.on('appointment.cancelled', (data) => {
+      this.notify({
+        type: 'warning',
+        title: 'Appointment Cancelled',
+        message: `${data.patientName || 'Patient'}'s appointment has been cancelled`,
+      })
+    })
   }
 
-  notify(notification: Omit<Notification, 'id' | 'timestamp'>) {
+  // Handle notifications coming from Firestore
+  private handleFirestoreNotification(data: RealtimeNotificationEvent) {
+    // Map Firestore notification types to our toast notification format
+    const typeMap: Record<string, ToastNotification['type']> = {
+      'treatment_ready': 'success',
+      'documentation_complete': 'info',
+      'assistance_needed': 'warning',
+      'sync_error': 'error',
+      'low_stock': 'warning',
+      'appointment_reminder': 'info',
+      'patient_arrived': 'info'
+    }
+
+    const notification: CreateToastNotification = {
+      type: typeMap[data.type] || 'info',
+      title: data.title || 'Notification',
+      message: data.message || data.body || '',
+      persistent: data.persistent || data.requiresAction,
+    }
+
+    // Add action if the notification has one
+    if (data.actionUrl || data.actionType) {
+      notification.action = {
+        label: data.actionLabel || 'View',
+        onClick: () => {
+          if (data.actionUrl && typeof window !== 'undefined') {
+            window.location.href = data.actionUrl
+          } else if (data.actionType) {
+            window.dispatchEvent(new CustomEvent(data.actionType, { detail: data }))
+          }
+        }
+      }
+    }
+
+    this.notify(notification)
+  }
+
+  notify(notification: CreateToastNotification): Notification {
     const newNotification: Notification = {
       ...notification,
-      id: `notif-${Date.now()}`,
+      id: `notif-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       timestamp: new Date()
     }
 
@@ -143,20 +244,7 @@ class NotificationService {
       position: 'top-right' as const,
     }
 
-    const message = (
-      <div className="flex flex-col gap-1">
-        <strong className="text-sm font-semibold">{notification.title}</strong>
-        <span className="text-xs">{notification.message}</span>
-        {notification.action && (
-          <button
-            onClick={notification.action.onClick}
-            className="mt-2 text-xs font-medium text-blue-600 hover:text-blue-700"
-          >
-            {notification.action.label} →
-          </button>
-        )}
-      </div>
-    )
+    const message = `${notification.title}: ${notification.message}${notification.action ? ` - ${notification.action.label}` : ''}`
 
     switch (notification.type) {
       case 'success':
@@ -166,7 +254,7 @@ class NotificationService {
         toast.error(message, options)
         break
       case 'warning':
-        toast(message, { ...options, icon: '⚠️' })
+        toast(message, { ...options, icon: '!' })
         break
       default:
         toast(message, options)
@@ -174,8 +262,8 @@ class NotificationService {
   }
 
   private showDesktopNotification(notification: Notification) {
-    if (typeof window === 'undefined' || !('Notification' in window)) return
-    
+    if (typeof window === 'undefined' || !('Notification' in window) || typeof Notification === 'undefined') return
+
     const desktopNotif = new Notification(notification.title, {
       body: notification.message,
       icon: '/icon-192.png', // Add your app icon
@@ -200,7 +288,7 @@ class NotificationService {
 
   private playNotificationSound(type: Notification['type']) {
     if (typeof window === 'undefined') return
-    
+
     // Map notification types to sound files
     const sounds: Record<string, string> = {
       success: '/sounds/success.mp3',
@@ -210,21 +298,26 @@ class NotificationService {
     }
 
     const soundUrl = sounds[type] || sounds.info
-    
+
     // Play sound (you'll need to add these sound files to your public folder)
     try {
       const audio = new Audio(soundUrl)
       audio.volume = 0.3
       audio.play().catch(err => {
-        console.log('Could not play notification sound:', err)
+        // Silently fail - browser may block autoplay
+        console.debug('Could not play notification sound:', err)
       })
     } catch (error) {
-      console.log('Audio playback not supported')
+      console.debug('Audio playback not supported')
     }
   }
 
   getNotifications() {
     return this.notifications
+  }
+
+  getUnreadCount() {
+    return this.notifications.filter(n => !n.read).length
   }
 
   clearNotification(id: string) {
@@ -240,13 +333,20 @@ class NotificationService {
   markAsRead(id: string) {
     const notification = this.notifications.find(n => n.id === id)
     if (notification) {
-      // Add read timestamp or flag
+      notification.read = true
       this.notifyListeners()
     }
   }
 
+  markAllAsRead() {
+    this.notifications.forEach(n => n.read = true)
+    this.notifyListeners()
+  }
+
   subscribe(callback: (notifications: Notification[]) => void) {
     this.listeners.add(callback)
+    // Immediately call with current notifications
+    callback(this.notifications)
     return () => this.listeners.delete(callback)
   }
 
@@ -260,50 +360,43 @@ class NotificationService {
 
   setDesktopEnabled(enabled: boolean) {
     this.desktopEnabled = enabled
-    if (enabled && typeof window !== 'undefined' && 'Notification' in window) {
+    if (enabled && typeof window !== 'undefined' && 'Notification' in window && typeof Notification !== 'undefined') {
       if (Notification.permission === 'default') {
-        Notification.requestPermission().then(permission => {
-          this.desktopEnabled = permission === 'granted'
-        })
+        Notification.requestPermission()
+          .then(permission => {
+            this.desktopEnabled = permission === 'granted'
+          })
+          .catch(() => {
+            // Permission request failed - keep desktop notifications disabled
+            this.desktopEnabled = false
+          })
       }
     }
   }
 
-  getSettings() {
+  getSettings(): NotificationServiceSettings {
     return {
       soundEnabled: this.soundEnabled,
       desktopEnabled: this.desktopEnabled,
-      notificationCount: this.notifications.length
+      notificationCount: this.notifications.length,
+      unreadCount: this.getUnreadCount()
     }
+  }
+
+  // Check if the real-time service is connected
+  isConnected() {
+    return websocketService.getConnectionStatus().connected
   }
 }
 
 // Export singleton instance
 export const notificationService = new NotificationService()
 
-// React Hook for Notifications
-import { useEffect, useState } from 'react'
-
-export function useNotifications() {
-  const [notifications, setNotifications] = useState(notificationService.getNotifications())
-  const [settings, setSettings] = useState(notificationService.getSettings())
-
-  useEffect(() => {
-    const unsubscribe = notificationService.subscribe((newNotifications) => {
-      setNotifications(newNotifications)
-      setSettings(notificationService.getSettings())
-    })
-
-    return unsubscribe
-  }, [])
-
-  return {
-    notifications,
-    settings,
-    clearNotification: (id: string) => notificationService.clearNotification(id),
-    clearAll: () => notificationService.clearAll(),
-    setSoundEnabled: (enabled: boolean) => notificationService.setSoundEnabled(enabled),
-    setDesktopEnabled: (enabled: boolean) => notificationService.setDesktopEnabled(enabled),
-    notify: (notification: Omit<Notification, 'id' | 'timestamp'>) => notificationService.notify(notification)
-  }
-}
+// React hook for notifications (can be used in components)
+// Example usage:
+// import { useNotifications } from '@/services/notifications'
+//
+// function MyComponent() {
+//   const { notifications, unreadCount, clearNotification, markAsRead } = useNotifications()
+//   ...
+// }

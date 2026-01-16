@@ -1,0 +1,3279 @@
+'use client'
+
+// SpeechRecognition type declarations
+interface SpeechRecognitionEvent extends Event {
+  results: SpeechRecognitionResultList
+  resultIndex: number
+}
+
+interface SpeechRecognitionErrorEvent extends Event {
+  error: string
+  message: string
+}
+
+interface SpeechRecognition extends EventTarget {
+  continuous: boolean
+  interimResults: boolean
+  lang: string
+  onresult: ((event: SpeechRecognitionEvent) => void) | null
+  onerror: ((event: SpeechRecognitionErrorEvent) => void) | null
+  onend: (() => void) | null
+  start: () => void
+  stop: () => void
+  abort: () => void
+}
+
+interface SpeechRecognitionResultList {
+  length: number
+  item(index: number): SpeechRecognitionResult
+  [index: number]: SpeechRecognitionResult
+}
+
+interface SpeechRecognitionResult {
+  length: number
+  item(index: number): SpeechRecognitionAlternative
+  [index: number]: SpeechRecognitionAlternative
+  isFinal: boolean
+}
+
+interface SpeechRecognitionAlternative {
+  transcript: string
+  confidence: number
+}
+
+declare global {
+  interface Window {
+    SpeechRecognition: new () => SpeechRecognition
+    webkitSpeechRecognition: new () => SpeechRecognition
+  }
+}
+
+import React, { useState, useCallback, useMemo, useRef, useEffect } from 'react'
+import Image from 'next/image'
+import {
+  useChartingSettings,
+  TreatmentZone,
+  TreatmentTemplate,
+  InjectionDepthPreset,
+  InjectionTechniquePreset,
+  NeedleGaugeOption,
+  ProductPreset
+} from '@/contexts/ChartingSettingsContext'
+import {
+  Plus,
+  Minus,
+  Layers,
+  Target,
+  Syringe,
+  Zap,
+  RotateCcw,
+  Save,
+  ChevronDown,
+  ChevronRight,
+  ChevronLeft,
+  Check,
+  X,
+  Info,
+  FileText,
+  Clock,
+  Sparkles,
+  Droplets,
+  History,
+  Copy,
+  Keyboard,
+  Settings2,
+  Pencil,
+  CircleDot,
+  MapPin,
+  Mic,
+  MicOff,
+  MousePointer2,
+  PointerIcon,
+  CheckSquare,
+  Volume2,
+  VolumeX,
+  Smartphone,
+  PenTool
+} from 'lucide-react'
+import toast from 'react-hot-toast'
+import { TotalsPanel } from './TotalsPanel'
+
+// =============================================================================
+// TYPES
+// =============================================================================
+
+export interface InjectionPoint {
+  id: string
+  zoneId: string
+  units?: number
+  volume?: number
+  depthId: string
+  techniqueId: string
+  needleGaugeId: string
+  productId?: string
+  notes?: string
+  timestamp: Date
+}
+
+export interface FreehandPoint {
+  id: string
+  x: number // percentage 0-100
+  y: number // percentage 0-100
+  customName?: string
+  units?: number
+  volume?: number
+  depthId: string
+  techniqueId: string
+  needleGaugeId: string
+  productId?: string
+  notes?: string
+  timestamp: Date
+}
+
+type DrawingMode = 'zones' | 'freehand'
+type SelectionMode = 'single' | 'multi'
+
+interface QuickEditState {
+  isOpen: boolean
+  zoneId: string | null
+  position: { x: number; y: number }
+}
+
+interface VoiceInputState {
+  isListening: boolean
+  transcript: string
+  error: string | null
+}
+
+interface TemplatePreviewState {
+  isOpen: boolean
+  template: TreatmentTemplate | null
+  touchTimer: NodeJS.Timeout | null
+}
+
+interface InteractiveFaceChartProps {
+  productType: 'neurotoxin' | 'filler'
+  gender: 'male' | 'female'
+  injectionPoints: Map<string, InjectionPoint>
+  onInjectionPointsChange: (points: Map<string, InjectionPoint>) => void
+  freehandPoints?: Map<string, FreehandPoint>
+  onFreehandPointsChange?: (points: Map<string, FreehandPoint>) => void
+  onSave?: () => void
+  selectedProductId?: string
+  patientLastTreatment?: Map<string, InjectionPoint> // For smart defaults
+  readOnly?: boolean
+}
+
+// =============================================================================
+// CONSTANTS
+// =============================================================================
+
+// Color scheme (used for summary panel)
+const COLORS = {
+  neurotoxin: {
+    primary: '#8B5CF6', // Purple
+    light: '#C4B5FD',
+    dark: '#6D28D9'
+  },
+  filler: {
+    primary: '#EC4899', // Pink
+    light: '#F9A8D4',
+    dark: '#BE185D'
+  }
+}
+
+// Zone positions as percentages relative to the face image
+// These coordinates are calibrated for the face-chart-female.png and face-chart-male.png images
+const ZONE_POSITIONS: Record<string, { x: number; y: number }> = {
+  // Upper Face
+  'zone-forehead': { x: 50, y: 15 },
+  'zone-glabella': { x: 50, y: 22 },
+  'zone-brow-l': { x: 43, y: 22 },
+  'zone-brow-r': { x: 57, y: 22 },
+  'zone-crows-l': { x: 30, y: 28 },
+  'zone-crows-r': { x: 70, y: 28 },
+
+  // Periorbital
+  'zone-tear-l': { x: 41, y: 31 },
+  'zone-tear-r': { x: 59, y: 31 },
+
+  // Mid Face
+  'zone-cheek-l': { x: 35, y: 40 },
+  'zone-cheek-r': { x: 65, y: 40 },
+  'zone-nose': { x: 50, y: 38 },
+  'zone-naso-l': { x: 42, y: 45 },
+  'zone-naso-r': { x: 58, y: 45 },
+
+  // Lower Face
+  'zone-lip-upper': { x: 50, y: 49 },
+  'zone-lip-lower': { x: 50, y: 52 },
+  'zone-marionette-l': { x: 42, y: 54 },
+  'zone-marionette-r': { x: 58, y: 54 },
+  'zone-chin': { x: 50, y: 58 },
+
+  // Jaw & Masseter
+  'zone-jaw-l': { x: 33, y: 55 },
+  'zone-jaw-r': { x: 67, y: 55 },
+  'zone-masseter-l': { x: 28, y: 48 },
+  'zone-masseter-r': { x: 72, y: 48 },
+
+  // Neck
+  'zone-platysma': { x: 50, y: 68 }
+}
+
+// Quick unit presets based on zone
+const QUICK_UNIT_PRESETS: Record<string, number[]> = {
+  'zone-forehead': [10, 15, 20, 25],
+  'zone-glabella': [15, 20, 25, 30],
+  'zone-crows-l': [8, 10, 12, 15],
+  'zone-crows-r': [8, 10, 12, 15],
+  'zone-masseter-l': [20, 25, 30, 40],
+  'zone-masseter-r': [20, 25, 30, 40],
+  default: [5, 10, 15, 20]
+}
+
+const QUICK_VOLUME_PRESETS: Record<string, number[]> = {
+  'zone-lip-upper': [0.3, 0.5, 0.7, 1.0],
+  'zone-lip-lower': [0.3, 0.5, 0.7, 1.0],
+  'zone-cheek-l': [0.5, 1.0, 1.5, 2.0],
+  'zone-cheek-r': [0.5, 1.0, 1.5, 2.0],
+  'zone-chin': [0.5, 1.0, 1.5, 2.0],
+  default: [0.25, 0.5, 0.75, 1.0]
+}
+
+// =============================================================================
+// MAIN COMPONENT
+// =============================================================================
+
+export function InteractiveFaceChart({
+  productType,
+  gender,
+  injectionPoints,
+  onInjectionPointsChange,
+  freehandPoints: externalFreehandPoints,
+  onFreehandPointsChange,
+  onSave,
+  selectedProductId,
+  patientLastTreatment,
+  readOnly = false
+}: InteractiveFaceChartProps) {
+  const {
+    settings,
+    getActiveZones,
+    getActiveDepths,
+    getActiveTechniques,
+    getActiveNeedleGauges,
+    getActiveTemplates,
+    getActiveProducts,
+    getZoneById,
+    getDepthById,
+    getTechniqueById,
+    getNeedleGaugeById,
+    getProductById
+  } = useChartingSettings()
+
+  // State
+  const [hoveredZone, setHoveredZone] = useState<string | null>(null)
+  const [selectedZone, setSelectedZone] = useState<string | null>(null)
+  const [quickEdit, setQuickEdit] = useState<QuickEditState>({ isOpen: false, zoneId: null, position: { x: 0, y: 0 } })
+  const [showTemplates, setShowTemplates] = useState(false)
+  const [showKeyboardHelp, setShowKeyboardHelp] = useState(false)
+  const [zoomLevel, setZoomLevel] = useState(1)
+  const [panOffset, setPanOffset] = useState({ x: 0, y: 0 })
+
+  // Multi-select mode state (for fast batch charting)
+  const [selectionMode, setSelectionMode] = useState<SelectionMode>('single')
+  const [multiSelectedZones, setMultiSelectedZones] = useState<Set<string>>(new Set())
+  const [multiSelectedFreehand, setMultiSelectedFreehand] = useState<Set<string>>(new Set())
+  const [showBatchPanel, setShowBatchPanel] = useState(false)
+  const [batchUnits, setBatchUnits] = useState<number>(productType === 'neurotoxin' ? 5 : 0.2)
+
+  // Bubble input state (simple tap-to-bubble workflow)
+  const [bubbleVisible, setBubbleVisible] = useState(false)
+  const [bubblePosition, setBubblePosition] = useState<{ x: number; y: number } | null>(null)
+  const [bubbleInputValue, setBubbleInputValue] = useState<string>('')
+
+  // Voice input state
+  const [voiceInput, setVoiceInput] = useState<VoiceInputState>({
+    isListening: false,
+    transcript: '',
+    error: null
+  })
+  const recognitionRef = useRef<SpeechRecognition | null>(null)
+
+  // Audio feedback state
+  const [audioFeedback, setAudioFeedback] = useState(false)
+
+  // Haptics feedback state (persisted to localStorage)
+  const [hapticsEnabled, setHapticsEnabled] = useState(() => {
+    if (typeof window === 'undefined') return true
+    const saved = localStorage.getItem('charting-haptics-enabled')
+    return saved !== null ? JSON.parse(saved) : true // Default to enabled
+  })
+
+  // Persist haptics preference to localStorage
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('charting-haptics-enabled', JSON.stringify(hapticsEnabled))
+    }
+  }, [hapticsEnabled])
+
+  // Freehand mode state
+  const [drawingMode, setDrawingMode] = useState<DrawingMode>('zones')
+  const [internalFreehandPoints, setInternalFreehandPoints] = useState<Map<string, FreehandPoint>>(new Map())
+  const [selectedFreehandPoint, setSelectedFreehandPoint] = useState<string | null>(null)
+  const [hoveredFreehandPoint, setHoveredFreehandPoint] = useState<string | null>(null)
+
+  // Ghost overlay state (for photo comparison)
+  const [ghostOverlayEnabled, setGhostOverlayEnabled] = useState(false)
+  const [ghostOverlayOpacity, setGhostOverlayOpacity] = useState(0.5)
+  const [ghostOverlayImage, setGhostOverlayImage] = useState<string | null>(null)
+  const [showGhostPanel, setShowGhostPanel] = useState(false)
+
+  // Template preview state (for mobile long-press)
+  const [templatePreview, setTemplatePreview] = useState<TemplatePreviewState>({
+    isOpen: false,
+    template: null,
+    touchTimer: null
+  })
+
+  // Use external freehand points if provided, otherwise use internal state
+  const freehandPoints = externalFreehandPoints ?? internalFreehandPoints
+  const setFreehandPoints = onFreehandPointsChange ?? setInternalFreehandPoints
+
+  const chartRef = useRef<HTMLDivElement>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
+
+  // Auto-save state
+  const [autoSaveStatus, setAutoSaveStatus] = useState<'saved' | 'saving' | 'idle'>('idle')
+  const autoSaveKey = 'charting-autosave-draft'
+  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+
+  // Totals panel state
+  const [totalsPanelExpanded, setTotalsPanelExpanded] = useState(true)
+
+  // Undo/Redo history state
+  const [history, setHistory] = useState<Array<Map<string, InjectionPoint>>>([])
+  const [historyIndex, setHistoryIndex] = useState(-1)
+
+  // Photo Charting Mode state
+  const [chartingSource, setChartingSource] = useState<'diagram' | 'photo'>('diagram')
+
+  // Ghost Overlay state (alternative names for compatibility)
+  const [showGhostOverlay, setShowGhostOverlay] = useState(false)
+  const [ghostOpacity, setGhostOpacity] = useState(0.3)
+
+  // File input ref for photo upload
+  const fileInputRef = useRef<HTMLInputElement | null>(null)
+
+  // Get active items from settings
+  const activeZones = useMemo(() => getActiveZones('face'), [getActiveZones])
+  const activeDepths = useMemo(() => getActiveDepths(), [getActiveDepths])
+  const activeTechniques = useMemo(() => getActiveTechniques(), [getActiveTechniques])
+  const activeGauges = useMemo(() => getActiveNeedleGauges(), [getActiveNeedleGauges])
+  const activeTemplates = useMemo(() => getActiveTemplates(productType), [getActiveTemplates, productType])
+  const activeProducts = useMemo(() => getActiveProducts(productType), [getActiveProducts, productType])
+
+  // ==========================================================================
+  // HAPTIC FEEDBACK UTILITY
+  // ==========================================================================
+
+  // Haptic feedback for mobile devices - degrades gracefully
+  const triggerHaptic = useCallback((type: 'light' | 'medium' | 'heavy' | 'error' | 'success') => {
+    // Check if haptics are enabled
+    if (!hapticsEnabled) return
+
+    if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
+      const patterns = {
+        light: [10],
+        medium: [30],
+        heavy: [50],
+        error: [50, 50, 50],
+        success: [20, 50, 20]
+      }
+      navigator.vibrate(patterns[type])
+    }
+  }, [hapticsEnabled])
+
+  // ==========================================================================
+  // SPEECH SYNTHESIS HELPER
+  // ==========================================================================
+
+  // Speech synthesis helper for audio feedback
+  const speak = useCallback((text: string) => {
+    if (!audioFeedback) return
+    if (typeof window === 'undefined' || !window.speechSynthesis) return
+
+    // Cancel any ongoing speech
+    window.speechSynthesis.cancel()
+
+    const utterance = new SpeechSynthesisUtterance(text)
+    utterance.rate = 1.2 // Slightly faster
+    utterance.pitch = 1
+    utterance.volume = 0.7
+
+    window.speechSynthesis.speak(utterance)
+  }, [audioFeedback])
+
+
+
+  // ==========================================================================
+  // AUTO-SAVE FUNCTIONALITY
+  // ==========================================================================
+
+  // Save to localStorage with debouncing
+  const saveToLocalStorage = useCallback(() => {
+    if (readOnly) return
+
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current)
+    }
+
+    setAutoSaveStatus('saving')
+
+    saveTimeoutRef.current = setTimeout(() => {
+      try {
+        const data = {
+          injectionPoints: Array.from(injectionPoints.entries()).map(([, point]) => ({
+            ...point,
+            timestamp: point.timestamp.toISOString()
+          })),
+          freehandPoints: Array.from(freehandPoints.entries()).map(([pointId, point]) => ({
+            pointId,
+            ...point,
+            timestamp: point.timestamp.toISOString()
+          })),
+          timestamp: Date.now(),
+          productType,
+          gender
+        }
+
+        localStorage.setItem(autoSaveKey, JSON.stringify(data))
+        setAutoSaveStatus('saved')
+
+        setTimeout(() => {
+          setAutoSaveStatus('idle')
+        }, 2000)
+      } catch (e) {
+        console.error('Failed to auto-save chart data:', e)
+        setAutoSaveStatus('idle')
+      }
+    }, 1000)
+  }, [injectionPoints, freehandPoints, readOnly, autoSaveKey, productType, gender])
+
+  // Calculate totals in real-time (including freehand points)
+  const totals = useMemo(() => {
+    let totalUnits = 0
+    let totalVolume = 0
+    let zoneCount = 0
+    let freehandCount = 0
+    const zoneTotals: Record<string, { units: number; volume: number }> = {}
+
+    // Region breakdowns
+    const regionTotals = {
+      'upper-face': { units: 0, volume: 0, sites: 0 },
+      'periorbital': { units: 0, volume: 0, sites: 0 },
+      'mid-face': { units: 0, volume: 0, sites: 0 },
+      'lower-face': { units: 0, volume: 0, sites: 0 }
+    }
+
+    // Count zone-based points
+    injectionPoints.forEach((point, zoneId) => {
+      zoneCount++
+      if (point.units) {
+        totalUnits += point.units
+        zoneTotals[zoneId] = { units: point.units, volume: 0 }
+      }
+      if (point.volume) {
+        totalVolume += point.volume
+        zoneTotals[zoneId] = { units: 0, volume: point.volume }
+      }
+
+      // Add to region totals
+      const zone = getZoneById(zoneId)
+      if (zone && zone.subCategory && regionTotals[zone.subCategory as keyof typeof regionTotals]) {
+        regionTotals[zone.subCategory as keyof typeof regionTotals].sites++
+        if (point.units) {
+          regionTotals[zone.subCategory as keyof typeof regionTotals].units += point.units
+        }
+        if (point.volume) {
+          regionTotals[zone.subCategory as keyof typeof regionTotals].volume += point.volume
+        }
+      }
+    })
+
+    // Count freehand points
+    freehandPoints.forEach((point) => {
+      freehandCount++
+      if (point.units) {
+        totalUnits += point.units
+      }
+      if (point.volume) {
+        totalVolume += point.volume
+      }
+    })
+
+    // Estimate cost
+    const product = selectedProductId ? getProductById(selectedProductId) : activeProducts[0]
+    const estimatedCost = product
+      ? (productType === 'neurotoxin' ? totalUnits * product.unitPrice : totalVolume * product.unitPrice)
+      : 0
+
+    return { totalUnits, totalVolume, zoneCount, freehandCount, zoneTotals, estimatedCost, regionTotals }
+  }, [injectionPoints, freehandPoints, selectedProductId, getProductById, activeProducts, productType, getZoneById])
+
+  // ==========================================================================
+  // HANDLERS
+  // ==========================================================================
+
+  // Handle zone click - implements < 3 tap workflow
+  const handleZoneClick = useCallback((zone: TreatmentZone, event: React.MouseEvent) => {
+    if (readOnly) return
+
+    // Haptic feedback on zone selection
+    triggerHaptic('light')
+
+    // Multi-select mode: toggle zone selection
+    if (selectionMode === 'multi') {
+      handleMultiSelectZone(zone.id)
+      return
+    }
+
+    const existingPoint = injectionPoints.get(zone.id)
+    const rect = chartRef.current?.getBoundingClientRect()
+
+    if (existingPoint) {
+      // Zone already has injection - open quick edit
+      setQuickEdit({
+        isOpen: true,
+        zoneId: zone.id,
+        position: {
+          x: event.clientX - (rect?.left || 0),
+          y: event.clientY - (rect?.top || 0)
+        }
+      })
+      setSelectedZone(zone.id)
+    } else {
+      // Add new injection point with smart defaults
+      const smartDefaults = getSmartDefaults(zone, patientLastTreatment)
+      const newPoint: InjectionPoint = {
+        id: `ip-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+        zoneId: zone.id,
+        units: productType === 'neurotoxin' ? smartDefaults.units : undefined,
+        volume: productType === 'filler' ? smartDefaults.volume : undefined,
+        depthId: smartDefaults.depthId,
+        techniqueId: smartDefaults.techniqueId,
+        needleGaugeId: smartDefaults.needleGaugeId,
+        productId: selectedProductId || activeProducts[0]?.id,
+        timestamp: new Date()
+      }
+
+      const newPoints = new Map(injectionPoints)
+      newPoints.set(zone.id, newPoint)
+      pushToHistory(newPoints)
+      onInjectionPointsChange(newPoints)
+
+      // Auto-select for quick adjustment
+      setSelectedZone(zone.id)
+
+      // Show quick edit for fine-tuning
+      setQuickEdit({
+        isOpen: true,
+        zoneId: zone.id,
+        position: {
+          x: event.clientX - (rect?.left || 0),
+          y: event.clientY - (rect?.top || 0)
+        }
+      })
+
+      toast.success(`Added ${zone.name}`, { duration: 1500, icon: '✓' })
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [injectionPoints, onInjectionPointsChange, productType, patientLastTreatment, selectedProductId, activeProducts, readOnly, selectionMode])
+
+  // Get smart defaults based on zone + patient history
+  const getSmartDefaults = useCallback((zone: TreatmentZone, lastTreatment?: Map<string, InjectionPoint>) => {
+    // First check patient's last treatment for this zone
+    if (lastTreatment?.has(zone.id)) {
+      const last = lastTreatment.get(zone.id)!
+      return {
+        units: last.units || zone.defaultUnits,
+        volume: last.volume || zone.defaultVolume,
+        depthId: last.depthId,
+        techniqueId: last.techniqueId,
+        needleGaugeId: last.needleGaugeId
+      }
+    }
+
+    // Fall back to zone defaults
+    return {
+      units: zone.defaultUnits,
+      volume: zone.defaultVolume,
+      depthId: zone.defaultDepth,
+      techniqueId: zone.defaultTechnique,
+      needleGaugeId: zone.defaultNeedleGauge
+    }
+  }, [])
+
+  // Update injection point
+  const updateInjectionPoint = useCallback((zoneId: string, updates: Partial<InjectionPoint>) => {
+    const newPoints = new Map(injectionPoints)
+    const existing = newPoints.get(zoneId)
+    if (existing) {
+      newPoints.set(zoneId, { ...existing, ...updates })
+      onInjectionPointsChange(newPoints)
+    }
+  }, [injectionPoints, onInjectionPointsChange])
+
+  // Remove injection point
+  const removeInjectionPoint = useCallback((zoneId: string) => {
+    const newPoints = new Map(injectionPoints)
+    newPoints.delete(zoneId)
+    onInjectionPointsChange(newPoints)
+    setQuickEdit({ isOpen: false, zoneId: null, position: { x: 0, y: 0 } })
+    setSelectedZone(null)
+    toast.success('Removed', { duration: 1000 })
+  }, [injectionPoints, onInjectionPointsChange])
+
+  // Quick unit adjustment (tap presets or +/- buttons)
+  const quickAdjustUnits = useCallback((zoneId: string, delta: number) => {
+    const point = injectionPoints.get(zoneId)
+    if (!point) return
+
+    if (productType === 'neurotoxin') {
+      const newUnits = Math.max(0, (point.units || 0) + delta)
+      updateInjectionPoint(zoneId, { units: newUnits })
+    } else {
+      const newVolume = Math.max(0, parseFloat(((point.volume || 0) + delta).toFixed(2)))
+      updateInjectionPoint(zoneId, { volume: newVolume })
+    }
+  }, [injectionPoints, productType, updateInjectionPoint])
+
+  // Set exact units (from preset buttons)
+  const setExactUnits = useCallback((zoneId: string, value: number) => {
+    if (productType === 'neurotoxin') {
+      updateInjectionPoint(zoneId, { units: value })
+    } else {
+      updateInjectionPoint(zoneId, { volume: value })
+    }
+  }, [productType, updateInjectionPoint])
+
+  // Apply template
+  const applyTemplate = useCallback((template: TreatmentTemplate) => {
+    const newPoints = new Map<string, InjectionPoint>()
+
+    template.zones.forEach(tz => {
+      newPoints.set(tz.zoneId, {
+        id: `ip-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+        zoneId: tz.zoneId,
+        units: tz.units,
+        volume: tz.volume,
+        depthId: tz.depth,
+        techniqueId: tz.technique,
+        needleGaugeId: tz.needleGauge,
+        productId: template.products[0],
+        timestamp: new Date()
+      })
+    })
+
+    // Haptic feedback on template application (success pattern)
+    triggerHaptic('success')
+
+    pushToHistory(newPoints)
+    onInjectionPointsChange(newPoints)
+    setShowTemplates(false)
+    setTemplatePreview({ isOpen: false, template: null, touchTimer: null })
+    toast.success(`Applied "${template.name}"`, { icon: '⚡' })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [onInjectionPointsChange])
+
+  // Handle template long-press (mobile)
+  const handleTemplateTouchStart = useCallback((template: TreatmentTemplate) => {
+    const timer = setTimeout(() => {
+      setTemplatePreview({ isOpen: true, template, touchTimer: null })
+      triggerHaptic('medium')
+    }, 500) // 500ms long-press
+
+    setTemplatePreview(prev => ({ ...prev, touchTimer: timer }))
+  }, [triggerHaptic])
+
+  const handleTemplateTouchEnd = useCallback(() => {
+    if (templatePreview.touchTimer) {
+      clearTimeout(templatePreview.touchTimer)
+      setTemplatePreview(prev => ({ ...prev, touchTimer: null }))
+    }
+  }, [templatePreview.touchTimer])
+
+  const closeTemplatePreview = useCallback(() => {
+    setTemplatePreview({ isOpen: false, template: null, touchTimer: null })
+  }, [])
+
+  // Save current injection points as template
+  const saveCurrentAsTemplate = useCallback(() => {
+    if (injectionPoints.size === 0) {
+      toast.error('No injection points to save')
+      return
+    }
+
+    // Calculate total units/volume
+    const totalUnits = Array.from(injectionPoints.values())
+      .reduce((sum, point) => sum + (point.units || 0), 0)
+    const totalVolume = Array.from(injectionPoints.values())
+      .reduce((sum, point) => sum + (point.volume || 0), 0)
+
+    const templateName = prompt(
+      `Save current treatment as template?\n\nTotal: ${productType === 'neurotoxin' ? `${totalUnits} units` : `${totalVolume.toFixed(1)} ml`}\nZones: ${injectionPoints.size}\n\nEnter template name:`
+    )
+
+    if (!templateName) return
+
+    // Create template zones from current injection points
+    const zones = Array.from(injectionPoints.entries()).map(([zoneId, point]) => ({
+      zoneId,
+      units: point.units,
+      volume: point.volume,
+      depth: point.depthId,
+      technique: point.techniqueId,
+      needleGauge: point.needleGaugeId
+    }))
+
+    // Note: In a real app, this would save to the backend/context
+    // For now, just show a success message
+    toast.success(`Template "${templateName}" created! (Would save to settings in production)`, {
+      duration: 4000,
+      icon: '💾'
+    })
+
+    // Optional: You could add this to ChartingSettingsContext via a new method
+    // settings.addTreatmentTemplate({ ... })
+  }, [injectionPoints, productType])
+
+  // Copy last treatment
+  const copyLastTreatment = useCallback(() => {
+    if (!patientLastTreatment || patientLastTreatment.size === 0) {
+      toast.error('No previous treatment to copy')
+      return
+    }
+
+    const newPoints = new Map<string, InjectionPoint>()
+    patientLastTreatment.forEach((point, zoneId) => {
+      newPoints.set(zoneId, {
+        ...point,
+        id: `ip-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+        timestamp: new Date()
+      })
+    })
+
+    onInjectionPointsChange(newPoints)
+    toast.success('Copied previous treatment', { icon: '📋' })
+  }, [patientLastTreatment, onInjectionPointsChange])
+
+  // Clear all
+  const clearAll = useCallback(() => {
+    // Haptic feedback on clear all (heavy)
+    triggerHaptic('heavy')
+
+    const emptyMap = new Map()
+    pushToHistory(emptyMap)
+    onInjectionPointsChange(emptyMap)
+    setFreehandPoints(new Map())
+    setSelectedZone(null)
+    setSelectedFreehandPoint(null)
+    setMultiSelectedZones(new Set())
+    setMultiSelectedFreehand(new Set())
+    setQuickEdit({ isOpen: false, zoneId: null, position: { x: 0, y: 0 } })
+
+    // Clear auto-save from localStorage
+    localStorage.removeItem(autoSaveKey)
+    setAutoSaveStatus('idle')
+
+    toast.success('Cleared all', { duration: 1000 })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [onInjectionPointsChange, setFreehandPoints, autoSaveKey])
+
+  // ==========================================================================
+  // UNDO/REDO HANDLERS
+  // ==========================================================================
+
+  // Push current state to history
+  const pushToHistory = useCallback((points: Map<string, InjectionPoint>) => {
+    setHistory(prev => {
+      const newHistory = prev.slice(0, historyIndex + 1)
+      newHistory.push(new Map(points))
+      if (newHistory.length > 20) newHistory.shift()
+      return newHistory
+    })
+    setHistoryIndex(prev => Math.min(prev + 1, 19))
+  }, [historyIndex])
+
+  // Undo
+  const undo = useCallback(() => {
+    if (historyIndex > 0) {
+      setHistoryIndex(prev => prev - 1)
+      onInjectionPointsChange(history[historyIndex - 1])
+      triggerHaptic('light')
+      toast.success('Undone', { duration: 1000, icon: '↩️' })
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [historyIndex, history, onInjectionPointsChange])
+
+  // Redo
+  const redo = useCallback(() => {
+    if (historyIndex < history.length - 1) {
+      setHistoryIndex(prev => prev - 1)
+      onInjectionPointsChange(history[historyIndex + 1])
+      triggerHaptic('light')
+      toast.success('Redone', { duration: 1000, icon: '↪️' })
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [historyIndex, history, onInjectionPointsChange])
+
+  // ==========================================================================
+  // GHOST OVERLAY HANDLERS (Photo Comparison)
+  // ==========================================================================
+
+  // Toggle ghost overlay panel
+  const toggleGhostPanel = useCallback(() => {
+    setShowGhostPanel(prev => !prev)
+    if (!showGhostPanel && !ghostOverlayImage) {
+      toast('Ghost overlay allows comparison with previous treatment photos', {
+        icon: '👻',
+        duration: 3000
+      })
+    }
+  }, [showGhostPanel, ghostOverlayImage])
+
+  // Load previous photo (placeholder for now)
+  const loadPreviousPhoto = useCallback(() => {
+    // In a real implementation, this would open a file picker or load from patient records
+    // For now, we create a placeholder gray overlay to simulate the feature
+    const canvas = document.createElement('canvas')
+    canvas.width = 600
+    canvas.height = 900
+    const ctx = canvas.getContext('2d')
+    if (ctx) {
+      // Create a gradient to simulate a face photo overlay
+      const gradient = ctx.createRadialGradient(300, 400, 50, 300, 400, 400)
+      gradient.addColorStop(0, 'rgba(200, 200, 200, 0.3)')
+      gradient.addColorStop(0.5, 'rgba(150, 150, 150, 0.2)')
+      gradient.addColorStop(1, 'rgba(100, 100, 100, 0.1)')
+      ctx.fillStyle = gradient
+      ctx.fillRect(0, 0, 600, 900)
+
+      // Add some facial feature guides
+      ctx.strokeStyle = 'rgba(100, 100, 100, 0.3)'
+      ctx.lineWidth = 2
+      // Eyes
+      ctx.beginPath()
+      ctx.arc(200, 280, 30, 0, 2 * Math.PI)
+      ctx.stroke()
+      ctx.beginPath()
+      ctx.arc(400, 280, 30, 0, 2 * Math.PI)
+      ctx.stroke()
+      // Nose
+      ctx.beginPath()
+      ctx.moveTo(300, 300)
+      ctx.lineTo(300, 420)
+      ctx.stroke()
+      // Mouth
+      ctx.beginPath()
+      ctx.arc(300, 480, 50, 0, Math.PI)
+      ctx.stroke()
+
+      setGhostOverlayImage(canvas.toDataURL())
+      setGhostOverlayEnabled(true)
+      toast.success('Loaded previous treatment photo (placeholder)', { icon: '👻' })
+    }
+  }, [])
+
+  // Toggle ghost overlay on/off
+  const toggleGhostOverlay = useCallback(() => {
+    if (!ghostOverlayImage) {
+      toast.error('Load a previous photo first')
+      return
+    }
+    setGhostOverlayEnabled(prev => !prev)
+    toast.success(ghostOverlayEnabled ? 'Ghost overlay hidden' : 'Ghost overlay shown', {
+      icon: '👻',
+      duration: 1500
+    })
+  }, [ghostOverlayImage, ghostOverlayEnabled])
+
+  // Update ghost overlay opacity
+  const updateGhostOpacity = useCallback((opacity: number) => {
+    setGhostOverlayOpacity(opacity)
+  }, [])
+
+  // ==========================================================================
+  // MULTI-SELECT MODE HANDLERS (Speed Charting)
+  // ==========================================================================
+
+  // Toggle multi-select mode
+  const toggleSelectionMode = useCallback(() => {
+    if (selectionMode === 'single') {
+      // Haptic feedback on entering multi-select mode
+      triggerHaptic('medium')
+
+      setSelectionMode('multi')
+      setMultiSelectedZones(new Set())
+      setMultiSelectedFreehand(new Set())
+      setSelectedZone(null)
+      setQuickEdit({ isOpen: false, zoneId: null, position: { x: 0, y: 0 } })
+      toast.success('Multi-select ON: Tap zones, then speak or enter units', {
+        duration: 3000,
+        icon: '🎯'
+      })
+    } else {
+      // Haptic feedback on exiting multi-select mode
+      triggerHaptic('light')
+
+      setSelectionMode('single')
+      setMultiSelectedZones(new Set())
+      setMultiSelectedFreehand(new Set())
+      setShowBatchPanel(false)
+      toast.success('Single-select mode', { duration: 1500 })
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectionMode])
+
+  const handleMultiSelectZone = useCallback((zoneId: string, event?: React.MouseEvent) => {
+    // Haptic feedback on multi-select
+    triggerHaptic('light')
+
+    setMultiSelectedZones(prev => {
+      const newSet = new Set(prev)
+      if (newSet.has(zoneId)) {
+        newSet.delete(zoneId)
+      } else {
+        newSet.add(zoneId)
+        // Audio feedback for selection
+        const zoneName = getZoneById(zoneId)?.name
+        speak(zoneName || 'Selected')
+      }
+
+      // Show bubble near the last tapped zone
+      if (newSet.size > 0 && event) {
+        const rect = chartRef.current?.getBoundingClientRect()
+        if (rect) {
+          setBubblePosition({
+            x: event.clientX - rect.left,
+            y: event.clientY - rect.top
+          })
+          setBubbleVisible(true)
+          setBubbleInputValue('')
+        }
+      } else if (newSet.size === 0) {
+        setBubbleVisible(false)
+      }
+
+      return newSet
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [getZoneById])
+
+  // Apply batch units to all selected zones
+  const applyBatchUnits = useCallback(() => {
+    if (multiSelectedZones.size === 0 && multiSelectedFreehand.size === 0) {
+      toast.error('No zones selected')
+      return
+    }
+
+    const newPoints = new Map(injectionPoints)
+    const defaultDepth = activeDepths[0]?.id || ''
+    const defaultTechnique = activeTechniques[0]?.id || ''
+    const defaultGauge = activeGauges[0]?.id || ''
+
+    // Apply to zone-based selections
+    multiSelectedZones.forEach(zoneId => {
+      const zone = getZoneById(zoneId)
+      const existingPoint = newPoints.get(zoneId)
+
+      if (existingPoint) {
+        // Update existing point
+        newPoints.set(zoneId, {
+          ...existingPoint,
+          units: productType === 'neurotoxin' ? batchUnits : undefined,
+          volume: productType === 'filler' ? batchUnits : undefined
+        })
+      } else {
+        // Create new point
+        newPoints.set(zoneId, {
+          id: `ip-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+          zoneId,
+          units: productType === 'neurotoxin' ? batchUnits : undefined,
+          volume: productType === 'filler' ? batchUnits : undefined,
+          depthId: zone?.defaultDepth || defaultDepth,
+          techniqueId: zone?.defaultTechnique || defaultTechnique,
+          needleGaugeId: zone?.defaultNeedleGauge || defaultGauge,
+          productId: selectedProductId || activeProducts[0]?.id,
+          timestamp: new Date()
+        })
+      }
+    })
+
+    pushToHistory(newPoints)
+    onInjectionPointsChange(newPoints)
+
+    // Apply to freehand selections
+    if (multiSelectedFreehand.size > 0) {
+      const newFreehand = new Map(freehandPoints)
+      multiSelectedFreehand.forEach(pointId => {
+        const point = newFreehand.get(pointId)
+        if (point) {
+          newFreehand.set(pointId, {
+            ...point,
+            units: productType === 'neurotoxin' ? batchUnits : undefined,
+            volume: productType === 'filler' ? batchUnits : undefined
+          })
+        }
+      })
+      setFreehandPoints(newFreehand)
+    }
+
+    const totalSelected = multiSelectedZones.size + multiSelectedFreehand.size
+
+    // Haptic feedback on batch apply success
+    triggerHaptic('medium')
+
+    // Audio feedback
+    speak(`${batchUnits} units applied to ${totalSelected} zones`)
+
+    toast.success(`Applied ${batchUnits} ${productType === 'neurotoxin' ? 'units' : 'ml'} to ${totalSelected} points`, {
+      duration: 2000,
+      icon: '✓'
+    })
+
+    // Clear selections after applying
+    setMultiSelectedZones(new Set())
+    setMultiSelectedFreehand(new Set())
+    setShowBatchPanel(false)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [multiSelectedZones, multiSelectedFreehand, injectionPoints, freehandPoints, batchUnits, productType, activeDepths, activeTechniques, activeGauges, selectedProductId, activeProducts, getZoneById, onInjectionPointsChange, setFreehandPoints])
+
+  // ==========================================================================
+  // VOICE INPUT HANDLERS
+  // ==========================================================================
+
+  // Initialize speech recognition
+  const initVoiceInput = useCallback(() => {
+    if (typeof window === 'undefined') return
+
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition
+    if (!SpeechRecognition) {
+      toast.error('Voice input not supported in this browser')
+      return null
+    }
+
+    const recognition = new SpeechRecognition()
+    recognition.continuous = false
+    recognition.interimResults = true
+    recognition.lang = 'en-US'
+
+    recognition.onresult = (event: SpeechRecognitionEvent) => {
+      const transcript = Array.from(event.results)
+        .map(result => result[0].transcript)
+        .join('')
+
+      setVoiceInput(prev => ({ ...prev, transcript }))
+
+      // Check if final result
+      if (event.results[0].isFinal) {
+        parseVoiceCommand(transcript)
+      }
+    }
+
+    recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
+      console.error('Speech recognition error:', event.error)
+      setVoiceInput(prev => ({
+        ...prev,
+        isListening: false,
+        error: event.error
+      }))
+      toast.error(`Voice error: ${event.error}`)
+    }
+
+    recognition.onend = () => {
+      setVoiceInput(prev => ({ ...prev, isListening: false }))
+    }
+
+    return recognition
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  const parseVoiceCommand = useCallback((transcript: string) => {
+    // Normalize transcript
+    const normalized = transcript.toLowerCase().trim()
+
+    // Check for action commands first
+    if (normalized.includes('apply') || normalized.includes('done')) {
+      applyBatchUnits()
+      return
+    }
+    if (normalized.includes('clear') || normalized.includes('cancel')) {
+      setMultiSelectedZones(new Set())
+      setMultiSelectedFreehand(new Set())
+      setShowBatchPanel(false)
+      toast.success('Cleared selections', { duration: 1500 })
+      return
+    }
+
+    // Word to number mapping
+    const wordToNum: Record<string, number> = {
+      'zero': 0, 'one': 1, 'two': 2, 'three': 3, 'four': 4, 'five': 5,
+      'six': 6, 'seven': 7, 'eight': 8, 'nine': 9, 'ten': 10,
+      'fifteen': 15, 'twenty': 20, 'twenty-five': 25, 'twentyfive': 25,
+      'thirty': 30, 'forty': 40, 'fifty': 50
+    }
+
+    // Fraction words mapping
+    const fractionWords: Record<string, number> = {
+      'half': 0.5,
+      'quarter': 0.25,
+      'third': 0.33
+    }
+
+    let value: number | null = null
+
+    // Check for "X and a half" pattern (e.g., "two and a half" = 2.5)
+    const andAHalfMatch = normalized.match(/(one|two|three|four|five|six|seven|eight|nine|ten)\s+and\s+a\s+half/i)
+    if (andAHalfMatch) {
+      const base = wordToNum[andAHalfMatch[1].toLowerCase()]
+      if (base !== undefined) {
+        value = base + 0.5
+      }
+    }
+
+    // Check for "half a unit" pattern
+    if (!value && normalized.match(/half\s+a\s+(unit|ml)/i)) {
+      value = 0.5
+    }
+
+    // Check for fraction words alone (e.g., "quarter" = 0.25, "half" = 0.5)
+    if (!value) {
+      for (const [word, num] of Object.entries(fractionWords)) {
+        if (normalized === word || normalized === `${word} unit` || normalized === `${word} units`) {
+          value = num
+          break
+        }
+      }
+    }
+
+    // Try numeric pattern first (e.g., "0.2", "5", "10.5")
+    if (!value) {
+      const numMatch = normalized.match(/(\d+\.?\d*)\s*(units?|ml)?/i)
+      if (numMatch) {
+        value = parseFloat(numMatch[1])
+      }
+    }
+
+    // Try "point X" pattern (e.g., "point two" = 0.2, "zero point one" = 0.1)
+    if (!value) {
+      const pointMatch = normalized.match(/(zero\s+)?point\s+(\w+)/i)
+      if (pointMatch) {
+        const afterPoint = wordToNum[pointMatch[2]] || parseInt(pointMatch[2])
+        if (afterPoint !== undefined) {
+          value = afterPoint / 10
+        }
+      }
+    }
+
+    // Try "X units each" pattern
+    if (!value) {
+      const eachMatch = normalized.match(/(one|two|three|four|five|six|seven|eight|nine|ten|fifteen|twenty|thirty|forty|fifty|\d+)\s+units?\s+each/i)
+      if (eachMatch) {
+        const num = wordToNum[eachMatch[1]] || parseInt(eachMatch[1])
+        if (num !== undefined) {
+          value = num
+        }
+      }
+    }
+
+    // Try word numbers
+    if (!value) {
+      for (const [word, num] of Object.entries(wordToNum)) {
+        if (normalized.includes(word)) {
+          value = num
+          break
+        }
+      }
+    }
+
+    if (value !== null && value > 0) {
+      // Haptic feedback on voice command recognized
+      triggerHaptic('medium')
+
+      setBatchUnits(value)
+
+      // Audio confirmation
+      speak(`Got it, ${value} ${productType === 'neurotoxin' ? 'units' : 'milliliters'}`)
+
+      toast.success(`Set to ${value} ${productType === 'neurotoxin' ? 'units' : 'ml'}`, {
+        duration: 2000,
+        icon: '🎤'
+      })
+
+      // If we have selections, auto-apply
+      if (multiSelectedZones.size > 0 || multiSelectedFreehand.size > 0) {
+        setTimeout(() => {
+          applyBatchUnits()
+        }, 500)
+      }
+    } else {
+      // Haptic feedback on error
+      triggerHaptic('error')
+      toast.error(`Couldn't parse: "${transcript}"`, { duration: 2000 })
+    }
+  }, [productType, multiSelectedZones, multiSelectedFreehand, applyBatchUnits,
+      setMultiSelectedZones, setMultiSelectedFreehand, setShowBatchPanel,
+      triggerHaptic, speak])
+
+  // Start voice input
+  const startVoiceInput = useCallback(() => {
+    if (voiceInput.isListening) return
+
+    // Haptic feedback on voice input start
+    triggerHaptic('light')
+
+    let recognition = recognitionRef.current
+    if (!recognition) {
+      recognition = initVoiceInput() || null
+      recognitionRef.current = recognition
+    }
+
+    if (recognition) {
+      setVoiceInput({ isListening: true, transcript: '', error: null })
+      recognition.start()
+      toast('Listening... Say the dosage (e.g., "0.2 units")', {
+        duration: 3000,
+        icon: '🎤'
+      })
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [voiceInput.isListening, initVoiceInput])
+
+  // Stop voice input
+  const stopVoiceInput = useCallback(() => {
+    if (recognitionRef.current && voiceInput.isListening) {
+      recognitionRef.current.stop()
+      setVoiceInput(prev => ({ ...prev, isListening: false }))
+    }
+  }, [voiceInput.isListening])
+
+  // ==========================================================================
+  // PHOTO CHARTING HAPTIC FEEDBACK (Future Feature)
+  // ==========================================================================
+
+  // Haptic feedback for photo capture (future use)
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const handlePhotoCapturePress = useCallback(() => {
+    // Light haptic on photo capture button press
+    triggerHaptic('light')
+    // TODO: Implement photo capture logic
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const handlePhotoSaveSuccess = useCallback(() => {
+    // Medium haptic on successful photo save
+    triggerHaptic('medium')
+    // TODO: Implement photo save success logic
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const handlePhotoSaveError = useCallback(() => {
+    // Error pattern on photo save failure
+    triggerHaptic('error')
+    // TODO: Implement photo save error logic
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  // Announce total when audio feedback is on and totals change
+  useEffect(() => {
+    if (audioFeedback && (totals.totalUnits > 0 || totals.totalVolume > 0)) {
+      const timeoutId = setTimeout(() => {
+        const value = productType === 'neurotoxin' ? totals.totalUnits : totals.totalVolume.toFixed(1)
+        speak(`Total: ${value} ${productType === 'neurotoxin' ? 'units' : 'milliliters'}`)
+      }, 1000) // Delay to avoid overlapping with other feedback
+
+      return () => clearTimeout(timeoutId)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [totals, audioFeedback, productType])
+
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (recognitionRef.current) {
+        recognitionRef.current.stop()
+      }
+    }
+  }, [])
+
+  // ==========================================================================
+  // AUTO-SAVE useEffect HOOKS
+  // ==========================================================================
+
+  // Auto-save on injection points or freehand points changes
+  useEffect(() => {
+    if (!readOnly && (injectionPoints.size > 0 || freehandPoints.size > 0)) {
+      saveToLocalStorage()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [injectionPoints, freehandPoints, readOnly])
+
+  // Restore from localStorage on mount
+  useEffect(() => {
+    if (readOnly) return
+
+    const saved = localStorage.getItem(autoSaveKey)
+    if (saved) {
+      try {
+        const data = JSON.parse(saved)
+        const hourAgo = Date.now() - 3600000
+        if (data.timestamp > hourAgo && data.productType === productType && data.gender === gender) {
+          toast((t) => (
+            <div className="flex flex-col gap-2">
+              <p className="font-medium text-gray-900">Restore unsaved chart?</p>
+              <p className="text-sm text-gray-600">
+                From {new Date(data.timestamp).toLocaleTimeString()}
+              </p>
+              <div className="flex gap-2 mt-1">
+                <button
+                  onClick={() => {
+                    const restoredInjectionPoints = new Map<string, InjectionPoint>(
+                      data.injectionPoints.map((item: any) => [
+                        item.zoneId,
+                        { ...item, timestamp: new Date(item.timestamp) }
+                      ])
+                    )
+                    onInjectionPointsChange(restoredInjectionPoints)
+
+                    const restoredFreehandPoints = new Map<string, FreehandPoint>(
+                      data.freehandPoints.map((item: any) => [
+                        item.pointId,
+                        { ...item, timestamp: new Date(item.timestamp) }
+                      ])
+                    )
+                    setFreehandPoints(restoredFreehandPoints)
+
+                    toast.dismiss(t.id)
+                    toast.success('Chart restored', { icon: '✓' })
+                  }}
+                  className="px-3 py-1.5 bg-purple-600 text-white text-sm rounded-lg hover:bg-purple-700 transition-colors"
+                >
+                  Restore
+                </button>
+                <button
+                  onClick={() => {
+                    localStorage.removeItem(autoSaveKey)
+                    toast.dismiss(t.id)
+                    toast('Discarded auto-save', { icon: 'ℹ️' })
+                  }}
+                  className="px-3 py-1.5 bg-gray-200 text-gray-700 text-sm rounded-lg hover:bg-gray-300 transition-colors"
+                >
+                  Discard
+                </button>
+              </div>
+            </div>
+          ), {
+            duration: 10000,
+            position: 'top-center'
+          })
+        } else {
+          localStorage.removeItem(autoSaveKey)
+        }
+      } catch (e) {
+        console.error('Failed to parse saved chart data:', e)
+        localStorage.removeItem(autoSaveKey)
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current)
+      }
+    }
+  }, [])
+
+  // ==========================================================================
+  // FREEHAND MODE HANDLERS
+  // ==========================================================================
+
+  // Reference for the image container to calculate click positions
+  const imageContainerRef = useRef<HTMLDivElement>(null)
+
+  // Handle click on the face image for freehand mode
+  const handleFreehandClick = useCallback((event: React.MouseEvent<HTMLDivElement>) => {
+    if (readOnly || drawingMode !== 'freehand') return
+
+    const container = imageContainerRef.current
+    if (!container) return
+
+    // Get click position relative to the container
+    const rect = container.getBoundingClientRect()
+    const x = ((event.clientX - rect.left) / rect.width) * 100
+    const y = ((event.clientY - rect.top) / rect.height) * 100
+
+    // Ensure click is within bounds
+    if (x < 0 || x > 100 || y < 0 || y > 100) return
+
+    // Get default values
+    const defaultDepth = activeDepths[0]?.id || ''
+    const defaultTechnique = activeTechniques[0]?.id || ''
+    const defaultGauge = activeGauges[0]?.id || ''
+
+    // Create new freehand point
+    const pointId = `fp-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+    const newPoint: FreehandPoint = {
+      id: pointId,
+      x,
+      y,
+      customName: `Point ${freehandPoints.size + 1}`,
+      units: productType === 'neurotoxin' ? 10 : undefined,
+      volume: productType === 'filler' ? 0.5 : undefined,
+      depthId: defaultDepth,
+      techniqueId: defaultTechnique,
+      needleGaugeId: defaultGauge,
+      productId: selectedProductId || activeProducts[0]?.id,
+      timestamp: new Date()
+    }
+
+    const newPoints = new Map(freehandPoints)
+    newPoints.set(pointId, newPoint)
+    setFreehandPoints(newPoints)
+    setSelectedFreehandPoint(pointId)
+
+    toast.success('Added custom point', { duration: 1500, icon: '📍' })
+  }, [readOnly, drawingMode, freehandPoints, setFreehandPoints, productType, selectedProductId, activeProducts, activeDepths, activeTechniques, activeGauges])
+
+  // Update freehand point
+  const updateFreehandPoint = useCallback((pointId: string, updates: Partial<FreehandPoint>) => {
+    const newPoints = new Map(freehandPoints)
+    const existing = newPoints.get(pointId)
+    if (existing) {
+      newPoints.set(pointId, { ...existing, ...updates })
+      setFreehandPoints(newPoints)
+    }
+  }, [freehandPoints, setFreehandPoints])
+
+  // Remove freehand point
+  const removeFreehandPoint = useCallback((pointId: string) => {
+    const newPoints = new Map(freehandPoints)
+    newPoints.delete(pointId)
+    setFreehandPoints(newPoints)
+    setSelectedFreehandPoint(null)
+    toast.success('Removed point', { duration: 1000 })
+  }, [freehandPoints, setFreehandPoints])
+
+  // Quick adjust freehand point units
+  const quickAdjustFreehandUnits = useCallback((pointId: string, delta: number) => {
+    const point = freehandPoints.get(pointId)
+    if (!point) return
+
+    if (productType === 'neurotoxin') {
+      const newUnits = Math.max(0, (point.units || 0) + delta)
+      updateFreehandPoint(pointId, { units: newUnits })
+    } else {
+      const newVolume = Math.max(0, parseFloat(((point.volume || 0) + delta).toFixed(2)))
+      updateFreehandPoint(pointId, { volume: newVolume })
+    }
+  }, [freehandPoints, productType, updateFreehandPoint])
+
+  // Set exact freehand units
+  const setExactFreehandUnits = useCallback((pointId: string, value: number) => {
+    if (productType === 'neurotoxin') {
+      updateFreehandPoint(pointId, { units: value })
+    } else {
+      updateFreehandPoint(pointId, { volume: value })
+    }
+  }, [productType, updateFreehandPoint])
+
+  // ==========================================================================
+  // KEYBOARD SHORTCUTS
+  // ==========================================================================
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (readOnly) return
+
+      // Don't trigger shortcuts when typing in input fields
+      const target = e.target as HTMLElement
+      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable) {
+        return
+      }
+
+      // Toggle keyboard shortcuts help with '?'
+      if (e.key === '?' && !e.shiftKey) {
+        e.preventDefault()
+        setShowKeyboardHelp(prev => !prev)
+        triggerHaptic('light')
+        return
+      }
+
+      // Handle freehand point shortcuts
+      if (selectedFreehandPoint && freehandPoints.has(selectedFreehandPoint)) {
+        switch (e.key) {
+          case 'ArrowUp':
+            e.preventDefault()
+            quickAdjustFreehandUnits(selectedFreehandPoint, productType === 'neurotoxin' ? 5 : 0.1)
+            return
+          case 'ArrowDown':
+            e.preventDefault()
+            quickAdjustFreehandUnits(selectedFreehandPoint, productType === 'neurotoxin' ? -5 : -0.1)
+            return
+          case 'Delete':
+          case 'Backspace':
+            e.preventDefault()
+            removeFreehandPoint(selectedFreehandPoint)
+            return
+          case 'Escape':
+            e.preventDefault()
+            setSelectedFreehandPoint(null)
+            return
+        }
+      }
+
+      // Handle zone point shortcuts
+      if (selectedZone && injectionPoints.has(selectedZone)) {
+        switch (e.key) {
+          case 'ArrowUp':
+            e.preventDefault()
+            quickAdjustUnits(selectedZone, productType === 'neurotoxin' ? 5 : 0.1)
+            break
+          case 'ArrowDown':
+            e.preventDefault()
+            quickAdjustUnits(selectedZone, productType === 'neurotoxin' ? -5 : -0.1)
+            break
+          case 'Delete':
+          case 'Backspace':
+            e.preventDefault()
+            removeInjectionPoint(selectedZone)
+            break
+          case 'Escape':
+            e.preventDefault()
+            setQuickEdit({ isOpen: false, zoneId: null, position: { x: 0, y: 0 } })
+            setSelectedZone(null)
+            break
+        }
+      }
+
+      // Speed charting shortcuts
+      switch (e.key.toLowerCase()) {
+        case 'm':
+          // Toggle multi-select mode
+          if (!e.ctrlKey && !e.metaKey) {
+            e.preventDefault()
+            toggleSelectionMode()
+            triggerHaptic('medium')
+            return
+          }
+          break
+        case 'v':
+          e.preventDefault()
+          if (voiceInput.isListening) {
+            stopVoiceInput()
+          } else {
+            startVoiceInput()
+          }
+          triggerHaptic('light')
+          return
+        case 'a':
+          // Select all visible zones (only in multi-select mode)
+          if (selectionMode === 'multi') {
+            e.preventDefault()
+            const allZoneIds = new Set(activeZones.map(z => z.id))
+            setMultiSelectedZones(allZoneIds)
+            triggerHaptic('medium')
+            toast.success(`Selected ${allZoneIds.size} zones`)
+            return
+          }
+          break
+        case 'enter':
+          // Apply batch units when in multi-select mode
+          if (selectionMode === 'multi' && (multiSelectedZones.size > 0 || multiSelectedFreehand.size > 0)) {
+            e.preventDefault()
+            applyBatchUnits()
+            triggerHaptic('heavy')
+            return
+          }
+          break
+        case 'escape':
+          // Clear multi-selection and exit speed mode
+          if (selectionMode === 'multi') {
+            e.preventDefault()
+            setMultiSelectedZones(new Set())
+            setMultiSelectedFreehand(new Set())
+            setSelectionMode('single')
+            setShowBatchPanel(false)
+            triggerHaptic('light')
+            toast.success('Exited speed mode')
+            return
+          }
+          break
+      }
+
+      // Number key shortcuts for quick batch units (1-9)
+      if (selectionMode === 'multi' && /^[1-9]$/.test(e.key)) {
+        e.preventDefault()
+        const keyNum = parseInt(e.key)
+        let newBatchUnits: number
+
+        if (productType === 'neurotoxin') {
+          // Neurotoxin: 1=5u, 2=10u, 3=15u, 4=20u, 5=25u, 6=30u, 7=35u, 8=40u, 9=45u
+          newBatchUnits = keyNum * 5
+        } else {
+          // Filler: 1=0.2, 2=0.5, 3=1.0, 4=1.5, 5=2.0, 6=2.5, 7=3.0, 8=3.5, 9=4.0
+          const fillerPresets = [0.2, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0]
+          newBatchUnits = fillerPresets[keyNum - 1]
+        }
+
+        setBatchUnits(newBatchUnits)
+        triggerHaptic('light')
+        toast.success(`Batch units set to ${productType === 'neurotoxin' ? newBatchUnits + 'u' : newBatchUnits + 'ml'}`)
+        return
+      }
+
+      // Global shortcuts
+      if (e.ctrlKey || e.metaKey) {
+        switch (e.key) {
+          case 's':
+            e.preventDefault()
+            onSave?.()
+            toast.success('Saved', { icon: '💾' })
+            break
+          case 'z':
+            e.preventDefault()
+            if (e.shiftKey) {
+              redo()
+            } else {
+              undo()
+            }
+            break
+          case 'd':
+            e.preventDefault()
+            copyLastTreatment()
+            break
+        }
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedZone, selectedFreehandPoint, injectionPoints, freehandPoints, productType, onSave, readOnly, voiceInput.isListening, selectionMode, multiSelectedZones, multiSelectedFreehand, activeZones])
+
+  // ==========================================================================
+  // RENDER
+  // ==========================================================================
+
+  return (
+    <div className="flex flex-col lg:flex-row gap-2 md:gap-4" ref={containerRef}>
+      {/* Main Chart Area */}
+      <div className="flex-1 bg-white rounded-lg md:rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+        {/* Toolbar */}
+        <div className="flex items-center justify-between px-2 md:px-4 py-2 md:py-3 border-b border-gray-100 bg-gray-50">
+          <div className="flex items-center gap-1.5 md:gap-3">
+            <h3 className="font-semibold text-sm md:text-base text-gray-900">Face Injection Map</h3>
+            <div className={`px-2 py-1 rounded-full text-xs font-medium ${
+              productType === 'neurotoxin'
+                ? 'bg-purple-100 text-purple-700'
+                : 'bg-pink-100 text-pink-700'
+            }`}>
+              {productType === 'neurotoxin' ? <Sparkles className="w-3 h-3 inline mr-1" /> : <Droplets className="w-3 h-3 inline mr-1" />}
+              {productType === 'neurotoxin' ? 'Neurotoxin' : 'Filler'}
+            </div>
+
+            {/* Drawing Mode Toggle */}
+            <div className="flex items-center bg-gray-100 rounded-lg p-0.5">
+              <button
+                onClick={() => setDrawingMode('zones')}
+                className={`px-2 md:px-3 py-1.5 text-xs font-medium rounded-md flex items-center gap-1 md:gap-1.5 transition-all ${
+                  drawingMode === 'zones'
+                    ? 'bg-white text-gray-900 shadow-sm'
+                    : 'text-gray-500 hover:text-gray-700'
+                }`}
+                title="Click predefined zones"
+              >
+                <CircleDot className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Zones</span>
+              </button>
+              <button
+                onClick={() => setDrawingMode('freehand')}
+                className={`px-2 md:px-3 py-1.5 text-xs font-medium rounded-md flex items-center gap-1 md:gap-1.5 transition-all ${
+                  drawingMode === 'freehand'
+                    ? 'bg-white text-gray-900 shadow-sm'
+                    : 'text-gray-500 hover:text-gray-700'
+                }`}
+                title="Click anywhere to add custom points"
+              >
+                <Pencil className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Freehand</span>
+              </button>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-1 md:gap-2 overflow-x-auto">
+            {/* Templates */}
+            <button
+              onClick={() => setShowTemplates(!showTemplates)}
+              className="px-2 md:px-3 py-1.5 text-xs md:text-sm bg-purple-50 text-purple-700 rounded-lg hover:bg-purple-100 flex items-center gap-1 md:gap-1.5 transition-colors whitespace-nowrap"
+            >
+              <Zap className="w-3.5 h-3.5 md:w-4 md:h-4" />
+              <span className="hidden sm:inline">Templates</span>
+            </button>
+
+            {/* Speed Charting Mode Toggle */}
+            <button
+              onClick={toggleSelectionMode}
+              className={`px-2 md:px-3 py-1.5 text-xs md:text-sm rounded-lg flex items-center gap-1 md:gap-1.5 transition-all shadow-sm whitespace-nowrap ${
+                selectionMode === 'multi'
+                  ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600 ring-2 ring-purple-300'
+                  : 'bg-white text-gray-700 border border-gray-200 hover:border-purple-300 hover:text-purple-700'
+              }`}
+              title={
+                selectionMode === 'multi'
+                  ? 'Exit Speed Mode - Return to single zone selection'
+                  : 'Speed Mode - Tap multiple zones, then speak or enter units to apply to all'
+              }
+            >
+              {selectionMode === 'multi' ? <CheckSquare className="w-3.5 h-3.5 md:w-4 md:h-4" /> : <MousePointer2 className="w-3.5 h-3.5 md:w-4 md:h-4" />}
+              <span className="font-medium hidden md:inline">{selectionMode === 'multi' ? 'Exit Speed Mode' : 'Speed Mode'}</span>
+              <span className="font-medium md:hidden">{selectionMode === 'multi' ? 'Exit' : 'Speed'}</span>
+            </button>
+
+            {/* Copy Last */}
+            {patientLastTreatment && patientLastTreatment.size > 0 && (
+              <button
+                onClick={copyLastTreatment}
+                className="px-2 md:px-3 py-1.5 text-xs md:text-sm text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg flex items-center gap-1 md:gap-1.5 transition-colors whitespace-nowrap"
+                title="Copy previous treatment (Ctrl+D)"
+              >
+                <Copy className="w-3.5 h-3.5 md:w-4 md:h-4" />
+                <span className="hidden lg:inline">Copy Last</span>
+              </button>
+            )}
+
+            {/* Undo/Redo */}
+            <div className="flex items-center gap-1 border-r border-gray-200 pr-2">
+              <button
+                onClick={undo}
+                disabled={historyIndex <= 0}
+                className="p-1.5 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                title="Undo (Ctrl+Z)"
+              >
+                <RotateCcw className="w-4 h-4" />
+              </button>
+              <button
+                onClick={redo}
+                disabled={historyIndex >= history.length - 1}
+                className="p-1.5 text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                title="Redo (Ctrl+Shift+Z)"
+              >
+                <RotateCcw className="w-4 h-4 scale-x-[-1]" />
+              </button>
+            </div>
+
+            {/* Keyboard Help */}
+            <button
+              onClick={() => setShowKeyboardHelp(!showKeyboardHelp)}
+              className="p-1.5 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100 transition-colors"
+              title="Keyboard shortcuts"
+            >
+              <Keyboard className="w-4 h-4" />
+            </button>
+
+            {/* Haptic Feedback Toggle */}
+            <button
+              onClick={() => setHapticsEnabled(!hapticsEnabled)}
+              className={`p-1.5 rounded-lg transition-colors ${
+                hapticsEnabled
+                  ? 'text-purple-600 bg-purple-50 hover:bg-purple-100'
+                  : 'text-gray-400 hover:text-gray-600 hover:bg-gray-100'
+              }`}
+              title={hapticsEnabled ? 'Haptic feedback enabled' : 'Haptic feedback disabled'}
+            >
+              <Smartphone className="w-4 h-4" />
+            </button>
+
+            {/* Ghost Overlay Toggle */}
+            <button
+              onClick={toggleGhostPanel}
+              className={`px-3 py-1.5 text-sm rounded-lg flex items-center gap-1.5 transition-all ${
+                showGhostPanel || ghostOverlayEnabled
+                  ? 'bg-indigo-50 text-indigo-700 border border-indigo-200 hover:bg-indigo-100'
+                  : 'text-gray-600 hover:text-gray-800 hover:bg-gray-100'
+              }`}
+              title="Ghost Overlay - Compare with previous treatment photos"
+            >
+              <Layers className="w-4 h-4" />
+              Ghost Overlay
+            </button>
+
+            {/* Auto-Save Status Indicator */}
+            {!readOnly && autoSaveStatus !== 'idle' && (
+              <div className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg bg-gray-50">
+                {autoSaveStatus === 'saving' && (
+                  <>
+                    <Clock className="w-3.5 h-3.5 text-blue-600 animate-pulse" />
+                    <span className="text-blue-600 font-medium">Saving...</span>
+                  </>
+                )}
+                {autoSaveStatus === 'saved' && (
+                  <>
+                    <Check className="w-3.5 h-3.5 text-green-600" />
+                    <span className="text-green-600 font-medium">Saved</span>
+                  </>
+                )}
+              </div>
+            )}
+
+            {/* Clear All */}
+            {(injectionPoints.size > 0 || freehandPoints.size > 0) && (
+              <button
+                onClick={clearAll}
+                className="px-3 py-1.5 text-sm text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-lg flex items-center gap-1.5 transition-colors"
+              >
+                <RotateCcw className="w-4 h-4" />
+                Clear
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Templates Dropdown */}
+        {showTemplates && activeTemplates.length > 0 && (
+          <div className="px-4 py-3 bg-purple-50 border-b border-purple-100">
+            <p className="text-sm font-medium text-purple-800 mb-2">Quick Templates:</p>
+            <div className="flex flex-wrap gap-2">
+              {activeTemplates.map(template => (
+                <button
+                  key={template.id}
+                  onClick={() => applyTemplate(template)}
+                  className="px-3 py-2 bg-white rounded-lg border border-purple-200 hover:border-purple-400 hover:shadow-sm transition-all text-left"
+                >
+                  <p className="font-medium text-sm text-gray-900">{template.name}</p>
+                  <p className="text-xs text-gray-500">
+                    {template.zones.length} zones • {template.estimatedTime}min
+                  </p>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Ghost Overlay Panel */}
+        {showGhostPanel && (
+          <div className="px-4 py-3 bg-indigo-50 border-b border-indigo-100">
+            <div className="flex items-center justify-between mb-3">
+              <p className="text-sm font-medium text-indigo-800">Ghost Overlay - Photo Comparison</p>
+              {ghostOverlayImage && (
+                <button
+                  onClick={toggleGhostOverlay}
+                  className={`px-2 py-1 text-xs font-medium rounded transition-all ${
+                    ghostOverlayEnabled
+                      ? 'bg-indigo-600 text-white hover:bg-indigo-700'
+                      : 'bg-white text-indigo-600 border border-indigo-300 hover:border-indigo-400'
+                  }`}
+                >
+                  {ghostOverlayEnabled ? 'Hide' : 'Show'}
+                </button>
+              )}
+            </div>
+
+            {/* Load Photo Button */}
+            {!ghostOverlayImage ? (
+              <button
+                onClick={loadPreviousPhoto}
+                className="w-full px-4 py-3 bg-white border-2 border-dashed border-indigo-300 rounded-lg hover:border-indigo-400 hover:bg-indigo-50 transition-all text-center group"
+              >
+                <div className="flex flex-col items-center gap-2">
+                  <Layers className="w-6 h-6 text-indigo-400 group-hover:text-indigo-500" />
+                  <div>
+                    <p className="text-sm font-medium text-indigo-700">Load Previous Photo</p>
+                    <p className="text-xs text-indigo-500">Compare current injection plan with past treatments</p>
+                  </div>
+                </div>
+              </button>
+            ) : (
+              <>
+                {/* Opacity Slider */}
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-medium text-indigo-700">Overlay Opacity</label>
+                    <span className="text-xs text-indigo-600 font-mono">{Math.round(ghostOverlayOpacity * 100)}%</span>
+                  </div>
+                  <input
+                    type="range"
+                    min="0"
+                    max="1"
+                    step="0.05"
+                    value={ghostOverlayOpacity}
+                    onChange={(e) => updateGhostOpacity(parseFloat(e.target.value))}
+                    className="w-full h-2 bg-indigo-200 rounded-lg appearance-none cursor-pointer accent-indigo-600"
+                    disabled={!ghostOverlayEnabled}
+                  />
+                  <div className="flex justify-between text-xs text-indigo-500">
+                    <span>Transparent</span>
+                    <span>Opaque</span>
+                  </div>
+                </div>
+
+                {/* Actions */}
+                <div className="flex gap-2 mt-3">
+                  <button
+                    onClick={loadPreviousPhoto}
+                    className="flex-1 px-3 py-2 bg-white text-indigo-700 border border-indigo-300 rounded-lg hover:bg-indigo-50 text-sm font-medium transition-all"
+                  >
+                    Load Different Photo
+                  </button>
+                  <button
+                    onClick={() => {
+                      setGhostOverlayImage(null)
+                      setGhostOverlayEnabled(false)
+                      toast.success('Ghost overlay removed', { icon: '✓' })
+                    }}
+                    className="px-3 py-2 bg-white text-red-600 border border-red-300 rounded-lg hover:bg-red-50 text-sm font-medium transition-all"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        )}
+
+        {/* Keyboard Shortcuts Help */}
+        {showKeyboardHelp && (
+          <div className="px-4 py-3 bg-gray-50 border-b border-gray-100 text-xs">
+            <div className="space-y-2">
+              <div className="font-semibold text-gray-700 mb-1">Keyboard Shortcuts</div>
+              <div className="flex flex-wrap gap-x-4 gap-y-1">
+                <span><kbd className="px-1.5 py-0.5 bg-gray-200 rounded">↑</kbd> +5 units</span>
+                <span><kbd className="px-1.5 py-0.5 bg-gray-200 rounded">↓</kbd> -5 units</span>
+                <span><kbd className="px-1.5 py-0.5 bg-gray-200 rounded">Del</kbd> Remove</span>
+                <span><kbd className="px-1.5 py-0.5 bg-gray-200 rounded">Esc</kbd> Deselect/Exit</span>
+              </div>
+              <div className="flex flex-wrap gap-x-4 gap-y-1">
+                <span><kbd className="px-1.5 py-0.5 bg-purple-200 rounded">M</kbd> Multi-Select Mode</span>
+                <span><kbd className="px-1.5 py-0.5 bg-purple-200 rounded">V</kbd> Voice Input</span>
+                <span><kbd className="px-1.5 py-0.5 bg-purple-200 rounded">A</kbd> Select All (in speed mode)</span>
+                <span><kbd className="px-1.5 py-0.5 bg-purple-200 rounded">Enter</kbd> Apply Batch (in speed mode)</span>
+              </div>
+              <div className="flex flex-wrap gap-x-4 gap-y-1">
+                <span><kbd className="px-1.5 py-0.5 bg-blue-200 rounded">1-9</kbd> Quick Units (in speed mode)</span>
+                <span className="text-gray-500 text-xs">Neurotoxin: 1=5u, 2=10u, 3=15u... | Filler: 1=0.2ml, 2=0.5ml, 3=1.0ml...</span>
+              </div>
+              <div className="flex flex-wrap gap-x-4 gap-y-1">
+                <span><kbd className="px-1.5 py-0.5 bg-gray-200 rounded">⌘Z</kbd> Undo</span>
+                <span><kbd className="px-1.5 py-0.5 bg-gray-200 rounded">⌘⇧Z</kbd> Redo</span>
+                <span><kbd className="px-1.5 py-0.5 bg-gray-200 rounded">⌘S</kbd> Save</span>
+                <span><kbd className="px-1.5 py-0.5 bg-gray-200 rounded">⌘D</kbd> Copy Last</span>
+                <span><kbd className="px-1.5 py-0.5 bg-gray-200 rounded">?</kbd> Toggle Help</span>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Freehand Mode Instructions */}
+        {drawingMode === 'freehand' && (
+          <div className="px-4 py-2 bg-blue-50 border-b border-blue-100 flex items-center gap-2">
+            <MapPin className="w-4 h-4 text-blue-600" />
+            <span className="text-sm text-blue-800">
+              <strong>Freehand Mode:</strong> Click anywhere on the face to add custom injection points
+            </span>
+            {freehandPoints.size > 0 && (
+              <span className="ml-auto text-xs text-blue-600 font-medium">
+                {freehandPoints.size} custom point{freehandPoints.size !== 1 ? 's' : ''}
+              </span>
+            )}
+          </div>
+        )}
+
+        {/* Total Units Display - Always Visible */}
+        {(injectionPoints.size > 0 || freehandPoints.size > 0 || (selectionMode === 'multi' && multiSelectedZones.size > 0)) && (
+          <div className="sticky top-0 z-40 bg-white/95 backdrop-blur-sm border-b border-gray-200 px-4 py-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-6">
+                {/* Current Total */}
+                <div className="text-center">
+                  <div className={`text-3xl font-bold transition-all duration-300 ${
+                    productType === 'neurotoxin' ? 'text-purple-600' : 'text-pink-600'
+                  }`}>
+                    {productType === 'neurotoxin' ? totals.totalUnits : totals.totalVolume.toFixed(1)}
+                  </div>
+                  <div className="text-xs text-gray-500 font-medium uppercase tracking-wide">
+                    {productType === 'neurotoxin' ? 'units' : 'ml'} used
+                  </div>
+                </div>
+
+                {/* Pending (if in speed mode with selections) */}
+                {selectionMode === 'multi' && multiSelectedZones.size > 0 && (
+                  <>
+                    <div className="text-gray-300 text-2xl font-light">+</div>
+                    <div className="text-center border-l pl-6 border-gray-200">
+                      <div className="flex items-center gap-2 justify-center mb-1">
+                        <div className={`
+                          px-2.5 py-1 rounded-full text-white text-xs font-bold
+                          shadow-lg animate-scale-in
+                          ${productType === 'neurotoxin'
+                            ? 'bg-gradient-to-br from-purple-500 to-pink-500'
+                            : 'bg-gradient-to-br from-pink-500 to-rose-500'
+                          }
+                        `}>
+                          {multiSelectedZones.size}
+                        </div>
+                        <span className="text-xl font-semibold text-gray-400">
+                          × {batchUnits}
+                        </span>
+                      </div>
+                      <div className="text-xs text-gray-400 uppercase tracking-wide">zones selected</div>
+                    </div>
+                    <div className="text-gray-300 text-2xl font-light">=</div>
+                    <div className="text-center">
+                      <div className={`text-2xl font-bold transition-all duration-300 ${
+                        productType === 'neurotoxin' ? 'text-purple-400' : 'text-pink-400'
+                      }`}>
+                        {productType === 'neurotoxin'
+                          ? totals.totalUnits + (batchUnits * multiSelectedZones.size)
+                          : (totals.totalVolume + (batchUnits * multiSelectedZones.size)).toFixed(1)
+                        }
+                      </div>
+                      <div className="text-xs text-gray-400 uppercase tracking-wide">projected</div>
+                    </div>
+                  </>
+                )}
+              </div>
+
+              {/* Zone count and cost */}
+              <div className="text-right">
+                <div className="text-sm font-semibold text-gray-900">
+                  {totals.zoneCount + totals.freehandCount} {totals.zoneCount + totals.freehandCount === 1 ? 'point' : 'points'}
+                </div>
+                {totals.zoneCount > 0 && totals.freehandCount > 0 && (
+                  <div className="text-xs text-gray-500">
+                    {totals.zoneCount} zones + {totals.freehandCount} custom
+                  </div>
+                )}
+                {totals.estimatedCost > 0 && (
+                  <div className="text-sm font-medium text-green-600 mt-0.5">
+                    ~${totals.estimatedCost.toFixed(0)}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Face Image Chart with Overlay Points */}
+        <div className="relative p-4" ref={chartRef}>
+          {/* Voice Input Indicator */}
+          {voiceInput.isListening && (
+            <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-50
+                            bg-gray-900/90 text-white px-6 py-3 rounded-full
+                            flex items-center gap-3 shadow-lg animate-fade-in">
+              <Mic className="text-red-400 animate-pulse" size={20} />
+              <div>
+                <div className="text-xs text-gray-400">Listening...</div>
+                <div className="text-sm font-medium">
+                  {voiceInput.transcript || 'Say the dosage (e.g., "0.2 units")'}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Voice Error Indicator */}
+          {voiceInput.error && (
+            <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-50
+                            bg-red-900/90 text-white px-6 py-3 rounded-full
+                            flex items-center gap-3 shadow-lg animate-fade-in">
+              <MicOff className="text-red-300" size={20} />
+              <div>
+                <div className="text-xs text-red-200">Error</div>
+                <div className="text-sm font-medium">
+                  {voiceInput.error}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Multi-Select Mode Active Banner */}
+          {selectionMode === 'multi' && (
+            <div className="absolute top-2 left-1/2 -translate-x-1/2 bg-purple-600 text-white px-4 py-1.5 rounded-full text-sm font-medium shadow-lg animate-bounce-once z-50">
+              <div className="flex items-center gap-2">
+                <Zap className="w-4 h-4" />
+                <span>Speed Mode Active - Tap zones to select</span>
+              </div>
+            </div>
+          )}
+
+          {/* Voice Input Indicator */}
+          {voiceInput.isListening && (
+            <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-50
+                            bg-gray-900/90 text-white px-6 py-3 rounded-full
+                            flex items-center gap-3 shadow-lg animate-fade-in">
+              <Mic className="text-red-400 animate-pulse" size={20} />
+              <div>
+                <div className="text-xs text-gray-400">Listening...</div>
+                <div className="text-sm font-medium">
+                  {voiceInput.transcript || 'Say the dosage (e.g., "0.2 units")'}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Voice Error Indicator */}
+          {voiceInput.error && (
+            <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-50
+                            bg-red-900/90 text-white px-6 py-3 rounded-full
+                            flex items-center gap-3 shadow-lg animate-fade-in">
+              <MicOff className="text-red-300" size={20} />
+              <div>
+                <div className="text-xs text-red-200">Error</div>
+                <div className="text-sm font-medium">
+                  {voiceInput.error}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Multi-Select Mode Active Banner */}
+          {selectionMode === 'multi' && (
+            <div className="absolute top-2 left-1/2 -translate-x-1/2 bg-purple-600 text-white px-4 py-1.5 rounded-full text-sm font-medium shadow-lg animate-bounce-once z-50">
+              <div className="flex items-center gap-2">
+                <Zap className="w-4 h-4" />
+                <span>Speed Mode Active - Tap zones to select</span>
+              </div>
+            </div>
+          )}
+
+
+          {/* Face Image Background */}
+          <div
+            ref={imageContainerRef}
+            className={`relative w-full max-w-lg mx-auto transition-all duration-300 ${
+              drawingMode === 'freehand' ? 'cursor-crosshair' : ''
+            } ${
+              selectionMode === 'multi'
+                ? `ring-4 ${productType === 'neurotoxin' ? 'ring-purple-400 animate-glow-pulse' : 'ring-pink-400 animate-glow-pulse-pink'} ring-opacity-50 rounded-lg`
+                : ''
+            }`}
+            style={{
+              aspectRatio: gender === 'female' ? '546/888' : '585/847',
+              transform: `scale(${zoomLevel})`,
+              transformOrigin: 'center'
+            }}
+            onClick={drawingMode === 'freehand' ? handleFreehandClick : undefined}
+          >
+            <Image
+              src={`/images/face-chart-${gender}.png`}
+              alt={`${gender} face chart for injection mapping`}
+              fill
+              className="object-contain"
+              style={{ opacity: 0.85 }}
+              priority
+            />
+
+            {/* Ghost Overlay - Previous Treatment Photo Comparison */}
+            {ghostOverlayEnabled && ghostOverlayImage && (
+              <div
+                className="absolute inset-0 pointer-events-none"
+                style={{
+                  opacity: ghostOverlayOpacity,
+                  mixBlendMode: 'overlay'
+                }}
+              >
+                <Image
+                  src={ghostOverlayImage}
+                  alt="Previous treatment photo overlay"
+                  fill
+                  className="object-contain"
+                />
+              </div>
+            )}
+
+            {/* Zone Points Overlay (shown in both modes, but only clickable in zones mode) */}
+            <div className="absolute inset-0 chart-area" style={{ pointerEvents: drawingMode === 'zones' ? 'auto' : 'none' }}>
+              {activeZones.map(zone => {
+                const zonePos = ZONE_POSITIONS[zone.id]
+                if (!zonePos) return null
+
+                const point = injectionPoints.get(zone.id)
+                const isSelected = selectedZone === zone.id
+                const isHovered = hoveredZone === zone.id
+                const hasInjection = point && (point.units || point.volume)
+
+                // Multi-select: check if this zone is in the selection and get its index
+                const selectedArray = Array.from(multiSelectedZones)
+                const selectionIndex = selectedArray.indexOf(zone.id)
+                const isMultiSelected = selectionIndex !== -1
+
+                return (
+                  <div
+                    key={zone.id}
+                    className={`absolute transform -translate-x-1/2 -translate-y-1/2 group ${
+                      drawingMode === 'zones' ? 'cursor-pointer' : ''
+                    }`}
+                    style={{
+                      left: `${zonePos.x}%`,
+                      top: `${zonePos.y}%`,
+                      pointerEvents: drawingMode === 'zones' ? 'auto' : 'none'
+                    }}
+                    onClick={(e) => {
+                      if (drawingMode === 'zones') {
+                        e.stopPropagation()
+                        if (selectionMode === 'multi') {
+                          handleMultiSelectZone(zone.id, e)
+                        } else {
+                          handleZoneClick(zone, e)
+                        }
+                      }
+                    }}
+                    onMouseEnter={() => drawingMode === 'zones' && setHoveredZone(zone.id)}
+                    onMouseLeave={() => setHoveredZone(null)}
+                  >
+                    {/* Larger clickable area */}
+                    <div className="absolute w-12 h-12 -left-6 -top-6" />
+
+                    {/* Visual Point */}
+                    <div
+                      className={`
+                        relative w-5 h-5 rounded-full transition-all duration-200
+                        ${isMultiSelected
+                          ? productType === 'neurotoxin'
+                            ? 'bg-purple-500 ring-2 ring-purple-400 ring-offset-2 ring-offset-white scale-125 shadow-lg shadow-purple-400/60'
+                            : 'bg-pink-500 ring-2 ring-pink-400 ring-offset-2 ring-offset-white scale-125 shadow-lg shadow-pink-400/60'
+                          : hasInjection
+                            ? isSelected
+                              ? productType === 'neurotoxin'
+                                ? 'bg-purple-700 ring-4 ring-purple-300 scale-150'
+                                : 'bg-pink-700 ring-4 ring-pink-300 scale-150'
+                              : productType === 'neurotoxin'
+                                ? 'bg-purple-600 shadow-lg shadow-purple-400/50 scale-125'
+                                : 'bg-pink-600 shadow-lg shadow-pink-400/50 scale-125'
+                            : isSelected
+                              ? 'bg-gray-500 ring-2 ring-gray-300 scale-125'
+                              : isHovered
+                                ? 'bg-gray-400 scale-110'
+                                : drawingMode === 'freehand'
+                                  ? 'bg-gray-200/60'
+                                  : 'bg-gray-300/80 hover:bg-gray-400'
+                        }
+                      `}
+                    >
+                      {/* Animated rings for multi-selected zones */}
+                      {isMultiSelected && (
+                        <>
+                          <div className={`absolute inset-0 rounded-full animate-ping ${
+                            productType === 'neurotoxin' ? 'bg-purple-400' : 'bg-pink-400'
+                          } opacity-40`} />
+                        </>
+                      )}
+
+                      {/* Animated rings for selected injection */}
+                      {hasInjection && !isMultiSelected && (
+                        <>
+                          <div className={`absolute inset-0 rounded-full animate-ping ${
+                            productType === 'neurotoxin' ? 'bg-purple-400' : 'bg-pink-400'
+                          } opacity-30`} />
+                          <div className={`absolute inset-0 rounded-full animate-pulse ${
+                            productType === 'neurotoxin' ? 'bg-purple-500' : 'bg-pink-500'
+                          } opacity-40`} />
+                        </>
+                      )}
+                    </div>
+
+                    {/* Selection Count Badge (Multi-Select Mode) */}
+                    {selectionMode === 'multi' && isMultiSelected && (
+                      <div className={`
+                        absolute -top-2 -right-2 w-4 h-4 rounded-full
+                        text-white text-[10px] flex items-center justify-center font-bold
+                        shadow-lg z-10 animate-scale-in
+                        ${productType === 'neurotoxin'
+                          ? 'bg-gradient-to-br from-purple-500 to-pink-500'
+                          : 'bg-gradient-to-br from-pink-500 to-rose-500'
+                        }
+                      `}>
+                        {selectionIndex + 1}
+                      </div>
+                    )}
+
+                    {/* Units Badge */}
+                    {hasInjection && selectionMode !== 'multi' && (
+                      <div className={`
+                        absolute -top-8 left-1/2 transform -translate-x-1/2
+                        px-2.5 py-1 rounded-full text-xs font-bold text-white
+                        ${productType === 'neurotoxin'
+                          ? 'bg-gradient-to-r from-purple-600 to-purple-700'
+                          : 'bg-gradient-to-r from-pink-600 to-pink-700'
+                        }
+                        shadow-lg whitespace-nowrap z-10
+                      `}>
+                        {point?.units || point?.volume}{productType === 'neurotoxin' ? 'u' : 'ml'}
+                      </div>
+                    )}
+                  </div>
+                )
+              })}
+            </div>
+
+            {/* Freehand Points Overlay */}
+            <div className="absolute inset-0" style={{ pointerEvents: 'none' }}>
+              {Array.from(freehandPoints.entries()).map(([pointId, point]) => {
+                const isSelected = selectedFreehandPoint === pointId
+                const isHovered = hoveredFreehandPoint === pointId
+                const hasValue = point.units || point.volume
+
+                return (
+                  <div
+                    key={pointId}
+                    className="absolute transform -translate-x-1/2 -translate-y-1/2 group cursor-pointer"
+                    style={{
+                      left: `${point.x}%`,
+                      top: `${point.y}%`,
+                      pointerEvents: 'auto'
+                    }}
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      setSelectedFreehandPoint(pointId)
+                      setSelectedZone(null)
+                    }}
+                    onMouseEnter={() => setHoveredFreehandPoint(pointId)}
+                    onMouseLeave={() => setHoveredFreehandPoint(null)}
+                  >
+                    {/* Visual Point - Custom freehand style with pin icon */}
+                    <div
+                      className={`
+                        relative w-6 h-6 rounded-full transition-all duration-200 flex items-center justify-center
+                        ${isSelected
+                          ? productType === 'neurotoxin'
+                            ? 'bg-purple-700 ring-4 ring-purple-300 scale-125'
+                            : 'bg-pink-700 ring-4 ring-pink-300 scale-125'
+                          : isHovered
+                            ? productType === 'neurotoxin'
+                              ? 'bg-purple-600 scale-110'
+                              : 'bg-pink-600 scale-110'
+                            : productType === 'neurotoxin'
+                              ? 'bg-purple-500 shadow-lg'
+                              : 'bg-pink-500 shadow-lg'
+                        }
+                      `}
+                    >
+                      <MapPin className="w-3.5 h-3.5 text-white" />
+
+                      {/* Animated rings for freehand points */}
+                      {hasValue && (
+                        <>
+                          <div className={`absolute inset-0 rounded-full animate-ping ${
+                            productType === 'neurotoxin' ? 'bg-purple-400' : 'bg-pink-400'
+                          } opacity-30`} />
+                        </>
+                      )}
+                    </div>
+
+                    {/* Units/Name Badge */}
+                    <div className={`
+                      absolute -top-9 left-1/2 transform -translate-x-1/2
+                      px-2 py-1 rounded-lg text-xs font-medium text-white
+                      ${productType === 'neurotoxin'
+                        ? 'bg-gradient-to-r from-purple-600 to-purple-700'
+                        : 'bg-gradient-to-r from-pink-600 to-pink-700'
+                      }
+                      shadow-lg whitespace-nowrap z-10
+                    `}>
+                      {hasValue ? (
+                        <>{point.units || point.volume}{productType === 'neurotoxin' ? 'u' : 'ml'}</>
+                      ) : (
+                        <span className="opacity-75">{point.customName}</span>
+                      )}
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+
+            {/* Hover Info Panel (bottom) - for zones mode */}
+            {drawingMode === 'zones' && hoveredZone && !quickEdit.isOpen && (
+              <div className="absolute bottom-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-t border-gray-200 p-3 shadow-lg">
+                <div className="flex items-start gap-2">
+                  <div className={`w-3 h-3 rounded-full mt-1 ${
+                    productType === 'neurotoxin' ? 'bg-purple-500' : 'bg-pink-500'
+                  }`} />
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                      <span className="font-semibold text-gray-900">{getZoneById(hoveredZone)?.name}</span>
+                      {settings.showAnatomicalNames && getZoneById(hoveredZone)?.anatomicalName && (
+                        <span className="text-xs text-gray-500 italic">({getZoneById(hoveredZone)?.anatomicalName})</span>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-3 mt-1 text-xs">
+                      {injectionPoints.has(hoveredZone) ? (
+                        <span className="text-purple-600 font-medium">Click to edit</span>
+                      ) : (
+                        <span className="text-gray-500">Click to add injection point</span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Hover Info Panel (bottom) - for freehand points */}
+            {hoveredFreehandPoint && freehandPoints.has(hoveredFreehandPoint) && (
+              <div className="absolute bottom-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-t border-gray-200 p-3 shadow-lg">
+                <div className="flex items-start gap-2">
+                  <MapPin className={`w-4 h-4 mt-0.5 ${
+                    productType === 'neurotoxin' ? 'text-purple-500' : 'text-pink-500'
+                  }`} />
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                      <span className="font-semibold text-gray-900">
+                        {freehandPoints.get(hoveredFreehandPoint)?.customName || 'Custom Point'}
+                      </span>
+                      <span className="text-xs text-blue-500 font-medium">Freehand</span>
+                    </div>
+                    <div className="text-xs text-gray-500 mt-1">Click to edit</div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Legend */}
+        <div className="px-4 py-3 border-t border-gray-100 bg-gray-50">
+          <div className="flex items-center justify-center gap-6 text-xs text-gray-500">
+            <div className="flex items-center gap-1.5">
+              <div className="w-3 h-3 rounded-full bg-gray-300 border border-gray-400" />
+              <span>Zone</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <div className={`w-3 h-3 rounded-full ${productType === 'neurotoxin' ? 'bg-purple-500' : 'bg-pink-500'} flex items-center justify-center`}>
+                <MapPin className="w-2 h-2 text-white" />
+              </div>
+              <span>Freehand</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <div className={`w-3 h-3 rounded-full ${productType === 'neurotoxin' ? 'bg-purple-700' : 'bg-pink-700'} ring-2 ring-offset-1 ${productType === 'neurotoxin' ? 'ring-purple-300' : 'ring-pink-300'}`} />
+              <span>Editing</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Right Panel - Totals & Quick Edit */}
+      <div className="w-full lg:w-80 space-y-4">
+        {/* Real-time Totals Panel */}
+        <div className={`rounded-xl border-2 overflow-hidden ${
+          productType === 'neurotoxin'
+            ? 'border-purple-200 bg-gradient-to-br from-purple-50 to-white'
+            : 'border-pink-200 bg-gradient-to-br from-pink-50 to-white'
+        }`}>
+          <div className={`px-4 py-3 ${productType === 'neurotoxin' ? 'bg-purple-100' : 'bg-pink-100'}`}>
+            <h4 className="font-semibold text-gray-900 flex items-center gap-2">
+              <Target className="w-4 h-4" />
+              Treatment Summary
+            </h4>
+          </div>
+
+          <div className="p-4 space-y-4">
+            {/* Main Totals */}
+            <div className="grid grid-cols-3 gap-3">
+              <div className="text-center p-3 bg-white rounded-lg border border-gray-100">
+                <p className="text-xs text-gray-500 uppercase tracking-wide">Zones</p>
+                <p className="text-xl font-bold text-gray-900">{totals.zoneCount}</p>
+              </div>
+              <div className="text-center p-3 bg-white rounded-lg border border-gray-100">
+                <p className="text-xs text-gray-500 uppercase tracking-wide">Custom</p>
+                <p className="text-xl font-bold text-blue-600">{totals.freehandCount}</p>
+              </div>
+              <div className="text-center p-3 bg-white rounded-lg border border-gray-100">
+                <p className="text-xs text-gray-500 uppercase tracking-wide">
+                  {productType === 'neurotoxin' ? 'Units' : 'Volume'}
+                </p>
+                <p className={`text-xl font-bold ${productType === 'neurotoxin' ? 'text-purple-600' : 'text-pink-600'}`}>
+                  {productType === 'neurotoxin' ? `${totals.totalUnits}u` : `${totals.totalVolume.toFixed(1)}ml`}
+                </p>
+              </div>
+            </div>
+
+            {/* Estimated Cost */}
+            {totals.estimatedCost > 0 && (
+              <div className="text-center p-3 bg-white rounded-lg border border-gray-100">
+                <p className="text-xs text-gray-500 uppercase tracking-wide">Estimated Cost</p>
+                <p className="text-xl font-bold text-green-600">${totals.estimatedCost.toFixed(0)}</p>
+              </div>
+            )}
+
+            {/* Breakdown - Zones */}
+            {injectionPoints.size > 0 && (
+              <div className="space-y-2">
+                <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Zone Points</p>
+                <div className="max-h-32 overflow-y-auto space-y-1">
+                  {Array.from(injectionPoints.entries()).map(([zoneId, point]) => {
+                    const zone = getZoneById(zoneId)
+                    return (
+                      <div
+                        key={zoneId}
+                        className={`flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer transition-colors ${
+                          selectedZone === zoneId
+                            ? (productType === 'neurotoxin' ? 'bg-purple-100' : 'bg-pink-100')
+                            : 'bg-white hover:bg-gray-50'
+                        }`}
+                        onClick={() => {
+                          setSelectedZone(zoneId)
+                          setSelectedFreehandPoint(null)
+                        }}
+                      >
+                        <span className="text-sm text-gray-700">{zone?.name}</span>
+                        <span className={`text-sm font-medium ${productType === 'neurotoxin' ? 'text-purple-600' : 'text-pink-600'}`}>
+                          {point.units ? `${point.units}u` : `${point.volume}ml`}
+                        </span>
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* Breakdown - Freehand Points */}
+            {freehandPoints.size > 0 && (
+              <div className="space-y-2">
+                <p className="text-xs font-medium text-blue-600 uppercase tracking-wide flex items-center gap-1">
+                  <MapPin className="w-3 h-3" />
+                  Custom Points
+                </p>
+                <div className="max-h-32 overflow-y-auto space-y-1">
+                  {Array.from(freehandPoints.entries()).map(([pointId, point]) => (
+                    <div
+                      key={pointId}
+                      className={`flex items-center justify-between px-3 py-2 rounded-lg cursor-pointer transition-colors ${
+                        selectedFreehandPoint === pointId
+                          ? (productType === 'neurotoxin' ? 'bg-purple-100' : 'bg-pink-100')
+                          : 'bg-white hover:bg-gray-50'
+                      }`}
+                      onClick={() => {
+                        setSelectedFreehandPoint(pointId)
+                        setSelectedZone(null)
+                      }}
+                    >
+                      <span className="text-sm text-gray-700 flex items-center gap-1.5">
+                        <MapPin className="w-3 h-3 text-blue-500" />
+                        {point.customName || 'Custom Point'}
+                      </span>
+                      <span className={`text-sm font-medium ${productType === 'neurotoxin' ? 'text-purple-600' : 'text-pink-600'}`}>
+                        {point.units ? `${point.units}u` : point.volume ? `${point.volume}ml` : '-'}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Quick Edit Panel (when zone selected) */}
+        {selectedZone && injectionPoints.has(selectedZone) && (
+          <QuickEditPanel
+            zoneId={selectedZone}
+            point={injectionPoints.get(selectedZone)!}
+            zone={getZoneById(selectedZone)!}
+            productType={productType}
+            depths={activeDepths}
+            techniques={activeTechniques}
+            gauges={activeGauges}
+            products={activeProducts}
+            onUpdate={(updates) => updateInjectionPoint(selectedZone, updates)}
+            onRemove={() => removeInjectionPoint(selectedZone)}
+            onClose={() => setSelectedZone(null)}
+            quickAdjust={(delta) => quickAdjustUnits(selectedZone, delta)}
+            setExact={(value) => setExactUnits(selectedZone, value)}
+            getDepthById={getDepthById}
+            getTechniqueById={getTechniqueById}
+            getNeedleGaugeById={getNeedleGaugeById}
+            getProductById={getProductById}
+          />
+        )}
+
+        {/* Quick Edit Panel (when freehand point selected) */}
+        {selectedFreehandPoint && freehandPoints.has(selectedFreehandPoint) && (
+          <FreehandQuickEditPanel
+            pointId={selectedFreehandPoint}
+            point={freehandPoints.get(selectedFreehandPoint)!}
+            productType={productType}
+            depths={activeDepths}
+            techniques={activeTechniques}
+            gauges={activeGauges}
+            products={activeProducts}
+            onUpdate={(updates) => updateFreehandPoint(selectedFreehandPoint, updates)}
+            onRemove={() => removeFreehandPoint(selectedFreehandPoint)}
+            onClose={() => setSelectedFreehandPoint(null)}
+            quickAdjust={(delta) => quickAdjustFreehandUnits(selectedFreehandPoint, delta)}
+            setExact={(value) => setExactFreehandUnits(selectedFreehandPoint, value)}
+            getDepthById={getDepthById}
+            getTechniqueById={getTechniqueById}
+            getNeedleGaugeById={getNeedleGaugeById}
+            getProductById={getProductById}
+          />
+        )}
+
+        {/* Batch Apply Panel (Multi-Select Mode) */}
+        {showBatchPanel && (multiSelectedZones.size > 0 || multiSelectedFreehand.size > 0) && (
+          <div className="rounded-xl border-2 border-purple-400 bg-gradient-to-br from-purple-50 via-purple-50 to-pink-50 overflow-hidden shadow-lg">
+            <div className="px-4 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <CheckSquare className="w-5 h-5" />
+                  <div>
+                    <h4 className="font-semibold">Batch Apply</h4>
+                    <p className="text-xs text-purple-100">
+                      {multiSelectedZones.size + multiSelectedFreehand.size} point{(multiSelectedZones.size + multiSelectedFreehand.size) !== 1 ? 's' : ''} selected
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => {
+                    setShowBatchPanel(false)
+                    setMultiSelectedZones(new Set())
+                    setMultiSelectedFreehand(new Set())
+                  }}
+                  className="p-1 hover:bg-white/20 rounded transition-colors"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+            <div className="p-4 space-y-4">
+              <div>
+                <label className="text-xs font-medium text-purple-700 uppercase tracking-wide mb-2 block">
+                  {productType === 'neurotoxin' ? 'Units per Point' : 'Volume per Point (ml)'}
+                </label>
+                <div className="flex items-center gap-3 mb-3">
+                  <button
+                    onClick={() => setBatchUnits(Math.max(0, batchUnits - (productType === 'neurotoxin' ? 5 : 0.1)))}
+                    className="w-14 h-14 rounded-xl bg-white hover:bg-gray-50 border-2 border-purple-200 hover:border-purple-400 flex items-center justify-center transition-all active:scale-95 shadow-sm"
+                  >
+                    <Minus className="w-6 h-6 text-purple-600" />
+                  </button>
+                  <div className="flex-1 text-center py-4 rounded-xl font-bold text-3xl bg-gradient-to-br from-purple-100 to-pink-100 text-purple-700 border-2 border-purple-300 shadow-sm">
+                    {productType === 'neurotoxin' ? `${batchUnits}u` : `${batchUnits.toFixed(1)}ml`}
+                  </div>
+                  <button
+                    onClick={() => setBatchUnits(batchUnits + (productType === 'neurotoxin' ? 5 : 0.1))}
+                    className="w-14 h-14 rounded-xl bg-white hover:bg-gray-50 border-2 border-purple-200 hover:border-purple-400 flex items-center justify-center transition-all active:scale-95 shadow-sm"
+                  >
+                    <Plus className="w-6 h-6 text-purple-600" />
+                  </button>
+                </div>
+                <input
+                  type="number"
+                  value={batchUnits}
+                  onChange={(e) => setBatchUnits(parseFloat(e.target.value) || 0)}
+                  step={productType === 'neurotoxin' ? 1 : 0.1}
+                  min="0"
+                  className="w-full px-4 py-3 text-center text-lg font-semibold border-2 border-purple-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 bg-white"
+                  placeholder={productType === 'neurotoxin' ? 'Enter units...' : 'Enter ml...'}
+                />
+              </div>
+              <button
+                onClick={voiceInput.isListening ? stopVoiceInput : startVoiceInput}
+                className={`w-full py-4 rounded-xl font-semibold flex items-center justify-center gap-3 transition-all active:scale-95 shadow-md ${
+                  voiceInput.isListening
+                    ? 'bg-gradient-to-r from-red-500 to-pink-500 text-white animate-pulse'
+                    : 'bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600'
+                }`}
+              >
+                {voiceInput.isListening ? (
+                  <>
+                    <MicOff className="w-5 h-5 animate-pulse" />
+                    <span>Listening... "{voiceInput.transcript}"</span>
+                  </>
+                ) : (
+                  <>
+                    <Mic className="w-5 h-5" />
+                    <span>Voice Input</span>
+                  </>
+                )}
+              </button>
+              <div className="grid grid-cols-2 gap-3 pt-2">
+                <button
+                  onClick={applyBatchUnits}
+                  className="py-3 rounded-xl bg-gradient-to-r from-green-500 to-emerald-500 text-white font-semibold hover:from-green-600 hover:to-emerald-600 flex items-center justify-center gap-2 transition-all active:scale-95 shadow-md"
+                >
+                  <Check className="w-5 h-5" />
+                  Apply to All
+                </button>
+                <button
+                  onClick={() => {
+                    setMultiSelectedZones(new Set())
+                    setMultiSelectedFreehand(new Set())
+                    setShowBatchPanel(false)
+                    toast.success('Selection cleared', { duration: 1500 })
+                  }}
+                  className="py-3 rounded-xl bg-white border-2 border-gray-300 text-gray-700 font-semibold hover:bg-gray-50 hover:border-gray-400 flex items-center justify-center gap-2 transition-all active:scale-95"
+                >
+                  <X className="w-5 h-5" />
+                  Clear Selection
+                </button>
+              </div>
+              {(multiSelectedZones.size > 0 || multiSelectedFreehand.size > 0) && (
+                <div className="pt-3 border-t border-purple-200">
+                  <p className="text-xs font-medium text-purple-700 uppercase tracking-wide mb-2">Selected Points:</p>
+                  <div className="max-h-32 overflow-y-auto space-y-1">
+                    {Array.from(multiSelectedZones).map(zoneId => {
+                      const zone = getZoneById(zoneId)
+                      return (
+                        <div
+                          key={zoneId}
+                          className="flex items-center justify-between px-3 py-2 bg-white rounded-lg text-sm"
+                        >
+                          <span className="text-gray-700 font-medium">{zone?.name}</span>
+                          <span className="text-purple-600 text-xs">Zone</span>
+                        </div>
+                      )
+                    })}
+                    {Array.from(multiSelectedFreehand).map(pointId => {
+                      const point = freehandPoints.get(pointId)
+                      return (
+                        <div
+                          key={pointId}
+                          className="flex items-center justify-between px-3 py-2 bg-white rounded-lg text-sm"
+                        >
+                          <span className="text-gray-700 font-medium flex items-center gap-1.5">
+                            <MapPin className="w-3 h-3 text-blue-500" />
+                            {point?.customName || 'Custom Point'}
+                          </span>
+                          <span className="text-blue-600 text-xs">Freehand</span>
+                        </div>
+                      )
+                    })}
+                  </div>
+                </div>
+              )}
+              <div className="bg-white/60 rounded-lg p-3 text-xs text-purple-700">
+                <p className="font-medium mb-1">Quick tip:</p>
+                <p className="text-purple-600">Click zones on the chart to add to selection, then use voice input or enter dosage manually.</p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Empty State */}
+        {!selectedZone && !selectedFreehandPoint && injectionPoints.size === 0 && freehandPoints.size === 0 && (
+          <div className="rounded-xl border border-dashed border-gray-300 p-6 text-center">
+            <Target className="w-10 h-10 text-gray-300 mx-auto mb-3" />
+            <p className="text-sm text-gray-500 mb-2">No injection points yet</p>
+            <p className="text-xs text-gray-400">
+              {drawingMode === 'zones'
+                ? 'Click on facial zones to add injection points, or use a template to get started quickly.'
+                : 'Click anywhere on the face to add custom injection points.'}
+            </p>
+          </div>
+        )}
+      </div>
+
+      {/* Floating Totals Panel */}
+      {(injectionPoints.size > 0 || freehandPoints.size > 0) && (
+        <TotalsPanel
+          productType={productType}
+          totalUnits={totals.totalUnits}
+          totalVolume={totals.totalVolume}
+          totalSites={totals.zoneCount + totals.freehandCount}
+          estimatedCost={totals.estimatedCost}
+          regionTotals={totals.regionTotals}
+          freehandCount={totals.freehandCount}
+          isExpanded={totalsPanelExpanded}
+          onToggleExpanded={() => setTotalsPanelExpanded(!totalsPanelExpanded)}
+        />
+      )}
+    </div>
+  )
+}
+
+// =============================================================================
+// QUICK EDIT PANEL COMPONENT
+// =============================================================================
+
+interface QuickEditPanelProps {
+  zoneId: string
+  point: InjectionPoint
+  zone: TreatmentZone
+  productType: 'neurotoxin' | 'filler'
+  depths: InjectionDepthPreset[]
+  techniques: InjectionTechniquePreset[]
+  gauges: NeedleGaugeOption[]
+  products: ProductPreset[]
+  onUpdate: (updates: Partial<InjectionPoint>) => void
+  onRemove: () => void
+  onClose: () => void
+  quickAdjust: (delta: number) => void
+  setExact: (value: number) => void
+  getDepthById: (id: string) => InjectionDepthPreset | undefined
+  getTechniqueById: (id: string) => InjectionTechniquePreset | undefined
+  getNeedleGaugeById: (id: string) => NeedleGaugeOption | undefined
+  getProductById: (id: string) => ProductPreset | undefined
+}
+
+function QuickEditPanel({
+  zoneId,
+  point,
+  zone,
+  productType,
+  depths,
+  techniques,
+  gauges,
+  products,
+  onUpdate,
+  onRemove,
+  onClose,
+  quickAdjust,
+  setExact,
+  getDepthById,
+  getTechniqueById,
+  getNeedleGaugeById,
+  getProductById
+}: QuickEditPanelProps) {
+  const [showAdvanced, setShowAdvanced] = useState(false)
+
+  const presets = productType === 'neurotoxin'
+    ? (QUICK_UNIT_PRESETS[zoneId] || QUICK_UNIT_PRESETS.default)
+    : (QUICK_VOLUME_PRESETS[zoneId] || QUICK_VOLUME_PRESETS.default)
+
+  const currentValue = productType === 'neurotoxin' ? point.units || 0 : point.volume || 0
+  const stepSize = productType === 'neurotoxin' ? 5 : 0.1
+
+  return (
+    <div className={`rounded-xl border-2 overflow-hidden ${
+      productType === 'neurotoxin'
+        ? 'border-purple-300 bg-white'
+        : 'border-pink-300 bg-white'
+    }`}>
+      {/* Header */}
+      <div className={`px-4 py-3 flex items-center justify-between ${
+        productType === 'neurotoxin' ? 'bg-purple-100' : 'bg-pink-100'
+      }`}>
+        <div>
+          <h4 className="font-semibold text-gray-900">{zone.name}</h4>
+          {zone.anatomicalName && (
+            <p className="text-xs text-gray-500 italic">{zone.anatomicalName}</p>
+          )}
+        </div>
+        <button
+          onClick={onClose}
+          className="p-1 text-gray-400 hover:text-gray-600 rounded"
+        >
+          <X className="w-4 h-4" />
+        </button>
+      </div>
+
+      <div className="p-4 space-y-4">
+        {/* Quick Unit/Volume Adjustment */}
+        <div>
+          <label className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2 block">
+            {productType === 'neurotoxin' ? 'Units' : 'Volume (ml)'}
+          </label>
+
+          {/* Main +/- controls */}
+          <div className="flex items-center gap-3 mb-3">
+            <button
+              onClick={() => quickAdjust(-stepSize)}
+              className="w-12 h-12 rounded-xl bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors"
+            >
+              <Minus className="w-5 h-5" />
+            </button>
+
+            <div className={`flex-1 text-center py-3 rounded-xl font-bold text-2xl ${
+              productType === 'neurotoxin' ? 'bg-purple-50 text-purple-700' : 'bg-pink-50 text-pink-700'
+            }`}>
+              {productType === 'neurotoxin' ? `${currentValue}u` : `${currentValue.toFixed(1)}ml`}
+            </div>
+
+            <button
+              onClick={() => quickAdjust(stepSize)}
+              className="w-12 h-12 rounded-xl bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors"
+            >
+              <Plus className="w-5 h-5" />
+            </button>
+          </div>
+
+          {/* Quick presets */}
+          <div className="grid grid-cols-4 gap-2">
+            {presets.map((preset) => (
+              <button
+                key={preset}
+                onClick={() => setExact(preset)}
+                className={`py-2 rounded-lg text-sm font-medium transition-colors ${
+                  currentValue === preset
+                    ? (productType === 'neurotoxin'
+                        ? 'bg-purple-600 text-white'
+                        : 'bg-pink-600 text-white')
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                {productType === 'neurotoxin' ? preset : preset.toFixed(1)}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Advanced Options Toggle */}
+        <button
+          onClick={() => setShowAdvanced(!showAdvanced)}
+          className="w-full flex items-center justify-between px-3 py-2 text-sm text-gray-600 hover:text-gray-800 hover:bg-gray-50 rounded-lg transition-colors"
+        >
+          <span className="flex items-center gap-2">
+            <Settings2 className="w-4 h-4" />
+            Advanced Options
+          </span>
+          {showAdvanced ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+        </button>
+
+        {/* Advanced Options */}
+        {showAdvanced && (
+          <div className="space-y-3 pt-2 border-t border-gray-100">
+            {/* Product */}
+            {products.length > 1 && (
+              <div>
+                <label className="text-xs font-medium text-gray-500 mb-1 block">Product</label>
+                <select
+                  value={point.productId || ''}
+                  onChange={(e) => onUpdate({ productId: e.target.value })}
+                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                >
+                  {products.map(p => (
+                    <option key={p.id} value={p.id}>{p.name}</option>
+                  ))}
+                </select>
+              </div>
+            )}
+
+            {/* Depth */}
+            <div>
+              <label className="text-xs font-medium text-gray-500 mb-1 block flex items-center gap-1">
+                <Layers className="w-3 h-3" />
+                Injection Depth
+              </label>
+              <select
+                value={point.depthId}
+                onChange={(e) => onUpdate({ depthId: e.target.value })}
+                className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              >
+                {depths.map(d => (
+                  <option key={d.id} value={d.id}>{d.name} ({d.depthMm})</option>
+                ))}
+              </select>
+            </div>
+
+            {/* Technique */}
+            <div>
+              <label className="text-xs font-medium text-gray-500 mb-1 block flex items-center gap-1">
+                <Target className="w-3 h-3" />
+                Technique
+              </label>
+              <select
+                value={point.techniqueId}
+                onChange={(e) => onUpdate({ techniqueId: e.target.value })}
+                className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              >
+                {techniques.map(t => (
+                  <option key={t.id} value={t.id}>{t.name}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* Needle Gauge */}
+            <div>
+              <label className="text-xs font-medium text-gray-500 mb-1 block flex items-center gap-1">
+                <Syringe className="w-3 h-3" />
+                Needle Gauge
+              </label>
+              <select
+                value={point.needleGaugeId}
+                onChange={(e) => onUpdate({ needleGaugeId: e.target.value })}
+                className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              >
+                {gauges.map(g => (
+                  <option key={g.id} value={g.id}>{g.gauge} ({g.diameter})</option>
+                ))}
+              </select>
+            </div>
+
+            {/* Notes */}
+            <div>
+              <label className="text-xs font-medium text-gray-500 mb-1 block flex items-center gap-1">
+                <FileText className="w-3 h-3" />
+                Notes
+              </label>
+              <textarea
+                value={point.notes || ''}
+                onChange={(e) => onUpdate({ notes: e.target.value })}
+                placeholder="Add notes..."
+                rows={2}
+                className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none"
+              />
+            </div>
+          </div>
+        )}
+
+        {/* Remove Button */}
+        <button
+          onClick={onRemove}
+          className="w-full py-2 text-sm text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors flex items-center justify-center gap-2"
+        >
+          <X className="w-4 h-4" />
+          Remove This Point
+        </button>
+      </div>
+    </div>
+  )
+}
+
+// =============================================================================
+// FREEHAND QUICK EDIT PANEL COMPONENT
+// =============================================================================
+
+interface FreehandQuickEditPanelProps {
+  pointId: string
+  point: FreehandPoint
+  productType: 'neurotoxin' | 'filler'
+  depths: InjectionDepthPreset[]
+  techniques: InjectionTechniquePreset[]
+  gauges: NeedleGaugeOption[]
+  products: ProductPreset[]
+  onUpdate: (updates: Partial<FreehandPoint>) => void
+  onRemove: () => void
+  onClose: () => void
+  quickAdjust: (delta: number) => void
+  setExact: (value: number) => void
+  getDepthById: (id: string) => InjectionDepthPreset | undefined
+  getTechniqueById: (id: string) => InjectionTechniquePreset | undefined
+  getNeedleGaugeById: (id: string) => NeedleGaugeOption | undefined
+  getProductById: (id: string) => ProductPreset | undefined
+}
+
+function FreehandQuickEditPanel({
+  pointId,
+  point,
+  productType,
+  depths,
+  techniques,
+  gauges,
+  products,
+  onUpdate,
+  onRemove,
+  onClose,
+  quickAdjust,
+  setExact,
+  getDepthById,
+  getTechniqueById,
+  getNeedleGaugeById,
+  getProductById
+}: FreehandQuickEditPanelProps) {
+  const [showAdvanced, setShowAdvanced] = useState(false)
+
+  const presets = productType === 'neurotoxin'
+    ? [5, 10, 15, 20]
+    : [0.25, 0.5, 0.75, 1.0]
+
+  const currentValue = productType === 'neurotoxin' ? point.units || 0 : point.volume || 0
+  const stepSize = productType === 'neurotoxin' ? 5 : 0.1
+
+  return (
+    <div className={`rounded-xl border-2 overflow-hidden ${
+      productType === 'neurotoxin'
+        ? 'border-purple-300 bg-white'
+        : 'border-pink-300 bg-white'
+    }`}>
+      {/* Header */}
+      <div className={`px-4 py-3 flex items-center justify-between ${
+        productType === 'neurotoxin' ? 'bg-purple-100' : 'bg-pink-100'
+      }`}>
+        <div className="flex items-center gap-2">
+          <MapPin className={`w-4 h-4 ${productType === 'neurotoxin' ? 'text-purple-600' : 'text-pink-600'}`} />
+          <div>
+            <input
+              type="text"
+              value={point.customName || ''}
+              onChange={(e) => onUpdate({ customName: e.target.value })}
+              placeholder="Point name..."
+              className="font-semibold text-gray-900 bg-transparent border-none focus:outline-none focus:ring-0 p-0 w-32"
+            />
+            <p className="text-xs text-blue-500 font-medium">Freehand Point</p>
+          </div>
+        </div>
+        <button
+          onClick={onClose}
+          className="p-1 text-gray-400 hover:text-gray-600 rounded"
+        >
+          <X className="w-4 h-4" />
+        </button>
+      </div>
+
+      <div className="p-4 space-y-4">
+        {/* Quick Unit/Volume Adjustment */}
+        <div>
+          <label className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2 block">
+            {productType === 'neurotoxin' ? 'Units' : 'Volume (ml)'}
+          </label>
+
+          {/* Main +/- controls */}
+          <div className="flex items-center gap-3 mb-3">
+            <button
+              onClick={() => quickAdjust(-stepSize)}
+              className="w-12 h-12 rounded-xl bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors"
+            >
+              <Minus className="w-5 h-5" />
+            </button>
+
+            <div className={`flex-1 text-center py-3 rounded-xl font-bold text-2xl ${
+              productType === 'neurotoxin' ? 'bg-purple-50 text-purple-700' : 'bg-pink-50 text-pink-700'
+            }`}>
+              {productType === 'neurotoxin' ? `${currentValue}u` : `${currentValue.toFixed(1)}ml`}
+            </div>
+
+            <button
+              onClick={() => quickAdjust(stepSize)}
+              className="w-12 h-12 rounded-xl bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors"
+            >
+              <Plus className="w-5 h-5" />
+            </button>
+          </div>
+
+          {/* Quick presets */}
+          <div className="grid grid-cols-4 gap-2">
+            {presets.map((preset) => (
+              <button
+                key={preset}
+                onClick={() => setExact(preset)}
+                className={`py-2 rounded-lg text-sm font-medium transition-colors ${
+                  currentValue === preset
+                    ? (productType === 'neurotoxin'
+                        ? 'bg-purple-600 text-white'
+                        : 'bg-pink-600 text-white')
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                {productType === 'neurotoxin' ? preset : preset.toFixed(2)}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Advanced Options Toggle */}
+        <button
+          onClick={() => setShowAdvanced(!showAdvanced)}
+          className="w-full flex items-center justify-between px-3 py-2 text-sm text-gray-600 hover:text-gray-800 hover:bg-gray-50 rounded-lg transition-colors"
+        >
+          <span className="flex items-center gap-2">
+            <Settings2 className="w-4 h-4" />
+            Advanced Options
+          </span>
+          {showAdvanced ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+        </button>
+
+        {/* Advanced Options */}
+        {showAdvanced && (
+          <div className="space-y-3 pt-2 border-t border-gray-100">
+            {/* Product */}
+            {products.length > 1 && (
+              <div>
+                <label className="text-xs font-medium text-gray-500 mb-1 block">Product</label>
+                <select
+                  value={point.productId || ''}
+                  onChange={(e) => onUpdate({ productId: e.target.value })}
+                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                >
+                  {products.map(p => (
+                    <option key={p.id} value={p.id}>{p.name}</option>
+                  ))}
+                </select>
+              </div>
+            )}
+
+            {/* Depth */}
+            <div>
+              <label className="text-xs font-medium text-gray-500 mb-1 block flex items-center gap-1">
+                <Layers className="w-3 h-3" />
+                Injection Depth
+              </label>
+              <select
+                value={point.depthId}
+                onChange={(e) => onUpdate({ depthId: e.target.value })}
+                className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              >
+                {depths.map(d => (
+                  <option key={d.id} value={d.id}>{d.name} ({d.depthMm})</option>
+                ))}
+              </select>
+            </div>
+
+            {/* Technique */}
+            <div>
+              <label className="text-xs font-medium text-gray-500 mb-1 block flex items-center gap-1">
+                <Target className="w-3 h-3" />
+                Technique
+              </label>
+              <select
+                value={point.techniqueId}
+                onChange={(e) => onUpdate({ techniqueId: e.target.value })}
+                className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              >
+                {techniques.map(t => (
+                  <option key={t.id} value={t.id}>{t.name}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* Needle Gauge */}
+            <div>
+              <label className="text-xs font-medium text-gray-500 mb-1 block flex items-center gap-1">
+                <Syringe className="w-3 h-3" />
+                Needle Gauge
+              </label>
+              <select
+                value={point.needleGaugeId}
+                onChange={(e) => onUpdate({ needleGaugeId: e.target.value })}
+                className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              >
+                {gauges.map(g => (
+                  <option key={g.id} value={g.id}>{g.gauge} ({g.diameter})</option>
+                ))}
+              </select>
+            </div>
+
+            {/* Notes */}
+            <div>
+              <label className="text-xs font-medium text-gray-500 mb-1 block flex items-center gap-1">
+                <FileText className="w-3 h-3" />
+                Notes
+              </label>
+              <textarea
+                value={point.notes || ''}
+                onChange={(e) => onUpdate({ notes: e.target.value })}
+                placeholder="Add notes about this injection point..."
+                rows={2}
+                className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none"
+              />
+            </div>
+          </div>
+        )}
+
+        {/* Remove Button */}
+        <button
+          onClick={onRemove}
+          className="w-full py-2 text-sm text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors flex items-center justify-center gap-2"
+        >
+          <X className="w-4 h-4" />
+          Remove This Point
+        </button>
+      </div>
+    </div>
+  )
+}
+
+export default InteractiveFaceChart

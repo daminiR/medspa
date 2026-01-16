@@ -1,0 +1,28 @@
+# Ignore node_modules
+node_modules/
+
+# Ignore Next.js build output (we rebuild in Docker)
+.next/
+
+# Git
+.git/
+.gitignore
+
+# IDE
+.idea/
+.vscode/
+
+# Mac
+.DS_Store
+
+# Logs
+*.log
+
+# Environment files
+.env*
+
+# Docker files (not needed in build context)
+.dockerignore
+
+# Markdown
+*.md

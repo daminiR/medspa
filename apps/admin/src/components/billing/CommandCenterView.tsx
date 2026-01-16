@@ -15,8 +15,10 @@ import {
   Phone,
   ChevronRight,
   Zap,
-  Wifi
+  Wifi,
+  WifiOff
 } from 'lucide-react'
+import { useRoomsRealtime, RoomUpdate, websocketService } from '@/services/websocket'
 
 type RoomStatus = 'empty' | 'waiting' | 'just-started' | 'in-progress' | 'almost-done' | 'ready'
 
@@ -49,86 +51,147 @@ interface MoneyMetrics {
   dailyGoal: number
 }
 
-export function CommandCenterView() {
-  const [rooms, setRooms] = useState<Room[]>([
-    {
-      id: '1',
-      number: 'Room 1',
-      status: 'ready',
-      patient: { id: 'p1', name: 'Emma Wilson' },
-      provider: { id: 'dr1', name: 'Dr. Smith' },
-      treatment: {
-        type: 'Botox',
-        startTime: new Date(Date.now() - 45 * 60000),
-        estimatedDuration: 30,
-        totalAmount: 650,
-        currentActivity: 'Complete'
-      }
-    },
-    {
-      id: '2',
-      number: 'Room 2',
-      status: 'almost-done',
-      patient: { id: 'p2', name: 'Sarah Chen' },
-      provider: { id: 'dr2', name: 'Dr. Park' },
-      treatment: {
-        type: 'Lip Filler',
-        startTime: new Date(Date.now() - 35 * 60000),
-        estimatedDuration: 45,
-        totalAmount: 1200,
-        currentActivity: 'Taking after photos'
-      }
-    },
-    {
-      id: '3',
-      number: 'Room 3',
-      status: 'in-progress',
-      patient: { id: 'p3', name: 'Mike Jones' },
-      provider: { id: 'dr1', name: 'Dr. Smith' },
-      treatment: {
-        type: 'Laser + PRP',
-        startTime: new Date(Date.now() - 20 * 60000),
-        estimatedDuration: 60,
-        totalAmount: 2400,
-        currentActivity: 'Laser treatment'
-      }
-    },
-    {
-      id: '4',
-      number: 'Room 4',
-      status: 'just-started',
-      patient: { id: 'p4', name: 'Lisa Park' },
-      provider: { id: 'nr1', name: 'Nurse Kim' },
-      treatment: {
-        type: 'Consultation',
-        startTime: new Date(Date.now() - 5 * 60000),
-        estimatedDuration: 30,
-        totalAmount: 0,
-        currentActivity: 'Discussing options'
-      }
-    },
-    {
-      id: '5',
-      number: 'Room 5',
-      status: 'empty'
-    },
-    {
-      id: '6',
-      number: 'Room 6',
-      status: 'waiting',
-      patient: { id: 'p5', name: 'Jennifer Wu' },
-      treatment: {
-        type: 'Chemical Peel',
-        startTime: new Date(Date.now() + 15 * 60000), // Future
-        estimatedDuration: 45,
-        totalAmount: 350
-      }
+// Default mock rooms for fallback when Firestore is not connected
+const defaultMockRooms: Room[] = [
+  {
+    id: '1',
+    number: 'Room 1',
+    status: 'ready',
+    patient: { id: 'p1', name: 'Emma Wilson' },
+    provider: { id: 'dr1', name: 'Dr. Smith' },
+    treatment: {
+      type: 'Botox',
+      startTime: new Date(Date.now() - 45 * 60000),
+      estimatedDuration: 30,
+      totalAmount: 650,
+      currentActivity: 'Complete'
     }
-  ])
+  },
+  {
+    id: '2',
+    number: 'Room 2',
+    status: 'almost-done',
+    patient: { id: 'p2', name: 'Sarah Chen' },
+    provider: { id: 'dr2', name: 'Dr. Park' },
+    treatment: {
+      type: 'Lip Filler',
+      startTime: new Date(Date.now() - 35 * 60000),
+      estimatedDuration: 45,
+      totalAmount: 1200,
+      currentActivity: 'Taking after photos'
+    }
+  },
+  {
+    id: '3',
+    number: 'Room 3',
+    status: 'in-progress',
+    patient: { id: 'p3', name: 'Mike Jones' },
+    provider: { id: 'dr1', name: 'Dr. Smith' },
+    treatment: {
+      type: 'Laser + PRP',
+      startTime: new Date(Date.now() - 20 * 60000),
+      estimatedDuration: 60,
+      totalAmount: 2400,
+      currentActivity: 'Laser treatment'
+    }
+  },
+  {
+    id: '4',
+    number: 'Room 4',
+    status: 'just-started',
+    patient: { id: 'p4', name: 'Lisa Park' },
+    provider: { id: 'nr1', name: 'Nurse Kim' },
+    treatment: {
+      type: 'Consultation',
+      startTime: new Date(Date.now() - 5 * 60000),
+      estimatedDuration: 30,
+      totalAmount: 0,
+      currentActivity: 'Discussing options'
+    }
+  },
+  {
+    id: '5',
+    number: 'Room 5',
+    status: 'empty'
+  },
+  {
+    id: '6',
+    number: 'Room 6',
+    status: 'waiting',
+    patient: { id: 'p5', name: 'Jennifer Wu' },
+    treatment: {
+      type: 'Chemical Peel',
+      startTime: new Date(Date.now() + 15 * 60000),
+      estimatedDuration: 45,
+      totalAmount: 350
+    }
+  }
+]
 
+// Convert RoomUpdate from Firestore to Room format
+function convertToRoom(roomUpdate: RoomUpdate): Room {
+  return {
+    id: roomUpdate.id,
+    number: roomUpdate.number,
+    status: roomUpdate.status,
+    patient: roomUpdate.patient,
+    provider: roomUpdate.provider,
+    treatment: roomUpdate.treatment
+  }
+}
+
+export function CommandCenterView() {
+  // Use real-time Firestore listener for room updates
+  const { rooms: realtimeRooms, isConnected } = useRoomsRealtime('default')
+
+  // Local state for rooms (will be synced with real-time updates or use mock data)
+  const [rooms, setRooms] = useState<Room[]>(defaultMockRooms)
   const [waitingCount] = useState(3)
   const [selectedRoom, setSelectedRoom] = useState<Room | null>(null)
   const [liveSync, setLiveSync] = useState(true)
+
+  // Sync real-time rooms with local state
+  useEffect(() => {
+    if (isConnected && realtimeRooms.length > 0) {
+      setRooms(realtimeRooms.map(convertToRoom))
+    }
+  }, [realtimeRooms, isConnected])
+
+  // Listen for treatment status changes for real-time updates
+  useEffect(() => {
+    if (!liveSync) return
+
+    const unsubscribe = websocketService.on('treatment.status_changed', (data) => {
+      setRooms(prev => prev.map(room => {
+        if (room.id === data.roomId) {
+          return { ...room, status: data.status }
+        }
+        return room
+      }))
+    })
+
+    return () => {
+      unsubscribe()
+    }
+  }, [liveSync])
+
+  // Listen for treatment ready for payment events
+  useEffect(() => {
+    const unsubscribe = websocketService.on('treatment.ready_for_payment', (data) => {
+      if (data.roomId) {
+        setRooms(prev => prev.map(room => {
+          if (room.id === data.roomId) {
+            return { ...room, status: 'ready' as RoomStatus }
+          }
+          return room
+        }))
+      }
+    })
+
+    return () => {
+      unsubscribe()
+    }
+  }, [])
 
   const metrics: MoneyMetrics = {
     readyToCollect: rooms.filter(r => r.status === 'ready').reduce((sum, r) => sum + (r.treatment?.totalAmount || 0), 0),
@@ -136,25 +199,6 @@ export function CommandCenterView() {
     collected: 12340,
     dailyGoal: 20000
   }
-
-  // Simulate real-time updates
-  useEffect(() => {
-    if (!liveSync) return
-    
-    const interval = setInterval(() => {
-      setRooms(prev => prev.map(room => {
-        if (room.status === 'in-progress' && room.treatment) {
-          const elapsed = (Date.now() - room.treatment.startTime.getTime()) / 60000
-          if (elapsed > room.treatment.estimatedDuration * 0.8) {
-            return { ...room, status: 'almost-done' }
-          }
-        }
-        return room
-      }))
-    }, 10000)
-
-    return () => clearInterval(interval)
-  }, [liveSync])
 
   const getStatusColor = (status: RoomStatus) => {
     switch (status) {
@@ -181,7 +225,7 @@ export function CommandCenterView() {
   }
 
   const getElapsedTime = (startTime: Date) => {
-    const minutes = Math.floor((Date.now() - startTime.getTime()) / 60000)
+    const minutes = Math.floor((Date.now() - new Date(startTime).getTime()) / 60000)
     if (minutes < 60) return `${minutes} min`
     const hours = Math.floor(minutes / 60)
     const mins = minutes % 60
@@ -190,7 +234,7 @@ export function CommandCenterView() {
 
   const getProgressPercentage = (room: Room) => {
     if (!room.treatment) return 0
-    const elapsed = (Date.now() - room.treatment.startTime.getTime()) / 60000
+    const elapsed = (Date.now() - new Date(room.treatment.startTime).getTime()) / 60000
     return Math.min(100, (elapsed / room.treatment.estimatedDuration) * 100)
   }
 
@@ -208,10 +252,10 @@ export function CommandCenterView() {
               ${metrics.readyToCollect.toLocaleString()}
             </div>
             {metrics.readyToCollect > 0 && (
-              <div className="text-xs mt-1 opacity-75 animate-pulse">Click to checkout →</div>
+              <div className="text-xs mt-1 opacity-75 animate-pulse">Click to checkout</div>
             )}
           </div>
-          
+
           <div className="text-center">
             <div className="flex items-center justify-center gap-2 mb-2">
               <Activity className="w-5 h-5" />
@@ -222,7 +266,7 @@ export function CommandCenterView() {
             </div>
             <div className="text-xs mt-1 opacity-75">Coming soon</div>
           </div>
-          
+
           <div className="text-center">
             <div className="flex items-center justify-center gap-2 mb-2">
               <CheckCircle className="w-5 h-5" />
@@ -232,7 +276,7 @@ export function CommandCenterView() {
               ${metrics.collected.toLocaleString()}
             </div>
           </div>
-          
+
           <div className="text-center">
             <div className="flex items-center justify-center gap-2 mb-2">
               <TrendingUp className="w-5 h-5" />
@@ -242,7 +286,7 @@ export function CommandCenterView() {
               {Math.round((metrics.collected / metrics.dailyGoal) * 100)}%
             </div>
             <div className="w-full bg-white/20 rounded-full h-2 mt-2">
-              <div 
+              <div
                 className="bg-white h-2 rounded-full transition-all"
                 style={{ width: `${Math.min(100, (metrics.collected / metrics.dailyGoal) * 100)}%` }}
               />
@@ -267,17 +311,22 @@ export function CommandCenterView() {
             <span className="text-sm text-gray-600">Avg Wait: <strong>12 min</strong></span>
           </div>
         </div>
-        
+
         <div className="flex items-center gap-2">
-          {liveSync ? (
+          {isConnected && liveSync ? (
             <>
               <Wifi className="w-4 h-4 text-green-500 animate-pulse" />
               <span className="text-sm text-green-600 font-medium">Live Sync</span>
             </>
+          ) : isConnected ? (
+            <>
+              <Wifi className="w-4 h-4 text-yellow-500" />
+              <span className="text-sm text-yellow-600">Paused</span>
+            </>
           ) : (
             <>
-              <Wifi className="w-4 h-4 text-gray-400" />
-              <span className="text-sm text-gray-500">Paused</span>
+              <WifiOff className="w-4 h-4 text-gray-400" />
+              <span className="text-sm text-gray-500">Offline</span>
             </>
           )}
           <button
@@ -296,8 +345,8 @@ export function CommandCenterView() {
             key={room.id}
             onClick={() => room.status !== 'empty' && setSelectedRoom(room)}
             className={`relative bg-white rounded-xl shadow-lg border-2 transition-all ${
-              room.status === 'ready' 
-                ? 'border-green-500 shadow-green-200 hover:shadow-green-300 cursor-pointer transform hover:scale-[1.02]' 
+              room.status === 'ready'
+                ? 'border-green-500 shadow-green-200 hover:shadow-green-300 cursor-pointer transform hover:scale-[1.02]'
                 : room.status === 'empty'
                 ? 'border-gray-200 opacity-60'
                 : 'border-gray-200 hover:border-gray-300 cursor-pointer hover:shadow-xl'
@@ -334,10 +383,10 @@ export function CommandCenterView() {
                         Est: {room.treatment.estimatedDuration} min
                       </span>
                     </div>
-                    
+
                     {/* Progress Bar */}
                     <div className="w-full bg-gray-200 rounded-full h-2">
-                      <div 
+                      <div
                         className={`h-2 rounded-full transition-all ${
                           room.status === 'ready' ? 'bg-green-500' :
                           room.status === 'almost-done' ? 'bg-yellow-500' :
@@ -406,21 +455,21 @@ export function CommandCenterView() {
           <div className="flex items-center justify-between p-2 bg-white rounded-lg">
             <div>
               <p className="font-medium text-gray-900">David Park</p>
-              <p className="text-xs text-gray-600">2:30 PM • Dysport • Dr. Smith</p>
+              <p className="text-xs text-gray-600">2:30 PM - Dysport - Dr. Smith</p>
             </div>
             <ChevronRight className="w-4 h-4 text-gray-400" />
           </div>
           <div className="flex items-center justify-between p-2 bg-white rounded-lg">
             <div>
               <p className="font-medium text-gray-900">Rachel Kim</p>
-              <p className="text-xs text-gray-600">2:45 PM • Facial • Nurse Kim</p>
+              <p className="text-xs text-gray-600">2:45 PM - Facial - Nurse Kim</p>
             </div>
             <ChevronRight className="w-4 h-4 text-gray-400" />
           </div>
           <div className="flex items-center justify-between p-2 bg-white rounded-lg">
             <div>
               <p className="font-medium text-gray-900">Tom Wilson</p>
-              <p className="text-xs text-gray-600">3:00 PM • Consultation • Dr. Park</p>
+              <p className="text-xs text-gray-600">3:00 PM - Consultation - Dr. Park</p>
             </div>
             <ChevronRight className="w-4 h-4 text-gray-400" />
           </div>
@@ -429,11 +478,11 @@ export function CommandCenterView() {
 
       {/* Quick Room Details Modal */}
       {selectedRoom && (
-        <div 
+        <div
           className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
           onClick={() => setSelectedRoom(null)}
         >
-          <div 
+          <div
             className="bg-white rounded-xl shadow-2xl max-w-md w-full p-6"
             onClick={(e) => e.stopPropagation()}
           >
@@ -446,7 +495,7 @@ export function CommandCenterView() {
                 onClick={() => setSelectedRoom(null)}
                 className="text-gray-400 hover:text-gray-600"
               >
-                ✕
+                X
               </button>
             </div>
 
@@ -469,7 +518,7 @@ export function CommandCenterView() {
                 </div>
                 <div className="flex justify-between py-2 border-b border-gray-100">
                   <span className="text-gray-600">Started</span>
-                  <span className="font-medium">{selectedRoom.treatment.startTime.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}</span>
+                  <span className="font-medium">{new Date(selectedRoom.treatment.startTime).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}</span>
                 </div>
                 <div className="flex justify-between py-2 border-b border-gray-100">
                   <span className="text-gray-600">Duration</span>

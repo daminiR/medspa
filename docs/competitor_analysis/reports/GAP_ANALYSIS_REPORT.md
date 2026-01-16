@@ -1,8 +1,8 @@
-# Competitive Gap Analysis: Mango Mint vs Luke's Medical Spa
+# Competitive Gap Analysis: Mango Mint vs Luxe Medical Spa EMR
 
 **Analysis Date**: 2025-10-16
 **Competitor**: Mango Mint
-**Current Platform**: Luke's Medical Spa
+**Current Platform**: Luxe Medical Spa EMR
 
 ---
 

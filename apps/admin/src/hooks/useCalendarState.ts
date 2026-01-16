@@ -4,6 +4,7 @@ import {
 	CalendarSettings,
 	ViewMode,
 	CreateMode,
+	BreakType,
 	Toast,
 	NewAppointmentData,
 	DragState
@@ -15,6 +16,7 @@ export const useCalendarState = (initialDate: Date) => {
 	const [selectedDate, setSelectedDate] = useState(initialDate)
 	const [view, setView] = useState<ViewMode>('day')
 	const [createMode, setCreateMode] = useState<CreateMode>('appointment')
+	const [pendingBreakType, setPendingBreakType] = useState<BreakType>('personal')
 
 	// Selection state
 	const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null)
@@ -95,6 +97,8 @@ export const useCalendarState = (initialDate: Date) => {
 		setView,
 		createMode,
 		setCreateMode,
+		pendingBreakType,
+		setPendingBreakType,
 
 		// Selections
 		selectedAppointment,

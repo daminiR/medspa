@@ -1,0 +1,299 @@
+            <div class="section">
+                <h2 class="section-title">All Appointment Booking Flows</h2>
+
+                <h3 class="section-subtitle">Flow 1: Online Booking (Patient Portal)</h3>
+                <div class="workflow-container">
+                    <div class="workflow-row">
+                        <div class="box user">
+                            <div class="box-title">Patient</div>
+                            <div class="box-subtitle">On website</div>
+                        </div>
+                        <span class="arrow">→</span>
+                        <div class="box action">
+                            <div class="box-title">Click "Book Now"</div>
+                        </div>
+                        <span class="arrow">→</span>
+                        <div class="box action">
+                            <div class="box-title">Select Service</div>
+                            <div class="box-subtitle">Botox, Filler, Laser, etc.</div>
+                        </div>
+                        <span class="arrow">→</span>
+                        <div class="box action">
+                            <div class="box-title">Select Practitioner</div>
+                            <div class="box-subtitle">Or "First Available"</div>
+                        </div>
+                    </div>
+                    <div class="workflow-row">
+                        <div class="box action">
+                            <div class="box-title">Choose Date</div>
+                            <div class="box-subtitle">Calendar with availability</div>
+                        </div>
+                        <span class="arrow">→</span>
+                        <div class="box action">
+                            <div class="box-title">Choose Time</div>
+                            <div class="box-subtitle">Available slots shown</div>
+                        </div>
+                        <span class="arrow">→</span>
+                        <div class="box action">
+                            <div class="box-title">Enter Info</div>
+                            <div class="box-subtitle">Name, email, phone</div>
+                        </div>
+                        <span class="arrow">→</span>
+                        <div class="box action">
+                            <div class="box-title">Confirm Booking</div>
+                        </div>
+                    </div>
+                    <div class="workflow-row">
+                        <div class="box automation">
+                            <div class="box-title">Save to Database</div>
+                        </div>
+                        <span class="arrow">→</span>
+                        <div class="box automation">
+                            <div class="box-title">Send Confirmation SMS</div>
+                            <div class="box-subtitle">"Your Botox appointment with Dr. Smith is confirmed for Jan 15 at 2pm"</div>
+                        </div>
+                        <span class="arrow">→</span>
+                        <div class="box automation">
+                            <div class="box-title">Send Confirmation Email</div>
+                            <div class="box-subtitle">With calendar attachment</div>
+                        </div>
+                    </div>
+                    <div class="workflow-row">
+                        <div class="box automation">
+                            <div class="box-title">Appear in Admin Calendar</div>
+                            <div class="box-subtitle">Instantly visible to staff</div>
+                        </div>
+                        <span class="arrow">→</span>
+                        <div class="box automation">
+                            <div class="box-title">Block Time Slot</div>
+                            <div class="box-subtitle">No double booking</div>
+                        </div>
+                        <span class="arrow">→</span>
+                        <div class="box automation">
+                            <div class="box-title">Trigger Reminder Sequence</div>
+                            <div class="box-subtitle">48hr, 24hr, 2hr reminders scheduled</div>
+                        </div>
+                    </div>
+                </div>
+
+                <h3 class="section-subtitle">Flow 2: Phone Booking (Manual Entry)</h3>
+                <div class="workflow-container">
+                    <div class="workflow-row">
+                        <div class="box user">
+                            <div class="box-title">Patient</div>
+                            <div class="box-subtitle">Calls clinic</div>
+                        </div>
+                        <span class="arrow">→</span>
+                        <div class="box user">
+                            <div class="box-title">Front Desk</div>
+                            <div class="box-subtitle">Answers phone</div>
+                        </div>
+                        <span class="arrow">→</span>
+                        <div class="box action">
+                            <div class="box-title">Search Patient</div>
+                            <div class="box-subtitle">By phone or name</div>
+                        </div>
+                        <span class="arrow">→</span>
+                        <div class="box action">
+                            <div class="box-title">New Patient?</div>
+                            <div class="box-subtitle">Create profile if needed</div>
+                        </div>
+                    </div>
+                    <div class="workflow-row">
+                        <div class="box action">
+                            <div class="box-title">Open Calendar</div>
+                        </div>
+                        <span class="arrow">→</span>
+                        <div class="box action">
+                            <div class="box-title">Find Available Slot</div>
+                            <div class="box-subtitle">Check practitioner availability</div>
+                        </div>
+                        <span class="arrow">→</span>
+                        <div class="box action">
+                            <div class="box-title">Click to Book</div>
+                            <div class="box-subtitle">Add service + patient</div>
+                        </div>
+                        <span class="arrow">→</span>
+                        <div class="box action">
+                            <div class="box-title">Save Appointment</div>
+                        </div>
+                    </div>
+                    <div class="workflow-row">
+                        <div class="box automation">
+                            <div class="box-title">Auto-Send SMS</div>
+                            <div class="box-subtitle">Same as online booking</div>
+                        </div>
+                        <span class="arrow">→</span>
+                        <div class="box automation">
+                            <div class="box-title">Trigger Reminders</div>
+                        </div>
+                        <span class="arrow">→</span>
+                        <div class="box user">
+                            <div class="box-title">Front Desk</div>
+                            <div class="box-subtitle">Confirms details verbally</div>
+                        </div>
+                    </div>
+                </div>
+
+                <h3 class="section-subtitle">Flow 3: SMS Booking (AI-Assisted)</h3>
+                <div class="workflow-container">
+                    <div class="workflow-row">
+                        <div class="box user">
+                            <div class="box-title">Patient</div>
+                            <div class="box-subtitle">Texts "I want Botox"</div>
+                        </div>
+                        <span class="arrow">→</span>
+                        <div class="box automation">
+                            <div class="box-title">AI Analyzes</div>
+                            <div class="box-subtitle">Intent: Book appointment</div>
+                        </div>
+                        <span class="arrow">→</span>
+                        <div class="box automation">
+                            <div class="box-title">Create Staff Notification</div>
+                            <div class="box-subtitle">Shows in messages dashboard</div>
+                        </div>
+                    </div>
+                    <div class="workflow-row">
+                        <div class="box automation">
+                            <div class="box-title">Auto-Reply</div>
+                            <div class="box-subtitle">"We'd love to book you! What dates work?"</div>
+                        </div>
+                        <span class="arrow">→</span>
+                        <div class="box user">
+                            <div class="box-title">Patient</div>
+                            <div class="box-subtitle">Replies with preferred dates</div>
+                        </div>
+                        <span class="arrow">→</span>
+                        <div class="box user">
+                            <div class="box-title">Front Desk</div>
+                            <div class="box-subtitle">Sees conversation, books appointment</div>
+                        </div>
+                    </div>
+                    <div class="workflow-row">
+                        <div class="box automation">
+                            <div class="box-title">Confirmation SMS</div>
+                        </div>
+                        <span class="arrow">→</span>
+                        <div class="box automation">
+                            <div class="box-title">Reminders Scheduled</div>
+                        </div>
+                    </div>
+                </div>
+
+                <h3 class="section-subtitle">Flow 4: Walk-In Booking</h3>
+                <div class="workflow-container">
+                    <div class="workflow-row">
+                        <div class="box user">
+                            <div class="box-title">Patient</div>
+                            <div class="box-subtitle">Walks into clinic</div>
+                        </div>
+                        <span class="arrow">→</span>
+                        <div class="box user">
+                            <div class="box-title">Front Desk</div>
+                            <div class="box-subtitle">"Do you have an appointment?"</div>
+                        </div>
+                        <span class="arrow">→</span>
+                        <div class="box action">
+                            <div class="box-title">Check Availability</div>
+                            <div class="box-subtitle">Can we fit them in now?</div>
+                        </div>
+                    </div>
+                    <div class="workflow-row">
+                        <div class="box action">
+                            <div class="box-title">Book Immediately</div>
+                            <div class="box-subtitle">Or schedule for later</div>
+                        </div>
+                        <span class="arrow">→</span>
+                        <div class="box action">
+                            <div class="box-title">Check-In Patient</div>
+                            <div class="box-subtitle">Update status to "Arrived"</div>
+                        </div>
+                        <span class="arrow">→</span>
+                        <div class="box action">
+                            <div class="box-title">Add to Queue</div>
+                            <div class="box-subtitle">Waiting room dashboard</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="note">
+                    <strong>Critical Rule:</strong> No matter which booking flow is used, the outcome is THE SAME: Appointment in calendar, Confirmation SMS sent, Reminders scheduled, Patient profile updated. This consistency is key to seamless operations.
+                </div>
+
+                <div class="edge-cases-container">
+                    <div class="edge-cases-header collapsed">
+                        ⚠️ REALITY CHECK: What Can Go Wrong with Booking? (Click to expand)
+                    </div>
+                    <div class="edge-cases-content">
+                        <div class="edge-case-item">
+                            <h5>🔴 Race Condition: Double Booking <span class="reality-badge common">Happens Weekly</span></h5>
+                            <p class="problem">Problem: Two patients select the same time slot simultaneously (2:00 PM). Both click "Book" before system updates availability.</p>
+                            <p class="solution">Lock time slot for 5 minutes when "Booking in progress" (shopping cart hold). First to complete payment wins. Second person sees "Sorry, that slot was just taken. Here are alternatives..."</p>
+                            <p class="human-needed">Front desk monitors dashboard for conflicts and calls affected patient immediately.</p>
+                        </div>
+
+                        <div class="edge-case-item">
+                            <h5>🔴 Wrong Phone Number Entered <span class="reality-badge common">Happens Daily</span></h5>
+                            <p class="problem">Problem: Patient types phone number incorrectly (555-1234 instead of 555-1235). Confirmations go to wrong person. Patient shows up confused.</p>
+                            <p class="solution">Send confirmation SMS immediately. If it bounces back (invalid number), flag appointment as "UNCONFIRMED - Bad Phone" in dashboard. Auto-email instead. Front desk must call to verify before appointment.</p>
+                            <p class="human-needed">Front desk calls patient 24hrs before to confirm + verify phone number.</p>
+                        </div>
+
+                        <div class="edge-case-item">
+                            <h5>🟡 Patient Never Confirms Appointment <span class="reality-badge common">20% of bookings</span></h5>
+                            <p class="problem">Problem: Patient books online but never responds to any confirmation requests. Are they coming or not?</p>
+                            <p class="solution">Mark as "UNCONFIRMED" in system. Send escalating reminders: T-48hrs (SMS), T-24hrs (SMS + Email), T-2hrs (Final SMS). If still no response, flag as 60% no-show risk. Manager decides: keep appointment or double-book?</p>
+                            <p class="human-needed">Manager reviews unconfirmed appointments each morning and decides whether to keep, call patient, or release slot.</p>
+                        </div>
+
+                        <div class="edge-case-item">
+                            <h5>🟡 Service Requires Consultation First <span class="reality-badge">New patients only</span></h5>
+                            <p class="problem">Problem: New patient books laser treatment online. But policy requires consultation first for safety/expectations.</p>
+                            <p class="solution">During booking, system detects: New patient + High-risk service → Show warning: "This service requires a free consultation first. Would you like to book a consultation instead?" Auto-switch to consultation booking. After consultation, practitioner can book actual treatment.</p>
+                            <p class="human-needed">If patient ignores warning and books anyway, front desk calls to reschedule as consultation.</p>
+                        </div>
+
+                        <div class="edge-case-item">
+                            <h5>🔴 Payment Card Declined (Pre-Payment Required) <span class="reality-badge">VIP/packages</span></h5>
+                            <p class="problem">Problem: Practice requires prepayment for new patients or packages. Card on file is declined at booking.</p>
+                            <p class="solution">Booking fails gracefully: "We couldn't process your payment. Please verify card details or call us at (555) 100-0000 to complete booking." Hold time slot for 30 mins. Send email with payment link.</p>
+                            <p class="human-needed">Front desk sees "Payment Failed" flag and calls patient to take payment over phone.</p>
+                        </div>
+
+                        <div class="edge-case-item">
+                            <h5>🔴 Minor Patient (Under 18) <span class="reality-badge rare">Rare but legal issue</span></h5>
+                            <p class="problem">Problem: 16-year-old books Botox online. Illegal to treat minors without parent consent for most cosmetic procedures.</p>
+                            <p class="solution">Intake form asks age. If under 18: "Patients under 18 require parent/guardian consent. Please call us at (555) 100-0000 to book with a parent." Booking blocked for minors online.</p>
+                            <p class="human-needed">Front desk handles all minor bookings via phone, requires parent signature, verifies ID.</p>
+                        </div>
+
+                        <div class="edge-case-item">
+                            <h5>🟡 Patient Texts "I want Botox" at 3 AM <span class="reality-badge common">Nights/weekends</span></h5>
+                            <p class="problem">Problem: Patient sends booking request via SMS outside business hours. No staff available to respond.</p>
+                            <p class="solution">AI auto-responds immediately: "Thanks for your interest! We're currently closed but we'll respond first thing tomorrow morning (9 AM). In the meantime, you can book online at [link]." Flag message for staff review at 9 AM. If patient hasn't booked online, staff calls to assist.</p>
+                            <p class="human-needed">First staff member to arrive reviews overnight messages and responds/books within 1 hour of opening.</p>
+                        </div>
+
+                        <div class="edge-case-item">
+                            <h5>🔴 Walk-In During Fully Booked Day <span class="reality-badge common">Happens 2-3x/week</span></h5>
+                            <p class="problem">Problem: Patient walks in wanting immediate Botox. Calendar completely full, no practitioner availability.</p>
+                            <p class="solution">Front desk checks: (1) Can we squeeze 15-min Botox between appointments? (2) Is practitioner willing to stay late? (3) Can we book at sister location today? If all no: "We're fully booked today. I can get you in tomorrow at 2 PM or Friday at 10 AM. Which works better?"</p>
+                            <p class="human-needed">Front desk uses judgment: If VIP patient or urgent medical need, may interrupt practitioner for approval to add extra appointment.</p>
+                        </div>
+
+                        <div class="edge-case-item">
+                            <h5>🔴 System Crash During Booking <span class="reality-badge rare">Once per month</span></h5>
+                            <p class="problem">Problem: Server error, internet outage, or database issue during booking process. Patient sees error page.</p>
+                            <p class="solution">Show error message: "We're experiencing technical difficulties. Your booking was NOT completed. Please try again in a few minutes or call us at (555) 100-0000." Log failed booking attempt with patient contact info. Send recovery email: "We noticed you tried to book with us. Click here to complete your booking [link]."</p>
+                            <p class="human-needed">IT alerted immediately. Front desk reviews failed bookings log and calls patients to manually complete booking.</p>
+                        </div>
+
+                        <div class="edge-case-item">
+                            <h5>🟡 Patient Books at Wrong Location <span class="reality-badge">Multi-location only</span></h5>
+                            <p class="problem">Problem: Practice has 3 locations. Patient books at "Downtown" but lives near "Westside." Shows up at Westside location confused.</p>
+                            <p class="solution">Confirmation SMS includes location: "Your appointment is at our DOWNTOWN location: 123 Main St. Map: [link]". If patient shows up at wrong location, front desk sees appointment in system with different location. Options: (1) Call Downtown to see if they can squeeze in, (2) Reschedule at correct location, (3) Cancel and apologize.</p>
+                            <p class="human-needed">Front desk coordinates with other location to transfer appointment if possible, or reschedules with apology discount.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>

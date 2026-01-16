@@ -1,11 +1,10 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import {
   CreditCard,
   DollarSign,
   Search,
-  Download,
   Filter,
   CheckCircle,
   XCircle,
@@ -19,6 +18,8 @@ import {
   Gift,
   MoreVertical
 } from 'lucide-react'
+import { ExportButton } from './ExportButton'
+import { ExportColumn, formatters } from '@/lib/export'
 
 interface Transaction {
   id: string
@@ -205,10 +206,48 @@ export function PaymentTransactionsReport() {
     totalRefunded: transactions.filter(t => t.status === 'refunded' || t.status === 'partial_refund')
       .reduce((sum, t) => sum + (t.refundAmount || t.amount), 0),
     transactionCount: transactions.filter(t => t.status === 'completed').length,
-    averageTransaction: transactions.filter(t => t.status === 'completed').reduce((sum, t) => sum + t.amount, 0) / 
+    averageTransaction: transactions.filter(t => t.status === 'completed').reduce((sum, t) => sum + t.amount, 0) /
       transactions.filter(t => t.status === 'completed').length || 0
   }
-  
+
+  // Prepare export data
+  const exportData = useMemo(() => {
+    return transactions.map(t => ({
+      id: t.id,
+      date: formatDate(t.date),
+      time: t.time,
+      patientName: t.patient.name,
+      patientId: t.patient.id,
+      invoice: t.invoice,
+      method: t.method,
+      cardLast4: t.cardLast4 || '-',
+      amount: t.amount,
+      fees: t.fees || 0,
+      netAmount: t.netAmount,
+      status: t.status,
+      refundAmount: t.refundAmount || 0,
+      provider: t.provider,
+      notes: t.notes || '',
+    }))
+  }, [transactions])
+
+  const exportColumns: ExportColumn[] = [
+    { key: 'id', header: 'Transaction ID' },
+    { key: 'date', header: 'Date' },
+    { key: 'time', header: 'Time' },
+    { key: 'patientName', header: 'Patient' },
+    { key: 'invoice', header: 'Invoice' },
+    { key: 'method', header: 'Payment Method' },
+    { key: 'cardLast4', header: 'Card Last 4' },
+    { key: 'amount', header: 'Amount', formatter: formatters.currency },
+    { key: 'fees', header: 'Fees', formatter: formatters.currency },
+    { key: 'netAmount', header: 'Net Amount', formatter: formatters.currency },
+    { key: 'status', header: 'Status' },
+    { key: 'refundAmount', header: 'Refund Amount', formatter: formatters.currency },
+    { key: 'provider', header: 'Provider' },
+    { key: 'notes', header: 'Notes' },
+  ]
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -219,10 +258,12 @@ export function PaymentTransactionsReport() {
             <p className="text-gray-600">Detailed transaction history and payment processing</p>
           </div>
           <div className="flex gap-2">
-            <button className="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
-              <Download className="w-4 h-4 inline mr-2" />
-              Export
-            </button>
+            <ExportButton
+              data={exportData}
+              columns={exportColumns}
+              filename="payment-transactions"
+              title="Payment Transactions Report"
+            />
           </div>
         </div>
       </div>

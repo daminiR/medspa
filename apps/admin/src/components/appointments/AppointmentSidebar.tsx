@@ -5,7 +5,7 @@ import { X, Calendar, Clock, User, Search, ChevronDown, ChevronLeft, Check, Aler
 import moment from 'moment'
 import { type Service, type Appointment, type Practitioner, services as allServices, practitioners } from '@/lib/data'
 import { findAppointmentConflicts, getConflictMessage } from '@/utils/appointmentConflicts'
-import { checkResourceAvailability, findAvailableResource } from '@/lib/mockResources'
+import { checkResourceAvailability, findAvailableResource, findAvailableRoom, checkRoomAvailability } from '@/lib/mockResources'
 import { mockResourcePools, mockRooms } from '@/lib/mockResources'
 import { checkServiceCapabilityMatch, getBookingExplanation } from '@/utils/capabilityMatcher'
 import RecurringAppointmentModal from './RecurringAppointmentModal'
@@ -134,11 +134,18 @@ export default function AppointmentSidebar({
 	}, [startTime.hour, startTime.minute])
 	const [conflicts, setConflicts] = useState<Appointment[]>([])
 	const [resourceAvailability, setResourceAvailability] = useState<{ available: boolean; resources: any[]; conflicts?: any[] }>({ available: true, resources: [] })
+	// Room selection: 'auto' = system picks first available, null = no room, or specific room ID
+	const [roomSelectionMode, setRoomSelectionMode] = useState<'auto' | 'manual'>('auto')
 	const [selectedRoom, setSelectedRoom] = useState<string | null>(null)
+	const [autoAssignedRoom, setAutoAssignedRoom] = useState<string | null>(null)
+	const [roomConflict, setRoomConflict] = useState<{ hasConflict: boolean; message?: string }>({ hasConflict: false })
 	const [overrideConflicts, setOverrideConflicts] = useState(false)
 	const [enablePostTreatmentTime, setEnablePostTreatmentTime] = useState(false)
 	const [showRecurringModal, setShowRecurringModal] = useState(false)
 	const [activeTab, setActiveTab] = useState<'booking' | 'history'>('booking')
+
+	// Get shift info early so it's available for useEffects
+	const shift = getShiftForDate(practitioner.id, selectedDate)
 
 	// New client form state
 	const [showNewClientForm, setShowNewClientForm] = useState(false)
@@ -298,6 +305,79 @@ export default function AppointmentSidebar({
 			conflicts: resourceConflicts
 		})
 	}, [selectedServiceState, selectedStartTime, selectedDate])
+
+	// Auto-assign room when in 'auto' mode
+	// This runs whenever time, service, or room mode changes
+	useEffect(() => {
+		if (roomSelectionMode !== 'auto') {
+			// In manual mode, don't auto-assign
+			setAutoAssignedRoom(null)
+			return
+		}
+
+		// Calculate start/end times for room check
+		const startDateTime = new Date(selectedDate)
+		startDateTime.setHours(selectedStartTime.hour, selectedStartTime.minute, 0, 0)
+
+		const endDateTime = new Date(selectedDate)
+		endDateTime.setHours(selectedStartTime.hour, selectedStartTime.minute, 0, 0)
+		const duration = selectedServiceState?.duration || 30
+		endDateTime.setMinutes(endDateTime.getMinutes() + duration)
+
+		// Prefer shift's room if available, otherwise find first available
+		const preferredRooms = shift?.room ? [shift.room] : []
+
+		const availableRoom = findAvailableRoom(startDateTime, endDateTime, {
+			excludeAppointmentId: existingAppointment?.id,
+			preferredRoomIds: preferredRooms
+		})
+
+		if (availableRoom) {
+			setAutoAssignedRoom(availableRoom.id)
+			setSelectedRoom(availableRoom.id)
+			setRoomConflict({ hasConflict: false })
+		} else {
+			// No room available - set conflict state
+			setAutoAssignedRoom(null)
+			setSelectedRoom(null)
+			setRoomConflict({
+				hasConflict: true,
+				message: 'All rooms are occupied during this time slot'
+			})
+		}
+	}, [roomSelectionMode, selectedStartTime, selectedDate, selectedServiceState, shift?.room, existingAppointment?.id, existingAppointments])
+
+	// Check room conflict when manual room is selected
+	useEffect(() => {
+		if (roomSelectionMode !== 'manual' || !selectedRoom) {
+			if (roomSelectionMode === 'manual') {
+				setRoomConflict({ hasConflict: false })
+			}
+			return
+		}
+
+		const startDateTime = new Date(selectedDate)
+		startDateTime.setHours(selectedStartTime.hour, selectedStartTime.minute, 0, 0)
+
+		const endDateTime = new Date(selectedDate)
+		endDateTime.setHours(selectedStartTime.hour, selectedStartTime.minute, 0, 0)
+		const duration = selectedServiceState?.duration || 30
+		endDateTime.setMinutes(endDateTime.getMinutes() + duration)
+
+		const roomAvailability = checkRoomAvailability(selectedRoom, startDateTime, endDateTime, {
+			excludeAppointmentId: existingAppointment?.id
+		})
+
+		if (roomAvailability && !roomAvailability.available) {
+			const conflictingApt = roomAvailability.conflicts?.[0]
+			const conflictMsg = conflictingApt
+				? `${mockRooms.find(r => r.id === selectedRoom)?.name} is booked for "${conflictingApt.serviceName}" at ${moment(conflictingApt.startTime).format('h:mm A')}`
+				: `${mockRooms.find(r => r.id === selectedRoom)?.name} is not available`
+			setRoomConflict({ hasConflict: true, message: conflictMsg })
+		} else {
+			setRoomConflict({ hasConflict: false })
+		}
+	}, [roomSelectionMode, selectedRoom, selectedStartTime, selectedDate, selectedServiceState, existingAppointment?.id, existingAppointments])
 
 	// Filter clients based on search
 	const filteredClients = existingClients.filter(client =>
@@ -558,6 +638,13 @@ export default function AppointmentSidebar({
 			return
 		}
 
+		// CRITICAL: Room conflict prevention (defense-in-depth, UI already blocks this)
+		// This ensures room double-booking is prevented even if button state is bypassed
+		if (roomConflict.hasConflict && !overrideConflicts) {
+			alert(`⚠️ Room Conflict\n\n${roomConflict.message || 'The selected room is not available during this time slot.'}\n\nPlease select a different room, use Auto-assign, or enable Administrative Override.`)
+			return
+		}
+
 		onSave({
 			appointmentId: existingAppointment?.id, // Include appointment ID if editing
 			client: selectedClient,
@@ -580,15 +667,7 @@ export default function AppointmentSidebar({
 		onClose()
 	}
 
-	// Get shift info
-	const shift = getShiftForDate(practitioner.id, selectedDate)
-	
-	// Initialize selected room from shift
-	useEffect(() => {
-		if (shift?.room && !selectedRoom) {
-			setSelectedRoom(shift.room)
-		}
-	}, [shift])
+	// NOTE: shift is now defined early in the component (line 148) so it's available for room auto-assign useEffect
 
 	// NEW: Check capability/equipment mismatch
 	let hasCapabilityMismatch = false
@@ -630,16 +709,20 @@ export default function AppointmentSidebar({
 				repeat: 'no-repeat',
 				bookingOptions: 'bookable'
 			}
-			capabilityMatch = checkServiceCapabilityMatch(selectedServiceState, fullPractitioner, fullShift)
-			hasCapabilityMismatch = !capabilityMatch.canPerform
+			if (selectedServiceState) {
+				capabilityMatch = checkServiceCapabilityMatch(selectedServiceState, fullPractitioner, fullShift)
+				hasCapabilityMismatch = !capabilityMatch.canPerform
+			}
 		}
 	}
 
 	// Check if save button should be disabled
+	// CRITICAL: Room conflicts PREVENT booking (not just warn) unless overridden
 	const isSaveDisabled = !selectedClient || !selectedServiceState ||
 		(!overrideConflicts && (conflicts.length > 0 ||
 		(selectedServiceState?.requiredResources && selectedServiceState.requiredResources.length > 0 && !resourceAvailability.available) ||
-		hasCapabilityMismatch))
+		hasCapabilityMismatch ||
+		roomConflict.hasConflict))
 
 	return (
 		<div className={`fixed right-0 top-0 h-full w-[480px] bg-white shadow-2xl transform transition-transform duration-300 z-50 ${isOpen ? 'translate-x-0' : 'translate-x-full'
@@ -1441,25 +1524,80 @@ export default function AppointmentSidebar({
 								<div className="text-sm font-medium">{practitioner.name}</div>
 							</div>
 
-							{/* Room Selection */}
+							{/* Room Selection - Enhanced with Auto-assign */}
 							<div className="mb-4">
-								<label className="text-sm text-gray-600 mb-2 block">Room</label>
+								<label className="text-sm text-gray-600 mb-2 block flex items-center justify-between">
+									<span>Room</span>
+									{roomSelectionMode === 'auto' && autoAssignedRoom && (
+										<span className="text-xs text-green-600 font-medium flex items-center">
+											<Check className="h-3 w-3 mr-1" />
+											Auto-assigned
+										</span>
+									)}
+								</label>
 								<div className="relative">
 									<select
-										value={selectedRoom || ''}
-										onChange={(e) => setSelectedRoom(e.target.value || null)}
-										className="w-full px-4 py-2 border border-gray-300 rounded-md appearance-none bg-white pr-10 focus:outline-none focus:ring-2 focus:ring-purple-500"
+										value={roomSelectionMode === 'auto' ? 'auto' : (selectedRoom || 'none')}
+										onChange={(e) => {
+											const value = e.target.value
+											if (value === 'auto') {
+												setRoomSelectionMode('auto')
+												// Auto-assign will be triggered by useEffect
+											} else if (value === 'none') {
+												setRoomSelectionMode('manual')
+												setSelectedRoom(null)
+											} else {
+												setRoomSelectionMode('manual')
+												setSelectedRoom(value)
+											}
+										}}
+										className={`w-full px-4 py-2 border rounded-md appearance-none bg-white pr-10 focus:outline-none focus:ring-2 focus:ring-purple-500 ${
+											roomConflict.hasConflict ? 'border-red-400 ring-2 ring-red-200' : 'border-gray-300'
+										}`}
 									>
-										<option value="">No Room Assigned</option>
-										{mockRooms.filter(room => room.isActive).map(room => (
-											<option key={room.id} value={room.id}>
-												{room.name}
-											</option>
-										))}
+										<option value="auto">
+											🔄 Auto (First Available){autoAssignedRoom ? ` → ${mockRooms.find(r => r.id === autoAssignedRoom)?.name}` : ''}
+										</option>
+										<option value="none">— No Room Required —</option>
+										<optgroup label="Manual Selection">
+											{mockRooms.filter(room => room.isActive).map(room => (
+												<option key={room.id} value={room.id}>
+													{room.name}{room.capacity ? ` (Capacity: ${room.capacity})` : ''}
+												</option>
+											))}
+										</optgroup>
 									</select>
 									<ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
 								</div>
-								{shift?.room && shift.room !== selectedRoom && (
+
+								{/* Room Conflict Warning */}
+								{roomConflict.hasConflict && (
+									<div className="mt-2 p-2 bg-red-50 border border-red-200 rounded-md">
+										<div className="flex items-start text-xs text-red-700">
+											<AlertCircle className="h-3 w-3 mr-1.5 mt-0.5 flex-shrink-0" />
+											<div>
+												<span className="font-medium">Room Conflict</span>
+												<p className="mt-0.5">{roomConflict.message}</p>
+											</div>
+										</div>
+									</div>
+								)}
+
+								{/* Auto-assigned room indicator */}
+								{roomSelectionMode === 'auto' && autoAssignedRoom && !roomConflict.hasConflict && (
+									<div className="mt-2 p-2 bg-green-50 border border-green-200 rounded-md">
+										<div className="flex items-center text-xs text-green-700">
+											<MapPin className="h-3 w-3 mr-1.5" />
+											<span>
+												<span className="font-medium">{mockRooms.find(r => r.id === autoAssignedRoom)?.name}</span>
+												{' '}is available and will be assigned
+											</span>
+										</div>
+									</div>
+								)}
+
+								{/* Shift room suggestion */}
+								{shift?.room && roomSelectionMode === 'manual' && selectedRoom !== shift.room && (
 									<div className="mt-2 text-xs text-yellow-600 flex items-center">
 										<AlertCircle className="h-3 w-3 mr-1" />
 										{practitioner.name} is scheduled in {mockRooms.find(r => r.id === shift.room)?.name || 'another room'}
@@ -1549,8 +1687,9 @@ export default function AppointmentSidebar({
 							</div>
 
 							{/* Override Options */}
-							{(hasCapabilityMismatch || 
-							  conflicts.length > 0 || 
+							{(hasCapabilityMismatch ||
+							  conflicts.length > 0 ||
+							  roomConflict.hasConflict ||
 							  (selectedServiceState?.requiredResources && selectedServiceState.requiredResources.length > 0 && !resourceAvailability.available)) && (
 								<div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded">
 									<label className="flex items-start cursor-pointer">
@@ -1570,6 +1709,9 @@ export default function AppointmentSidebar({
 													)}
 													{conflicts.length > 0 && (
 														<li>• Scheduling conflicts</li>
+													)}
+													{roomConflict.hasConflict && (
+														<li>• Room availability conflict</li>
 													)}
 													{selectedServiceState?.requiredResources && selectedServiceState.requiredResources.length > 0 && !resourceAvailability.available && (
 														<li>• Resource availability</li>
@@ -1620,14 +1762,20 @@ export default function AppointmentSidebar({
 								disabled={isSaveDisabled}
 								className={`px-6 py-2 rounded-md font-medium transition-colors ${isSaveDisabled
 										? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-										: overrideConflicts && (conflicts.length > 0 || !resourceAvailability.available)
+										: overrideConflicts && (conflicts.length > 0 || !resourceAvailability.available || roomConflict.hasConflict)
 											? 'bg-yellow-600 text-white hover:bg-yellow-700'
 											: 'bg-teal-500 text-white hover:bg-teal-600'
 									}`}
-								title={conflicts.length > 0 && !overrideConflicts ? 'Cannot book due to scheduling conflict' : ''}
+								title={
+									roomConflict.hasConflict && !overrideConflicts
+										? 'Cannot book due to room conflict'
+										: conflicts.length > 0 && !overrideConflicts
+											? 'Cannot book due to scheduling conflict'
+											: ''
+								}
 							>
-								{overrideConflicts && (conflicts.length > 0 || !resourceAvailability.available) 
-									? existingAppointment ? 'Update with Override' : 'Book with Override' 
+								{overrideConflicts && (conflicts.length > 0 || !resourceAvailability.available || roomConflict.hasConflict)
+									? existingAppointment ? 'Update with Override' : 'Book with Override'
 									: existingAppointment ? 'Update Appointment' : 'Book Appointment'}
 							</button>
 						</div>

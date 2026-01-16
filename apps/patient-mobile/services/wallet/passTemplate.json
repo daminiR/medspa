@@ -1,0 +1,115 @@
+{
+  "$schema": "https://developer.apple.com/documentation/walletpasses",
+  "_comment": "PKPass Template for Luxe MedSpa Appointments",
+  "_description": "This is a reference template. Actual passes are generated dynamically.",
+  
+  "formatVersion": 1,
+  "passTypeIdentifier": "pass.com.luxemedspa.appointment",
+  "serialNumber": "APT-UNIQUE-ID",
+  "teamIdentifier": "YOUR_TEAM_ID",
+  
+  "organizationName": "Luxe MedSpa",
+  "description": "MedSpa Appointment",
+  "logoText": "Luxe MedSpa",
+  
+  "foregroundColor": "rgb(255, 255, 255)",
+  "backgroundColor": "rgb(139, 92, 246)",
+  "labelColor": "rgb(245, 243, 255)",
+  
+  "relevantDate": "2024-01-15T10:00:00-08:00",
+  
+  "locations": [
+    {
+      "latitude": 34.0736,
+      "longitude": -118.4004,
+      "relevantText": "Your appointment is nearby!"
+    }
+  ],
+  
+  "barcode": {
+    "message": "{\"type\":\"appointment_checkin\",\"appointmentId\":\"123\",\"confirmationNumber\":\"LXABC1234\"}",
+    "format": "PKBarcodeFormatQR",
+    "messageEncoding": "iso-8859-1",
+    "altText": "LXABC1234"
+  },
+  
+  "eventTicket": {
+    "primaryFields": [
+      {
+        "key": "service",
+        "label": "SERVICE",
+        "value": "Botox - Full Face",
+        "changeMessage": "Your service has been updated to %@"
+      }
+    ],
+    "secondaryFields": [
+      {
+        "key": "date",
+        "label": "DATE",
+        "value": "Mon, Jan 15, 2024",
+        "changeMessage": "Your appointment date has been changed to %@"
+      },
+      {
+        "key": "time",
+        "label": "TIME",
+        "value": "10:00 AM - 10:45 AM",
+        "changeMessage": "Your appointment time has been changed to %@"
+      }
+    ],
+    "auxiliaryFields": [
+      {
+        "key": "provider",
+        "label": "PROVIDER",
+        "value": "Dr. Sarah Chen",
+        "changeMessage": "Your provider has been changed to %@"
+      },
+      {
+        "key": "location",
+        "label": "LOCATION",
+        "value": "Beverly Hills"
+      }
+    ],
+    "backFields": [
+      {
+        "key": "confirmationNumber",
+        "label": "Confirmation Number",
+        "value": "LXABC1234"
+      },
+      {
+        "key": "address",
+        "label": "Address",
+        "value": "123 Luxury Ave, Beverly Hills, CA 90210"
+      },
+      {
+        "key": "phone",
+        "label": "Phone",
+        "value": "(310) 555-0123"
+      },
+      {
+        "key": "duration",
+        "label": "Duration",
+        "value": "45 minutes"
+      },
+      {
+        "key": "price",
+        "label": "Price",
+        "value": "$450.00"
+      },
+      {
+        "key": "cancellationPolicy",
+        "label": "Cancellation Policy",
+        "value": "Cancellation Policy:\n- Free cancellation up to 24 hours before your appointment\n- Cancellations within 24 hours may incur a 50% fee\n- No-shows will be charged the full service amount\n\nTo reschedule or cancel, please call us or use the Luxe MedSpa app."
+      },
+      {
+        "key": "website",
+        "label": "Website",
+        "value": "https://portal.luxemedspa.com"
+      },
+      {
+        "key": "appLink",
+        "label": "Manage Appointment",
+        "value": "Open the Luxe MedSpa app to reschedule or cancel"
+      }
+    ]
+  }
+}

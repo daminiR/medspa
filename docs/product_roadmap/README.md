@@ -1,6 +1,6 @@
 # Product Roadmap System
 
-Strategic roadmap for Luke's Medical Spa platform, built from competitive analysis insights.
+Strategic roadmap for Luxe Medical Spa EMR platform, built from competitive analysis insights.
 
 ---
 

@@ -1,0 +1,209 @@
+{
+  "apiRoutes": [],
+  "htmlRoutes": [
+    {
+      "file": "./forms/index.tsx",
+      "page": "/forms/index",
+      "namedRegex": "^/forms(?:/)?$",
+      "routeKeys": {}
+    },
+    {
+      "file": "./index.tsx",
+      "page": "/index",
+      "namedRegex": "^/(?:/)?$",
+      "routeKeys": {}
+    },
+    {
+      "file": "./(auth)/login.tsx",
+      "page": "/(auth)/login",
+      "namedRegex": "^(?:/\\(auth\\))?/login(?:/)?$",
+      "routeKeys": {}
+    },
+    {
+      "file": "./(tabs)/photos.tsx",
+      "page": "/(tabs)/photos",
+      "namedRegex": "^(?:/\\(tabs\\))?/photos(?:/)?$",
+      "routeKeys": {}
+    },
+    {
+      "file": "./(tabs)/groups.tsx",
+      "page": "/(tabs)/groups",
+      "namedRegex": "^(?:/\\(tabs\\))?/groups(?:/)?$",
+      "routeKeys": {}
+    },
+    {
+      "file": "./forms/history.tsx",
+      "page": "/forms/history",
+      "namedRegex": "^/forms/history(?:/)?$",
+      "routeKeys": {}
+    },
+    {
+      "file": "./(tabs)/profile.tsx",
+      "page": "/(tabs)/profile",
+      "namedRegex": "^(?:/\\(tabs\\))?/profile(?:/)?$",
+      "routeKeys": {}
+    },
+    {
+      "file": "./(auth)/welcome.tsx",
+      "page": "/(auth)/welcome",
+      "namedRegex": "^(?:/\\(auth\\))?/welcome(?:/)?$",
+      "routeKeys": {}
+    },
+    {
+      "file": "./(tabs)/messages.tsx",
+      "page": "/(tabs)/messages",
+      "namedRegex": "^(?:/\\(tabs\\))?/messages(?:/)?$",
+      "routeKeys": {}
+    },
+    {
+      "file": "./(auth)/register.tsx",
+      "page": "/(auth)/register",
+      "namedRegex": "^(?:/\\(auth\\))?/register(?:/)?$",
+      "routeKeys": {}
+    },
+    {
+      "file": "expo-router/build/views/Sitemap.js",
+      "page": "/_sitemap",
+      "namedRegex": "^/_sitemap(?:/)?$",
+      "routeKeys": {},
+      "generated": true
+    },
+    {
+      "file": "./(tabs)/dashboard.tsx",
+      "page": "/(tabs)/dashboard",
+      "namedRegex": "^(?:/\\(tabs\\))?/dashboard(?:/)?$",
+      "routeKeys": {}
+    },
+    {
+      "file": "./groups/index.tsx",
+      "page": "/groups/index",
+      "namedRegex": "^/groups(?:/)?$",
+      "routeKeys": {}
+    },
+    {
+      "file": "./(tabs)/appointments.tsx",
+      "page": "/(tabs)/appointments",
+      "namedRegex": "^(?:/\\(tabs\\))?/appointments(?:/)?$",
+      "routeKeys": {}
+    },
+    {
+      "file": "./(auth)/verify-phone.tsx",
+      "page": "/(auth)/verify-phone",
+      "namedRegex": "^(?:/\\(auth\\))?/verify\\-phone(?:/)?$",
+      "routeKeys": {}
+    },
+    {
+      "file": "./(auth)/verify-email.tsx",
+      "page": "/(auth)/verify-email",
+      "namedRegex": "^(?:/\\(auth\\))?/verify\\-email(?:/)?$",
+      "routeKeys": {}
+    },
+    {
+      "file": "./rewards/index.tsx",
+      "page": "/rewards/index",
+      "namedRegex": "^/rewards(?:/)?$",
+      "routeKeys": {}
+    },
+    {
+      "file": "./groups/create.tsx",
+      "page": "/groups/create",
+      "namedRegex": "^/groups/create(?:/)?$",
+      "routeKeys": {}
+    },
+    {
+      "file": "./booking/index.tsx",
+      "page": "/booking/index",
+      "namedRegex": "^/booking(?:/)?$",
+      "routeKeys": {}
+    },
+    {
+      "file": "./referrals/index.tsx",
+      "page": "/referrals/index",
+      "namedRegex": "^/referrals(?:/)?$",
+      "routeKeys": {}
+    },
+    {
+      "file": "./referrals/program.tsx",
+      "page": "/referrals/program",
+      "namedRegex": "^/referrals/program(?:/)?$",
+      "routeKeys": {}
+    },
+    {
+      "file": "./booking/confirmed.tsx",
+      "page": "/booking/confirmed",
+      "namedRegex": "^/booking/confirmed(?:/)?$",
+      "routeKeys": {}
+    },
+    {
+      "file": "./waiting-room/status.tsx",
+      "page": "/waiting-room/status",
+      "namedRegex": "^/waiting\\-room/status(?:/)?$",
+      "routeKeys": {}
+    },
+    {
+      "file": "./notifications/index.tsx",
+      "page": "/notifications/index",
+      "namedRegex": "^/notifications(?:/)?$",
+      "routeKeys": {}
+    },
+    {
+      "file": "./waiting-room/check-in.tsx",
+      "page": "/waiting-room/check-in",
+      "namedRegex": "^/waiting\\-room/check\\-in(?:/)?$",
+      "routeKeys": {}
+    },
+    {
+      "file": "./settings/notifications.tsx",
+      "page": "/settings/notifications",
+      "namedRegex": "^/settings/notifications(?:/)?$",
+      "routeKeys": {}
+    },
+    {
+      "file": "./payments/PaymentMethods.tsx",
+      "page": "/payments/PaymentMethods",
+      "namedRegex": "^/payments/PaymentMethods(?:/)?$",
+      "routeKeys": {}
+    },
+    {
+      "file": "./payments/AddPaymentMethod.tsx",
+      "page": "/payments/AddPaymentMethod",
+      "namedRegex": "^/payments/AddPaymentMethod(?:/)?$",
+      "routeKeys": {}
+    },
+    {
+      "file": "./groups/join/[code].tsx",
+      "page": "/groups/join/[code]",
+      "namedRegex": "^/groups/join/(?<code>[^/]+?)(?:/)?$",
+      "routeKeys": {
+        "code": "code"
+      }
+    },
+    {
+      "file": "./groups/[id].tsx",
+      "page": "/groups/[id]",
+      "namedRegex": "^/groups/(?<id>[^/]+?)(?:/)?$",
+      "routeKeys": {
+        "id": "id"
+      }
+    },
+    {
+      "file": "./forms/[formId].tsx",
+      "page": "/forms/[formId]",
+      "namedRegex": "^/forms/(?<formId>[^/]+?)(?:/)?$",
+      "routeKeys": {
+        "formId": "formId"
+      }
+    }
+  ],
+  "notFoundRoutes": [
+    {
+      "file": "expo-router/build/views/Unmatched.js",
+      "page": "/+not-found",
+      "namedRegex": "^(?:/(?<notfound>.+?))?(?:/)?$",
+      "routeKeys": {
+        "notfound": "not-found"
+      },
+      "generated": true
+    }
+  ]
+}

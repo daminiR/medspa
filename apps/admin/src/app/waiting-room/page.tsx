@@ -1,20 +1,39 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { WaitingRoomEntry } from '@/lib/data';
+import { useState, useEffect, useCallback } from 'react';
+import { useWaitingRoomRealtime, WaitingRoomEntry } from '@/services/websocket';
+import { Wifi, WifiOff, RefreshCw } from 'lucide-react';
 
 export default function WaitingRoomDashboard() {
+  // Use real-time Firestore listener for queue updates
+  const { queue: realtimeQueue, isConnected } = useWaitingRoomRealtime('default');
+
+  // Local state for queue (will be synced with real-time updates or API fallback)
   const [queue, setQueue] = useState<WaitingRoomEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
 
-  const fetchQueue = async () => {
+  // Sync real-time queue with local state
+  useEffect(() => {
+    if (realtimeQueue.length > 0 || isConnected) {
+      setQueue(realtimeQueue);
+      setLastUpdated(new Date());
+      setLoading(false);
+      setError(null);
+    }
+  }, [realtimeQueue, isConnected]);
+
+  // Fallback to API fetch if real-time is not available
+  const fetchQueue = useCallback(async () => {
     try {
+      setLoading(true);
       const response = await fetch('/api/waiting-room/queue');
       const data = await response.json();
 
       if (data.success) {
         setQueue(data.queue);
+        setLastUpdated(new Date());
         setError(null);
       } else {
         setError('Failed to fetch queue');
@@ -25,16 +44,16 @@ export default function WaitingRoomDashboard() {
     } finally {
       setLoading(false);
     }
-  };
-
-  useEffect(() => {
-    fetchQueue();
-
-    // Poll every 10 seconds for real-time updates
-    const interval = setInterval(fetchQueue, 10000);
-
-    return () => clearInterval(interval);
   }, []);
+
+  // Initial fetch as fallback when real-time is not connected
+  useEffect(() => {
+    if (!isConnected) {
+      fetchQueue();
+    } else {
+      setLoading(false);
+    }
+  }, [isConnected, fetchQueue]);
 
   const callPatient = async (appointmentId: string) => {
     try {
@@ -47,8 +66,11 @@ export default function WaitingRoomDashboard() {
       const data = await response.json();
 
       if (data.success) {
-        // Refresh queue
-        await fetchQueue();
+        // Real-time update will handle the queue refresh
+        // Only fetch manually if not connected
+        if (!isConnected) {
+          await fetchQueue();
+        }
         alert(`Patient notified: ${data.smsPreview}`);
       } else {
         alert(`Error: ${data.error}`);
@@ -73,8 +95,11 @@ export default function WaitingRoomDashboard() {
       const data = await response.json();
 
       if (data.success) {
-        // Refresh queue
-        await fetchQueue();
+        // Real-time update will handle the queue refresh
+        // Only fetch manually if not connected
+        if (!isConnected) {
+          await fetchQueue();
+        }
       } else {
         alert(`Error: ${data.error}`);
       }
@@ -124,7 +149,7 @@ export default function WaitingRoomDashboard() {
     );
   };
 
-  if (loading) {
+  if (loading && queue.length === 0) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-xl">Loading waiting room...</div>
@@ -142,12 +167,35 @@ export default function WaitingRoomDashboard() {
               {queue.length === 0 ? 'No patients waiting' : `${queue.length} patient${queue.length > 1 ? 's' : ''} waiting`}
             </p>
           </div>
-          <button
-            onClick={fetchQueue}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            Refresh
-          </button>
+          <div className="flex items-center gap-4">
+            {/* Real-time connection status indicator */}
+            <div className="flex items-center gap-2">
+              {isConnected ? (
+                <>
+                  <Wifi className="w-4 h-4 text-green-500" />
+                  <span className="text-sm text-green-600 font-medium">Live</span>
+                </>
+              ) : (
+                <>
+                  <WifiOff className="w-4 h-4 text-gray-400" />
+                  <span className="text-sm text-gray-500">Offline</span>
+                </>
+              )}
+            </div>
+            {lastUpdated && (
+              <span className="text-xs text-gray-400">
+                Updated {lastUpdated.toLocaleTimeString()}
+              </span>
+            )}
+            <button
+              onClick={fetchQueue}
+              disabled={loading}
+              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
+            >
+              <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+              Refresh
+            </button>
+          </div>
         </div>
 
         {error && (
@@ -158,15 +206,15 @@ export default function WaitingRoomDashboard() {
 
         {queue.length === 0 ? (
           <div className="bg-white rounded-lg shadow-sm p-12 text-center">
-            <div className="text-gray-400 text-6xl mb-4">🪑</div>
+            <div className="text-gray-400 text-6xl mb-4">&#128186;</div>
             <h2 className="text-xl font-semibold text-gray-700 mb-2">No patients in waiting room</h2>
             <p className="text-gray-500">Patients can check in by texting "HERE" to your clinic number</p>
           </div>
         ) : (
           <div className="space-y-4">
-            {queue.map((entry: any, index: number) => (
+            {queue.map((entry: WaitingRoomEntry, index: number) => (
               <div
-                key={entry.appointmentId}
+                key={entry.appointmentId || entry.id}
                 className="bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow"
               >
                 <div className="flex items-start justify-between">
@@ -235,11 +283,11 @@ export default function WaitingRoomDashboard() {
                   </div>
                 </div>
 
-                {entry.status === 'room_ready' && entry.roomReadyNotifiedAt && (
+                {entry.status === 'room_ready' && (entry as any).roomReadyNotifiedAt && (
                   <div className="mt-4 pt-4 border-t border-gray-200">
                     <p className="text-sm text-gray-600">
                       Notified{' '}
-                      {Math.floor((Date.now() - new Date(entry.roomReadyNotifiedAt).getTime()) / 60000)} minutes ago
+                      {Math.floor((Date.now() - new Date((entry as any).roomReadyNotifiedAt).getTime()) / 60000)} minutes ago
                     </p>
                   </div>
                 )}

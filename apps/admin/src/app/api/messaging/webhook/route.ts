@@ -9,21 +9,26 @@ import { aiEngine, IntentCategory, UrgencyLevel } from '@/services/messaging/ai-
 import { generateMessage } from '@/services/messaging/templates';
 import twilio from 'twilio';
 
+// Emergency/Complication Routing
+import { handleComplicationAlert, type ComplicationAlert } from '@/services/alerts/complicationAlertService';
+import { generateComplicationResponse, generateUrgentAcknowledgment } from '@/services/alerts/complicationResponder';
+import { findRecentTreatment, findPatientIdByPhone } from '@/lib/data/treatmentLookup';
+
 // Twilio webhook signature validation
-const validateTwilioSignature = (request: NextRequest, body: string): boolean => {
+const validateTwilioSignature = (request: NextRequest, body: Record<string, any>): boolean => {
   if (process.env.NODE_ENV === 'development') {
     // Skip validation in development
     return true;
   }
-  
+
   const signature = request.headers.get('X-Twilio-Signature');
   const url = request.url;
   const authToken = process.env.TWILIO_AUTH_TOKEN;
-  
+
   if (!signature || !authToken) {
     return false;
   }
-  
+
   return twilio.validateRequest(
     authToken,
     signature,
@@ -39,8 +44,7 @@ export async function POST(request: NextRequest) {
     const body = Object.fromEntries(formData);
     
     // Validate webhook signature
-    const bodyString = new URLSearchParams(body as any).toString();
-    if (!validateTwilioSignature(request, bodyString)) {
+    if (!validateTwilioSignature(request, body as Record<string, any>)) {
       console.error('Invalid Twilio signature');
       return new NextResponse(null, { status: 403 });
     }
@@ -137,8 +141,49 @@ async function handleMessageIntent(
     return;
   }
   
-  // Handle high urgency
+  // Handle high urgency - check for complications first
   if (analysis.urgency === UrgencyLevel.HIGH || analysis.requiresHuman) {
+    // Check if this is a complication or side effect report
+    const isComplication =
+      analysis.intent.primary === IntentCategory.TREATMENT_CONCERN ||
+      analysis.intent.primary === IntentCategory.SIDE_EFFECT_REPORT ||
+      analysis.riskFactors?.includes('complication') ||
+      analysis.riskFactors?.includes('side_effect') ||
+      (analysis.keywords || []).some((k: string) =>
+        ['bruising', 'swelling', 'pain', 'redness', 'bump', 'lump', 'asymmetry',
+         'drooping', 'infection', 'bleeding', 'numbness'].includes(k.toLowerCase())
+      );
+
+    if (isComplication && context.patientId) {
+      // Use the new complication-specific handler
+      const treatment = findRecentTreatment(context.patientId);
+
+      const complicationAlert: ComplicationAlert = {
+        patientId: context.patientId,
+        patientName: context.patientName || 'Patient',
+        patientPhone: message.from,
+        message: message.body,
+        keywords: analysis.keywords || [],
+        urgency: analysis.urgency === UrgencyLevel.CRITICAL ? 'critical' : 'high',
+        treatment: treatment || undefined
+      };
+
+      // Handle the complication alert (notifies provider, logs to medical record)
+      await handleComplicationAlert(complicationAlert);
+
+      // Generate and send aftercare-aware auto-response
+      const autoResponse = generateComplicationResponse(treatment, analysis.keywords || []);
+      await sendAutoResponse(message.from, autoResponse, conversation.id);
+
+      console.log('[COMPLICATION] Handled via new routing system:', {
+        patientId: context.patientId,
+        hasRecentTreatment: !!treatment,
+        keywords: analysis.keywords
+      });
+      return;
+    }
+
+    // Regular HIGH urgency (not complication) - use existing staff alert
     await createStaffAlert({
       conversationId: conversation.id,
       patientId: context.patientId,
@@ -146,9 +191,9 @@ async function handleMessageIntent(
       message: message.body,
       analysis,
     });
-    
+
     // Send acknowledgment
-    const ackMessage = 'We\'ve received your message and a team member will respond shortly.';
+    const ackMessage = generateUrgentAcknowledgment();
     await sendAutoResponse(message.from, ackMessage, conversation.id);
     return;
   }
@@ -212,20 +257,22 @@ async function handleMessageIntent(
 }
 
 /**
- * Handle appointment confirmation
+ * Handle appointment confirmation (Reply C to confirm)
+ * This updates both the appointment status and the smsConfirmedAt timestamp
  */
 async function handleAppointmentConfirmation(message: any, context: any): Promise<string> {
   const upcomingAppointment = context.patientProfile?.upcomingAppointments?.[0];
-  
+
   if (upcomingAppointment) {
-    // Update appointment status
+    // Update appointment status to 'confirmed' and set smsConfirmedAt timestamp
     await updateAppointmentStatus(upcomingAppointment.id, 'confirmed');
-    
+    await updateAppointmentConfirmation(upcomingAppointment.id, new Date());
+
     return `Perfect! Your ${upcomingAppointment.service} appointment on ${
       upcomingAppointment.date.toLocaleDateString()
     } at ${upcomingAppointment.time} is confirmed. See you soon!`;
   }
-  
+
   return 'Thank you for confirming! We look forward to seeing you.';
 }
 
@@ -319,21 +366,46 @@ async function handlePricingInquiry(message: any, analysis: any): Promise<string
  * Handle emergency messages
  */
 async function handleEmergency(message: any, analysis: any, context: any): Promise<void> {
-  // Create immediate alert
-  await createEmergencyAlert({
-    patientId: context.patientId,
-    patientPhone: message.from,
-    message: message.body,
-    analysis,
-    timestamp: new Date(),
-  });
-  
-  // Send immediate response
-  const emergencyResponse = 'This appears to be urgent. If this is a medical emergency, please call 911. ' +
-    'Our medical team has been alerted and will contact you immediately.';
-  
-  await sendAutoResponse(message.from, emergencyResponse);
-  
+  // Use the new complication alert system for emergencies too
+  if (context.patientId) {
+    const treatment = findRecentTreatment(context.patientId);
+
+    const emergencyAlert: ComplicationAlert = {
+      patientId: context.patientId,
+      patientName: context.patientName || 'Patient',
+      patientPhone: message.from,
+      message: message.body,
+      keywords: analysis.keywords || [],
+      urgency: 'critical',
+      treatment: treatment || undefined
+    };
+
+    // Handle as critical complication (will alert provider AND manager)
+    await handleComplicationAlert(emergencyAlert);
+
+    // Generate emergency-specific response
+    const emergencyResponse = generateComplicationResponse(treatment, analysis.keywords || []);
+    await sendAutoResponse(message.from, emergencyResponse);
+
+    console.log('[EMERGENCY] Handled via complication routing:', {
+      patientId: context.patientId,
+      hasRecentTreatment: !!treatment
+    });
+  } else {
+    // Fallback for unknown patient
+    await createEmergencyAlert({
+      patientId: context.patientId,
+      patientPhone: message.from,
+      message: message.body,
+      analysis,
+      timestamp: new Date(),
+    });
+
+    const emergencyResponse = 'This appears to be urgent. If this is a medical emergency, please call 911. ' +
+      'Our medical team has been alerted and will contact you immediately.';
+    await sendAutoResponse(message.from, emergencyResponse);
+  }
+
   // Trigger phone call if configured
   if (process.env.ENABLE_EMERGENCY_CALLS === 'true') {
     await initiateEmergencyCall(message.from);
@@ -353,6 +425,7 @@ async function sendAutoResponse(
       to,
       body: message,
       conversationId,
+      priority: 'normal',
       metadata: {
         type: 'auto_response',
         timestamp: new Date().toISOString(),
@@ -470,6 +543,14 @@ async function createOrUpdateConversation(data: any): Promise<any> {
 
 async function updateAppointmentStatus(appointmentId: string, status: string): Promise<void> {
   console.log(`Updated appointment ${appointmentId} to ${status}`);
+  // TODO: In production, update the database
+  // await db.appointments.update({ id: appointmentId }, { status });
+}
+
+async function updateAppointmentConfirmation(appointmentId: string, confirmedAt: Date): Promise<void> {
+  console.log(`Updated appointment ${appointmentId} confirmation timestamp to ${confirmedAt.toISOString()}`);
+  // TODO: In production, update the database
+  // await db.appointments.update({ id: appointmentId }, { smsConfirmedAt: confirmedAt });
 }
 
 async function createRescheduleRequest(data: any): Promise<void> {

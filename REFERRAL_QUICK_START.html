@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Referral Program - Quick Start Guide</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #1F2937;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 50%, #6D28D9 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        h2 {
+            color: #8B5CF6;
+            font-size: 1.8rem;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #E5E7EB;
+        }
+
+        h2:first-child {
+            margin-top: 0;
+        }
+
+        h3 {
+            color: #6D28D9;
+            font-size: 1.3rem;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+
+        h4 {
+            color: #374151;
+            font-size: 1.1rem;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        p {
+            margin-bottom: 15px;
+            line-height: 1.7;
+        }
+
+        ul, ol {
+            margin-left: 30px;
+            margin-bottom: 20px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        code {
+            background: #F3F4F6;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 0.9em;
+            color: #DC2626;
+        }
+
+        pre {
+            background: #1F2937;
+            color: #F9FAFB;
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin-bottom: 20px;
+        }
+
+        pre code {
+            background: none;
+            color: #10B981;
+            padding: 0;
+        }
+
+        .badge {
+            display: inline-block;
+            background: #10B981;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+
+        .badge.pending {
+            background: #F59E0B;
+        }
+
+        .info-box {
+            background: #F5F3FF;
+            border-left: 4px solid #8B5CF6;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        .info-box strong {
+            color: #6D28D9;
+            display: block;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .warning-box {
+            background: #FEF3C7;
+            border-left: 4px solid #F59E0B;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        .success-box {
+            background: #D1FAE5;
+            border-left: 4px solid #10B981;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+
+        .checklist {
+            list-style: none;
+            margin-left: 0;
+        }
+
+        .checklist li {
+            padding-left: 30px;
+            position: relative;
+        }
+
+        .checklist li:before {
+            content: '☐';
+            position: absolute;
+            left: 0;
+            color: #8B5CF6;
+            font-size: 1.2em;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #8B5CF6 0%, #6D28D9 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .stat-card .number {
+            font-size: 2rem;
+            font-weight: 700;
+            display: block;
+        }
+
+        .stat-card .label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .feature-list {
+            background: #F9FAFB;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+
+        .share-methods {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .share-method {
+            background: #8B5CF6;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #E5E7EB;
+        }
+
+        th {
+            background: #F9FAFB;
+            font-weight: 600;
+            color: #6D28D9;
+        }
+
+        .footer {
+            background: #F9FAFB;
+            padding: 30px;
+            text-align: center;
+            color: #6B7280;
+            border-top: 1px solid #E5E7EB;
+        }
+
+        .footer strong {
+            color: #8B5CF6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Referral Program</h1>
+            <p>Quick Start Guide</p>
+        </div>
+
+        <div class="content">
+            <h2>Testing the Implementation</h2>
+
+            <h3>1. View Referral Card on Dashboard</h3>
+            <pre><code># Navigate to patient mobile app
+cd apps/patient-mobile
+
+# Run the app
+npm start
+# or
+yarn start</code></pre>
+
+            <p>Navigate to the Dashboard tab. You should see:</p>
+            <ul>
+                <li>A beautiful purple gradient "Referral Program" card</li>
+                <li>Shows total earnings and available credits</li>
+                <li>Displays "You Get $25" + "Friend Gets $25"</li>
+                <li>Tap to open full referral program</li>
+            </ul>
+
+            <h3>2. Access from Profile</h3>
+            <p>Navigate to Profile tab > Account section</p>
+            <ul>
+                <li>Look for "Referral Program" menu item</li>
+                <li>Shows earnings badge (e.g., "$75 earned")</li>
+                <li>Has gift icon</li>
+                <li>Tap to open full program</li>
+            </ul>
+
+            <h3>3. Explore Full Referral Program Screen</h3>
+            <p>The screen includes:</p>
+
+            <div class="info-box">
+                <strong>Your Referral Code:</strong>
+                <ul>
+                    <li>Large, bold code (e.g., "SARAH25")</li>
+                    <li>Tap the copy icon to copy to clipboard</li>
+                    <li>See "Copied to clipboard!" confirmation</li>
+                </ul>
+            </div>
+
+            <div class="info-box">
+                <strong>Share Your Code:</strong>
+                <ul>
+                    <li>Primary purple button opens share modal</li>
+                    <li>Quick share buttons: SMS, Email, Social</li>
+                </ul>
+            </div>
+
+            <div class="info-box">
+                <strong>Your Stats (4 cards):</strong>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <span class="number">7</span>
+                        <span class="label">Total Referrals</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="number">2</span>
+                        <span class="label">Pending</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="number">5</span>
+                        <span class="label">Successful</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="number">$125</span>
+                        <span class="label">Earned</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-box">
+                <strong>Milestones:</strong>
+                <ul>
+                    <li>5 Referrals ✅ - Extra $10 bonus (Achieved)</li>
+                    <li>10 Referrals - Extra $25 bonus (7/10 progress)</li>
+                    <li>25 Referrals - Free HydraFacial ($250 value)</li>
+                </ul>
+            </div>
+
+            <div class="info-box">
+                <strong>Referral History:</strong>
+                <ul>
+                    <li>List of friends you've referred</li>
+                    <li>Status badges (Completed, First Visit, Signed Up, Pending)</li>
+                    <li>Earnings shown for completed referrals</li>
+                    <li>Dates displayed</li>
+                </ul>
+            </div>
+
+            <div class="info-box">
+                <strong>How It Works:</strong>
+                <ol>
+                    <li>Share your code</li>
+                    <li>Friend signs up and books</li>
+                    <li>Both get $25!</li>
+                </ol>
+            </div>
+
+            <h3>4. Test Share Modal</h3>
+            <p>Tap "Share Your Code" button:</p>
+
+            <div class="feature-list">
+                <h4>Features:</h4>
+                <ul>
+                    <li>See your referral code prominently displayed</li>
+                    <li>Copy code with one tap</li>
+                    <li>Choose share method:</li>
+                </ul>
+
+                <div class="share-methods">
+                    <span class="share-method">📱 SMS</span>
+                    <span class="share-method">📧 Email</span>
+                    <span class="share-method">💬 WhatsApp</span>
+                    <span class="share-method">📸 Instagram</span>
+                    <span class="share-method">👍 Facebook</span>
+                    <span class="share-method">🐦 Twitter</span>
+                </div>
+
+                <ul>
+                    <li>Copy Link button - Copies tracking URL</li>
+                    <li>Message Preview at bottom</li>
+                </ul>
+            </div>
+
+            <div class="success-box">
+                <strong>Pre-filled Messages:</strong>
+                <p>All messages include:</p>
+                <ul>
+                    <li>Your referral code</li>
+                    <li>$25 off value proposition</li>
+                    <li>Personal recommendation</li>
+                    <li>Trackable link</li>
+                </ul>
+            </div>
+
+            <h3>5. Test Interactions</h3>
+
+            <h4>Pull to Refresh:</h4>
+            <ul>
+                <li>Pull down on referral program screen</li>
+                <li>See loading indicator</li>
+                <li>Data refreshes</li>
+            </ul>
+
+            <h4>Copy Code:</h4>
+            <ul>
+                <li>Tap copy icon next to referral code</li>
+                <li>See green checkmark</li>
+                <li>See "Copied to clipboard!" message</li>
+                <li>Paste in notes app to verify</li>
+            </ul>
+
+            <h4>Navigation:</h4>
+            <ul>
+                <li>Tap back button (top left) to go back</li>
+                <li>Tap referral card on dashboard to open program</li>
+                <li>Tap profile menu item to open program</li>
+            </ul>
+
+            <h2>Mock Data Included</h2>
+
+            <p>The app includes realistic mock data for development:</p>
+
+            <div class="info-box">
+                <strong>User Profile:</strong>
+                <ul>
+                    <li>Code: <code>SARAH25</code></li>
+                    <li>Total Referrals: 7</li>
+                    <li>Pending: 2</li>
+                    <li>Successful: 5</li>
+                    <li>Total Earnings: $125</li>
+                    <li>Available Credits: $75</li>
+                </ul>
+            </div>
+
+            <div class="info-box">
+                <strong>Sample Referrals:</strong>
+                <ol>
+                    <li>Emily Johnson - Completed ($25 earned)</li>
+                    <li>Jessica Martinez - First Visit scheduled</li>
+                    <li>Amanda - Signed up, not booked yet</li>
+                    <li>Michelle - Pending (code shared)</li>
+                    <li>Lisa - Pending (code shared)</li>
+                </ol>
+            </div>
+
+            <div class="info-box">
+                <strong>Milestones:</strong>
+                <ul>
+                    <li>5 referrals milestone achieved on Nov 15, 2024</li>
+                    <li>10 referrals milestone at 70% (7/10)</li>
+                    <li>25 referrals milestone locked</li>
+                </ul>
+            </div>
+
+            <h2>Key Features to Test</h2>
+
+            <h3>Visual Elements</h3>
+            <ul class="checklist">
+                <li>Purple gradient backgrounds</li>
+                <li>Smooth animations on scroll</li>
+                <li>Icon badges for different statuses</li>
+                <li>Progress bars for milestones</li>
+                <li>Avatar circles with initials</li>
+                <li>Decorative sparkle icons</li>
+                <li>Shadow effects on cards</li>
+            </ul>
+
+            <h3>Interactions</h3>
+            <ul class="checklist">
+                <li>Code copy functionality</li>
+                <li>Share button opens modal</li>
+                <li>Modal close button works</li>
+                <li>Each share method functions</li>
+                <li>Pull to refresh works</li>
+                <li>Back navigation works</li>
+                <li>All tap targets responsive</li>
+            </ul>
+
+            <h3>Content</h3>
+            <ul class="checklist">
+                <li>All text is readable</li>
+                <li>Numbers format correctly (e.g., $125, not 125)</li>
+                <li>Dates format nicely (e.g., "Dec 11, 2024")</li>
+                <li>Status badges show correct colors</li>
+                <li>Milestone progress accurate</li>
+            </ul>
+
+            <h2>Expected User Flow</h2>
+
+            <h3>New User:</h3>
+            <ol>
+                <li>Opens app, sees dashboard</li>
+                <li>Sees attractive referral card</li>
+                <li>Taps card, views referral program</li>
+                <li>Sees code "SARAH25"</li>
+                <li>Taps "Share Your Code"</li>
+                <li>Chooses SMS</li>
+                <li>Sends message to friend with code</li>
+                <li>Closes modal</li>
+                <li>Views "No referrals yet" in history</li>
+                <li>Reads "How it works" section</li>
+            </ol>
+
+            <h3>Active User:</h3>
+            <ol>
+                <li>Opens profile</li>
+                <li>Sees "Referral Program - $75 earned"</li>
+                <li>Taps menu item</li>
+                <li>Views stats: 7 total, 5 successful, $125 earned</li>
+                <li>Sees milestone: "First 5 Referrals" achieved ✅</li>
+                <li>Scrolls to history</li>
+                <li>Sees 5 referrals with various statuses</li>
+                <li>Pulls to refresh for latest data</li>
+                <li>Taps share button</li>
+                <li>Shares via Instagram</li>
+                <li>Closes modal</li>
+            </ol>
+
+            <h2>Troubleshooting</h2>
+
+            <h3>Referral card not showing on dashboard?</h3>
+            <ul>
+                <li>Check that <code>referralService.getReferralProgram()</code> is working</li>
+                <li>Look for console errors</li>
+                <li>Verify mock data is being returned</li>
+            </ul>
+
+            <h3>Share methods not working?</h3>
+            <ul>
+                <li>SMS/Email: Requires device with email/messaging apps</li>
+                <li>Social: Requires apps installed</li>
+                <li>Use iOS Simulator or Android Emulator with test accounts</li>
+            </ul>
+
+            <h3>Navigation not working?</h3>
+            <ul>
+                <li>Verify route exists at <code>/app/referrals/program.tsx</code></li>
+                <li>Check Expo Router configuration</li>
+                <li>Look for navigation errors in console</li>
+            </ul>
+
+            <h3>Styles look off?</h3>
+            <ul>
+                <li>Check that LinearGradient is imported from 'expo-linear-gradient'</li>
+                <li>Verify Ionicons working</li>
+                <li>Check device screen size (tested on iPhone 14 Pro size)</li>
+            </ul>
+
+            <h2>Next Steps for Backend</h2>
+
+            <p>To connect to real API:</p>
+
+            <h4>1. Update referralService.ts:</h4>
+            <ul>
+                <li>Replace <code>API_BASE_URL</code> with production URL</li>
+                <li>Add authentication tokens from auth store</li>
+                <li>Remove mock data fallbacks</li>
+            </ul>
+
+            <h4>2. Create API endpoints:</h4>
+            <ul>
+                <li><code>GET /api/referrals/program</code></li>
+                <li><code>GET /api/referrals/history</code></li>
+                <li><code>POST /api/referrals/share</code></li>
+                <li><code>POST /api/referrals/apply</code></li>
+                <li><code>GET /api/referrals/stats</code></li>
+            </ul>
+
+            <h4>3. Test with real data:</h4>
+            <ul>
+                <li>Create test referrals</li>
+                <li>Verify tracking works</li>
+                <li>Test reward application</li>
+                <li>Check milestone calculations</li>
+            </ul>
+
+            <h2>Support</h2>
+
+            <p>For issues or questions:</p>
+            <ul>
+                <li>Check console logs for errors</li>
+                <li>Verify all files are in correct locations</li>
+                <li>Review type definitions in <code>@medical-spa/types</code></li>
+                <li>Test on real device for share functionality</li>
+            </ul>
+
+            <h2>Success Criteria</h2>
+
+            <div class="success-box">
+                <p>The implementation is successful when:</p>
+                <ul class="checklist">
+                    <li>Referral card visible on dashboard</li>
+                    <li>Profile menu includes referral program</li>
+                    <li>Full program screen loads with all sections</li>
+                    <li>Code can be copied</li>
+                    <li>Share modal opens and functions</li>
+                    <li>All share methods work (on device)</li>
+                    <li>Stats display correctly</li>
+                    <li>Milestones show progress</li>
+                    <li>History lists referrals</li>
+                    <li>Animations smooth</li>
+                    <li>No console errors</li>
+                    <li>Navigation works both ways</li>
+                </ul>
+            </div>
+
+            <div style="text-align: center; margin: 40px 0;">
+                <p style="font-size: 1.3rem; color: #8B5CF6; font-weight: 600;">Enjoy your new referral program system!</p>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p><strong>Medical Spa Platform</strong> - Referral Program Implementation</p>
+            <p>Generated on December 11, 2024</p>
+        </div>
+    </div>
+</body>
+</html>

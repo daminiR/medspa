@@ -315,9 +315,13 @@ export interface GiftCard {
   purchaseDate: Date
   activationDate?: Date
   expirationDate?: Date
-  
+  scheduledDate?: Date
+
   // Status
-  status: 'active' | 'depleted' | 'expired' | 'cancelled'
+  status: 'active' | 'depleted' | 'expired' | 'cancelled' | 'pending'
+
+  // Delivery/Design
+  design?: string
   
   // Transactions
   transactions: GiftCardTransaction[]

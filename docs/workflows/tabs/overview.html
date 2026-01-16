@@ -1,0 +1,262 @@
+            <div class="section">
+                <h2 class="section-title">System Architecture Overview</h2>
+                <p style="font-size: 1.1em; color: #666; margin-bottom: 20px;">
+                    Luxe Medical Spa EMR is a multi-application ecosystem with separate interfaces for different user types and workflows. Each application communicates through a central database and messaging system.
+                </p>
+                <div class="note" style="background: #fff8e1; border-color: #ff9800;">
+                    <strong style="color: #ff9800;">⚠️ Realistic Approach:</strong> This document shows both IDEAL workflows (how things should work) and REAL-WORLD edge cases (what actually goes wrong). Each major workflow includes a collapsible "Reality Check" section with common problems, fallback solutions, and when human intervention is needed. <strong>Click the orange "Reality Check" sections to expand edge cases.</strong>
+                </div>
+
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-box" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"></div>
+                        <span>Application/Interface</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-box" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);"></div>
+                        <span>User Type</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-box" style="background: #f8f9fa; border-color: #28a745;"></div>
+                        <span>Action/Process</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-box" style="background: #fff3cd; border: 2px dashed #ffc107;"></div>
+                        <span>Automated Process</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-box" style="background: #ffe5e5; border: 2px dashed #ff6b6b;"></div>
+                        <span>Edge Case/Problem</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-box" style="background: #fff8e1; border: 2px solid #ff9800;"></div>
+                        <span>Fallback/Recovery</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-box" style="background: #ffe0e0; border: 2px dashed #dc3545;"></div>
+                        <span>Gap/Opportunity</span>
+                    </div>
+                </div>
+
+                <h3 class="section-subtitle">Core Applications</h3>
+                <p style="color: #666; margin-bottom: 20px;">
+                    Based on industry standards (Mangomint, Boulevard, Zenoti, AestheticsPro), a complete MedSpa EMR requires these distinct applications:
+                </p>
+
+                <div class="app-grid">
+                    <div class="app-card" style="border-left: 4px solid #10B981;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <h3 style="margin: 0;">🖥️ Admin Dashboard</h3>
+                            <span style="background: #10B981; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.75em;">apps/admin</span>
+                        </div>
+                        <p style="margin-bottom: 15px; color: #666;">Main web application for front desk, managers, and owners</p>
+                        <p style="font-size: 0.85em; color: #888; margin-bottom: 10px;"><strong>Users:</strong> Front Desk, Managers, Owners</p>
+                        <p style="font-size: 0.85em; color: #888; margin-bottom: 10px;"><strong>Platform:</strong> Web (Next.js) + Tablet</p>
+                        <ul>
+                            <li>Calendar & Scheduling</li>
+                            <li>Patient Management (CRM)</li>
+                            <li>Billing & Checkout</li>
+                            <li>Reports & Analytics</li>
+                            <li>Staff & Shift Management</li>
+                            <li>Inventory Management</li>
+                            <li>Messaging Center (SMS/Email)</li>
+                            <li>Waitlist Management</li>
+                            <li>Group Bookings</li>
+                            <li>Settings & Configuration</li>
+                        </ul>
+                    </div>
+
+                    <div class="app-card" style="border-left: 4px solid #10B981;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <h3 style="margin: 0;">💉 Practitioner Charting</h3>
+                            <span style="background: #10B981; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.75em;">apps/tablet-charting</span>
+                        </div>
+                        <p style="margin-bottom: 15px; color: #666;">iPad/tablet app for practitioners during treatments</p>
+                        <p style="font-size: 0.85em; color: #888; margin-bottom: 10px;"><strong>Users:</strong> Physicians, Nurses, Aestheticians</p>
+                        <p style="font-size: 0.85em; color: #888; margin-bottom: 10px;"><strong>Platform:</strong> Web (iPad optimized)</p>
+                        <ul>
+                            <li>3D Face & Body Charting</li>
+                            <li>Injection Point Mapping</li>
+                            <li>SOAP Notes</li>
+                            <li>Before/After Photos</li>
+                            <li>Treatment Templates</li>
+                            <li>Product Usage Tracking</li>
+                            <li>Consent Form Signing</li>
+                            <li>Voice Dictation (planned)</li>
+                        </ul>
+                    </div>
+
+                    <div class="app-card" style="border-left: 4px solid #10B981;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <h3 style="margin: 0;">🌐 Patient Portal</h3>
+                            <span style="background: #10B981; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.75em;">apps/patient-portal</span>
+                        </div>
+                        <p style="margin-bottom: 15px; color: #666;">Self-service web portal for patients</p>
+                        <p style="font-size: 0.85em; color: #888; margin-bottom: 10px;"><strong>Users:</strong> Patients</p>
+                        <p style="font-size: 0.85em; color: #888; margin-bottom: 10px;"><strong>Platform:</strong> Web (Next.js PWA)</p>
+                        <ul>
+                            <li>Online Booking</li>
+                            <li>Appointment Management</li>
+                            <li>Medical History Forms</li>
+                            <li>Treatment Plans & Progress</li>
+                            <li>Before/After Gallery</li>
+                            <li>Payments & Invoices</li>
+                            <li>Packages & Memberships</li>
+                            <li>Referral Program</li>
+                            <li>Secure Messaging</li>
+                        </ul>
+                    </div>
+
+                    <div class="app-card" style="border-left: 4px solid #10B981;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <h3 style="margin: 0;">📱 Patient Mobile App</h3>
+                            <span style="background: #10B981; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.75em;">apps/patient-mobile</span>
+                        </div>
+                        <p style="margin-bottom: 15px; color: #666;">Native mobile app for patients (iOS & Android)</p>
+                        <p style="font-size: 0.85em; color: #888; margin-bottom: 10px;"><strong>Users:</strong> Patients</p>
+                        <p style="font-size: 0.85em; color: #888; margin-bottom: 10px;"><strong>Platform:</strong> React Native (Expo)</p>
+                        <ul>
+                            <li>Quick Booking</li>
+                            <li>Push Notifications</li>
+                            <li>Appointment Reminders</li>
+                            <li>Check-In from Phone</li>
+                            <li>Group Booking</li>
+                            <li>Apple/Google Wallet Passes</li>
+                            <li>Loyalty & Rewards</li>
+                            <li>Biometric Login</li>
+                        </ul>
+                    </div>
+
+                    <div class="app-card" style="border-left: 4px solid #6366F1;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <h3 style="margin: 0;">📋 Check-In Kiosk</h3>
+                            <span style="background: #6366F1; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.75em;">admin/kiosk</span>
+                        </div>
+                        <p style="margin-bottom: 15px; color: #666;">Tablet kiosk mode for patient self-check-in</p>
+                        <p style="font-size: 0.85em; color: #888; margin-bottom: 10px;"><strong>Users:</strong> Patients (self-service)</p>
+                        <p style="font-size: 0.85em; color: #888; margin-bottom: 10px;"><strong>Platform:</strong> Web (part of Admin app)</p>
+                        <ul>
+                            <li>Self Check-In</li>
+                            <li>Virtual Waiting Room</li>
+                            <li>Form Completion</li>
+                            <li>Consent Signatures</li>
+                            <li>Payment on File Update</li>
+                            <li>Queue Position Display</li>
+                        </ul>
+                    </div>
+
+                    <div class="app-card" style="border-left: 4px solid #9CA3AF;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <h3 style="margin: 0;">📊 Staff Mobile App</h3>
+                            <span style="background: #9CA3AF; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.75em;">FUTURE</span>
+                        </div>
+                        <p style="margin-bottom: 15px; color: #666;">Mobile app for staff schedule & notifications</p>
+                        <p style="font-size: 0.85em; color: #888; margin-bottom: 10px;"><strong>Users:</strong> Practitioners, Staff</p>
+                        <p style="font-size: 0.85em; color: #888; margin-bottom: 10px;"><strong>Platform:</strong> React Native (planned)</p>
+                        <ul>
+                            <li style="color: #888;">○ View Personal Schedule</li>
+                            <li style="color: #888;">○ Block Off Time</li>
+                            <li style="color: #888;">○ View Patient Info</li>
+                            <li style="color: #888;">○ Push Notifications</li>
+                            <li style="color: #888;">○ Commission Tracking</li>
+                            <li style="color: #888;">○ Time Clock</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Backend Systems -->
+                <h3 class="section-subtitle" style="margin-top: 40px;">Backend Infrastructure</h3>
+                <div class="app-grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
+                    <div class="app-card" style="border-left: 4px solid #8B5CF6; background: #f8f7ff;">
+                        <h3>🔌 Hono.js API</h3>
+                        <p style="color: #666; font-size: 0.9em;">REST API on Google Cloud Run</p>
+                        <ul style="font-size: 0.9em;">
+                            <li>~120 API endpoints</li>
+                            <li>Prisma ORM + PostgreSQL</li>
+                            <li>HIPAA compliant</li>
+                        </ul>
+                    </div>
+                    <div class="app-card" style="border-left: 4px solid #F59E0B; background: #fffbeb;">
+                        <h3>💬 Twilio SMS</h3>
+                        <p style="color: #666; font-size: 0.9em;">Two-way messaging system</p>
+                        <ul style="font-size: 0.9em;">
+                            <li>Appointment reminders</li>
+                            <li>Two-way conversations</li>
+                            <li>Marketing campaigns</li>
+                        </ul>
+                    </div>
+                    <div class="app-card" style="border-left: 4px solid #EF4444; background: #fef2f2;">
+                        <h3>🔔 Firebase/FCM</h3>
+                        <p style="color: #666; font-size: 0.9em;">Real-time & push notifications</p>
+                        <ul style="font-size: 0.9em;">
+                            <li>Push notifications</li>
+                            <li>Real-time updates</li>
+                            <li>Firestore sync</li>
+                        </ul>
+                    </div>
+                    <div class="app-card" style="border-left: 4px solid #06B6D4; background: #f0fdfa;">
+                        <h3>💳 Stripe</h3>
+                        <p style="color: #666; font-size: 0.9em;">Payment processing</p>
+                        <ul style="font-size: 0.9em;">
+                            <li>Card on file</li>
+                            <li>Subscriptions</li>
+                            <li>Invoicing</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="note">
+                    <strong>Key Insight:</strong> All applications connect to a central backend API and share the same database. Changes in one app instantly reflect in all others. This architecture enables optimized UX for each user type while maintaining data consistency and HIPAA compliance.
+                </div>
+
+                <!-- User Role Matrix -->
+                <h3 class="section-subtitle" style="margin-top: 40px;">User Access Matrix</h3>
+                <div style="overflow-x: auto;">
+                    <table style="width: 100%; border-collapse: collapse; font-size: 0.9em;">
+                        <thead>
+                            <tr style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                                <th style="padding: 12px; text-align: left;">Role</th>
+                                <th style="padding: 12px; text-align: center;">Admin</th>
+                                <th style="padding: 12px; text-align: center;">Charting</th>
+                                <th style="padding: 12px; text-align: center;">Kiosk</th>
+                                <th style="padding: 12px; text-align: center;">Patient Portal</th>
+                                <th style="padding: 12px; text-align: center;">Patient Mobile</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr style="background: #f8f9fa;">
+                                <td style="padding: 10px; border-bottom: 1px solid #e0e0e0;"><strong>Owner/Manager</strong></td>
+                                <td style="padding: 10px; text-align: center; border-bottom: 1px solid #e0e0e0;">✅ Full</td>
+                                <td style="padding: 10px; text-align: center; border-bottom: 1px solid #e0e0e0;">👁️ View</td>
+                                <td style="padding: 10px; text-align: center; border-bottom: 1px solid #e0e0e0;">⚙️ Config</td>
+                                <td style="padding: 10px; text-align: center; border-bottom: 1px solid #e0e0e0;">—</td>
+                                <td style="padding: 10px; text-align: center; border-bottom: 1px solid #e0e0e0;">—</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 10px; border-bottom: 1px solid #e0e0e0;"><strong>Front Desk</strong></td>
+                                <td style="padding: 10px; text-align: center; border-bottom: 1px solid #e0e0e0;">✅ Primary</td>
+                                <td style="padding: 10px; text-align: center; border-bottom: 1px solid #e0e0e0;">👁️ View</td>
+                                <td style="padding: 10px; text-align: center; border-bottom: 1px solid #e0e0e0;">👁️ Monitor</td>
+                                <td style="padding: 10px; text-align: center; border-bottom: 1px solid #e0e0e0;">—</td>
+                                <td style="padding: 10px; text-align: center; border-bottom: 1px solid #e0e0e0;">—</td>
+                            </tr>
+                            <tr style="background: #f8f9fa;">
+                                <td style="padding: 10px; border-bottom: 1px solid #e0e0e0;"><strong>Practitioner</strong></td>
+                                <td style="padding: 10px; text-align: center; border-bottom: 1px solid #e0e0e0;">👁️ Limited</td>
+                                <td style="padding: 10px; text-align: center; border-bottom: 1px solid #e0e0e0;">✅ Primary</td>
+                                <td style="padding: 10px; text-align: center; border-bottom: 1px solid #e0e0e0;">—</td>
+                                <td style="padding: 10px; text-align: center; border-bottom: 1px solid #e0e0e0;">—</td>
+                                <td style="padding: 10px; text-align: center; border-bottom: 1px solid #e0e0e0;">—</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 10px;"><strong>Patient</strong></td>
+                                <td style="padding: 10px; text-align: center;">—</td>
+                                <td style="padding: 10px; text-align: center;">—</td>
+                                <td style="padding: 10px; text-align: center;">✅ Check-in</td>
+                                <td style="padding: 10px; text-align: center;">✅ Primary</td>
+                                <td style="padding: 10px; text-align: center;">✅ Primary</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>

@@ -1,3 +1,10 @@
+/**
+ * @deprecated This is an enhanced version of PatientDetailTabs.tsx with gradient styling,
+ * but PatientDetailTabsClean.tsx is now the canonical version being used in production.
+ * This file is kept for reference only.
+ *
+ * For new development, use: import PatientDetailTabs from '@/components/patients/PatientDetailTabsClean'
+ */
 'use client'
 
 import { useState } from 'react'
@@ -57,9 +64,9 @@ export default function PatientDetailTabs({ patient }: PatientDetailTabsProps) {
     { id: 'notes', label: 'Notes', icon: MessageSquare }
   ]
 
-  const calculateAge = (dateOfBirth: string) => {
+  const calculateAge = (dateOfBirth: Date | string) => {
     const today = new Date()
-    const birthDate = new Date(dateOfBirth)
+    const birthDate = dateOfBirth instanceof Date ? dateOfBirth : new Date(dateOfBirth)
     let age = today.getFullYear() - birthDate.getFullYear()
     const monthDiff = today.getMonth() - birthDate.getMonth()
     if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
@@ -73,7 +80,7 @@ export default function PatientDetailTabs({ patient }: PatientDetailTabsProps) {
     : null
 
   const getLoyaltyStatus = () => {
-    const visits = patient.visitCount || 0
+    const visits = patient.totalVisits || 0
     if (visits >= 20) return { level: 'VIP', color: 'bg-gradient-to-r from-amber-400 to-amber-600', icon: Award }
     if (visits >= 10) return { level: 'Gold', color: 'bg-gradient-to-r from-yellow-400 to-yellow-600', icon: Star }
     if (visits >= 5) return { level: 'Silver', color: 'bg-gradient-to-r from-gray-400 to-gray-600', icon: Star }
@@ -156,7 +163,7 @@ export default function PatientDetailTabs({ patient }: PatientDetailTabsProps) {
         <div className="grid grid-cols-4 gap-4 mt-6 p-4 bg-white/10 backdrop-blur rounded-xl">
           <div className="text-center">
             <p className="text-white/70 text-xs uppercase tracking-wider">Total Visits</p>
-            <p className="text-2xl font-bold text-white">{patient.visitCount || 0}</p>
+            <p className="text-2xl font-bold text-white">{patient.totalVisits || 0}</p>
           </div>
           <div className="text-center">
             <p className="text-white/70 text-xs uppercase tracking-wider">Last Visit</p>
@@ -188,7 +195,7 @@ export default function PatientDetailTabs({ patient }: PatientDetailTabsProps) {
             <div className="flex gap-2 flex-wrap">
               {patient.medicalAlerts.map((alert, index) => (
                 <span key={index} className="px-3 py-1 bg-white/20 backdrop-blur rounded-full text-white text-sm">
-                  {alert}
+                  {alert.description}
                 </span>
               ))}
             </div>
@@ -241,18 +248,18 @@ export default function PatientDetailTabs({ patient }: PatientDetailTabsProps) {
                     <div>
                       <p className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Address</p>
                       <p className="text-sm text-gray-900">
-                        {patient.address.street} {patient.address.unit && `, ${patient.address.unit}`}<br />
-                        {patient.address.city}, {patient.address.state} {patient.address.zip}
+                        {patient.address.street}{patient.address.street2 && `, ${patient.address.street2}`}<br />
+                        {patient.address.city}, {patient.address.state} {patient.address.zipCode}
                       </p>
                     </div>
                   )}
                   <div>
                     <p className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">Preferred Contact</p>
                     <div className="flex items-center gap-2">
-                      {patient.preferredCommunication === 'email' && <Mail className="h-4 w-4 text-blue-500" />}
-                      {patient.preferredCommunication === 'phone' && <Phone className="h-4 w-4 text-blue-500" />}
-                      {patient.preferredCommunication === 'sms' && <MessageSquare className="h-4 w-4 text-blue-500" />}
-                      <span className="text-sm text-gray-900 capitalize">{patient.preferredCommunication}</span>
+                      {patient.communicationPreferences?.preferredMethod === 'email' && <Mail className="h-4 w-4 text-blue-500" />}
+                      {patient.communicationPreferences?.preferredMethod === 'phone' && <Phone className="h-4 w-4 text-blue-500" />}
+                      {patient.communicationPreferences?.preferredMethod === 'sms' && <MessageSquare className="h-4 w-4 text-blue-500" />}
+                      <span className="text-sm text-gray-900 capitalize">{patient.communicationPreferences?.preferredMethod || 'Not specified'}</span>
                     </div>
                   </div>
                 </div>
@@ -281,10 +288,10 @@ export default function PatientDetailTabs({ patient }: PatientDetailTabsProps) {
                       <Phone className="h-3 w-3" />
                       {patient.emergencyContact.phone}
                     </div>
-                    {patient.emergencyContact.email && (
+                    {patient.emergencyContact.alternatePhone && (
                       <div className="flex items-center gap-2 text-xs text-gray-600 ml-13">
-                        <Mail className="h-3 w-3" />
-                        {patient.emergencyContact.email}
+                        <Phone className="h-3 w-3" />
+                        {patient.emergencyContact.alternatePhone} (Alt)
                       </div>
                     )}
                   </div>
@@ -323,7 +330,7 @@ export default function PatientDetailTabs({ patient }: PatientDetailTabsProps) {
                       <div className="flex flex-wrap gap-1.5">
                         {patient.allergies.map((allergy, index) => (
                           <span key={index} className="px-2.5 py-1 bg-red-100 text-red-700 rounded-full text-xs font-medium">
-                            {allergy}
+                            {allergy.allergen}
                           </span>
                         ))}
                       </div>
@@ -340,7 +347,7 @@ export default function PatientDetailTabs({ patient }: PatientDetailTabsProps) {
                         {patient.medications.map((med, index) => (
                           <div key={index} className="flex items-center gap-2">
                             <Pill className="h-3.5 w-3.5 text-blue-500" />
-                            <span className="text-sm text-gray-700">{med}</span>
+                            <span className="text-sm text-gray-700">{med.name} - {med.dosage}</span>
                           </div>
                         ))}
                       </div>
@@ -362,7 +369,7 @@ export default function PatientDetailTabs({ patient }: PatientDetailTabsProps) {
                   </div>
                   <div className="p-4 space-y-3">
                     {/* Fitzpatrick Type Visual */}
-                    {patient.aestheticProfile.fitzpatrickType && (
+                    {patient.aestheticProfile.skinType && (
                       <div>
                         <p className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-2">Skin Type</p>
                         <div className="flex items-center gap-2">
@@ -371,7 +378,7 @@ export default function PatientDetailTabs({ patient }: PatientDetailTabsProps) {
                               <div
                                 key={type}
                                 className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold transition-all ${
-                                  patient.aestheticProfile?.fitzpatrickType === type
+                                  patient.aestheticProfile?.skinType === type
                                     ? 'bg-purple-500 text-white shadow-lg scale-110'
                                     : 'bg-gray-100 text-gray-400'
                                 }`}
@@ -452,13 +459,13 @@ export default function PatientDetailTabs({ patient }: PatientDetailTabsProps) {
                     </div>
                   </div>
 
-                  {patient.insurance && (
+                  {patient.insurance && patient.insurance.length > 0 && (
                     <div className="pt-3 border-t">
                       <div className="flex items-center gap-2">
                         <CardIcon className="h-4 w-4 text-gray-400" />
                         <div>
                           <p className="text-xs text-gray-500">Insurance</p>
-                          <p className="text-sm font-medium text-gray-900">{patient.insurance.provider}</p>
+                          <p className="text-sm font-medium text-gray-900">{patient.insurance[0].provider}</p>
                         </div>
                       </div>
                     </div>

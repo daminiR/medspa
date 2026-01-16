@@ -13,7 +13,21 @@ export async function GET(request: NextRequest) {
     }
 
     const now = new Date()
-    const results = {
+
+    interface ReminderResult {
+      appointmentId: string
+      patientId: string
+      success: boolean
+      messageId?: string
+    }
+
+    const results: {
+      '48hr': ReminderResult[]
+      '24hr': ReminderResult[]
+      '2hr': ReminderResult[]
+      postTreatment: ReminderResult[]
+      noShow: ReminderResult[]
+    } = {
       '48hr': [],
       '24hr': [],
       '2hr': [],

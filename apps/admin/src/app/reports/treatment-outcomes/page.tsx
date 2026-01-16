@@ -27,6 +27,8 @@ import {
   BarChart3
 } from 'lucide-react'
 import { format, subMonths, differenceInDays } from 'date-fns'
+import { ExportButton } from '@/components/reports/ExportButton'
+import { formatters, ExportColumn } from '@/lib/export'
 
 // Mock data for treatment outcomes
 const generateTreatmentOutcomes = () => {
@@ -291,6 +293,45 @@ export default function TreatmentOutcomesPage() {
     }
   }, [treatmentData])
 
+  // Prepare export data
+  const exportData = useMemo(() => {
+    const rows: any[] = []
+
+    treatmentData.forEach(category => {
+      category.treatments.forEach(treatment => {
+        rows.push({
+          category: category.category,
+          treatment: treatment.name,
+          totalTreatments: treatment.totalTreatments,
+          satisfaction: `${treatment.satisfaction}%`,
+          photoCompliance: `${treatment.beforeAfterPhotos}%`,
+          retreatmentRate: `${treatment.retreatmentRate}%`,
+          complications: treatment.complications,
+          excellentOutcome: `${treatment.outcomes.excellent}%`,
+          goodOutcome: `${treatment.outcomes.good}%`,
+          fairOutcome: `${treatment.outcomes.fair}%`,
+          poorOutcome: `${treatment.outcomes.poor}%`
+        })
+      })
+    })
+
+    return rows
+  }, [treatmentData])
+
+  const exportColumns: ExportColumn[] = [
+    { key: 'category', header: 'Category' },
+    { key: 'treatment', header: 'Treatment' },
+    { key: 'totalTreatments', header: 'Total Treatments', formatter: formatters.number },
+    { key: 'satisfaction', header: 'Satisfaction' },
+    { key: 'photoCompliance', header: 'Photo Compliance' },
+    { key: 'retreatmentRate', header: 'Retreatment Rate' },
+    { key: 'complications', header: 'Complications', formatter: formatters.number },
+    { key: 'excellentOutcome', header: 'Excellent' },
+    { key: 'goodOutcome', header: 'Good' },
+    { key: 'fairOutcome', header: 'Fair' },
+    { key: 'poorOutcome', header: 'Poor' },
+  ]
+
   return (
     <div className="flex h-screen bg-gray-50">
       <Navigation />
@@ -312,17 +353,19 @@ export default function TreatmentOutcomesPage() {
             </div>
             
             <div className="flex space-x-3">
-              <button className="px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-700 hover:bg-gray-50 flex items-center space-x-2">
-                <Download className="h-4 w-4" />
-                <span>Export</span>
-              </button>
+              <ExportButton
+                data={exportData}
+                columns={exportColumns}
+                filename="treatment-outcomes"
+                title="Treatment Outcomes Report"
+              />
             </div>
           </div>
 
           {/* Filters */}
           <div className="bg-white rounded-lg p-4 mb-6 shadow-sm">
             <div className="flex flex-wrap items-center space-x-4">
-              <select 
+              <select
                 value={selectedDateRange}
                 onChange={(e) => setSelectedDateRange(e.target.value)}
                 className="px-4 py-2 border border-gray-200 rounded-lg"

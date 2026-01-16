@@ -1,0 +1,2564 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Allergy {
+  id        String          @id
+  patientId String
+  allergen  String
+  reaction  String
+  severity  AllergySeverity
+  onsetDate String?
+  notes     String?
+  Patient   Patient         @relation(fields: [patientId], references: [id], onDelete: Cascade)
+
+  @@index([patientId])
+}
+
+model Appointment {
+  id               String            @id
+  patientId        String
+  patientName      String
+  serviceName      String
+  serviceCategory  String
+  practitionerId   String
+  practitionerName String
+  startTime        DateTime
+  endTime          DateTime
+  status           AppointmentStatus
+  notes            String?
+  createdAt        DateTime          @default(now())
+  Patient          Patient           @relation(fields: [patientId], references: [id], onDelete: Cascade)
+
+  @@index([patientId])
+  @@index([practitionerId])
+  @@index([startTime])
+  @@index([status])
+}
+
+model BenefitRedemption {
+  id                String            @id
+  membershipId      String
+  patientId         String
+  serviceId         String
+  serviceName       String
+  appointmentId     String?
+  redeemedAt        DateTime
+  redeemedBy        String
+  PatientMembership PatientMembership @relation(fields: [membershipId], references: [id])
+
+  @@index([membershipId])
+  @@index([patientId])
+  @@index([redeemedAt])
+}
+
+model ExpressBookingToken {
+  id             String               @id
+  token          String               @unique
+  rawTokenPrefix String
+  patientId      String?
+  patientName    String?
+  patientEmail   String?
+  patientPhone   String?
+  serviceIds     String[]
+  providerIds    String[]
+  locationId     String?
+  validFrom      DateTime?
+  validUntil     DateTime?
+  allowedDays    String[]
+  maxUses        Int                  @default(1)
+  usedCount      Int                  @default(0)
+  message        String?
+  redirectUrl    String?
+  requireDeposit Boolean              @default(false)
+  depositAmount  Float?
+  status         ExpressBookingStatus @default(ACTIVE)
+  bookings       String[]
+  createdBy      String
+  createdAt      DateTime             @default(now())
+  expiresAt      DateTime
+
+  @@index([expiresAt])
+  @@index([patientId])
+  @@index([status])
+  @@index([token])
+}
+
+model FormSubmission {
+  id                String           @id
+  formId            String
+  formTitle         String
+  formType          String
+  patientId         String
+  appointmentId     String?
+  status            SubmissionStatus
+  responses         Json
+  patientSignature  Json?
+  witnessSignature  Json?
+  providerSignature Json?
+  consentGiven      Boolean          @default(false)
+  acknowledgements  String[]
+  pdfUrl            String?
+  pdfGeneratedAt    DateTime?
+  startedAt         DateTime?
+  completedAt       DateTime?
+  expiresAt         DateTime?
+  submittedAt       DateTime?
+  ipAddress         String?
+  userAgent         String?
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime
+  FormTemplate      FormTemplate     @relation(fields: [formId], references: [id])
+
+  @@index([formId])
+  @@index([patientId])
+  @@index([status])
+}
+
+model FormTemplate {
+  id                    String                  @id
+  slug                  String                  @unique
+  title                 String
+  description           String?
+  type                  FormType
+  category              String?
+  sections              Json
+  signature             Json
+  requiresWitness       Boolean                 @default(false)
+  expirationDays        Int?
+  serviceIds            String[]
+  isActive              Boolean                 @default(true)
+  version               Int                     @default(1)
+  createdAt             DateTime                @default(now())
+  updatedAt             DateTime
+  createdBy             String
+  lastModifiedBy        String
+  deletedAt             DateTime?
+  deletedBy             String?
+  FormSubmission        FormSubmission[]
+  PatientFormAssignment PatientFormAssignment[]
+
+  @@index([isActive])
+  @@index([slug])
+  @@index([type])
+}
+
+model GiftCard {
+  id                    String                @id
+  code                  String                @unique
+  originalValue         Float
+  currentBalance        Float
+  purchaserId           String?
+  purchaserName         String
+  purchaserEmail        String
+  recipientName         String?
+  recipientEmail        String?
+  recipientMessage      String?
+  purchaseDate          DateTime
+  activationDate        DateTime?
+  expirationDate        DateTime?
+  scheduledDeliveryDate DateTime?
+  status                GiftCardStatus
+  designTemplate        String?
+  createdAt             DateTime              @default(now())
+  updatedAt             DateTime
+  createdBy             String
+  GiftCardTransaction   GiftCardTransaction[]
+
+  @@index([code])
+  @@index([purchaseDate])
+  @@index([purchaserEmail])
+  @@index([recipientEmail])
+  @@index([status])
+}
+
+model GiftCardTransaction {
+  id           String                  @id
+  giftCardId   String
+  type         GiftCardTransactionType
+  amount       Float
+  balanceAfter Float
+  invoiceId    String?
+  paymentId    String?
+  notes        String?
+  processedBy  String
+  processedAt  DateTime
+  GiftCard     GiftCard                @relation(fields: [giftCardId], references: [id])
+
+  @@index([giftCardId])
+  @@index([processedAt])
+}
+
+model GroupBooking {
+  id                      String             @id
+  name                    String
+  type                    GroupBookingType
+  organizerId             String
+  organizerName           String
+  organizerEmail          String
+  organizerPhone          String
+  date                    String
+  startTime               DateTime
+  endTime                 DateTime
+  locationId              String?
+  maxParticipants         Int                @default(10)
+  minParticipants         Int                @default(2)
+  sharedServiceId         String?
+  allowIndividualServices Boolean            @default(true)
+  status                  GroupBookingStatus @default(DRAFT)
+  inviteCode              String             @unique
+  paymentType             GroupPaymentType   @default(INDIVIDUAL)
+  depositRequired         Boolean            @default(false)
+  depositAmount           Float?
+  totalAmount             Float              @default(0)
+  paidAmount              Float              @default(0)
+  notes                   String?
+  specialRequests         String?
+  createdAt               DateTime           @default(now())
+  updatedAt               DateTime
+  GroupParticipant        GroupParticipant[]
+
+  @@index([date])
+  @@index([inviteCode])
+  @@index([organizerId])
+  @@index([status])
+}
+
+model GroupParticipant {
+  id              String            @id
+  groupId         String
+  patientId       String?
+  firstName       String
+  lastName        String
+  email           String?
+  phone           String?
+  serviceId       String
+  serviceName     String
+  providerId      String?
+  providerName    String?
+  roomId          String?
+  startTime       DateTime
+  duration        Int
+  status          ParticipantStatus @default(INVITED)
+  checkedInAt     DateTime?
+  amount          Float             @default(0)
+  paid            Boolean           @default(false)
+  paymentId       String?
+  consentSigned   Boolean           @default(false)
+  consentSignedAt DateTime?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime
+  GroupBooking    GroupBooking      @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  @@index([groupId])
+  @@index([patientId])
+  @@index([status])
+}
+
+model InjectionPoint {
+  id             String             @id @default(uuid())
+  treatmentId    String
+  zoneId         String
+  x              Float
+  y              Float
+  productId      String
+  productName    String
+  units          Float?
+  volume         Float?
+  depth          InjectionDepth
+  technique      InjectionTechnique
+  needleGauge    String?
+  lotNumber      String?
+  expirationDate String?
+  notes          String?
+  complications  String?
+  timestamp      DateTime           @default(now())
+  addedBy        String
+  Treatment      Treatment          @relation(fields: [treatmentId], references: [id], onDelete: Cascade)
+
+  @@index([timestamp])
+  @@index([treatmentId])
+}
+
+model Invoice {
+  id              String            @id
+  invoiceNumber   String            @unique
+  patientId       String
+  patientName     String
+  providerId      String?
+  providerName    String?
+  locationId      String?
+  appointmentId   String?
+  invoiceDate     DateTime
+  dueDate         DateTime
+  serviceDate     DateTime?
+  subtotal        Float             @default(0)
+  taxTotal        Float             @default(0)
+  discountTotal   Float             @default(0)
+  total           Float             @default(0)
+  amountPaid      Float             @default(0)
+  balance         Float             @default(0)
+  status          InvoiceStatus     @default(DRAFT)
+  internalNotes   String?
+  patientNotes    String?
+  sentAt          DateTime?
+  paidAt          DateTime?
+  cancelledAt     DateTime?
+  voidedAt        DateTime?
+  voidedBy        String?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime
+  createdBy       String
+  InvoiceLineItem InvoiceLineItem[]
+  Payment         Payment[]
+
+  @@index([patientId, voidedAt])
+  @@index([invoiceDate])
+  @@index([invoiceNumber])
+  @@index([patientId])
+  @@index([providerId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model InvoiceLineItem {
+  id             String        @id
+  invoiceId      String
+  type           LineItemType
+  itemId         String?
+  name           String
+  description    String?
+  quantity       Float
+  unitPrice      Float
+  unitType       UnitType?
+  lotNumber      String?
+  discountType   DiscountType?
+  discountValue  Float?
+  discountAmount Float         @default(0)
+  taxRate        Float         @default(0)
+  taxAmount      Float         @default(0)
+  lineTotal      Float
+  providerId     String?
+  Invoice        Invoice       @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+
+  @@index([invoiceId])
+}
+
+model MembershipTier {
+  id                     String              @id
+  name                   String
+  description            String?
+  tier                   MembershipLevel
+  imageUrl               String?
+  billingCycle           BillingCycle
+  price                  Int
+  setupFee               Int                 @default(0)
+  benefits               Json
+  minimumTermMonths      Int                 @default(0)
+  cancellationNoticeDays Int                 @default(30)
+  isActive               Boolean             @default(true)
+  acceptingNewMembers    Boolean             @default(true)
+  displayOrder           Int                 @default(0)
+  createdAt              DateTime            @default(now())
+  updatedAt              DateTime
+  PatientMembership      PatientMembership[]
+
+  @@index([acceptingNewMembers])
+  @@index([isActive])
+  @@index([tier])
+}
+
+model Note {
+  id            String   @id
+  patientId     String
+  content       String
+  authorId      String
+  authorName    String
+  appointmentId String?
+  isImportant   Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  Patient       Patient  @relation(fields: [patientId], references: [id], onDelete: Cascade)
+
+  @@index([appointmentId])
+  @@index([createdAt])
+  @@index([patientId])
+}
+
+model Package {
+  id                   String            @id
+  name                 String
+  description          String?
+  category             String?
+  imageUrl             String?
+  contents             Json
+  regularPrice         Float
+  salePrice            Float
+  savings              Float
+  savingsPercent       Int
+  validityDays         Int
+  restrictions         Json?
+  isActive             Boolean           @default(true)
+  availableForPurchase Boolean           @default(true)
+  displayOrder         Int               @default(0)
+  createdAt            DateTime          @default(now())
+  updatedAt            DateTime
+  createdBy            String
+  PackagePurchase      PackagePurchase[]
+
+  @@index([availableForPurchase])
+  @@index([displayOrder])
+  @@index([isActive])
+}
+
+model PackagePurchase {
+  id            String                @id
+  packageId     String
+  packageName   String
+  patientId     String
+  purchaseDate  DateTime
+  purchasePrice Float
+  invoiceId     String?
+  paymentId     String?
+  validFrom     DateTime
+  validUntil    DateTime
+  items         Json
+  status        PackagePurchaseStatus
+  notes         String?
+  createdAt     DateTime              @default(now())
+  updatedAt     DateTime
+  createdBy     String
+  Package       Package               @relation(fields: [packageId], references: [id])
+
+  @@index([packageId])
+  @@index([patientId])
+  @@index([purchaseDate])
+  @@index([status])
+}
+
+model Patient {
+  id                           String        @id
+  patientNumber                String        @unique
+  firstName                    String
+  lastName                     String
+  middleName                   String?
+  preferredName                String?
+  pronouns                     String?
+  dateOfBirth                  DateTime
+  gender                       Gender?
+  email                        String?       @unique
+  phone                        String
+  alternatePhone               String?
+  workPhone                    String?
+  timezone                     String?
+  addressStreet                String?
+  addressStreet2               String?
+  addressCity                  String?
+  addressState                 String?
+  addressZipCode               String?
+  addressCountry               String?
+  emergencyContactName         String?
+  emergencyContactRelationship String?
+  emergencyContactPhone        String?
+  emergencyContactAltPhone     String?
+  bloodType                    String?
+  primaryProviderId            String?
+  commPrefMethod               String?
+  commPrefAppointmentReminders Boolean       @default(true)
+  commPrefMarketingEmails      Boolean       @default(false)
+  commPrefSmsNotifications     Boolean       @default(true)
+  commPrefEmailNotifications   Boolean       @default(true)
+  commPrefLanguage             String        @default("en")
+  privacyShareWithFamily       Boolean       @default(false)
+  privacyAllowPhotos           Boolean       @default(true)
+  privacyAllowResearch         Boolean       @default(false)
+  privacyMode                  Boolean       @default(false)
+  photoConsent                 Boolean?
+  marketingConsent             Boolean?
+  generalNotes                 String?
+  importantNotes               String?
+  tags                         String[]
+  status                       PatientStatus @default(ACTIVE)
+  balance                      Float         @default(0)
+  credits                      Float         @default(0)
+  lifetimeValue                Float         @default(0)
+  totalVisits                  Int           @default(0)
+  registrationDate             DateTime      @default(now())
+  firstVisit                   DateTime?
+  lastVisit                    DateTime?
+  createdAt                    DateTime      @default(now())
+  updatedAt                    DateTime
+  createdBy                    String
+  lastModifiedBy               String
+  deletedAt                    DateTime?
+  deletedBy                    String?
+  Allergy                      Allergy[]
+  Appointment                  Appointment[]
+  Note                         Note[]
+
+  @@index([firstName, lastName])
+  @@index([createdAt])
+  @@index([email])
+  @@index([lastName])
+  @@index([patientNumber])
+  @@index([phone])
+  @@index([status])
+}
+
+model PatientFormAssignment {
+  id            String           @id
+  formId        String
+  patientId     String
+  appointmentId String?
+  dueDate       DateTime?
+  status        AssignmentStatus
+  assignedAt    DateTime         @default(now())
+  assignedBy    String
+  completedAt   DateTime?
+  FormTemplate  FormTemplate     @relation(fields: [formId], references: [id], onDelete: Cascade)
+
+  @@index([formId])
+  @@index([patientId])
+  @@index([status])
+}
+
+model PatientMembership {
+  id                    String              @id
+  patientId             String
+  tierId                String
+  tierName              String
+  enrolledAt            DateTime
+  currentPeriodStart    DateTime
+  currentPeriodEnd      DateTime
+  nextBillingDate       DateTime?
+  cancelledAt           DateTime?
+  pausedAt              DateTime?
+  resumeAt              DateTime?
+  status                MembershipStatus
+  currentPeriodBenefits Json
+  paymentMethodId       String?
+  lastPaymentDate       DateTime?
+  lastPaymentAmount     Int?
+  createdAt             DateTime            @default(now())
+  updatedAt             DateTime
+  createdBy             String
+  BenefitRedemption     BenefitRedemption[]
+  MembershipTier        MembershipTier      @relation(fields: [tierId], references: [id])
+
+  @@index([enrolledAt])
+  @@index([patientId])
+  @@index([status])
+  @@index([tierId])
+}
+
+model Payment {
+  id               String        @id
+  invoiceId        String
+  patientId        String
+  amount           Float
+  currency         String        @default("USD")
+  method           PaymentMethod
+  cardDetails      Json?
+  checkDetails     Json?
+  giftCardDetails  Json?
+  financingDetails Json?
+  transactionId    String?
+  reference        String?
+  status           PaymentStatus
+  refundedAmount   Float         @default(0)
+  processedAt      DateTime
+  processedBy      String
+  notes            String?
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime
+  Invoice          Invoice       @relation(fields: [invoiceId], references: [id])
+  Refund           Refund[]
+
+  @@index([invoiceId])
+  @@index([patientId])
+  @@index([processedAt])
+  @@index([status])
+}
+
+model PhotoAnnotation {
+  id               String         @id
+  photoId          String
+  x                Float
+  y                Float
+  width            Float?
+  height           Float?
+  type             AnnotationType
+  label            String?
+  notes            String?
+  color            String?
+  measurementValue Float?
+  measurementUnit  String?
+  referenceType    String?
+  referenceId      String?
+  createdAt        DateTime       @default(now())
+  createdBy        String
+  updatedAt        DateTime?
+  updatedBy        String?
+  TreatmentPhoto   TreatmentPhoto @relation(fields: [photoId], references: [id], onDelete: Cascade)
+
+  @@index([photoId])
+}
+
+model ProductUsage {
+  id              String          @id @default(uuid())
+  treatmentId     String
+  productId       String
+  productName     String
+  productCategory ProductCategory
+  unitsUsed       Float?
+  volumeUsed      Float?
+  packagesUsed    Int?
+  lotNumber       String
+  expirationDate  String?
+  vialId          String?
+  unitPrice       Float?
+  totalPrice      Float?
+  addedAt         DateTime        @default(now())
+  addedBy         String
+  Treatment       Treatment       @relation(fields: [treatmentId], references: [id], onDelete: Cascade)
+
+  @@index([addedAt])
+  @@index([treatmentId])
+}
+
+model RecurringException {
+  id               String           @id
+  patternId        String
+  originalDate     String
+  type             ExceptionType
+  newDate          String?
+  newTime          String?
+  newProviderId    String?
+  modifiedFields   Json?
+  reason           String?
+  createdAt        DateTime         @default(now())
+  createdBy        String?
+  RecurringPattern RecurringPattern @relation(fields: [patternId], references: [id], onDelete: Cascade)
+
+  @@index([originalDate])
+  @@index([patternId])
+}
+
+model RecurringPattern {
+  id                 String               @id
+  patientId          String
+  patientName        String
+  serviceId          String
+  serviceName        String
+  providerId         String
+  providerName       String
+  duration           Int
+  roomId             String?
+  locationId         String?
+  notes              String?
+  color              String?
+  frequency          RecurringFrequency
+  interval           Int                  @default(1)
+  byDayOfWeek        Int[]
+  byDayOfMonth       Int?
+  bySetPos           Int?
+  startDate          String
+  startTime          String
+  endDate            String?
+  occurrenceCount    Int?
+  rruleString        String
+  status             RecurringStatus      @default(ACTIVE)
+  nextOccurrence     String?
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime
+  createdBy          String
+  RecurringException RecurringException[]
+
+  @@index([patientId])
+  @@index([providerId])
+  @@index([startDate])
+  @@index([status])
+}
+
+model Refund {
+  id            String       @id
+  paymentId     String
+  amount        Float
+  reason        String
+  status        RefundStatus
+  processedAt   DateTime?
+  processedBy   String
+  transactionId String?
+  createdAt     DateTime     @default(now())
+  Payment       Payment      @relation(fields: [paymentId], references: [id])
+
+  @@index([paymentId])
+  @@index([processedAt])
+}
+
+model Treatment {
+  id                String           @id @default(uuid())
+  patientId         String
+  providerId        String
+  appointmentId     String?
+  locationId        String?
+  serviceName       String?
+  serviceCategory   String?
+  productType       ProductType
+  treatmentArea     String?
+  chiefComplaint    String?
+  startTime         DateTime
+  endTime           DateTime?
+  status            TreatmentStatus
+  soapNotes         Json
+  photoIds          String[]
+  injectionPointIds String[]
+  signedOffBy       String?
+  signedOffAt       DateTime?
+  coSignRequired    Boolean          @default(false)
+  coSignedBy        String?
+  coSignedAt        DateTime?
+  notes             String?
+  consentObtained   Boolean          @default(false)
+  photosBeforeTaken Boolean          @default(false)
+  photosAfterTaken  Boolean          @default(false)
+  followUpScheduled Boolean          @default(false)
+  followUpDate      String?
+  complications     String?
+  outcome           String?
+  startedAt         DateTime?
+  completedAt       DateTime?
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+  createdBy         String
+  lastModifiedBy    String
+  InjectionPoint    InjectionPoint[]
+  ProductUsage      ProductUsage[]
+
+  @@index([appointmentId])
+  @@index([patientId])
+  @@index([providerId])
+  @@index([startTime])
+  @@index([status])
+}
+
+model TreatmentPhoto {
+  id               String            @id
+  patientId        String
+  treatmentId      String?
+  appointmentId    String?
+  storageKey       String
+  thumbnailKey     String?
+  originalFilename String
+  contentType      String
+  fileSize         Int
+  type             PhotoType
+  angle            PhotoAngle?
+  bodyRegion       String?
+  description      String?
+  consentFormId    String?
+  photoConsent     Boolean
+  marketingConsent Boolean           @default(false)
+  isProcessed      Boolean           @default(false)
+  width            Int?
+  height           Int?
+  uploadedAt       DateTime          @default(now())
+  uploadedBy       String
+  deletedAt        DateTime?
+  deletedBy        String?
+  PhotoAnnotation  PhotoAnnotation[]
+
+  @@index([patientId])
+  @@index([treatmentId])
+  @@index([uploadedAt])
+}
+
+model WaitlistEntry {
+  id                  String           @id
+  patientId           String
+  patientName         String
+  patientPhone        String
+  patientEmail        String?
+  serviceIds          String[]
+  serviceNames        String[]
+  providerIds         String[]
+  providerNames       String[]
+  preferredDays       String[]
+  preferredTimeRanges Json
+  flexibleDates       Boolean          @default(false)
+  flexibleProviders   Boolean          @default(true)
+  flexibleTimes       Boolean          @default(false)
+  status              WaitlistStatus   @default(ACTIVE)
+  priority            WaitlistPriority @default(NORMAL)
+  tier                VIPTier?
+  currentOffer        Json?
+  offerHistory        Json[]
+  notes               String?
+  deposit             Float?
+  hasCompletedForms   Boolean          @default(false)
+  createdAt           DateTime         @default(now())
+  updatedAt           DateTime
+  expiresAt           DateTime?
+
+  @@index([createdAt])
+  @@index([patientId])
+  @@index([priority])
+  @@index([status])
+}
+
+model WaitlistSettings {
+  id                     String   @id
+  automaticOffersEnabled Boolean  @default(true)
+  offerExpiryMinutes     Int      @default(120)
+  maxOffersPerSlot       Int      @default(3)
+  minimumNoticeHours     Int      @default(4)
+  offerSequence          String   @default("tier-weighted")
+  tierWeights            Json
+  autoTierRules          Json
+  communication          Json
+  autoExpireDays         Int      @default(30)
+  doubleOptInRequired    Boolean  @default(true)
+  auditLogRetentionDays  Int      @default(90)
+  updatedAt              DateTime
+  updatedBy              String?
+}
+
+enum AllergySeverity {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum AnnotationType {
+  marker
+  circle
+  arrow
+  text
+  measurement
+  area
+}
+
+enum AppointmentStatus {
+  SCHEDULED
+  CONFIRMED
+  ARRIVED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+  NO_SHOW
+}
+
+enum AssignmentStatus {
+  pending
+  in_progress
+  completed
+  expired
+}
+
+enum BillingCycle {
+  MONTHLY
+  QUARTERLY
+  ANNUAL
+}
+
+enum DiscountType {
+  PERCENTAGE
+  FIXED
+}
+
+enum ExceptionType {
+  SKIP
+  RESCHEDULE
+  MODIFY
+}
+
+enum ExpressBookingStatus {
+  ACTIVE
+  USED
+  EXPIRED
+  REVOKED
+}
+
+enum FormType {
+  intake
+  consent
+  hipaa
+  photo_release
+  treatment_specific
+  medical_history
+  custom
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+  PREFER_NOT_TO_SAY
+}
+
+enum GiftCardStatus {
+  PENDING
+  ACTIVE
+  PARTIALLY_USED
+  DEPLETED
+  EXPIRED
+  CANCELLED
+}
+
+enum GiftCardTransactionType {
+  PURCHASE
+  REDEMPTION
+  REFUND
+  ADJUSTMENT
+  EXPIRATION
+}
+
+enum GroupBookingStatus {
+  DRAFT
+  CONFIRMED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum GroupBookingType {
+  COUPLES
+  PARTY
+  CORPORATE
+  FAMILY
+  FRIENDS
+  OTHER
+}
+
+enum GroupPaymentType {
+  ORGANIZER_PAYS
+  SPLIT_EQUAL
+  INDIVIDUAL
+}
+
+enum InjectionDepth {
+  superficial
+  mid_dermal
+  deep_dermal
+  subcutaneous
+  supraperiosteal
+}
+
+enum InjectionTechnique {
+  serial
+  linear
+  fanning
+  cross_hatching
+  bolus
+  depot
+}
+
+enum InvoiceStatus {
+  DRAFT
+  SENT
+  VIEWED
+  PAID
+  PARTIALLY_PAID
+  OVERDUE
+  CANCELLED
+  REFUNDED
+}
+
+enum LineItemType {
+  SERVICE
+  PRODUCT
+  PACKAGE
+  INJECTABLE
+  ADJUSTMENT
+}
+
+enum MembershipLevel {
+  BRONZE
+  SILVER
+  GOLD
+  PLATINUM
+  VIP
+}
+
+enum MembershipStatus {
+  ACTIVE
+  PAUSED
+  CANCELLED
+  PAST_DUE
+  EXPIRED
+}
+
+enum PackagePurchaseStatus {
+  ACTIVE
+  PARTIALLY_USED
+  FULLY_USED
+  EXPIRED
+  CANCELLED
+  REFUNDED
+}
+
+enum ParticipantStatus {
+  INVITED
+  CONFIRMED
+  ARRIVED
+  IN_PROGRESS
+  COMPLETED
+  NO_SHOW
+  CANCELLED
+}
+
+enum PatientStatus {
+  ACTIVE
+  INACTIVE
+  DECEASED
+}
+
+enum PaymentMethod {
+  CASH
+  CREDIT_CARD
+  DEBIT_CARD
+  CHECK
+  GIFT_CARD
+  PACKAGE_CREDIT
+  FINANCING
+  OTHER
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+  PARTIALLY_REFUNDED
+}
+
+enum PhotoAngle {
+  front
+  left
+  right
+  angle_45_left
+  angle_45_right
+  top
+  custom
+}
+
+enum PhotoType {
+  before
+  after
+  during
+  progress
+  profile
+  other
+}
+
+enum ProductCategory {
+  neurotoxin
+  filler
+  skincare
+  anesthetic
+  other
+}
+
+enum ProductType {
+  neurotoxin
+  filler
+  laser
+  skin
+  body
+  other
+}
+
+enum RecurringFrequency {
+  DAILY
+  WEEKLY
+  BIWEEKLY
+  MONTHLY
+}
+
+enum RecurringStatus {
+  ACTIVE
+  PAUSED
+  COMPLETED
+  CANCELLED
+}
+
+enum RefundStatus {
+  PENDING
+  COMPLETED
+  FAILED
+}
+
+enum SubmissionStatus {
+  pending
+  in_progress
+  completed
+  expired
+}
+
+enum TreatmentStatus {
+  in_progress
+  completed
+  pending_review
+  cancelled
+}
+
+enum UnitType {
+  UNIT
+  SYRINGE
+  VIAL
+  ML
+}
+
+enum VIPTier {
+  PLATINUM
+  GOLD
+  SILVER
+  NONE
+}
+
+enum WaitlistPriority {
+  NORMAL
+  HIGH
+  URGENT
+}
+
+enum WaitlistStatus {
+  ACTIVE
+  OFFERED
+  BOOKED
+  EXPIRED
+  CANCELLED
+}
+
+// ===================
+// MESSAGING MODELS
+// ===================
+
+model Conversation {
+  id                   String             @id
+  patientId            String
+  patientName          String
+  patientPhone         String
+  patientEmail         String?
+  status               ConversationStatus
+  channel              MessageChannel
+  unreadCount          Int                @default(0)
+  lastMessageBody      String?
+  lastMessageAt        DateTime?
+  lastMessageDirection MessageDirection?
+  assignedTo           String?
+  assignedToName       String?
+  tags                 String[]
+  priority             MessagePriority
+  aiAnalysis           Json?
+  metadata             Json               @default("{}")
+  createdAt            DateTime           @default(now())
+  updatedAt            DateTime
+  createdBy            String
+  messages             MessagingMessage[]
+
+  @@index([patientId, channel])
+  @@index([patientId])
+  @@index([status])
+  @@index([assignedTo])
+  @@index([lastMessageAt])
+  @@index([priority])
+}
+
+model MessagingMessage {
+  id             String           @id
+  conversationId String
+  patientId      String
+  direction      MessageDirection
+  channel        MessageChannel
+  body           String
+  mediaUrls      String[]
+  from           String
+  to             String
+  status         MessageStatus
+  externalSid    String?
+  errorCode      String?
+  errorMessage   String?
+  scheduledAt    DateTime?
+  sentAt         DateTime?
+  deliveredAt    DateTime?
+  templateId     String?
+  isAutoResponse Boolean          @default(false)
+  aiAnalysis     Json?
+  metadata       Json             @default("{}")
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime
+  sentBy         String?
+  Conversation   Conversation     @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId, createdAt])
+  @@index([conversationId])
+  @@index([patientId])
+  @@index([status])
+  @@index([scheduledAt])
+  @@index([sentAt])
+  @@index([createdAt])
+}
+
+model Campaign {
+  id               String              @id
+  name             String
+  description      String?
+  status           CampaignStatus
+  audienceType     AudienceType
+  audienceFilters  Json?
+  audienceCount    Int                 @default(0)
+  consentCount     Int                 @default(0)
+  templateId       String?
+  messageBody      String
+  messageType      MessageType
+  scheduledFor     DateTime?
+  sendingStartedAt DateTime?
+  sentAt           DateTime?
+  pausedAt         DateTime?
+  stats            Json
+  batchSize        Int                 @default(100)
+  batchDelayMs     Int                 @default(5000)
+  currentBatch     Int                 @default(0)
+  totalBatches     Int                 @default(0)
+  createdBy        String
+  createdAt        DateTime            @default(now())
+  updatedAt        DateTime
+  cancelledAt      DateTime?
+  cancelledBy      String?
+  recipients       CampaignRecipient[]
+
+  @@index([status])
+  @@index([scheduledFor])
+  @@index([sentAt])
+  @@index([createdAt])
+}
+
+model CampaignRecipient {
+  id           String                  @id
+  campaignId   String
+  patientId    String
+  phone        String
+  status       CampaignRecipientStatus
+  sentAt       DateTime?
+  deliveredAt  DateTime?
+  failedReason String?
+  twilioSid    String?
+  Campaign     Campaign                @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+
+  @@index([campaignId])
+  @@index([patientId])
+  @@index([status])
+}
+
+model ConsentRecord {
+  id                         String            @id
+  patientId                  String            @unique
+  phone                      String
+  transactionalConsent       ConsentStatus
+  marketingConsent           ConsentStatus
+  transactionalOptInAt       DateTime?
+  marketingOptInAt           DateTime?
+  transactionalOptInSource   ConsentSource?
+  marketingOptInSource       ConsentSource?
+  transactionalOptOutAt      DateTime?
+  marketingOptOutAt          DateTime?
+  transactionalOptOutKeyword String?
+  marketingOptOutKeyword     String?
+  tcpaCompliant              Boolean           @default(true)
+  lastAuditedAt              DateTime?
+  createdAt                  DateTime          @default(now())
+  updatedAt                  DateTime
+  auditLogs                  ConsentAuditLog[]
+
+  @@index([patientId])
+  @@index([phone])
+  @@index([transactionalConsent])
+  @@index([marketingConsent])
+}
+
+model ConsentAuditLog {
+  id                    String         @id
+  patientId             String
+  phone                 String
+  action                ConsentAction
+  consentType           ConsentType
+  previousStatus        ConsentStatus
+  newStatus             ConsentStatus
+  source                ConsentSource
+  keyword               String?
+  messageSid            String?
+  ipAddress             String?
+  userAgent             String?
+  processedBy           String?
+  processedAt           DateTime
+  processedWithin10Days Boolean        @default(true)
+  createdAt             DateTime       @default(now())
+  consentRecordId       String?
+  ConsentRecord         ConsentRecord? @relation(fields: [consentRecordId], references: [id], onDelete: SetNull)
+
+  @@index([patientId])
+  @@index([phone])
+  @@index([action])
+  @@index([processedAt])
+  @@index([consentRecordId])
+}
+
+// ===================
+// MESSAGING ENUMS (NEW)
+// ===================
+
+enum MessageChannel {
+  sms
+  email
+  portal
+}
+
+enum MessageDirection {
+  inbound
+  outbound
+}
+
+enum MessagePriority {
+  low
+  normal
+  high
+  urgent
+}
+
+enum CampaignStatus {
+  draft
+  scheduled
+  sending
+  sent
+  paused
+  cancelled
+  failed
+}
+
+enum AudienceType {
+  all_patients
+  last_visit_30days
+  last_visit_60days
+  last_visit_90days
+  vip
+  new_patients
+  birthday_this_month
+  custom
+}
+
+enum MessageType {
+  marketing
+  transactional
+}
+
+enum CampaignRecipientStatus {
+  pending
+  sent
+  delivered
+  failed
+  opted_out
+}
+
+enum ConsentStatus {
+  opted_in
+  opted_out
+  pending
+}
+
+enum ConsentSource {
+  sms
+  web
+  app
+  paper
+  verbal
+  import
+}
+
+enum ConsentAction {
+  opt_in
+  opt_out
+  update
+  revoke_all
+}
+
+enum ConsentType {
+  transactional
+  marketing
+  all
+}
+
+model ReminderSettings {
+  id                 String   @id @default(uuid())
+  enabled            Boolean  @default(true)
+  sendConfirmation   Boolean  @default(true)
+  sendPrepReminder   Boolean  @default(true)
+  prepReminderDays   Int      @default(3)
+  send48hrReminder   Boolean  @default(true)
+  send24hrReminder   Boolean  @default(true)
+  send2hrReminder    Boolean  @default(true)
+  sendFollowUps      Boolean  @default(true)
+  businessHoursStart String   @default("09:00")
+  businessHoursEnd   String   @default("18:00")
+  quietHoursStart    String   @default("21:00")
+  quietHoursEnd      String   @default("08:00")
+  timezone           String   @default("America/New_York")
+  updatedAt          DateTime @updatedAt
+  updatedBy          String?
+}
+
+model SentReminder {
+  id            String         @id @default(uuid())
+  appointmentId String
+  patientId     String
+  patientPhone  String
+  reminderType  ReminderType
+  messageBody   String
+  messageSid    String?
+  status        ReminderStatus
+  sentAt        DateTime       @default(now())
+  deliveredAt   DateTime?
+  failedReason  String?
+
+  @@index([appointmentId])
+  @@index([patientId])
+  @@index([sentAt])
+  @@index([status])
+}
+
+model MessageTemplate {
+  id             String           @id @default(uuid())
+  name           String
+  category       TemplateCategory
+  channel        TemplateChannel
+  subject        String?
+  body           String
+  variables      String[]
+  tags           String[]
+  isActive       Boolean          @default(true)
+  isSystem       Boolean          @default(false)
+  usageCount     Int              @default(0)
+  lastUsedAt     DateTime?
+  hipaaCompliant Boolean          @default(true)
+  includesOptOut Boolean          @default(false)
+  maxLength      Int?
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  createdBy      String?
+
+  @@index([category])
+  @@index([channel])
+  @@index([isActive])
+  @@index([isSystem])
+}
+
+// Quick Replies - Pre-written responses for common messaging scenarios
+model QuickReply {
+  id          String    @id @default(uuid())
+  category    String
+  content     String
+  order       Int       @default(0)
+  isSystem    Boolean   @default(false)
+  createdById String?
+  useCount    Int       @default(0)
+  lastUsedAt  DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([category])
+  @@index([isSystem])
+}
+
+model QuickReplyCategory {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  displayName String
+  description String?
+  order       Int      @default(0)
+  icon        String?
+  isSystem    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([name])
+  @@index([isSystem])
+}
+
+model InboundMessage {
+  id              String   @id @default(uuid())
+  messageSid      String   @unique
+  from            String
+  to              String
+  body            String
+  numMedia        Int      @default(0)
+  mediaUrls       String[]
+  timestamp       DateTime @default(now())
+  conversationId  String?
+  patientId       String?
+  processed       Boolean  @default(false)
+  isOptOut        Boolean  @default(false)
+  isOptIn         Boolean  @default(false)
+  isEmergency     Boolean  @default(false)
+  detectedCommand String?
+
+  @@index([messageSid])
+  @@index([patientId])
+  @@index([conversationId])
+  @@index([timestamp])
+  @@index([processed])
+}
+
+model OutboundMessage {
+  id             String        @id @default(uuid())
+  externalSid    String        @unique
+  conversationId String
+  to             String
+  body           String
+  status         MessageStatus
+  errorCode      String?
+  errorMessage   String?
+  sentAt         DateTime      @default(now())
+  deliveredAt    DateTime?
+
+  @@index([externalSid])
+  @@index([conversationId])
+  @@index([status])
+  @@index([sentAt])
+}
+
+model StatusUpdate {
+  id            String        @id @default(uuid())
+  messageSid    String
+  messageStatus MessageStatus
+  errorCode     String?
+  errorMessage  String?
+  to            String
+  timestamp     DateTime      @default(now())
+
+  @@index([messageSid])
+  @@index([timestamp])
+}
+
+model StaffAlert {
+  id              String    @id @default(uuid())
+  type            AlertType
+  patientId       String?
+  patientPhone    String
+  message         String
+  triggerKeywords String[]
+  createdAt       DateTime  @default(now())
+  acknowledgedAt  DateTime?
+  acknowledgedBy  String?
+
+  @@index([type])
+  @@index([patientId])
+  @@index([createdAt])
+  @@index([acknowledgedAt])
+}
+
+model PatientMessagingProfile {
+  id             String    @id @default(uuid())
+  patientId      String    @unique
+  phone          String
+  phoneValid     Boolean   @default(true)
+  phoneType      PhoneType @default(mobile)
+  smsConsent     Boolean   @default(false)
+  smsConsentedAt DateTime?
+  smsOptOutAt    DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  @@index([patientId])
+  @@index([phone])
+  @@index([smsConsent])
+}
+
+model ChartingSettings {
+  id                     String   @id
+  providerId             String?
+  locationId             String?
+  defaultView            String   @default("face-2d")
+  showInjectionHistory   Boolean  @default(true)
+  showProductSuggestions Boolean  @default(true)
+  autoSaveInterval       Int      @default(30)
+  zoneConfigs            Json
+  defaultMeasurement     String   @default("units")
+  quickActions           Json
+  updatedAt              DateTime
+  updatedBy              String
+
+  @@unique([providerId, locationId])
+  @@index([providerId])
+  @@index([locationId])
+}
+
+enum ReminderType {
+  confirmation
+  prep_reminder
+  reminder_48hr
+  reminder_24hr
+  reminder_2hr
+  followup_24hr
+  followup_3day
+  followup_1week
+  followup_2week
+  no_show
+}
+
+enum ReminderStatus {
+  sent
+  delivered
+  failed
+}
+
+enum PendingReminderStatus {
+  pending
+  skipped
+  sent
+}
+
+enum TemplateCategory {
+  appointment
+  treatment
+  followup
+  marketing
+  financial
+  membership
+  review
+  emergency
+  administrative
+}
+
+enum TemplateChannel {
+  sms
+  email
+  both
+}
+
+enum MessageStatus {
+  queued
+  sending
+  sent
+  delivered
+  undelivered
+  failed
+}
+
+enum AlertType {
+  emergency
+  urgent
+  normal
+}
+
+enum ConversationStatus {
+  active
+  resolved
+  waiting
+  urgent
+  archived
+}
+
+enum PhoneType {
+  mobile
+  landline
+  voip
+  unknown
+}
+
+// ===================
+// INVENTORY MODELS
+// ===================
+
+model Vendor {
+  id                 String         @id @default(uuid())
+  name               String
+  shortName          String?
+  contactName        String?
+  email              String?
+  phone              String?
+  fax                String?
+  website            String?
+  address            Json?
+  accountNumber      String?
+  paymentTerms       String?
+  taxId              String?
+  averageLeadDays    Int            @default(7)
+  onTimeDeliveryRate Float?
+  qualityRating      Float?
+  isActive           Boolean        @default(true)
+  isPreferred        Boolean        @default(false)
+  notes              String?
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
+  createdBy          String?
+  updatedBy          String?
+  deletedAt          DateTime?
+  deletedBy          String?
+  products           Product[]
+  inventoryLots      InventoryLot[]
+
+  @@index([isActive])
+  @@index([isPreferred])
+}
+
+model Product {
+  id                     String               @id @default(uuid())
+  name                   String
+  displayName            String?
+  description            String?
+  category               ProductCategoryType?
+  brand                  String?
+  vendorId               String?
+  sku                    String               @unique
+  ndc                    String?
+  upc                    String?
+  gtin                   String?
+  costPrice              Float
+  retailPrice            Float
+  markupPercent          Float?
+  unitPrice              Float
+  unitType               ProductUnitType?
+  unitsPerPackage        Float                @default(1)
+  injectableDetails      Json?
+  storageRequirements    Json?
+  reorderPoint           Int                  @default(5)
+  reorderQuantity        Int                  @default(10)
+  minStockLevel          Int                  @default(1)
+  maxStockLevel          Int?
+  leadTimeDays           Int                  @default(7)
+  trackInventory         Boolean              @default(true)
+  trackByLot             Boolean              @default(true)
+  trackBySerial          Boolean              @default(false)
+  requireExpirationDate  Boolean              @default(true)
+  commissionable         Boolean              @default(false)
+  commissionRate         Float?
+  tags                   String[]
+  treatmentTypes         String[]
+  requiredCertifications String[]
+  status                 ProductStatusType    @default(active)
+  isActive               Boolean              @default(true)
+  availableForSale       Boolean              @default(false)
+  requiresPrescription   Boolean              @default(false)
+  controlledSubstance    Boolean              @default(false)
+  hsaFsaEligible         Boolean              @default(true)
+  imageUrl               String?
+  thumbnailUrl           String?
+  createdAt              DateTime             @default(now())
+  updatedAt              DateTime             @updatedAt
+  createdBy              String?
+  updatedBy              String?
+  deletedAt              DateTime?
+  deletedBy              String?
+  vendor                 Vendor?              @relation(fields: [vendorId], references: [id])
+  inventoryLots          InventoryLot[]
+
+  @@index([category])
+  @@index([status])
+  @@index([isActive])
+  @@index([vendorId])
+  @@index([sku])
+}
+
+model InventoryLot {
+  id                    String           @id @default(uuid())
+  productId             String
+  locationId            String
+  lotNumber             String
+  batchNumber           String?
+  serialNumber          String?
+  manufacturingDate     DateTime?
+  expirationDate        DateTime
+  receivedDate          DateTime         @default(now())
+  openedDate            DateTime?
+  initialQuantity       Float
+  currentQuantity       Float
+  reservedQuantity      Float            @default(0)
+  unitType              ProductUnitType?
+  reconstitutionDetails Json?
+  storageLocation       String?
+  purchaseOrderId       String?
+  vendorId              String?
+  invoiceNumber         String?
+  purchaseCost          Float?
+  status                LotStatusType    @default(available)
+  qualityNotes          String?
+  recallStatus          Json?
+  createdAt             DateTime         @default(now())
+  updatedAt             DateTime         @updatedAt
+  createdBy             String?
+  updatedBy             String?
+  deletedAt             DateTime?
+  deletedBy             String?
+  product               Product          @relation(fields: [productId], references: [id])
+  vendor                Vendor?          @relation(fields: [vendorId], references: [id])
+
+  @@index([productId])
+  @@index([locationId])
+  @@index([lotNumber])
+  @@index([expirationDate])
+  @@index([status])
+}
+
+// ===================
+// INVENTORY ENUMS
+// ===================
+
+enum ProductCategoryType {
+  neurotoxin
+  filler
+  skincare
+  device
+  consumable
+  supplement
+  other
+}
+
+enum ProductStatusType {
+  active
+  discontinued
+  out_of_stock
+  pending_approval
+}
+
+enum ProductUnitType {
+  units
+  syringe
+  vial
+  ml
+  cc
+  gram
+  piece
+  box
+  kit
+}
+
+enum LotStatusType {
+  available
+  quarantine
+  expired
+  recalled
+  depleted
+  damaged
+}
+
+model InventoryTransaction {
+  id               String                   @id @default(uuid())
+  type             InventoryTransactionType
+  productId        String
+  lotId            String?
+  quantity         Float
+  previousQuantity Float?
+  newQuantity      Float?
+  unitCost         Float?
+  totalCost        Float?
+  locationId       String?
+  patientId        String?
+  appointmentId    String?
+  practitionerId   String?
+  reason           String?
+  notes            String?
+  referenceNumber  String?
+  createdAt        DateTime                 @default(now())
+  createdBy        String?
+
+  @@index([productId])
+  @@index([lotId])
+  @@index([locationId])
+  @@index([createdAt])
+  @@index([type])
+}
+
+model InventoryTransfer {
+  id                    String         @id @default(uuid())
+  transferNumber        String         @unique
+  sourceLocationId      String
+  destinationLocationId String
+  status                TransferStatus @default(DRAFT)
+  items                 Json // Array of {productId, lotId, quantity}
+  notes                 String?
+  requestedAt           DateTime       @default(now())
+  requestedBy           String?
+  approvedAt            DateTime?
+  approvedBy            String?
+  shippedAt             DateTime?
+  receivedAt            DateTime?
+  receivedBy            String?
+
+  @@index([status])
+  @@index([sourceLocationId])
+  @@index([destinationLocationId])
+}
+
+model InventoryCount {
+  id            String      @id @default(uuid())
+  countNumber   String      @unique
+  locationId    String
+  status        CountStatus @default(IN_PROGRESS)
+  countType     String // full, cycle, spot
+  items         Json // Array of count items
+  startedAt     DateTime    @default(now())
+  startedBy     String?
+  completedAt   DateTime?
+  completedBy   String?
+  notes         String?
+  varianceTotal Float?
+
+  @@index([locationId])
+  @@index([status])
+}
+
+model WasteRecord {
+  id         String      @id @default(uuid())
+  productId  String
+  lotId      String?
+  quantity   Float
+  reason     WasteReason
+  notes      String?
+  locationId String?
+  recordedAt DateTime    @default(now())
+  recordedBy String?
+  unitCost   Float?
+  totalCost  Float?
+
+  @@index([productId])
+  @@index([lotId])
+  @@index([reason])
+  @@index([recordedAt])
+}
+
+model PurchaseOrder {
+  id           String              @id @default(uuid())
+  orderNumber  String              @unique
+  vendorId     String?
+  vendorName   String
+  status       PurchaseOrderStatus @default(DRAFT)
+  items        Json // Array of order items
+  subtotal     Float
+  tax          Float?
+  shipping     Float?
+  total        Float
+  notes        String?
+  expectedDate DateTime?
+  orderedAt    DateTime?
+  orderedBy    String?
+  receivedAt   DateTime?
+  receivedBy   String?
+  createdAt    DateTime            @default(now())
+  updatedAt    DateTime            @updatedAt
+
+  @@index([status])
+  @@index([vendorId])
+  @@index([orderNumber])
+}
+
+model InventoryAlert {
+  id         String               @id @default(uuid())
+  type       InventoryAlertType
+  severity   AlertSeverity
+  productId  String?
+  lotId      String?
+  locationId String?
+  message    String
+  status     InventoryAlertStatus @default(ACTIVE)
+  createdAt  DateTime             @default(now())
+  resolvedAt DateTime?
+  resolvedBy String?
+
+  @@index([type])
+  @@index([severity])
+  @@index([status])
+  @@index([productId])
+}
+
+model OpenVialSession {
+  id                String     @id @default(uuid())
+  lotId             String
+  productId         String
+  locationId        String
+  initialQuantity   Float
+  remainingQuantity Float
+  status            VialStatus @default(OPEN)
+  openedAt          DateTime   @default(now())
+  openedBy          String?
+  expiresAt         DateTime
+  closedAt          DateTime?
+  closedBy          String?
+  closeReason       String?
+  usageRecords      Json? // Array of usage records
+
+  @@index([lotId])
+  @@index([productId])
+  @@index([locationId])
+  @@index([status])
+  @@index([expiresAt])
+}
+
+// ===================
+// PROVIDER/STAFF MANAGEMENT MODELS
+// ===================
+
+model User {
+  id          String  @id @default(uuid())
+  firebaseUid String? @unique
+  employeeId  String? @unique
+
+  // Personal info
+  firstName      String
+  lastName       String
+  email          String    @unique
+  phone          String?
+  alternatePhone String?
+  profilePhoto   String?
+  pronouns       String?
+  birthDate      DateTime?
+
+  // Role & Access
+  role        UserRole
+  accessLevel AccessLevel?
+  status      UserStatus   @default(active)
+
+  // Location assignments
+  primaryLocationId String?
+
+  // Professional info
+  specializations String[]
+  certifications  Json?
+  licenses        Json?
+
+  // Medical identifiers
+  npiNumber String?
+  deaNumber String?
+
+  // Employment
+  hireDate        DateTime?
+  terminationDate DateTime?
+
+  // Address
+  address Json?
+
+  // Emergency contact
+  emergencyContact Json?
+
+  // Compensation
+  hourlyRate      Float?
+  salary          Float?
+  commissionRates Json?
+
+  // Bio & qualifications
+  bio            String?
+  qualifications String[]
+  languages      String[]
+
+  // Capabilities (for service matching)
+  capabilities     String[]
+  experienceLevels Json?
+
+  // Management hierarchy
+  reportsTo String?
+
+  // Practitioner-specific settings
+  staggerOnlineBooking Int? // minutes
+  defaultSchedule      Json?
+
+  // MFA & Security
+  mfaEnabled         Boolean   @default(false)
+  mfaSecret          String? // Encrypted TOTP secret
+  lastLoginAt        DateTime?
+  lastPasswordChange DateTime?
+
+  // Metadata
+  onboardingCompleted Boolean   @default(false)
+  lastTrainingDate    DateTime?
+  nextReviewDate      DateTime?
+  notes               String?
+
+  // Audit
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  createdBy      String?
+  lastModifiedBy String?
+  deletedAt      DateTime?
+  deletedBy      String?
+
+  // Relations
+  shifts                  Shift[]
+  timeOffRequests         TimeOffRequest[]
+  userLocations           UserLocation[]
+  servicePractitioners    ServicePractitioner[]
+  sessions                UserSession[]
+  staffPin                StaffPin?
+  pushTokens              PushToken[]
+  notifications           Notification[]
+  notificationPreferences NotificationPreference?
+
+  @@index([email])
+  @@index([role])
+  @@index([status])
+  @@index([primaryLocationId])
+}
+
+model UserLocation {
+  id         String   @id @default(uuid())
+  userId     String
+  locationId String
+  isPrimary  Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, locationId])
+  @@index([userId])
+  @@index([locationId])
+}
+
+model Shift {
+  id         String  @id @default(uuid())
+  userId     String
+  locationId String?
+  roomId     String?
+
+  // Schedule
+  dayOfWeek    Int? // 0-6, null if specific date
+  specificDate DateTime? // for one-off shifts
+  startTime    String // HH:MM format
+  endTime      String // HH:MM format
+  breakStart   String? // HH:MM format
+  breakEnd     String? // HH:MM format
+
+  // Type
+  isRecurring Boolean @default(true)
+
+  // Capabilities available during this shift
+  availableCapabilities String[]
+  availableEquipment    String[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([locationId])
+  @@index([dayOfWeek])
+  @@index([specificDate])
+}
+
+model TimeOffRequest {
+  id         String        @id @default(uuid())
+  userId     String
+  type       TimeOffType
+  startDate  DateTime
+  endDate    DateTime
+  status     TimeOffStatus @default(pending)
+  reason     String?
+  approvedBy String?
+  approvedAt DateTime?
+  notes      String?
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([status])
+  @@index([startDate])
+  @@index([endDate])
+}
+
+model UserSession {
+  id             String    @id @default(uuid())
+  userId         String
+  token          String    @unique
+  deviceInfo     Json?
+  expiresAt      DateTime
+  lastActivityAt DateTime?
+  createdAt      DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([token])
+  @@index([expiresAt])
+}
+
+model StaffPin {
+  id             String    @id @default(uuid())
+  userId         String    @unique
+  pinHash        String
+  failedAttempts Int       @default(0)
+  lockedUntil    DateTime?
+  lastUsedAt     DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model ServicePractitioner {
+  id             String   @id @default(uuid())
+  serviceId      String
+  practitionerId String
+  createdAt      DateTime @default(now())
+
+  service Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [practitionerId], references: [id], onDelete: Cascade)
+
+  @@unique([serviceId, practitionerId])
+  @@index([serviceId])
+  @@index([practitionerId])
+}
+
+model Location {
+  id        String   @id @default(uuid())
+  name      String
+  address   Json?
+  phone     String?
+  email     String?
+  timezone  String?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([isActive])
+}
+
+model Service {
+  id                  String                @id @default(uuid())
+  name                String
+  description         String?
+  category            String
+  duration            Int // minutes
+  scheduledDuration   Int? // minutes (includes buffer time)
+  price               Float
+  depositRequired     Boolean               @default(false)
+  depositAmount       Float?
+  isActive            Boolean               @default(true)
+  createdAt           DateTime              @default(now())
+  updatedAt           DateTime              @updatedAt
+  ServicePractitioner ServicePractitioner[]
+
+  @@index([category])
+  @@index([isActive])
+}
+
+// ===================
+// PROVIDER ENUMS
+// ===================
+
+enum UserRole {
+  admin
+  medical_director
+  physician
+  nurse_practitioner
+  registered_nurse
+  aesthetician
+  laser_technician
+  injection_specialist
+  front_desk
+  office_manager
+  billing_specialist
+  marketing_coordinator
+  patient_coordinator
+  patient
+}
+
+enum AccessLevel {
+  no_access
+  practitioner_limited
+  practitioner_front_desk
+  practitioner_front_desk_all_locations
+  front_desk_only
+  administrative_billing
+  full_access
+  account_owner
+}
+
+enum UserStatus {
+  active
+  inactive
+  on_leave
+  terminated
+}
+
+enum TimeOffType {
+  vacation
+  sick
+  personal
+  training
+}
+
+enum TimeOffStatus {
+  pending
+  approved
+  denied
+}
+
+// ===================
+// INVENTORY TRANSACTION ENUMS
+// ===================
+
+enum InventoryTransactionType {
+  PURCHASE
+  SALE
+  ADJUSTMENT
+  TRANSFER_IN
+  TRANSFER_OUT
+  WASTE
+  TREATMENT_USE
+  COUNT_ADJUSTMENT
+  RETURN
+  EXPIRED
+}
+
+enum TransferStatus {
+  DRAFT
+  REQUESTED
+  APPROVED
+  IN_TRANSIT
+  RECEIVED
+  CANCELLED
+}
+
+enum CountStatus {
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum WasteReason {
+  EXPIRED
+  CONTAMINATION
+  DAMAGED
+  PATIENT_NO_SHOW
+  SPILL
+  RECALLED
+  OTHER
+}
+
+enum PurchaseOrderStatus {
+  DRAFT
+  SUBMITTED
+  CONFIRMED
+  PARTIALLY_RECEIVED
+  RECEIVED
+  CANCELLED
+}
+
+enum InventoryAlertType {
+  LOW_STOCK
+  EXPIRING_SOON
+  EXPIRED
+  RECALL
+  REORDER_POINT
+}
+
+enum AlertSeverity {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum InventoryAlertStatus {
+  ACTIVE
+  ACKNOWLEDGED
+  RESOLVED
+  DISMISSED
+}
+
+enum VialStatus {
+  OPEN
+  CLOSED
+  EXPIRED
+  WASTED
+}
+
+// ===================
+// TREATMENT TEMPLATE MODELS
+// ===================
+
+model TreatmentTemplate {
+  id          String      @id @default(uuid())
+  name        String
+  description String?
+  productType ProductType
+
+  // Template details (stored as JSON)
+  defaultZones    Json @default("[]") // Array of TemplateZone
+  defaultProducts Json @default("[]") // Array of TemplateProduct
+
+  // SOAP note defaults (stored as JSON)
+  soapDefaults Json? // SOAPDefaults object
+
+  // Settings
+  estimatedDuration     Int // minutes
+  requiredConsents      String[]
+  aftercareInstructions String?
+
+  // Visibility
+  isGlobal   Boolean @default(false)
+  providerId String?
+
+  // Audit
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  createdBy String
+
+  @@index([productType])
+  @@index([isGlobal])
+  @@index([providerId])
+  @@index([createdAt])
+}
+
+model ProviderPlaybook {
+  id          String  @id @default(uuid())
+  providerId  String  @unique
+  name        String
+  description String?
+
+  // Personal protocols (stored as JSON)
+  protocols Json @default("[]") // Array of PlaybookProtocol
+
+  // DOT phrases for quick charting (stored as JSON)
+  dotPhrases Json @default("[]") // Array of DotPhrase
+
+  // Settings (stored as JSON)
+  defaultProductPreferences Json? // Record<string, string>
+
+  // Audit
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([providerId])
+}
+
+// ===================
+// NOTIFICATIONS MODELS
+// ===================
+
+model PushToken {
+  id        String       @id @default(uuid())
+  userId    String
+  token     String       @unique
+  platform  PushPlatform
+  deviceId  String?
+  isActive  Boolean      @default(true)
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, deviceId])
+  @@index([userId])
+  @@index([token])
+  @@index([isActive])
+}
+
+model Notification {
+  id        String               @id @default(uuid())
+  userId    String
+  type      NotificationType
+  title     String
+  body      String
+  data      Json?
+  read      Boolean              @default(false)
+  readAt    DateTime?
+  channel   NotificationChannel  @default(push)
+  priority  NotificationPriority @default(normal)
+  expiresAt DateTime?
+  createdAt DateTime             @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([read])
+  @@index([type])
+  @@index([createdAt])
+  @@index([userId, read])
+}
+
+model NotificationPreference {
+  id     String @id @default(uuid())
+  userId String @unique
+
+  // Email preferences
+  appointmentReminders Boolean @default(true)
+  appointmentChanges   Boolean @default(true)
+  messageNotifications Boolean @default(true)
+  marketingEmails      Boolean @default(false)
+  treatmentReminders   Boolean @default(true)
+  billingAlerts        Boolean @default(true)
+
+  // Push preferences
+  pushEnabled      Boolean @default(true)
+  pushAppointments Boolean @default(true)
+  pushMessages     Boolean @default(true)
+  pushPromotions   Boolean @default(false)
+
+  // SMS preferences
+  smsEnabled      Boolean @default(true)
+  smsAppointments Boolean @default(true)
+  smsReminders    Boolean @default(true)
+
+  // Quiet hours
+  quietHoursEnabled Boolean @default(false)
+  quietHoursStart   String? // HH:MM format
+  quietHoursEnd     String? // HH:MM format
+  timezone          String  @default("America/New_York")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+// ===================
+// NOTIFICATIONS ENUMS
+// ===================
+
+enum PushPlatform {
+  ios
+  android
+  web
+  expo
+}
+
+enum NotificationType {
+  appointment_reminder
+  appointment_confirmation
+  appointment_cancelled
+  appointment_rescheduled
+  message_received
+  treatment_followup
+  billing_reminder
+  payment_received
+  membership_renewal
+  marketing_promotion
+  system_alert
+  waitlist_offer
+  form_required
+}
+
+enum NotificationChannel {
+  push
+  email
+  sms
+  in_app
+}
+
+enum NotificationPriority {
+  low
+  normal
+  high
+  urgent
+}

@@ -1,11 +1,12 @@
 'use client'
 
 import { useState } from 'react'
-import { X, Calendar, Clock, User, MapPin, DollarSign, FileText, Edit, History } from 'lucide-react'
+import { X, Calendar, Clock, User, MapPin, DollarSign, FileText, Edit, History, Footprints } from 'lucide-react'
 import moment from 'moment'
-import { type Appointment, practitioners, services } from '@/lib/data'
+import { type Appointment, practitioners, services, locations } from '@/lib/data'
 import { mockRooms } from '@/lib/mockResources'
 import AppointmentHistory from './AppointmentHistory'
+import AddToCalendarButton from './AddToCalendarButton'
 
 interface AppointmentDetailViewProps {
   appointment: Appointment
@@ -21,9 +22,17 @@ export default function AppointmentDetailView({
   onEdit
 }: AppointmentDetailViewProps) {
   const [activeTab, setActiveTab] = useState<'details' | 'history'>('details')
-  
+
   // Get service details
   const service = services.find(s => s.name === appointment.serviceName)
+
+  // Get practitioner for calendar export
+  const practitioner = practitioners.find(p => p.id === appointment.practitionerId)
+
+  // Get location for calendar export
+  const location = appointment.locationId
+    ? locations.find(l => l.id === appointment.locationId)
+    : locations[0] // Default to first location
 
   return (
     <div className="h-full flex flex-col bg-white">
@@ -39,6 +48,16 @@ export default function AppointmentDetailView({
               <Edit className="h-4 w-4 mr-2" />
               Edit
             </button>
+            {/* Add to Calendar Button */}
+            {practitioner && (
+              <AddToCalendarButton
+                appointment={appointment}
+                practitioner={practitioner}
+                location={location}
+                variant="outline"
+                size="md"
+              />
+            )}
             <button
               onClick={onClose}
               className="p-1 hover:bg-gray-200 rounded-full transition-colors"
@@ -204,6 +223,44 @@ export default function AppointmentDetailView({
                 </div>
               )}
             </div>
+
+            {/* Booking Type & Check-In Time */}
+            {(appointment.bookingType || appointment.checkInTime) && (
+              <div className="border-t pt-6">
+                {appointment.bookingType && (
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-sm font-medium text-gray-700">Booking Type</span>
+                    <span className={`px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1.5 ${
+                      appointment.bookingType === 'walk_in' ? 'bg-orange-100 text-orange-800' :
+                      appointment.bookingType === 'express_booking' ? 'bg-amber-100 text-amber-800' :
+                      appointment.bookingType === 'from_waitlist' ? 'bg-blue-100 text-blue-800' :
+                      'bg-gray-100 text-gray-800'
+                    }`}>
+                      {appointment.bookingType === 'walk_in' && (
+                        <Footprints className="h-3 w-3" />
+                      )}
+                      {appointment.bookingType === 'walk_in' ? 'Walk-In' :
+                       appointment.bookingType === 'express_booking' ? 'Express Booking' :
+                       appointment.bookingType === 'from_waitlist' ? 'From Waitlist' :
+                       'Scheduled'}
+                    </span>
+                  </div>
+                )}
+                {appointment.checkInTime && (
+                  <div className="p-3 bg-orange-50 rounded-md">
+                    <div className="flex items-center gap-2 text-orange-800">
+                      <Clock className="h-4 w-4" />
+                      <span className="text-sm font-medium">
+                        Checked in at {moment(appointment.checkInTime).format('h:mm A')}
+                      </span>
+                    </div>
+                    <p className="text-xs text-orange-600 mt-1">
+                      {moment(appointment.checkInTime).format('MMM D, YYYY')}
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         ) : (
           <AppointmentHistory

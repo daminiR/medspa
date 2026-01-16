@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import {
   Users,
   TrendingUp,
@@ -12,11 +12,12 @@ import {
   Award,
   Target,
   ChevronRight,
-  Download,
   BarChart3,
   ArrowUpRight,
   ArrowDownRight
 } from 'lucide-react'
+import { ExportButton } from './ExportButton'
+import { ExportColumn, formatters } from '@/lib/export'
 import {
   BarChart,
   Bar,
@@ -241,10 +242,57 @@ export function ProviderPerformanceDashboard() {
     )
   }
   
-  const selectedProviderData = selectedProvider === 'all' 
-    ? null 
+  const selectedProviderData = selectedProvider === 'all'
+    ? null
     : providers.find(p => p.id === selectedProvider)
-  
+
+  // Prepare export data
+  const exportData = useMemo(() => {
+    const dataToExport = selectedProvider === 'all' ? providers : providers.filter(p => p.id === selectedProvider)
+    return dataToExport.map(p => ({
+      name: p.name,
+      role: p.role,
+      revenueToday: p.revenue.today,
+      revenueWeek: p.revenue.week,
+      revenueMonth: p.revenue.month,
+      revenueYear: p.revenue.year,
+      servicesToday: p.services.today,
+      servicesWeek: p.services.week,
+      servicesMonth: p.services.month,
+      avgServicesPerDay: p.services.avgPerDay,
+      utilization: p.performance.utilization,
+      avgTicket: p.performance.avgTicket,
+      rebookingRate: p.performance.rebookingRate,
+      satisfaction: p.performance.satisfaction,
+      productivityScore: p.performance.productivityScore,
+      commissionServices: p.commission.services,
+      commissionProducts: p.commission.products,
+      tips: p.commission.tips,
+      totalCommission: p.commission.total,
+    }))
+  }, [providers, selectedProvider])
+
+  const exportColumns: ExportColumn[] = [
+    { key: 'name', header: 'Provider Name' },
+    { key: 'role', header: 'Role' },
+    { key: 'revenueToday', header: 'Revenue (Today)', formatter: formatters.currency },
+    { key: 'revenueWeek', header: 'Revenue (Week)', formatter: formatters.currency },
+    { key: 'revenueMonth', header: 'Revenue (Month)', formatter: formatters.currency },
+    { key: 'revenueYear', header: 'Revenue (Year)', formatter: formatters.currency },
+    { key: 'servicesToday', header: 'Services (Today)', formatter: formatters.number },
+    { key: 'servicesMonth', header: 'Services (Month)', formatter: formatters.number },
+    { key: 'avgServicesPerDay', header: 'Avg Services/Day', formatter: formatters.number },
+    { key: 'utilization', header: 'Utilization %', formatter: formatters.percentage },
+    { key: 'avgTicket', header: 'Avg Ticket', formatter: formatters.currency },
+    { key: 'rebookingRate', header: 'Rebooking Rate %', formatter: formatters.percentage },
+    { key: 'satisfaction', header: 'Satisfaction', formatter: formatters.number },
+    { key: 'productivityScore', header: 'Productivity Score', formatter: formatters.percentage },
+    { key: 'commissionServices', header: 'Service Commission', formatter: formatters.currency },
+    { key: 'commissionProducts', header: 'Product Commission', formatter: formatters.currency },
+    { key: 'tips', header: 'Tips', formatter: formatters.currency },
+    { key: 'totalCommission', header: 'Total Commission', formatter: formatters.currency },
+  ]
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -275,10 +323,12 @@ export function ProviderPerformanceDashboard() {
               <option value="month">This Month</option>
               <option value="year">This Year</option>
             </select>
-            <button className="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
-              <Download className="w-4 h-4 inline mr-2" />
-              Export
-            </button>
+            <ExportButton
+              data={exportData}
+              columns={exportColumns}
+              filename="provider-performance"
+              title="Provider Performance Report"
+            />
           </div>
         </div>
       </div>

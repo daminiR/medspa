@@ -1,0 +1,329 @@
+            <div class="section">
+                <h2 class="section-title">🧪 Testing Checklist</h2>
+                <p style="font-size: 1.1em; color: #666; margin-bottom: 30px;">
+                    Comprehensive testing checklist for all features. Check items as you test them. Progress is saved locally.
+                </p>
+
+                <!-- Express Booking Tests -->
+                <div class="integration-card" style="margin-bottom: 30px; border-left: 5px solid #8B5CF6;">
+                    <h3 style="color: #333; margin-bottom: 15px;">
+                        📱 Express Booking
+                        <span style="background: #8B5CF6; color: white; padding: 4px 12px; border-radius: 12px; font-size: 0.7em; margin-left: 10px;">NEW</span>
+                    </h3>
+                    <p style="color: #666; margin-bottom: 15px;">Test the SMS-based quick booking feature</p>
+
+                    <div class="requirements-checklist" id="express-booking-tests">
+                        <h4 style="margin-bottom: 10px; color: #555;">Staff Side (Admin)</h4>
+                        <label class="checkbox-item">
+                            <input type="checkbox" onchange="saveTestProgress()">
+                            <span>Go to Calendar → Click "Express Book" button (purple/pink gradient)</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" onchange="saveTestProgress()">
+                            <span>Enter patient first name, phone number, select service</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" onchange="saveTestProgress()">
+                            <span>Toggle deposit requirement ON/OFF</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" onchange="saveTestProgress()">
+                            <span>Select different expiry times (15m, 30m, 1h, 2h)</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" onchange="saveTestProgress()">
+                            <span>Click "Send Booking Link via SMS" → Verify success message</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" onchange="saveTestProgress()">
+                            <span>Check your phone - SMS should arrive with booking link</span>
+                        </label>
+
+                        <h4 style="margin-top: 20px; margin-bottom: 10px; color: #555;">Patient Side (Mobile)</h4>
+                        <label class="checkbox-item">
+                            <input type="checkbox" onchange="saveTestProgress()">
+                            <span>Click the link in SMS → Patient booking page loads</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" onchange="saveTestProgress()">
+                            <span>Verify appointment details shown (date, time, service, provider)</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" onchange="saveTestProgress()">
+                            <span>Countdown timer visible and counting down</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" onchange="saveTestProgress()">
+                            <span>Fill in form: first name, last name, email, phone</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" onchange="saveTestProgress()">
+                            <span>Accept cancellation policy checkbox</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" onchange="saveTestProgress()">
+                            <span>Click "Confirm Booking" → Success page appears</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" onchange="saveTestProgress()">
+                            <span>Confirmation SMS received on phone</span>
+                        </label>
+
+                        <h4 style="margin-top: 20px; margin-bottom: 10px; color: #555;">Edge Cases</h4>
+                        <label class="checkbox-item">
+                            <input type="checkbox" onchange="saveTestProgress()">
+                            <span>Wait for link to expire → "Link Expired" page shown</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" onchange="saveTestProgress()">
+                            <span>Try to submit without accepting policy → Error shown</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" onchange="saveTestProgress()">
+                            <span>Try to use same link after completing → "Already completed" message</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Virtual Waiting Room Tests -->
+                <div class="integration-card" style="margin-bottom: 30px; border-left: 5px solid #10B981;">
+                    <h3 style="color: #333; margin-bottom: 15px;">
+                        🏥 Virtual Waiting Room
+                        <span style="background: #10B981; color: white; padding: 4px 12px; border-radius: 12px; font-size: 0.7em; margin-left: 10px;">COMPLETE</span>
+                    </h3>
+                    <p style="color: #666; margin-bottom: 15px;">Test the SMS check-in and queue management</p>
+
+                    <div class="requirements-checklist" id="waiting-room-tests">
+                        <label class="checkbox-item">
+                            <input type="checkbox" onchange="saveTestProgress()">
+                            <span>Go to /waiting-room → Queue dashboard loads</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" onchange="saveTestProgress()">
+                            <span>Go to /check-in → Patient check-in page loads on mobile</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" onchange="saveTestProgress()">
+                            <span>Enter phone number → Appointment found</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" onchange="saveTestProgress()">
+                            <span>Click "Check In" → Patient added to waiting queue</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" onchange="saveTestProgress()">
+                            <span>Staff clicks "Call Patient" → SMS sent to patient</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" onchange="saveTestProgress()">
+                            <span>Staff clicks "Mark Checked In" → Patient removed from queue</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Messages/SMS Tests -->
+                <div class="integration-card" style="margin-bottom: 30px; border-left: 5px solid #3B82F6;">
+                    <h3 style="color: #333; margin-bottom: 15px;">
+                        💬 Messages & SMS
+                    </h3>
+                    <p style="color: #666; margin-bottom: 15px;">Test the messaging center and SMS functionality</p>
+
+                    <div class="requirements-checklist" id="messages-tests">
+                        <label class="checkbox-item">
+                            <input type="checkbox" onchange="saveTestProgress()">
+                            <span>Go to /messages → Conversations list loads</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" onchange="saveTestProgress()">
+                            <span>Click a conversation → Messages appear</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" onchange="saveTestProgress()">
+                            <span>Type message → Send SMS → Message sent (check phone)</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" onchange="saveTestProgress()">
+                            <span>Click Quick Reply → Message auto-filled</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" onchange="saveTestProgress()">
+                            <span>Click "Send Forms" → Form templates shown</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" onchange="saveTestProgress()">
+                            <span>Send a form → Message with link composed</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" onchange="saveTestProgress()">
+                            <span>Filter: Unread, Today, Post-care → List filtered correctly</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Calendar Tests -->
+                <div class="integration-card" style="margin-bottom: 30px; border-left: 5px solid #F59E0B;">
+                    <h3 style="color: #333; margin-bottom: 15px;">
+                        📅 Calendar & Appointments
+                    </h3>
+                    <p style="color: #666; margin-bottom: 15px;">Test calendar views and appointment management</p>
+
+                    <div class="requirements-checklist" id="calendar-tests">
+                        <label class="checkbox-item">
+                            <input type="checkbox" onchange="saveTestProgress()">
+                            <span>Go to /calendar → Calendar loads with practitioners</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" onchange="saveTestProgress()">
+                            <span>Switch between Day/Week view</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" onchange="saveTestProgress()">
+                            <span>Navigate: Previous/Next/Today buttons work</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" onchange="saveTestProgress()">
+                            <span>Click time slot → Appointment modal opens</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" onchange="saveTestProgress()">
+                            <span>Create appointment → Appears on calendar</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" onchange="saveTestProgress()">
+                            <span>Click appointment → Details panel opens</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" onchange="saveTestProgress()">
+                            <span>Add break (lunch/personal) → Shows on calendar</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" onchange="saveTestProgress()">
+                            <span>Drag appointment → Reschedules correctly</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Patient Management Tests -->
+                <div class="integration-card" style="margin-bottom: 30px; border-left: 5px solid #EC4899;">
+                    <h3 style="color: #333; margin-bottom: 15px;">
+                        👥 Patient Management
+                    </h3>
+                    <p style="color: #666; margin-bottom: 15px;">Test patient profiles and management</p>
+
+                    <div class="requirements-checklist" id="patient-tests">
+                        <label class="checkbox-item">
+                            <input type="checkbox" onchange="saveTestProgress()">
+                            <span>Go to /patients → Patient list loads</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" onchange="saveTestProgress()">
+                            <span>Search patients → Results filter correctly</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" onchange="saveTestProgress()">
+                            <span>Click patient → Profile page loads</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" onchange="saveTestProgress()">
+                            <span>View tabs: Details, History, Financials, etc.</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" onchange="saveTestProgress()">
+                            <span>Create new patient → Form submits successfully</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" onchange="saveTestProgress()">
+                            <span>Edit patient → Changes saved</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Billing Tests -->
+                <div class="integration-card" style="margin-bottom: 30px; border-left: 5px solid #14B8A6;">
+                    <h3 style="color: #333; margin-bottom: 15px;">
+                        💳 Billing & Payments
+                    </h3>
+                    <p style="color: #666; margin-bottom: 15px;">Test billing, payments, and packages</p>
+
+                    <div class="requirements-checklist" id="billing-tests">
+                        <label class="checkbox-item">
+                            <input type="checkbox" onchange="saveTestProgress()">
+                            <span>Go to /billing → Billing page loads</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" onchange="saveTestProgress()">
+                            <span>Select services → Total calculates correctly</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" onchange="saveTestProgress()">
+                            <span>Injectable billing → Face chart works, units tracked</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" onchange="saveTestProgress()">
+                            <span>Apply package → Discount applied</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" onchange="saveTestProgress()">
+                            <span>Process payment (test mode) → Payment succeeds</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" onchange="saveTestProgress()">
+                            <span>Split payment → Multiple methods work</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" onchange="saveTestProgress()">
+                            <span>Go to /packages → Package list loads</span>
+                        </label>
+                        <label class="checkbox-item">
+                            <input type="checkbox" onchange="saveTestProgress()">
+                            <span>Create package → Wizard completes</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Progress Summary -->
+                <div style="background: linear-gradient(135deg, #667eea15 0%, #764ba215 100%); padding: 25px; border-radius: 15px; margin-top: 40px;">
+                    <h3 style="margin-bottom: 15px; color: #333;">📊 Testing Progress</h3>
+                    <div id="testing-progress-summary">
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px;">
+                            <div style="background: white; padding: 15px; border-radius: 10px; text-align: center;">
+                                <div id="express-booking-progress" style="font-size: 1.5em; font-weight: bold; color: #8B5CF6;">0%</div>
+                                <div style="color: #666; font-size: 0.85em;">Express Booking</div>
+                            </div>
+                            <div style="background: white; padding: 15px; border-radius: 10px; text-align: center;">
+                                <div id="waiting-room-progress" style="font-size: 1.5em; font-weight: bold; color: #10B981;">0%</div>
+                                <div style="color: #666; font-size: 0.85em;">Waiting Room</div>
+                            </div>
+                            <div style="background: white; padding: 15px; border-radius: 10px; text-align: center;">
+                                <div id="messages-progress" style="font-size: 1.5em; font-weight: bold; color: #3B82F6;">0%</div>
+                                <div style="color: #666; font-size: 0.85em;">Messages</div>
+                            </div>
+                            <div style="background: white; padding: 15px; border-radius: 10px; text-align: center;">
+                                <div id="calendar-progress" style="font-size: 1.5em; font-weight: bold; color: #F59E0B;">0%</div>
+                                <div style="color: #666; font-size: 0.85em;">Calendar</div>
+                            </div>
+                            <div style="background: white; padding: 15px; border-radius: 10px; text-align: center;">
+                                <div id="patient-progress" style="font-size: 1.5em; font-weight: bold; color: #EC4899;">0%</div>
+                                <div style="color: #666; font-size: 0.85em;">Patients</div>
+                            </div>
+                            <div style="background: white; padding: 15px; border-radius: 10px; text-align: center;">
+                                <div id="billing-progress" style="font-size: 1.5em; font-weight: bold; color: #14B8A6;">0%</div>
+                                <div style="color: #666; font-size: 0.85em;">Billing</div>
+                            </div>
+                        </div>
+                        <button onclick="resetTestProgress()" style="margin-top: 20px; padding: 10px 20px; background: #dc3545; color: white; border: none; border-radius: 8px; cursor: pointer;">
+                            🔄 Reset All Test Progress
+                        </button>
+                    </div>
+                </div>
+
+                <div class="note" style="margin-top: 30px;">
+                    <strong>Testing Tips:</strong>
+                    <ul style="margin-left: 20px; margin-top: 10px;">
+                        <li>Use test phone number: <code>+17652500332</code> for SMS testing</li>
+                        <li>Stripe is in test mode - use card <code>4242 4242 4242 4242</code></li>
+                        <li>Check browser console (F12) for any errors</li>
+                        <li>Progress is saved in your browser - checkboxes persist across sessions</li>
+                    </ul>
+                </div>
+            </div>

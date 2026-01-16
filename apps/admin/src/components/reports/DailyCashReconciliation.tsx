@@ -1,12 +1,11 @@
 'use client'
 
-import { useState } from 'react'
-import { 
-  DollarSign, 
-  CreditCard, 
-  Banknote, 
+import { useState, useMemo } from 'react'
+import {
+  DollarSign,
+  CreditCard,
+  Banknote,
   Calendar,
-  Download,
   Printer,
   TrendingUp,
   Users,
@@ -15,6 +14,8 @@ import {
   Check,
   X
 } from 'lucide-react'
+import { ExportButton } from './ExportButton'
+import { ExportColumn, formatters } from '@/lib/export'
 
 interface PaymentBreakdown {
   cash: number
@@ -119,6 +120,42 @@ export function DailyCashReconciliation() {
     }).format(amount)
   }
 
+  // Prepare export data
+  const exportData = useMemo(() => {
+    const data = reconciliationData
+    return [
+      { category: 'Summary', item: 'Gross Revenue', value: data.grossRevenue },
+      { category: 'Summary', item: 'Net Revenue', value: data.netRevenue },
+      { category: 'Summary', item: 'Transaction Count', value: data.transactionCount },
+      { category: 'Summary', item: 'Patient Count', value: data.patientCount },
+      { category: 'Summary', item: 'New Patients', value: data.newPatients },
+      { category: 'Cash Drawer', item: 'Opening Cash', value: data.openingCash },
+      { category: 'Cash Drawer', item: 'Expected Cash', value: data.expectedCash },
+      { category: 'Cash Drawer', item: 'Closing Cash', value: data.closingCash },
+      { category: 'Cash Drawer', item: 'Variance', value: data.variance },
+      { category: 'Payments', item: 'Cash', value: data.payments.cash },
+      { category: 'Payments', item: 'Credit Card', value: data.payments.creditCard },
+      { category: 'Payments', item: 'Debit Card', value: data.payments.debitCard },
+      { category: 'Payments', item: 'Check', value: data.payments.check },
+      { category: 'Payments', item: 'Gift Card', value: data.payments.giftCard },
+      { category: 'Payments', item: 'Package Credit', value: data.payments.packageCredit },
+      { category: 'Services', item: 'Injectables', value: data.services.injectables },
+      { category: 'Services', item: 'Facials', value: data.services.facials },
+      { category: 'Services', item: 'Laser', value: data.services.laser },
+      { category: 'Services', item: 'Products', value: data.services.products },
+      { category: 'Services', item: 'Packages', value: data.services.packages },
+      { category: 'Adjustments', item: 'Refunds', value: data.refunds },
+      { category: 'Adjustments', item: 'Discounts', value: data.discounts },
+      { category: 'Adjustments', item: 'Tips', value: data.tips },
+    ]
+  }, [reconciliationData])
+
+  const exportColumns: ExportColumn[] = [
+    { key: 'category', header: 'Category' },
+    { key: 'item', header: 'Item' },
+    { key: 'value', header: 'Amount', formatter: formatters.currency },
+  ]
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -141,10 +178,17 @@ export function DailyCashReconciliation() {
               <Printer className="w-4 h-4" />
               Print
             </button>
-            <button className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 flex items-center gap-2">
-              <Download className="w-4 h-4" />
-              Export
-            </button>
+            <ExportButton
+              data={exportData}
+              columns={exportColumns}
+              filename="cash-reconciliation"
+              title="Daily Cash Reconciliation"
+              dateRange={{
+                start: reconciliationData.date.toISOString().split('T')[0],
+                end: reconciliationData.date.toISOString().split('T')[0]
+              }}
+              variant="primary"
+            />
           </div>
         </div>
       </div>

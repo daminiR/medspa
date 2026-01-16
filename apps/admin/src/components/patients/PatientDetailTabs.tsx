@@ -1,3 +1,10 @@
+/**
+ * @deprecated This component is deprecated in favor of PatientDetailTabsClean.tsx
+ * which includes more comprehensive features like the AppointmentHistory component
+ * and a separate Medical Profile tab. This file is kept for reference only.
+ *
+ * For new development, use: import PatientDetailTabs from '@/components/patients/PatientDetailTabsClean'
+ */
 'use client'
 
 import { useState } from 'react'
@@ -77,7 +84,7 @@ export default function PatientDetailTabs({ patient }: PatientDetailTabsProps) {
               <div className="flex items-center gap-4 mt-2 text-sm text-gray-600">
                 <span className="flex items-center gap-1">
                   <User className="h-4 w-4" />
-                  {patient.gender} • {calculateAge(patient.dateOfBirth)} years old
+                  {patient.gender} • {calculateAge(patient.dateOfBirth instanceof Date ? patient.dateOfBirth.toISOString() : patient.dateOfBirth)} years old
                 </span>
                 <span className="flex items-center gap-1">
                   <Calendar className="h-4 w-4" />
@@ -118,7 +125,7 @@ export default function PatientDetailTabs({ patient }: PatientDetailTabsProps) {
                 <h4 className="text-sm font-medium text-red-900">Medical Alerts</h4>
                 <ul className="mt-1 text-sm text-red-700 space-y-1">
                   {patient.medicalAlerts.map((alert, index) => (
-                    <li key={index}>• {alert}</li>
+                    <li key={index}>• {alert.description}</li>
                   ))}
                 </ul>
               </div>
@@ -169,14 +176,14 @@ export default function PatientDetailTabs({ patient }: PatientDetailTabsProps) {
                     <div>
                       <p className="text-gray-600">Address:</p>
                       <p className="text-gray-900">
-                        {patient.address.street} {patient.address.unit && `, ${patient.address.unit}`}<br />
-                        {patient.address.city}, {patient.address.state} {patient.address.zip}
+                        {patient.address.street}{patient.address.street2 && `, ${patient.address.street2}`}<br />
+                        {patient.address.city}, {patient.address.state} {patient.address.zipCode}
                       </p>
                     </div>
                   )}
                   <div>
                     <p className="text-gray-600">Preferred Contact:</p>
-                    <p className="text-gray-900 capitalize">{patient.preferredCommunication}</p>
+                    <p className="text-gray-900 capitalize">{patient.communicationPreferences?.preferredMethod || 'Not specified'}</p>
                   </div>
                 </div>
               </div>
@@ -219,7 +226,7 @@ export default function PatientDetailTabs({ patient }: PatientDetailTabsProps) {
                       <p className="text-gray-600 font-medium">Allergies:</p>
                       <ul className="mt-1 text-gray-900 space-y-1">
                         {patient.allergies.map((allergy, index) => (
-                          <li key={index}>• {allergy}</li>
+                          <li key={index}>• {allergy.allergen} ({allergy.severity})</li>
                         ))}
                       </ul>
                     </div>
@@ -229,7 +236,7 @@ export default function PatientDetailTabs({ patient }: PatientDetailTabsProps) {
                       <p className="text-gray-600 font-medium">Current Medications:</p>
                       <ul className="mt-1 text-gray-900 space-y-1">
                         {patient.medications.map((med, index) => (
-                          <li key={index}>• {med}</li>
+                          <li key={index}>• {med.name} - {med.dosage}</li>
                         ))}
                       </ul>
                     </div>
@@ -249,10 +256,10 @@ export default function PatientDetailTabs({ patient }: PatientDetailTabsProps) {
                     Aesthetic Profile
                   </h3>
                   <div className="bg-gray-50 rounded-lg p-4 space-y-3 text-sm">
-                    {patient.aestheticProfile.fitzpatrickType && (
+                    {patient.aestheticProfile.skinType && (
                       <div>
-                        <p className="text-gray-600">Fitzpatrick Type:</p>
-                        <p className="text-gray-900">Type {patient.aestheticProfile.fitzpatrickType}</p>
+                        <p className="text-gray-600">Skin Type (Fitzpatrick):</p>
+                        <p className="text-gray-900">Type {patient.aestheticProfile.skinType}</p>
                       </div>
                     )}
                     {patient.aestheticProfile.skinConcerns && patient.aestheticProfile.skinConcerns.length > 0 && (
@@ -287,16 +294,16 @@ export default function PatientDetailTabs({ patient }: PatientDetailTabsProps) {
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-sm text-gray-600">Last Payment:</span>
+                    <span className="text-sm text-gray-600">Last Visit:</span>
                     <span className="text-sm text-gray-900">
-                      {patient.lastPaymentDate ? format(new Date(patient.lastPaymentDate), 'MMM d, yyyy') : 'N/A'}
+                      {patient.lastVisit ? format(new Date(patient.lastVisit), 'MMM d, yyyy') : 'N/A'}
                     </span>
                   </div>
-                  {patient.insurance && (
+                  {patient.insurance && patient.insurance.length > 0 && (
                     <div className="pt-2 border-t">
                       <p className="text-sm text-gray-600">Insurance:</p>
-                      <p className="text-sm text-gray-900">{patient.insurance.provider}</p>
-                      <p className="text-xs text-gray-500">ID: {patient.insurance.memberId}</p>
+                      <p className="text-sm text-gray-900">{patient.insurance[0].provider}</p>
+                      <p className="text-xs text-gray-500">Policy: {patient.insurance[0].policyNumber}</p>
                     </div>
                   )}
                 </div>
@@ -312,7 +319,7 @@ export default function PatientDetailTabs({ patient }: PatientDetailTabsProps) {
                   <div className="flex justify-between">
                     <span className="text-gray-600">Total Visits:</span>
                     <span className="text-gray-900 font-medium">
-                      {patient.visitCount || 0}
+                      {patient.totalVisits || 0}
                     </span>
                   </div>
                   <div className="flex justify-between">
@@ -573,13 +580,13 @@ export default function PatientDetailTabs({ patient }: PatientDetailTabsProps) {
             </div>
 
             <div className="space-y-4">
-              {patient.notes && (
+              {patient.generalNotes && (
                 <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
                   <div className="flex items-start gap-2">
                     <MessageSquare className="h-5 w-5 text-yellow-600 flex-shrink-0 mt-0.5" />
                     <div>
                       <p className="text-sm font-medium text-gray-900">General Notes</p>
-                      <p className="text-sm text-gray-700 mt-1">{patient.notes}</p>
+                      <p className="text-sm text-gray-700 mt-1">{patient.generalNotes}</p>
                     </div>
                   </div>
                 </div>

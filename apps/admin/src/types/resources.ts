@@ -65,6 +65,7 @@ export interface RoomAssignment {
   practitionerId?: string
   startTime: Date
   endTime: Date
+  serviceName?: string
 }
 
 export interface RoomAvailability {

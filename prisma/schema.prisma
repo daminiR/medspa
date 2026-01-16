@@ -1,0 +1,1506 @@
+// Medical Spa Platform - Prisma Schema
+// Inventory Management Models
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ===================
+// Product Management
+// ===================
+
+enum ProductCategory {
+  neurotoxin
+  filler
+  skincare
+  device
+  consumable
+  supplement
+  other
+}
+
+enum ProductStatus {
+  active
+  discontinued
+  out_of_stock
+  pending_approval
+}
+
+enum UnitType {
+  units
+  syringe
+  vial
+  ml
+  cc
+  gram
+  piece
+  box
+  kit
+}
+
+enum InjectableType {
+  neurotoxin
+  filler
+  biostimulator
+  pdo_threads
+}
+
+model ProductCategory {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  displayName String
+  description String?
+  products    Product[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("product_categories")
+}
+
+model Product {
+  id                       String         @id @default(uuid())
+  name                     String
+  displayName              String
+  description              String?
+  category                 ProductCategory @default(other)
+  categoryId               String?
+  productCategory          ProductCategory? @relation(fields: [categoryId], references: [id])
+  brand                    String
+  manufacturerId           String?
+  manufacturerName         String
+
+  // Identification
+  sku                      String         @unique
+  ndc                      String?
+  upc                      String?
+  gtin                     String?
+
+  // Pricing
+  costPrice                Decimal        @db.Decimal(10, 2)
+  retailPrice              Decimal        @db.Decimal(10, 2)
+  markupPercent            Decimal        @default(0) @db.Decimal(5, 2)
+  unitPrice                Decimal        @db.Decimal(10, 2)
+  unitType                 UnitType       @default(units)
+  unitsPerPackage          Int            @default(1)
+
+  // Injectable-specific fields (JSON for flexibility)
+  injectableDetails        Json?          // { type, concentration, dilutionRatio, defaultDilution, volumePerSyringe, reconstitutionRequired, maxHoursAfterReconstitution }
+
+  // Storage requirements (FDA compliance)
+  storageRequirements      Json?          // { temperatureMin, temperatureMax, requiresRefrigeration, freezerStorage, lightSensitive, humidityControlled, specialInstructions }
+
+  // Inventory thresholds
+  reorderPoint             Int            @default(10)
+  reorderQuantity          Int            @default(20)
+  minStockLevel            Int            @default(5)
+  maxStockLevel            Int            @default(100)
+  leadTimeDays             Int            @default(7)
+
+  // Tracking flags
+  trackInventory           Boolean        @default(true)
+  trackByLot               Boolean        @default(true)
+  trackBySerial            Boolean        @default(false)
+  requireExpirationDate    Boolean        @default(true)
+
+  // Commission
+  commissionable           Boolean        @default(false)
+  commissionRate           Decimal?       @db.Decimal(5, 2)
+
+  // Categorization
+  tags                     String[]
+  treatmentTypes           String[]
+  requiredCertifications   String[]
+
+  // Status
+  status                   ProductStatus  @default(active)
+  isActive                 Boolean        @default(true)
+  availableForSale         Boolean        @default(false)
+  requiresPrescription     Boolean        @default(false)
+  controlledSubstance      Boolean        @default(false)
+  hsaFsaEligible           Boolean        @default(false)
+
+  // Images
+  imageUrl                 String?
+  thumbnailUrl             String?
+
+  // Audit
+  createdAt                DateTime       @default(now())
+  updatedAt                DateTime       @updatedAt
+  createdBy                String
+  lastUpdatedBy            String
+
+  // Soft delete
+  deletedAt                DateTime?
+  deletedBy                String?
+
+  // Relations
+  inventoryLots            InventoryLot[]
+  purchaseOrderItems       PurchaseOrderItem[]
+  inventoryTransactions    InventoryTransaction[]
+  wasteRecords             WasteRecord[]
+  openVialSessions         OpenVialSession[]
+
+  @@index([sku])
+  @@index([category])
+  @@index([brand])
+  @@index([status])
+  @@index([isActive])
+  @@map("products")
+}
+
+// ===================
+// Inventory Lot Tracking
+// ===================
+
+enum LotStatus {
+  available
+  quarantine
+  expired
+  recalled
+  depleted
+  damaged
+}
+
+model InventoryLot {
+  id                       String         @id @default(uuid())
+  productId                String
+  product                  Product        @relation(fields: [productId], references: [id])
+  productName              String         // Denormalized for performance
+  lotNumber                String
+  batchNumber              String?
+  serialNumber             String?
+
+  // Dates
+  manufacturingDate        DateTime?
+  expirationDate           DateTime
+  receivedDate             DateTime
+  openedDate               DateTime?
+
+  // Quantities
+  initialQuantity          Decimal        @db.Decimal(10, 2)
+  currentQuantity          Decimal        @db.Decimal(10, 2)
+  reservedQuantity         Decimal        @default(0) @db.Decimal(10, 2)
+  unitType                 UnitType
+
+  // Reconstitution tracking
+  reconstitutionDetails    Json?          // { reconstitutedAt, diluentVolume, diluentType, reconstitutedBy, expiresAt, concentration }
+
+  // Location
+  locationId               String
+  locationName             String         // Denormalized
+  storageLocation          String?
+
+  // Purchase order link
+  purchaseOrderId          String?
+  purchaseOrder            PurchaseOrder? @relation(fields: [purchaseOrderId], references: [id])
+
+  // Vendor
+  vendorId                 String?
+  vendor                   Vendor?        @relation(fields: [vendorId], references: [id])
+  vendorName               String?        // Denormalized
+
+  // Cost
+  purchaseCost             Decimal        @db.Decimal(10, 2)
+
+  // Status
+  status                   LotStatus      @default(available)
+  qualityNotes             String?
+
+  // Recall tracking
+  recallStatus             Json?          // { isRecalled, recallDate, recallReason, recallNumber, fdaRecallClass, patientsNotified, notificationDate }
+
+  // Audit
+  createdAt                DateTime       @default(now())
+  updatedAt                DateTime       @updatedAt
+  createdBy                String
+  lastUpdatedBy            String
+
+  // Relations
+  inventoryTransactions    InventoryTransaction[]
+  wasteRecords             WasteRecord[]
+  openVialSessions         OpenVialSession[]
+  lotUsages                LotUsage[]
+
+  @@unique([productId, lotNumber])
+  @@index([productId])
+  @@index([lotNumber])
+  @@index([expirationDate])
+  @@index([status])
+  @@index([locationId])
+  @@map("inventory_lots")
+}
+
+// ===================
+// Lot Usage Tracking (for multi-patient vials)
+// ===================
+
+model LotUsage {
+  id                       String         @id @default(uuid())
+  lotId                    String
+  lot                      InventoryLot   @relation(fields: [lotId], references: [id])
+  openVialSessionId        String?
+  openVialSession          OpenVialSession? @relation(fields: [openVialSessionId], references: [id])
+
+  // Usage details
+  unitsUsed                Decimal        @db.Decimal(10, 2)
+  timestamp                DateTime       @default(now())
+
+  // Patient/Treatment info
+  patientId                String
+  patientName              String
+  appointmentId            String
+  practitionerId           String
+  practitionerName         String
+
+  // Clinical details
+  areasInjected            Json?          // [{ name, units }]
+  chartId                  String?
+  notes                    String?
+
+  // Audit
+  createdAt                DateTime       @default(now())
+  createdBy                String
+
+  @@index([lotId])
+  @@index([patientId])
+  @@index([practitionerId])
+  @@index([appointmentId])
+  @@index([timestamp])
+  @@map("lot_usages")
+}
+
+// ===================
+// Open Vial Sessions (KEY DIFFERENTIATOR)
+// ===================
+
+enum OpenVialStatus {
+  active
+  expired
+  depleted
+  discarded
+}
+
+enum VialClosedReason {
+  depleted
+  expired
+  stability_exceeded
+  contamination
+  manual_close
+}
+
+model OpenVialSession {
+  id                       String         @id @default(uuid())
+  lotId                    String
+  lot                      InventoryLot   @relation(fields: [lotId], references: [id])
+  lotNumber                String         // Denormalized
+  productId                String
+  product                  Product        @relation(fields: [productId], references: [id])
+  productName              String         // Denormalized
+  vialNumber               Int
+
+  // Quantities
+  originalUnits            Decimal        @db.Decimal(10, 2)
+  currentUnits             Decimal        @db.Decimal(10, 2)
+  usedUnits                Decimal        @default(0) @db.Decimal(10, 2)
+  wastedUnits              Decimal        @default(0) @db.Decimal(10, 2)
+
+  // Reconstitution tracking
+  reconstitutedAt          DateTime?
+  reconstitutedBy          String?
+  reconstitutedByName      String?
+  diluentType              String?
+  diluentVolume            Decimal?       @db.Decimal(10, 2)
+  concentration            String?
+  expiresAt                DateTime
+  stabilityHoursTotal      Int
+  stabilityHoursRemaining  Decimal        @db.Decimal(5, 2)
+  isExpired                Boolean        @default(false)
+
+  // Usage records
+  usageRecords             LotUsage[]
+  totalPatients            Int            @default(0)
+
+  // Location
+  locationId               String
+  locationName             String         // Denormalized
+  storageLocation          String?
+
+  // Status
+  status                   OpenVialStatus @default(active)
+  closedAt                 DateTime?
+  closedBy                 String?
+  closedReason             VialClosedReason?
+
+  // Cost analysis
+  vialCost                 Decimal        @db.Decimal(10, 2)
+  costPerUnitUsed          Decimal        @default(0) @db.Decimal(10, 2)
+  revenueGenerated         Decimal        @default(0) @db.Decimal(10, 2)
+  profitMargin             Decimal        @default(0) @db.Decimal(5, 2)
+
+  // Audit
+  createdAt                DateTime       @default(now())
+  updatedAt                DateTime       @updatedAt
+  createdBy                String
+  lastUpdatedBy            String
+
+  @@index([lotId])
+  @@index([productId])
+  @@index([status])
+  @@index([locationId])
+  @@index([expiresAt])
+  @@map("open_vial_sessions")
+}
+
+// ===================
+// Inventory Adjustments & Transactions
+// ===================
+
+enum TransactionType {
+  receive
+  adjustment_add
+  adjustment_remove
+  treatment_use
+  transfer_out
+  transfer_in
+  damage
+  expiration
+  recall
+  return_vendor
+  sale
+  waste
+  reconstitution
+}
+
+enum TransactionStatus {
+  pending
+  completed
+  cancelled
+  reversed
+}
+
+model InventoryTransaction {
+  id                       String         @id @default(uuid())
+  type                     TransactionType
+  status                   TransactionStatus @default(completed)
+  timestamp                DateTime       @default(now())
+
+  // Product/Lot
+  productId                String
+  product                  Product        @relation(fields: [productId], references: [id])
+  productName              String         // Denormalized
+  lotId                    String
+  lot                      InventoryLot   @relation(fields: [lotId], references: [id])
+  lotNumber                String         // Denormalized
+
+  // Quantity
+  quantity                 Decimal        @db.Decimal(10, 2)
+  unitType                 UnitType
+  quantityBefore           Decimal        @db.Decimal(10, 2)
+  quantityAfter            Decimal        @db.Decimal(10, 2)
+
+  // Cost
+  unitCost                 Decimal        @db.Decimal(10, 2)
+  totalCost                Decimal        @db.Decimal(10, 2)
+
+  // Location
+  locationId               String
+  locationName             String         // Denormalized
+
+  // Treatment-related (if applicable)
+  appointmentId            String?
+  patientId                String?
+  patientName              String?
+  practitionerId           String?
+  practitionerName         String?
+
+  // Invoice/Billing (if applicable)
+  invoiceId                String?
+  invoiceLineItemId        String?
+
+  // Purchase Order (if applicable)
+  purchaseOrderId          String?
+
+  // Transfer (if applicable)
+  transferId               String?
+  transfer                 InventoryTransfer? @relation(fields: [transferId], references: [id])
+
+  // Treatment details (JSON for flexibility)
+  treatmentDetails         Json?          // { serviceName, areasInjected, chartId, treatmentNotes }
+
+  // Reason & Notes
+  reason                   String
+  notes                    String?
+
+  // Audit
+  performedBy              String
+  performedByName          String
+  approvedBy               String?
+  approvedByName           String?
+  approvalRequired         Boolean        @default(false)
+  approvalTimestamp        DateTime?
+
+  metadata                 Json?
+
+  createdAt                DateTime       @default(now())
+  updatedAt                DateTime       @updatedAt
+
+  @@index([productId])
+  @@index([lotId])
+  @@index([type])
+  @@index([timestamp])
+  @@index([locationId])
+  @@index([patientId])
+  @@index([practitionerId])
+  @@index([status])
+  @@map("inventory_transactions")
+}
+
+// ===================
+// Waste Tracking
+// ===================
+
+enum WasteReason {
+  expired_unused
+  stability_exceeded
+  contamination
+  draw_up_loss
+  patient_no_show
+  adverse_reaction_discard
+  training
+  damaged
+  recall
+  other
+}
+
+model WasteRecord {
+  id                       String         @id @default(uuid())
+  lotId                    String
+  lot                      InventoryLot   @relation(fields: [lotId], references: [id])
+  lotNumber                String         // Denormalized
+  productId                String
+  product                  Product        @relation(fields: [productId], references: [id])
+  productName              String         // Denormalized
+
+  // Vial session (if applicable)
+  openVialSessionId        String?
+
+  // Waste details
+  unitsWasted              Decimal        @db.Decimal(10, 2)
+  unitType                 UnitType
+  reason                   WasteReason
+  reasonNotes              String?
+
+  // Cost
+  unitCost                 Decimal        @db.Decimal(10, 2)
+  totalWasteValue          Decimal        @db.Decimal(10, 2)
+
+  // Recorded by
+  recordedBy               String
+  recordedByName           String
+  recordedAt               DateTime       @default(now())
+
+  // Location
+  locationId               String
+  locationName             String         // Denormalized
+
+  // Practitioner/Appointment (if applicable)
+  practitionerId           String?
+  practitionerName         String?
+  appointmentId            String?
+
+  // Audit
+  createdAt                DateTime       @default(now())
+  updatedAt                DateTime       @updatedAt
+
+  @@index([lotId])
+  @@index([productId])
+  @@index([reason])
+  @@index([recordedAt])
+  @@index([locationId])
+  @@map("waste_records")
+}
+
+// ===================
+// Inventory Transfers
+// ===================
+
+enum TransferStatus {
+  draft
+  requested
+  approved
+  in_transit
+  received
+  cancelled
+}
+
+model InventoryTransfer {
+  id                       String         @id @default(uuid())
+  transferNumber           String         @unique
+
+  // Locations
+  sourceLocationId         String
+  sourceLocationName       String         // Denormalized
+  destinationLocationId    String
+  destinationLocationName  String         // Denormalized
+
+  // Items
+  items                    TransferItem[]
+
+  // Dates
+  requestedDate            DateTime       @default(now())
+  approvedDate             DateTime?
+  shippedDate              DateTime?
+  receivedDate             DateTime?
+
+  // Status
+  status                   TransferStatus @default(draft)
+
+  // Shipping
+  trackingNumber           String?
+  carrier                  String?
+
+  // Totals
+  totalValue               Decimal        @db.Decimal(10, 2)
+
+  // People
+  requestedBy              String
+  requestedByName          String
+  approvedBy               String?
+  approvedByName           String?
+  shippedBy                String?
+  shippedByName            String?
+  receivedBy               String?
+  receivedByName           String?
+
+  // Notes
+  requestNotes             String?
+  approvalNotes            String?
+  receivingNotes           String?
+
+  // Relations
+  transactions             InventoryTransaction[]
+
+  // Audit
+  createdAt                DateTime       @default(now())
+  updatedAt                DateTime       @updatedAt
+
+  @@index([transferNumber])
+  @@index([status])
+  @@index([sourceLocationId])
+  @@index([destinationLocationId])
+  @@map("inventory_transfers")
+}
+
+model TransferItem {
+  id                       String         @id @default(uuid())
+  transferId               String
+  transfer                 InventoryTransfer @relation(fields: [transferId], references: [id])
+
+  // Product/Lot
+  productId                String
+  productName              String         // Denormalized
+  lotId                    String
+  lotNumber                String         // Denormalized
+
+  // Quantities
+  requestedQuantity        Decimal        @db.Decimal(10, 2)
+  approvedQuantity         Decimal        @default(0) @db.Decimal(10, 2)
+  shippedQuantity          Decimal        @default(0) @db.Decimal(10, 2)
+  receivedQuantity         Decimal        @default(0) @db.Decimal(10, 2)
+
+  unitType                 UnitType
+
+  // Cost
+  unitCost                 Decimal        @db.Decimal(10, 2)
+  totalCost                Decimal        @db.Decimal(10, 2)
+
+  notes                    String?
+
+  @@index([transferId])
+  @@index([productId])
+  @@index([lotId])
+  @@map("transfer_items")
+}
+
+// ===================
+// Physical Inventory Counts
+// ===================
+
+enum CountStatus {
+  draft
+  in_progress
+  completed
+  approved
+  posted
+}
+
+enum CountType {
+  full
+  cycle
+  spot
+  category
+}
+
+model InventoryCount {
+  id                       String         @id @default(uuid())
+  countNumber              String         @unique
+
+  // Location
+  locationId               String
+  locationName             String         // Denormalized
+
+  // Count type & filters
+  countType                CountType
+  categoryFilter           String?
+  productFilter            String[]
+
+  // Dates
+  scheduledDate            DateTime
+  startedAt                DateTime?
+  completedAt              DateTime?
+  approvedAt               DateTime?
+  postedAt                 DateTime?
+
+  // Items
+  items                    CountItem[]
+
+  // Summary
+  totalItems               Int            @default(0)
+  countedItems             Int            @default(0)
+  itemsWithVariance        Int            @default(0)
+  totalVarianceValue       Decimal        @default(0) @db.Decimal(10, 2)
+
+  // Status
+  status                   CountStatus    @default(draft)
+
+  // People
+  createdBy                String
+  startedBy                String?
+  completedBy              String?
+  approvedBy               String?
+  postedBy                 String?
+
+  notes                    String?
+
+  // Audit
+  createdAt                DateTime       @default(now())
+  updatedAt                DateTime       @updatedAt
+
+  @@index([countNumber])
+  @@index([status])
+  @@index([locationId])
+  @@index([scheduledDate])
+  @@map("inventory_counts")
+}
+
+model CountItem {
+  id                       String         @id @default(uuid())
+  countId                  String
+  count                    InventoryCount @relation(fields: [countId], references: [id])
+
+  // Product/Lot
+  productId                String
+  productName              String         // Denormalized
+  lotId                    String?
+  lotNumber                String?
+
+  // Quantities
+  systemQuantity           Decimal        @db.Decimal(10, 2)
+  countedQuantity          Decimal        @default(0) @db.Decimal(10, 2)
+  variance                 Decimal        @default(0) @db.Decimal(10, 2)
+  variancePercent          Decimal        @default(0) @db.Decimal(5, 2)
+
+  // Cost
+  unitCost                 Decimal        @db.Decimal(10, 2)
+  varianceValue            Decimal        @default(0) @db.Decimal(10, 2)
+
+  notes                    String?
+
+  // Counted by
+  countedBy                String?
+  countedAt                DateTime?
+
+  @@index([countId])
+  @@index([productId])
+  @@map("count_items")
+}
+
+// ===================
+// Inventory Alerts
+// ===================
+
+enum AlertType {
+  low_stock
+  out_of_stock
+  expiring_soon
+  expired
+  recall
+  temperature_excursion
+  variance_detected
+  reorder_recommended
+}
+
+enum AlertSeverity {
+  info
+  warning
+  critical
+}
+
+enum AlertStatus {
+  active
+  acknowledged
+  resolved
+  dismissed
+}
+
+model InventoryAlert {
+  id                       String         @id @default(uuid())
+  type                     AlertType
+  severity                 AlertSeverity
+  status                   AlertStatus    @default(active)
+
+  // Product/Lot (optional)
+  productId                String?
+  productName              String?
+  lotId                    String?
+  lotNumber                String?
+
+  // Location
+  locationId               String
+  locationName             String         // Denormalized
+
+  // Alert details
+  title                    String
+  message                  String
+  actionRequired           String?
+
+  // Thresholds (if applicable)
+  currentValue             Decimal?       @db.Decimal(10, 2)
+  thresholdValue           Decimal?       @db.Decimal(10, 2)
+
+  // Expiration (if applicable)
+  expirationDate           DateTime?
+  daysUntilExpiration      Int?
+
+  // Actions
+  acknowledgedBy           String?
+  acknowledgedAt           DateTime?
+  resolvedBy               String?
+  resolvedAt               DateTime?
+  resolution               String?
+
+  notificationSent         Boolean        @default(false)
+
+  // Audit
+  createdAt                DateTime       @default(now())
+  updatedAt                DateTime       @updatedAt
+
+  @@index([type])
+  @@index([severity])
+  @@index([status])
+  @@index([locationId])
+  @@index([productId])
+  @@map("inventory_alerts")
+}
+
+// ===================
+// Vendors
+// ===================
+
+model Vendor {
+  id                       String         @id @default(uuid())
+  name                     String
+  shortName                String
+
+  // Contact
+  contactName              String?
+  email                    String?
+  phone                    String?
+  fax                      String?
+  website                  String?
+
+  // Address
+  address                  Json?          // { street, city, state, zipCode, country }
+
+  // Account
+  accountNumber            String?
+  paymentTerms             String?
+  taxId                    String?
+
+  // Products
+  productIds               String[]
+  primaryCategory          ProductCategory?
+
+  // Performance
+  averageLeadDays          Int            @default(7)
+  onTimeDeliveryRate       Decimal?       @db.Decimal(5, 2)
+  qualityRating            Decimal?       @db.Decimal(3, 2)
+
+  // Status
+  isActive                 Boolean        @default(true)
+  isPreferred              Boolean        @default(false)
+
+  notes                    String?
+
+  // Relations
+  purchaseOrders           PurchaseOrder[]
+  inventoryLots            InventoryLot[]
+
+  // Audit
+  createdAt                DateTime       @default(now())
+  updatedAt                DateTime       @updatedAt
+
+  @@index([name])
+  @@index([isActive])
+  @@index([primaryCategory])
+  @@map("vendors")
+}
+
+// ===================
+// Purchase Orders
+// ===================
+
+enum PurchaseOrderStatus {
+  draft
+  submitted
+  confirmed
+  shipped
+  partial_received
+  received
+  cancelled
+}
+
+enum PaymentStatus {
+  pending
+  partial
+  paid
+}
+
+model PurchaseOrder {
+  id                       String         @id @default(uuid())
+  orderNumber              String         @unique
+
+  // Vendor
+  vendorId                 String
+  vendor                   Vendor         @relation(fields: [vendorId], references: [id])
+  vendorName               String         // Denormalized
+  vendorContact            String?
+  vendorEmail              String?
+  vendorPhone              String?
+
+  // Location
+  locationId               String
+  locationName             String         // Denormalized
+  shippingAddress          String?
+
+  // Dates
+  orderDate                DateTime       @default(now())
+  expectedDeliveryDate     DateTime?
+  actualDeliveryDate       DateTime?
+
+  // Items
+  items                    PurchaseOrderItem[]
+
+  // Totals
+  subtotal                 Decimal        @db.Decimal(10, 2)
+  taxAmount                Decimal        @default(0) @db.Decimal(10, 2)
+  shippingCost             Decimal        @default(0) @db.Decimal(10, 2)
+  discount                 Decimal        @default(0) @db.Decimal(10, 2)
+  total                    Decimal        @db.Decimal(10, 2)
+
+  // Status
+  status                   PurchaseOrderStatus @default(draft)
+  paymentStatus            PaymentStatus  @default(pending)
+  paymentTerms             String?
+  paymentMethod            String?
+
+  // Shipping
+  trackingNumber           String?
+  carrier                  String?
+
+  // Notes
+  internalNotes            String?
+  vendorNotes              String?
+
+  // People
+  createdBy                String
+  submittedBy              String?
+  submittedAt              DateTime?
+  approvedBy               String?
+  approvedAt               DateTime?
+  receivedBy               String?
+  receivedAt               DateTime?
+  cancelledBy              String?
+  cancelledAt              DateTime?
+
+  // Relations
+  inventoryLots            InventoryLot[]
+  receivingRecords         ReceivingRecord[]
+
+  // Audit
+  createdAt                DateTime       @default(now())
+  updatedAt                DateTime       @updatedAt
+
+  @@index([orderNumber])
+  @@index([vendorId])
+  @@index([status])
+  @@index([orderDate])
+  @@index([locationId])
+  @@map("purchase_orders")
+}
+
+enum DiscountType {
+  percentage
+  fixed
+}
+
+model PurchaseOrderItem {
+  id                       String         @id @default(uuid())
+  purchaseOrderId          String
+  purchaseOrder            PurchaseOrder  @relation(fields: [purchaseOrderId], references: [id])
+
+  // Product
+  productId                String
+  product                  Product        @relation(fields: [productId], references: [id])
+  productName              String         // Denormalized
+  sku                      String
+
+  // Quantities
+  quantityOrdered          Decimal        @db.Decimal(10, 2)
+  quantityReceived         Decimal        @default(0) @db.Decimal(10, 2)
+  quantityPending          Decimal        @db.Decimal(10, 2)
+
+  unitType                 UnitType
+
+  // Pricing
+  unitCost                 Decimal        @db.Decimal(10, 2)
+  totalCost                Decimal        @db.Decimal(10, 2)
+  discount                 Decimal?       @db.Decimal(10, 2)
+  discountType             DiscountType?
+  finalCost                Decimal        @db.Decimal(10, 2)
+
+  // Received lots (JSON for flexibility)
+  receivedLots             Json?          // [{ id, lotNumber, quantity, expirationDate, manufacturingDate, receivedAt, receivedBy, storageLocation }]
+
+  notes                    String?
+
+  @@index([purchaseOrderId])
+  @@index([productId])
+  @@map("purchase_order_items")
+}
+
+model ReceivingRecord {
+  id                       String         @id @default(uuid())
+  purchaseOrderId          String
+  purchaseOrder            PurchaseOrder  @relation(fields: [purchaseOrderId], references: [id])
+
+  receivedAt               DateTime       @default(now())
+  receivedBy               String
+  receivedByName           String
+
+  // Items received (JSON for flexibility)
+  items                    Json           // [{ itemId, productId, productName, quantityReceived, lots: [{ lotId, lotNumber, quantity, expirationDate }] }]
+
+  notes                    String?
+
+  createdAt                DateTime       @default(now())
+
+  @@index([purchaseOrderId])
+  @@index([receivedAt])
+  @@map("receiving_records")
+}
+
+// ============================================================================
+// MESSAGING & COMMUNICATIONS
+// ============================================================================
+
+enum ConversationStatus {
+  active
+  resolved
+  waiting
+  urgent
+  archived
+}
+
+enum ConversationPriority {
+  low
+  normal
+  high
+  urgent
+}
+
+enum MessageDirection {
+  inbound   // From patient
+  outbound  // To patient
+}
+
+enum MessageChannel {
+  sms
+  email
+  portal
+  both      // Templates only
+}
+
+enum MessageStatus {
+  queued
+  sending
+  sent
+  delivered
+  failed
+  undelivered
+}
+
+// Conversations - Top-level messaging threads with patients
+model Conversation {
+  id                   String              @id @default(uuid())
+  patientId            String
+
+  // Patient contact info (denormalized for quick access)
+  patientName          String
+  patientPhone         String
+  patientEmail         String?
+
+  // Conversation state
+  status               ConversationStatus  @default(active)
+  channel              MessageChannel      @default(sms)
+  priority             ConversationPriority @default(normal)
+  tags                 String[]            @default([])
+
+  // Messaging stats
+  unreadCount          Int                 @default(0)
+  lastMessageBody      String?
+  lastMessageAt        DateTime?
+  lastMessageDirection MessageDirection?
+
+  // Assignment
+  assignedTo           String?
+  assignedToName       String?
+
+  // AI Analysis
+  aiIntent             String?
+  aiSentiment          String?
+  aiUrgency            String?
+  requiresHuman        Boolean             @default(false)
+
+  // Metadata
+  metadata             Json?
+
+  // Timestamps
+  createdAt            DateTime            @default(now())
+  updatedAt            DateTime            @updatedAt
+  createdBy            String?
+
+  // Relations
+  messages             Message[]
+
+  @@index([patientId])
+  @@index([status])
+  @@index([assignedTo])
+  @@index([lastMessageAt])
+  @@map("conversations")
+}
+
+// Messages - Individual messages within conversations
+model Message {
+  id               String            @id @default(uuid())
+
+  conversationId   String
+  conversation     Conversation      @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  patientId        String
+
+  // Message content
+  direction        MessageDirection
+  channel          MessageChannel
+  body             String
+  mediaUrls        String[]          @default([])
+
+  // Contact info
+  fromNumber       String
+  toNumber         String
+
+  // Delivery status
+  status           MessageStatus     @default(queued)
+  externalSid      String?           // Twilio/provider message ID
+  errorCode        String?
+  errorMessage     String?
+
+  // Timing
+  scheduledAt      DateTime?
+  sentAt           DateTime?
+  deliveredAt      DateTime?
+
+  // Template & automation
+  templateId       String?
+  template         MessageTemplate?  @relation(fields: [templateId], references: [id])
+  isAutoResponse   Boolean           @default(false)
+
+  // AI Analysis
+  aiIntent         String?
+  aiConfidence     Decimal?          @db.Decimal(5, 4)
+  aiSentiment      String?
+  suggestedResponses String[]        @default([])
+
+  // Metadata
+  metadata         Json?
+
+  // Timestamps
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  sentBy           String?
+
+  @@index([conversationId])
+  @@index([patientId])
+  @@index([status])
+  @@index([sentAt])
+  @@index([externalSid])
+  @@map("messages")
+}
+
+enum TemplateCategory {
+  appointment
+  treatment
+  followup
+  marketing
+  financial
+  membership
+  review
+  emergency
+  administrative
+}
+
+// Message Templates - Reusable message templates
+model MessageTemplate {
+  id              String            @id @default(uuid())
+  name            String
+  category        TemplateCategory
+  channel         MessageChannel
+
+  // Content
+  subject         String?           // For email
+  body            String
+  variables       String[]          @default([]) // e.g., ["patientName", "date", "time"]
+
+  // Organization
+  tags            String[]          @default([])
+
+  // Status
+  isActive        Boolean           @default(true)
+  isSystem        Boolean           @default(false) // System templates cannot be modified
+
+  // Usage stats
+  usageCount      Int               @default(0)
+  lastUsedAt      DateTime?
+
+  // TCPA Compliance
+  hipaaCompliant  Boolean           @default(true)
+  includesOptOut  Boolean           @default(false)
+  maxLength       Int?              // For SMS
+
+  // Timestamps
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  createdBy       String?
+
+  // Relations
+  messages        Message[]
+  campaigns       Campaign[]
+
+  @@index([category])
+  @@index([channel])
+  @@index([isActive])
+  @@map("message_templates")
+}
+
+enum CampaignStatus {
+  draft
+  scheduled
+  sending
+  sent
+  paused
+  cancelled
+  failed
+}
+
+enum AudienceType {
+  all_patients
+  last_visit_30days
+  last_visit_60days
+  last_visit_90days
+  vip
+  new_patients
+  birthday_this_month
+  custom
+}
+
+enum CampaignType {
+  transactional
+  marketing
+}
+
+// Marketing Campaigns
+model Campaign {
+  id                    String            @id @default(uuid())
+  name                  String
+  description           String?
+  status                CampaignStatus    @default(draft)
+
+  // Audience targeting
+  audienceType          AudienceType
+  audienceFilters       Json?             // { services: [], providers: [], tags: [], minSpend: 0 }
+  audienceCount         Int               @default(0)
+  consentCount          Int               @default(0)
+
+  // Message content
+  templateId            String?
+  template              MessageTemplate?  @relation(fields: [templateId], references: [id])
+  messageBody           String
+  messageType           CampaignType      @default(marketing)
+
+  // Scheduling
+  scheduledFor          DateTime?
+  sendingStartedAt      DateTime?
+  sentAt                DateTime?
+  pausedAt              DateTime?
+
+  // Delivery stats
+  totalRecipients       Int               @default(0)
+  sent                  Int               @default(0)
+  delivered             Int               @default(0)
+  failed                Int               @default(0)
+  clicked               Int               @default(0)
+  optedOut              Int               @default(0)
+  deliveryRate          Decimal           @default(0) @db.Decimal(5, 2)
+
+  // Batching
+  batchSize             Int               @default(100)
+  batchDelayMs          Int               @default(5000)
+  currentBatch          Int               @default(0)
+  totalBatches          Int               @default(0)
+
+  // Timestamps
+  createdAt             DateTime          @default(now())
+  updatedAt             DateTime          @updatedAt
+  createdBy             String
+
+  cancelledAt           DateTime?
+  cancelledBy           String?
+
+  // Relations
+  recipients            CampaignRecipient[]
+
+  @@index([status])
+  @@index([scheduledFor])
+  @@index([createdAt])
+  @@map("campaigns")
+}
+
+enum RecipientStatus {
+  pending
+  sent
+  delivered
+  failed
+  opted_out
+}
+
+model CampaignRecipient {
+  id            String              @id @default(uuid())
+  campaignId    String
+  campaign      Campaign            @relation(fields: [campaignId], references: [id], onDelete: Cascade)
+
+  patientId     String
+  phone         String
+
+  status        RecipientStatus     @default(pending)
+  sentAt        DateTime?
+  deliveredAt   DateTime?
+  failedReason  String?
+  twilioSid     String?
+
+  @@index([campaignId])
+  @@index([patientId])
+  @@index([status])
+  @@map("campaign_recipients")
+}
+
+enum ReminderKind {
+  confirmation
+  prep_reminder
+  reminder_48hr
+  reminder_24hr
+  reminder_2hr
+  followup_24hr
+  followup_3day
+  followup_1week
+  followup_2week
+  no_show
+}
+
+enum ReminderDeliveryStatus {
+  sent
+  delivered
+  failed
+}
+
+// Reminder System Settings
+model ReminderSettings {
+  id                    String   @id @default(uuid())
+  organizationId        String   @unique @default("default")
+
+  // Feature flags
+  enabled               Boolean  @default(true)
+  sendConfirmation      Boolean  @default(true)
+  sendPrepReminder      Boolean  @default(true)
+  prepReminderDays      Int      @default(3)
+  send48hrReminder      Boolean  @default(true)
+  send24hrReminder      Boolean  @default(true)
+  send2hrReminder       Boolean  @default(true)
+  sendFollowUps         Boolean  @default(true)
+
+  // Business hours
+  businessHoursStart    String   @default("09:00")
+  businessHoursEnd      String   @default("18:00")
+  quietHoursStart       String   @default("21:00")
+  quietHoursEnd         String   @default("08:00")
+  timezone              String   @default("America/New_York")
+
+  // Timestamps
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@map("reminder_settings")
+}
+
+model ReminderHistory {
+  id                String           @id @default(uuid())
+  appointmentId     String
+  patientId         String
+  patientPhone      String
+
+  // Reminder details
+  reminderType      ReminderKind
+  messageBody       String
+  messageSid        String?
+
+  // Delivery status
+  status            ReminderDeliveryStatus @default(sent)
+  sentAt            DateTime         @default(now())
+  deliveredAt       DateTime?
+  failedReason      String?
+
+  @@index([appointmentId])
+  @@index([patientId])
+  @@index([reminderType])
+  @@index([sentAt])
+  @@map("reminder_history")
+}
+
+enum ConsentStatus {
+  opted_in
+  opted_out
+  pending
+}
+
+enum ConsentSource {
+  sms
+  web
+  app
+  paper
+  verbal
+  import
+}
+
+enum ConsentAction {
+  opt_in
+  opt_out
+  update
+  revoke_all
+}
+
+enum ConsentTypeEnum {
+  transactional
+  marketing
+  all
+}
+
+// TCPA Consent Management
+model PatientConsent {
+  id                        String        @id @default(uuid())
+  patientId                 String        @unique
+  phone                     String
+
+  // Separate consent types (TCPA requirement)
+  transactionalConsent      ConsentStatus @default(pending)
+  marketingConsent          ConsentStatus @default(pending)
+
+  // Opt-in timestamps
+  transactionalOptInAt      DateTime?
+  marketingOptInAt          DateTime?
+  transactionalOptInSource  ConsentSource?
+  marketingOptInSource      ConsentSource?
+
+  // Opt-out timestamps
+  transactionalOptOutAt     DateTime?
+  marketingOptOutAt         DateTime?
+  transactionalOptOutKeyword String?
+  marketingOptOutKeyword    String?
+
+  // TCPA compliance
+  tcpaCompliant             Boolean       @default(true)
+  lastAuditedAt             DateTime?
+
+  // Timestamps
+  createdAt                 DateTime      @default(now())
+  updatedAt                 DateTime      @updatedAt
+
+  // Relations
+  auditLogs                 ConsentAuditLog[]
+
+  @@index([patientId])
+  @@index([phone])
+  @@map("patient_consents")
+}
+
+model ConsentAuditLog {
+  id                    String         @id @default(uuid())
+
+  consentId             String
+  consent               PatientConsent @relation(fields: [consentId], references: [id], onDelete: Cascade)
+
+  patientId             String
+  phone                 String
+
+  // Action details
+  action                ConsentAction
+  consentType           ConsentTypeEnum
+  previousStatus        ConsentStatus
+  newStatus             ConsentStatus
+
+  // Source tracking
+  source                ConsentSource
+  keyword               String?
+  messageSid            String?
+
+  // Context
+  ipAddress             String?
+  userAgent             String?
+  processedBy           String?           // Staff ID if manual
+
+  // TCPA compliance - must process opt-outs within 10 days
+  processedAt           DateTime          @default(now())
+  processedWithin10Days Boolean           @default(true)
+
+  // Timestamps
+  createdAt             DateTime          @default(now())
+
+  @@index([consentId])
+  @@index([patientId])
+  @@index([action])
+  @@index([processedAt])
+  @@map("consent_audit_logs")
+}

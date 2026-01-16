@@ -52,3 +52,5 @@ next-env.d.ts
 *.pem
 *.log
 .cache/
+.claude/
+# Claude Code user-specific settings

@@ -148,8 +148,9 @@ export async function GET(request: NextRequest) {
   ]
   
   // Filter appointments based on reminder type and timing
+  type ReminderKey = keyof typeof mockAppointments[0]['remindersSent']
   const appointmentsNeedingReminders = mockAppointments.filter(apt => {
-    if (reminderType && !apt.remindersSent[reminderType]) {
+    if (reminderType && !apt.remindersSent[reminderType as ReminderKey]) {
       // Check timing logic here
       return true
     }

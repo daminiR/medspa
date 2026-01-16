@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#A855F7;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#7C3AED;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="96" fill="url(#gradient)"/>
+  <g fill="white">
+    <path d="M256 120c-75 0-136 61-136 136s61 136 136 136 136-61 136-136-61-136-136-136zm0 240c-57.5 0-104-46.5-104-104s46.5-104 104-104 104 46.5 104 104-46.5 104-104 104z"/>
+    <circle cx="256" cy="256" r="48"/>
+    <path d="M256 80c-8.8 0-16 7.2-16 16v32c0 8.8 7.2 16 16 16s16-7.2 16-16V96c0-8.8-7.2-16-16-16zM256 368c-8.8 0-16 7.2-16 16v32c0 8.8 7.2 16 16 16s16-7.2 16-16v-32c0-8.8-7.2-16-16-16zM432 240h-32c-8.8 0-16 7.2-16 16s7.2 16 16 16h32c8.8 0 16-7.2 16-16s-7.2-16-16-16zM128 240H96c-8.8 0-16 7.2-16 16s7.2 16 16 16h32c8.8 0 16-7.2 16-16s-7.2-16-16-16z"/>
+  </g>
+  <text x="256" y="420" text-anchor="middle" fill="white" font-family="system-ui" font-size="48" font-weight="bold">LUXE</text>
+</svg>

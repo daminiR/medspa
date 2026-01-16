@@ -1,0 +1,31 @@
+{
+  "hosting": {
+    "site": "dalphene-v4",
+    "public": "out",
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "headers": [
+      {
+        "source": "**/*.glb",
+        "headers": [
+          { "key": "Content-Type", "value": "model/gltf-binary" },
+          { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" },
+          { "key": "Access-Control-Allow-Origin", "value": "*" }
+        ]
+      },
+      {
+        "source": "**/*.@(js|css)",
+        "headers": [
+          { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
+        ]
+      },
+      {
+        "source": "**/*.@(jpg|jpeg|png|gif|webp|svg|ico)",
+        "headers": [
+          { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
+        ]
+      }
+    ],
+    "cleanUrls": true,
+    "trailingSlash": true
+  }
+}

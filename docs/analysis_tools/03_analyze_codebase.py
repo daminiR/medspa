@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Stage 3: Codebase Analysis Scanner
-Analyzes the Luke's Medical Spa codebase to inventory existing features
+Analyzes the Luxe Medical Spa EMR codebase to inventory existing features
 """
 
 import os
@@ -60,7 +60,7 @@ def extract_features_from_structure(structure):
 
     print("\nExtracting features from codebase structure...")
 
-    prompt = f"""Analyze this codebase structure for Luke's Medical Spa platform and identify all features.
+    prompt = f"""Analyze this codebase structure for Luxe Medical Spa EMR platform and identify all features.
 
 Frontend Pages:
 {json.dumps(structure['frontend_pages'], indent=2)}
@@ -79,7 +79,7 @@ Based on these file paths and directory structure, identify all features in this
 Provide a JSON structure:
 
 {{
-  "platform_name": "Luke's Medical Spa",
+  "platform_name": "Luxe Medical Spa EMR",
   "feature_categories": {{
     "Dashboard": {{
       "features": ["feature 1", "feature 2"],
@@ -181,7 +181,7 @@ def deep_feature_analysis(key_files):
         for f in key_files[:10]  # Limit to prevent token overflow
     ])
 
-    prompt = f"""Analyze these key files from Luke's Medical Spa platform and provide detailed feature inventory.
+    prompt = f"""Analyze these key files from Luxe Medical Spa EMR platform and provide detailed feature inventory.
 
 {files_content}
 
@@ -268,7 +268,7 @@ def main():
 
     # Step 5: Combine analyses into master inventory
     master_inventory = {
-        'platform': 'Luke\'s Medical Spa',
+        'platform': 'Luxe Medical Spa EMR',
         'analysis_date': '2025-10-16',
         'structural_analysis': structural_features,
         'deep_analysis': deep_analysis if 'deep_analysis' in locals() else None,

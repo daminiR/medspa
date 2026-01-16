@@ -1,6 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { appointments, practitioners } from '@/lib/data';
 
+// Clinic branding info
+const demoClinic = {
+  name: 'Dalphene Medical Spa',
+  address: '123 Beauty Lane, Los Angeles, CA 90001',
+  phone: '(555) 123-4567',
+  cancellationPolicy: 'Please provide at least 24 hours notice for cancellations. Late cancellations or no-shows may result in a charge of up to 50% of the service cost.',
+};
+
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ token: string }> }
@@ -63,12 +71,7 @@ export async function GET(
         depositAmount: appointment.depositAmount,
         expiresAt: appointment.expressBookingExpiresAt,
       },
-      clinic: {
-        name: 'Luke\'s Medical Spa',
-        address: '123 Main Street, Suite 100',
-        phone: '(555) 100-0000',
-        cancellationPolicy: 'We require 24 hours notice for cancellations. Late cancellations or no-shows may be charged a fee.',
-      },
+      clinic: demoClinic,
     });
   } catch (error) {
     console.error('Express booking fetch error:', error);

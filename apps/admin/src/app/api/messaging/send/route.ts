@@ -15,7 +15,7 @@ const SendMessageSchema = z.object({
   patientId: z.string().optional(),
   conversationId: z.string().optional(),
   templateId: z.string().optional(),
-  variables: z.record(z.any()).optional(),
+  variables: z.record(z.string(), z.any()).optional(),
   mediaUrl: z.array(z.string().url()).optional(),
   scheduledAt: z.string().datetime().optional(),
 });
@@ -49,6 +49,7 @@ export async function POST(request: NextRequest) {
       conversationId: validated.conversationId,
       mediaUrl: validated.mediaUrl,
       scheduledAt: validated.scheduledAt ? new Date(validated.scheduledAt) : undefined,
+      priority: 'normal',
       metadata: {
         templateId: validated.templateId,
         variables: validated.variables,
@@ -70,10 +71,10 @@ export async function POST(request: NextRequest) {
     
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { 
-          success: false, 
-          error: 'Invalid request data', 
-          details: error.errors 
+        {
+          success: false,
+          error: 'Invalid request data',
+          details: error.issues
         },
         { status: 400 }
       );

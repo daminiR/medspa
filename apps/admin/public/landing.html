@@ -1,0 +1,2073 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Luxe Medical Spa Platform | The Future of MedSpa Management</title>
+    <meta name="description" content="AI-powered medical spa management platform with 3D charting, intelligent scheduling, and seamless patient communication.">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <!-- Three.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
+    <style>
+        :root {
+            --primary-start: #667eea;
+            --primary-end: #764ba2;
+            --accent-pink: #f093fb;
+            --accent-magenta: #f5576c;
+            --neurotoxin: #7C3AED;
+            --filler: #DB2777;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --text-primary: #1F2937;
+            --text-secondary: #4B5563;
+            --text-muted: #9CA3AF;
+            --bg-primary: #ffffff;
+            --bg-secondary: #F9FAFB;
+            --bg-dark: #0F172A;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            overflow-x: hidden;
+        }
+
+        /* Navigation */
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .nav.scrolled {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+        }
+
+        .nav-logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary-start), var(--primary-end));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .nav-logo-icon svg {
+            width: 24px;
+            height: 24px;
+            color: white;
+        }
+
+        .nav-logo-text {
+            font-weight: 700;
+            font-size: 1.25rem;
+            background: linear-gradient(135deg, var(--primary-start), var(--primary-end));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary-start);
+        }
+
+        .nav-cta {
+            background: linear-gradient(135deg, var(--primary-start), var(--primary-end));
+            color: white !important;
+            padding: 0.625rem 1.25rem;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .nav-cta:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 6rem 2rem 4rem;
+            background: linear-gradient(180deg, #F8FAFF 0%, #ffffff 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -25%;
+            width: 80%;
+            height: 150%;
+            background: radial-gradient(ellipse, rgba(102, 126, 234, 0.08) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .hero-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .hero-content {
+            z-index: 1;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 100px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--primary-start);
+            margin-bottom: 1.5rem;
+        }
+
+        .hero-badge-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--success);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.2); }
+        }
+
+        .hero-title {
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            letter-spacing: -0.02em;
+        }
+
+        .hero-title-gradient {
+            background: linear-gradient(135deg, var(--primary-start), var(--primary-end), var(--accent-pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-description {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            line-height: 1.7;
+            margin-bottom: 2rem;
+            max-width: 540px;
+        }
+
+        .hero-stats {
+            display: flex;
+            gap: 3rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .hero-stat {
+            text-align: left;
+        }
+
+        .hero-stat-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary-start), var(--primary-end));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-stat-label {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .hero-ctas {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1rem;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-start), var(--primary-end));
+            color: white;
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(102, 126, 234, 0.5);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--text-primary);
+            border: 2px solid #E5E7EB;
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--primary-start);
+            color: var(--primary-start);
+        }
+
+        /* 3D Face Container */
+        .hero-3d {
+            position: relative;
+            height: 600px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .hero-3d-container {
+            width: 100%;
+            height: 100%;
+            border-radius: 24px;
+            overflow: hidden;
+            background: linear-gradient(145deg, #1a1a2e 0%, #16213e 50%, #0f0f23 100%);
+            box-shadow:
+                0 25px 80px rgba(0, 0, 0, 0.3),
+                0 0 0 1px rgba(255, 255, 255, 0.05),
+                inset 0 0 100px rgba(102, 126, 234, 0.1);
+            position: relative;
+        }
+
+        #face-canvas {
+            width: 100%;
+            height: 100%;
+        }
+
+        .hero-3d-overlay {
+            position: absolute;
+            bottom: 1.5rem;
+            left: 1.5rem;
+            right: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            pointer-events: none;
+        }
+
+        .hero-3d-label {
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(10px);
+            padding: 0.75rem 1rem;
+            border-radius: 10px;
+            color: white;
+            font-size: 0.8rem;
+        }
+
+        .hero-3d-label strong {
+            display: block;
+            font-size: 0.9rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .hero-3d-legend {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(10px);
+            padding: 0.5rem 0.75rem;
+            border-radius: 8px;
+            color: white;
+            font-size: 0.75rem;
+        }
+
+        .legend-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .legend-dot.neurotoxin {
+            background: var(--neurotoxin);
+            box-shadow: 0 0 10px var(--neurotoxin);
+        }
+
+        .legend-dot.filler {
+            background: var(--filler);
+            box-shadow: 0 0 10px var(--filler);
+        }
+
+        /* Floating elements */
+        .floating-card {
+            position: absolute;
+            background: white;
+            border-radius: 16px;
+            padding: 1rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            animation: float 6s ease-in-out infinite;
+            z-index: 10;
+        }
+
+        .floating-card.card-1 {
+            top: 10%;
+            left: -60px;
+            animation-delay: 0s;
+        }
+
+        .floating-card.card-2 {
+            bottom: 15%;
+            right: -40px;
+            animation-delay: 2s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
+        }
+
+        .floating-stat {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .floating-stat-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .floating-stat-icon.green {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+        }
+
+        .floating-stat-icon.purple {
+            background: rgba(124, 58, 237, 0.1);
+            color: var(--neurotoxin);
+        }
+
+        .floating-stat-content strong {
+            display: block;
+            font-size: 1.25rem;
+            color: var(--text-primary);
+        }
+
+        .floating-stat-content span {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        /* Problems Section */
+        .problems {
+            padding: 6rem 2rem;
+            background: var(--bg-dark);
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .problems::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.5), transparent);
+        }
+
+        .section-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-label {
+            display: inline-block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--accent-pink);
+            margin-bottom: 1rem;
+        }
+
+        .section-title {
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 800;
+            margin-bottom: 1rem;
+        }
+
+        .section-subtitle {
+            font-size: 1.125rem;
+            color: rgba(255, 255, 255, 0.7);
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.7;
+        }
+
+        .problems-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .problem-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .problem-card:hover {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(102, 126, 234, 0.3);
+            transform: translateY(-5px);
+        }
+
+        .problem-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .problem-icon.red { background: rgba(239, 68, 68, 0.15); }
+        .problem-icon.orange { background: rgba(245, 158, 11, 0.15); }
+        .problem-icon.yellow { background: rgba(234, 179, 8, 0.15); }
+
+        .problem-card h3 {
+            font-size: 1.125rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .problem-card p {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.6);
+            line-height: 1.6;
+        }
+
+        .problem-stat {
+            display: inline-block;
+            margin-top: 1rem;
+            padding: 0.375rem 0.75rem;
+            background: rgba(239, 68, 68, 0.15);
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #FCA5A5;
+        }
+
+        /* Solution Section */
+        .solution {
+            padding: 6rem 2rem;
+            background: linear-gradient(180deg, #ffffff 0%, #F8FAFF 100%);
+        }
+
+        .solution-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .solution-content h2 {
+            font-size: clamp(2rem, 4vw, 2.75rem);
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
+        }
+
+        .solution-content p {
+            font-size: 1.125rem;
+            color: var(--text-secondary);
+            line-height: 1.7;
+            margin-bottom: 2rem;
+        }
+
+        .solution-features {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .solution-feature {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        .solution-feature-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-start), var(--primary-end));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .solution-feature-icon svg {
+            width: 14px;
+            height: 14px;
+            color: white;
+        }
+
+        .solution-feature span {
+            font-size: 1rem;
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .solution-image {
+            position: relative;
+        }
+
+        .solution-mockup {
+            width: 100%;
+            border-radius: 16px;
+            box-shadow: 0 40px 80px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Features Section */
+        .features {
+            padding: 6rem 2rem;
+            background: white;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .feature-card {
+            background: var(--bg-secondary);
+            border-radius: 20px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+        }
+
+        .feature-card:hover {
+            background: white;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            border-color: rgba(102, 126, 234, 0.2);
+            transform: translateY(-5px);
+        }
+
+        .feature-card.featured {
+            background: linear-gradient(135deg, var(--primary-start), var(--primary-end));
+            color: white;
+            grid-column: span 2;
+        }
+
+        .feature-card.featured .feature-description {
+            color: rgba(255, 255, 255, 0.85);
+        }
+
+        .feature-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            font-size: 1.75rem;
+        }
+
+        .feature-card:not(.featured) .feature-icon {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+        }
+
+        .feature-card.featured .feature-icon {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .feature-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+        }
+
+        .feature-description {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .feature-tag {
+            display: inline-block;
+            margin-top: 1rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .feature-card:not(.featured) .feature-tag {
+            background: rgba(102, 126, 234, 0.1);
+            color: var(--primary-start);
+        }
+
+        .feature-card.featured .feature-tag {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        /* AI Section */
+        .ai-section {
+            padding: 6rem 2rem;
+            background: linear-gradient(135deg, #0F172A 0%, #1E1B4B 50%, #312E81 100%);
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ai-section::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.02'%3E%3Ccircle cx='30' cy='30' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            pointer-events: none;
+        }
+
+        .ai-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .ai-content h2 {
+            font-size: clamp(2rem, 4vw, 2.75rem);
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
+        }
+
+        .ai-content p {
+            font-size: 1.125rem;
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.7;
+            margin-bottom: 2rem;
+        }
+
+        .ai-capabilities {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .ai-capability {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 1.25rem;
+        }
+
+        .ai-capability h4 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .ai-capability p {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 0;
+        }
+
+        .ai-demo {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 2rem;
+        }
+
+        .ai-demo-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .ai-demo-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .ai-demo-dot:nth-child(1) { background: #EF4444; }
+        .ai-demo-dot:nth-child(2) { background: #F59E0B; }
+        .ai-demo-dot:nth-child(3) { background: #10B981; }
+
+        .ai-demo-title {
+            margin-left: auto;
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .ai-message {
+            padding: 1rem;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            animation: fadeInUp 0.5s ease forwards;
+            opacity: 0;
+        }
+
+        .ai-message.incoming {
+            background: rgba(255, 255, 255, 0.1);
+            margin-right: 2rem;
+        }
+
+        .ai-message.analysis {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.3), rgba(118, 75, 162, 0.3));
+            border: 1px solid rgba(102, 126, 234, 0.5);
+        }
+
+        .ai-message.suggestions {
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .ai-message:nth-child(1) { animation-delay: 0.2s; }
+        .ai-message:nth-child(2) { animation-delay: 0.6s; }
+        .ai-message:nth-child(3) { animation-delay: 1s; }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .ai-message-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: rgba(255, 255, 255, 0.5);
+            margin-bottom: 0.5rem;
+        }
+
+        .ai-message-content {
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .ai-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.75rem;
+        }
+
+        .ai-tag {
+            padding: 0.25rem 0.625rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            font-size: 0.75rem;
+        }
+
+        /* Metrics Section */
+        .metrics {
+            padding: 6rem 2rem;
+            background: white;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .metric-card {
+            text-align: center;
+            padding: 2rem;
+            border-radius: 16px;
+            background: linear-gradient(180deg, var(--bg-secondary) 0%, white 100%);
+            border: 1px solid #E5E7EB;
+        }
+
+        .metric-value {
+            font-size: 3.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary-start), var(--primary-end));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1;
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-label {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .metric-trend {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            margin-top: 0.75rem;
+            padding: 0.25rem 0.5rem;
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        /* Market Section */
+        .market {
+            padding: 6rem 2rem;
+            background: var(--bg-secondary);
+        }
+
+        .market-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .market-card {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            border: 1px solid #E5E7EB;
+            transition: all 0.3s ease;
+        }
+
+        .market-card:hover {
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
+            transform: translateY(-5px);
+        }
+
+        .market-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+        }
+
+        .market-card h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+        }
+
+        .market-card p {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .market-stat {
+            display: flex;
+            align-items: baseline;
+            gap: 0.5rem;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #E5E7EB;
+        }
+
+        .market-stat-value {
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: var(--primary-start);
+        }
+
+        .market-stat-label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        /* CTA Section */
+        .cta {
+            padding: 6rem 2rem;
+            background: linear-gradient(135deg, var(--primary-start), var(--primary-end));
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23ffffff' fill-opacity='0.05' fill-rule='evenodd'/%3E%3C/svg%3E");
+            pointer-events: none;
+        }
+
+        .cta-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .cta h2 {
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 800;
+            color: white;
+            margin-bottom: 1rem;
+        }
+
+        .cta p {
+            font-size: 1.25rem;
+            color: rgba(255, 255, 255, 0.85);
+            margin-bottom: 2.5rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .cta-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-white {
+            background: white;
+            color: var(--primary-start);
+        }
+
+        .btn-white:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-outline-white {
+            background: transparent;
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+        }
+
+        .btn-outline-white:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: white;
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--bg-dark);
+            color: white;
+            padding: 4rem 2rem 2rem;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 4rem;
+        }
+
+        .footer-brand p {
+            color: rgba(255, 255, 255, 0.6);
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .footer-column h4 {
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 1.5rem;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .footer-column ul {
+            list-style: none;
+        }
+
+        .footer-column li {
+            margin-bottom: 0.75rem;
+        }
+
+        .footer-column a {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+
+        .footer-column a:hover {
+            color: white;
+        }
+
+        .footer-bottom {
+            max-width: 1200px;
+            margin: 3rem auto 0;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer-copyright {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .footer-social {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .footer-social a {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(255, 255, 255, 0.7);
+            transition: all 0.2s;
+        }
+
+        .footer-social a:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .hero-container,
+            .solution-grid,
+            .ai-grid {
+                grid-template-columns: 1fr;
+                gap: 3rem;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .feature-card.featured {
+                grid-column: span 2;
+            }
+
+            .metrics-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .market-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .footer-content {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .hero-stats {
+                flex-direction: column;
+                gap: 1.5rem;
+            }
+
+            .hero-3d {
+                height: 400px;
+            }
+
+            .floating-card {
+                display: none;
+            }
+
+            .features-grid,
+            .market-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .feature-card.featured {
+                grid-column: span 1;
+            }
+
+            .ai-capabilities {
+                grid-template-columns: 1fr;
+            }
+
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-content {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .footer-bottom {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+        }
+
+        /* Loading animation for 3D */
+        .loader {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .loader-spinner {
+            width: 48px;
+            height: 48px;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top-color: var(--primary-start);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loader-text {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav" id="nav">
+        <a href="#" class="nav-logo">
+            <div class="nav-logo-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                </svg>
+            </div>
+            <span class="nav-logo-text">Luxe MedSpa</span>
+        </a>
+        <div class="nav-links">
+            <a href="#features">Features</a>
+            <a href="#ai">AI Platform</a>
+            <a href="#market">Market</a>
+            <a href="#contact" class="nav-cta">Get Early Access</a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-container">
+            <div class="hero-content">
+                <div class="hero-badge">
+                    <span class="hero-badge-dot"></span>
+                    Now in Development
+                </div>
+                <h1 class="hero-title">
+                    The Future of<br>
+                    <span class="hero-title-gradient">Medical Spa</span><br>
+                    Management
+                </h1>
+                <p class="hero-description">
+                    AI-powered platform with 3D anatomical charting, intelligent scheduling, and seamless patient communication. Built specifically for modern medical spas.
+                </p>
+                <div class="hero-stats">
+                    <div class="hero-stat">
+                        <div class="hero-stat-value">85%</div>
+                        <div class="hero-stat-label">Platform Complete</div>
+                    </div>
+                    <div class="hero-stat">
+                        <div class="hero-stat-value">12+</div>
+                        <div class="hero-stat-label">Core Modules</div>
+                    </div>
+                    <div class="hero-stat">
+                        <div class="hero-stat-value">3D</div>
+                        <div class="hero-stat-label">Charting System</div>
+                    </div>
+                </div>
+                <div class="hero-ctas">
+                    <a href="#contact" class="btn btn-primary">
+                        Schedule a Demo
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                    </a>
+                    <a href="#features" class="btn btn-secondary">
+                        Explore Features
+                    </a>
+                </div>
+            </div>
+
+            <div class="hero-3d">
+                <!-- Floating Cards -->
+                <div class="floating-card card-1">
+                    <div class="floating-stat">
+                        <div class="floating-stat-icon green">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+                        </div>
+                        <div class="floating-stat-content">
+                            <strong>+45%</strong>
+                            <span>Reduced No-Shows</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="floating-card card-2">
+                    <div class="floating-stat">
+                        <div class="floating-stat-icon purple">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                        </div>
+                        <div class="floating-stat-content">
+                            <strong>3 Days</strong>
+                            <span>Invoice to Payment</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3D Face Canvas -->
+                <div class="hero-3d-container">
+                    <div id="face-canvas"></div>
+                    <div class="loader" id="loader">
+                        <div class="loader-spinner"></div>
+                        <span class="loader-text">Loading 3D Model...</span>
+                    </div>
+                    <div class="hero-3d-overlay">
+                        <div class="hero-3d-label">
+                            <strong>3D Injection Mapping</strong>
+                            Interactive charting for precision treatments
+                        </div>
+                        <div class="hero-3d-legend">
+                            <div class="legend-item">
+                                <span class="legend-dot neurotoxin"></span>
+                                Neurotoxin
+                            </div>
+                            <div class="legend-item">
+                                <span class="legend-dot filler"></span>
+                                Filler
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Problems Section -->
+    <section class="problems">
+        <div class="section-container">
+            <div class="section-header">
+                <span class="section-label">The Challenge</span>
+                <h2 class="section-title">Medical Spas Deserve Better Software</h2>
+                <p class="section-subtitle">
+                    Today's med spa owners struggle with fragmented systems, manual processes, and software built for generic wellness businesses.
+                </p>
+            </div>
+            <div class="problems-grid">
+                <div class="problem-card">
+                    <div class="problem-icon red">📅</div>
+                    <h3>Scheduling Chaos</h3>
+                    <p>Double bookings, missed appointments, and no-shows cost med spas thousands in lost revenue every month.</p>
+                    <span class="problem-stat">$150K+ lost annually</span>
+                </div>
+                <div class="problem-card">
+                    <div class="problem-icon orange">📝</div>
+                    <h3>Paper-Based Charting</h3>
+                    <p>Handwritten notes, lost records, and no way to track injection patterns or treatment history accurately.</p>
+                    <span class="problem-stat">2+ hours daily</span>
+                </div>
+                <div class="problem-card">
+                    <div class="problem-icon yellow">💬</div>
+                    <h3>Missed Communications</h3>
+                    <p>Patient texts and emails fall through the cracks. Urgent concerns get delayed responses.</p>
+                    <span class="problem-stat">23% patient churn</span>
+                </div>
+                <div class="problem-card">
+                    <div class="problem-icon red">💳</div>
+                    <h3>Billing Nightmares</h3>
+                    <p>Manual invoicing, unit tracking errors, and 15+ day payment cycles drain cash flow.</p>
+                    <span class="problem-stat">15-day payment delay</span>
+                </div>
+                <div class="problem-card">
+                    <div class="problem-icon orange">📦</div>
+                    <h3>Inventory Blind Spots</h3>
+                    <p>Expired products, stockouts on popular injectables, and no lot tracking for compliance.</p>
+                    <span class="problem-stat">$40K wasted yearly</span>
+                </div>
+                <div class="problem-card">
+                    <div class="problem-icon yellow">🔌</div>
+                    <h3>Integration Hell</h3>
+                    <p>Multiple disconnected systems that don't talk to each other. Data silos everywhere.</p>
+                    <span class="problem-stat">5+ separate tools</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Solution Section -->
+    <section class="solution" id="features">
+        <div class="section-container">
+            <div class="solution-grid">
+                <div class="solution-content">
+                    <span class="section-label">The Solution</span>
+                    <h2>One Platform.<br>Every Workflow.<br><span class="hero-title-gradient">Zero Friction.</span></h2>
+                    <p>
+                        Built from the ground up for medical aesthetics. Not adapted from salon software. Not a generic healthcare tool. Purpose-built for the unique needs of modern med spas.
+                    </p>
+                    <div class="solution-features">
+                        <div class="solution-feature">
+                            <div class="solution-feature-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                            </div>
+                            <span>Unit-based billing for injectables (Botox, Dysport, Juvederm)</span>
+                        </div>
+                        <div class="solution-feature">
+                            <div class="solution-feature-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                            </div>
+                            <span>FDA-compliant lot tracking and expiration management</span>
+                        </div>
+                        <div class="solution-feature">
+                            <div class="solution-feature-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                            </div>
+                            <span>Before/after photo galleries with consent tracking</span>
+                        </div>
+                        <div class="solution-feature">
+                            <div class="solution-feature-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                            </div>
+                            <span>HIPAA-compliant messaging and patient records</span>
+                        </div>
+                        <div class="solution-feature">
+                            <div class="solution-feature-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                            </div>
+                            <span>AI-powered smart scheduling and waitlist auto-fill</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="solution-image">
+                    <div style="background: linear-gradient(145deg, #f8f9fa, #e9ecef); border-radius: 20px; padding: 2rem; box-shadow: 0 40px 80px rgba(0,0,0,0.1);">
+                        <div style="background: white; border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 20px rgba(0,0,0,0.05);">
+                            <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
+                                <div style="width: 10px; height: 10px; border-radius: 50%; background: #EF4444;"></div>
+                                <div style="width: 10px; height: 10px; border-radius: 50%; background: #F59E0B;"></div>
+                                <div style="width: 10px; height: 10px; border-radius: 50%; background: #10B981;"></div>
+                            </div>
+                            <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 1rem;">
+                                <div style="background: linear-gradient(135deg, #667eea15, #764ba215); border-radius: 8px; padding: 1rem;">
+                                    <div style="font-size: 0.7rem; color: #666; margin-bottom: 0.5rem;">TODAY'S SCHEDULE</div>
+                                    <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                                        <div style="background: #667eea; color: white; padding: 0.5rem; border-radius: 4px; font-size: 0.65rem;">9:00 - Botox (J. Smith)</div>
+                                        <div style="background: #DB2777; color: white; padding: 0.5rem; border-radius: 4px; font-size: 0.65rem;">10:30 - Filler (M. Johnson)</div>
+                                        <div style="background: #667eea; color: white; padding: 0.5rem; border-radius: 4px; font-size: 0.65rem;">1:00 - Consultation</div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div style="font-size: 0.7rem; color: #666; margin-bottom: 0.5rem;">QUICK STATS</div>
+                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+                                        <div style="background: #f0fdf4; padding: 0.75rem; border-radius: 6px; text-align: center;">
+                                            <div style="font-size: 1.25rem; font-weight: 700; color: #10B981;">$4,280</div>
+                                            <div style="font-size: 0.6rem; color: #666;">Today's Revenue</div>
+                                        </div>
+                                        <div style="background: #faf5ff; padding: 0.75rem; border-radius: 6px; text-align: center;">
+                                            <div style="font-size: 1.25rem; font-weight: 700; color: #7C3AED;">8</div>
+                                            <div style="font-size: 0.6rem; color: #666;">Appointments</div>
+                                        </div>
+                                        <div style="background: #fef3c7; padding: 0.75rem; border-radius: 6px; text-align: center;">
+                                            <div style="font-size: 1.25rem; font-weight: 700; color: #F59E0B;">3</div>
+                                            <div style="font-size: 0.6rem; color: #666;">On Waitlist</div>
+                                        </div>
+                                        <div style="background: #ffe4e6; padding: 0.75rem; border-radius: 6px; text-align: center;">
+                                            <div style="font-size: 1.25rem; font-weight: 700; color: #DB2777;">2</div>
+                                            <div style="font-size: 0.6rem; color: #666;">Follow-ups Due</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Grid -->
+    <section class="features">
+        <div class="section-container">
+            <div class="section-header">
+                <span class="section-label">Platform Capabilities</span>
+                <h2 class="section-title">Everything You Need. Nothing You Don't.</h2>
+                <p class="section-subtitle" style="color: var(--text-secondary);">
+                    12+ integrated modules designed to streamline every aspect of your medical spa operation.
+                </p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card featured">
+                    <div class="feature-icon">🎯</div>
+                    <h3 class="feature-title">3D Anatomical Charting</h3>
+                    <p class="feature-description">
+                        Industry-first interactive 3D models for precise injection point mapping. Track neurotoxin units by zone, filler volume by area, and create detailed treatment plans with visual precision.
+                    </p>
+                    <span class="feature-tag">Industry Exclusive</span>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📅</div>
+                    <h3 class="feature-title">Smart Scheduling</h3>
+                    <p class="feature-description">
+                        Drag-to-create appointments with service-driven durations. Conflict detection, multi-provider views, and automatic time alignment.
+                    </p>
+                    <span class="feature-tag">85% Complete</span>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">💳</div>
+                    <h3 class="feature-title">Injectable Billing</h3>
+                    <p class="feature-description">
+                        Unit-based pricing for Botox/Dysport, volume tracking for fillers. Auto-deduct inventory and generate detailed invoices instantly.
+                    </p>
+                    <span class="feature-tag">Stripe Integrated</span>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">💬</div>
+                    <h3 class="feature-title">AI Messaging</h3>
+                    <p class="feature-description">
+                        Two-way SMS with smart reply suggestions. Auto-categorize patient requests and route urgent concerns instantly.
+                    </p>
+                    <span class="feature-tag">HIPAA Safe</span>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3 class="feature-title">Analytics Hub</h3>
+                    <p class="feature-description">
+                        9 specialized dashboards covering revenue, acquisition, retention, provider performance, and campaign ROI.
+                    </p>
+                    <span class="feature-tag">Real-Time</span>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📦</div>
+                    <h3 class="feature-title">Inventory Control</h3>
+                    <p class="feature-description">
+                        Barcode scanning, lot tracking, expiration alerts. Never run out of product or use expired inventory again.
+                    </p>
+                    <span class="feature-tag">FDA Ready</span>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">👥</div>
+                    <h3 class="feature-title">Group Bookings</h3>
+                    <p class="feature-description">
+                        Multi-patient appointments with split payments. Perfect for Botox parties, bridal groups, and corporate events.
+                    </p>
+                    <span class="feature-tag">90% Complete</span>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⏰</div>
+                    <h3 class="feature-title">Waitlist Auto-Fill</h3>
+                    <p class="feature-description">
+                        AI suggests the best patients to fill cancelled slots. One-click offers with automatic notifications.
+                    </p>
+                    <span class="feature-tag">AI Powered</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- AI Section -->
+    <section class="ai-section" id="ai">
+        <div class="section-container">
+            <div class="ai-grid">
+                <div class="ai-content">
+                    <span class="section-label">Artificial Intelligence</span>
+                    <h2>Your 24/7 Digital<br>Front Desk Assistant</h2>
+                    <p>
+                        Our AI engine analyzes every patient message in real-time. It categorizes requests, detects urgency, extracts appointment details, and suggests contextual responses&mdash;all without sending data to external APIs.
+                    </p>
+                    <div class="ai-capabilities">
+                        <div class="ai-capability">
+                            <h4>🎯 Intent Recognition</h4>
+                            <p>Automatically categorizes messages: booking, rescheduling, billing, emergencies, and more.</p>
+                        </div>
+                        <div class="ai-capability">
+                            <h4>🚨 Urgent Detection</h4>
+                            <p>Flags complications, emergencies, and VIP concerns for immediate staff attention.</p>
+                        </div>
+                        <div class="ai-capability">
+                            <h4>📅 Data Extraction</h4>
+                            <p>Pulls dates, times, services, and product names from free-text messages.</p>
+                        </div>
+                        <div class="ai-capability">
+                            <h4>💡 Smart Replies</h4>
+                            <p>Generates 3 contextual response options based on patient history and request type.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="ai-demo">
+                    <div class="ai-demo-header">
+                        <div class="ai-demo-dot"></div>
+                        <div class="ai-demo-dot"></div>
+                        <div class="ai-demo-dot"></div>
+                        <span class="ai-demo-title">AI Message Analysis</span>
+                    </div>
+                    <div class="ai-message incoming">
+                        <div class="ai-message-label">Incoming SMS</div>
+                        <div class="ai-message-content">
+                            "Hi, I got Botox 3 days ago and I'm seeing some bruising near my eye. Is this normal? Also can I reschedule my filler appointment next Tuesday to Thursday instead?"
+                        </div>
+                    </div>
+                    <div class="ai-message analysis">
+                        <div class="ai-message-label">AI Analysis</div>
+                        <div class="ai-message-content">
+                            <strong>Primary Intent:</strong> Medical concern + Reschedule request<br>
+                            <strong>Urgency:</strong> Medium (post-treatment symptom)<br>
+                            <strong>Extracted:</strong> Botox, 3 days post, bruising, next Tuesday → Thursday
+                        </div>
+                        <div class="ai-tags">
+                            <span class="ai-tag">Post-Treatment</span>
+                            <span class="ai-tag">Reschedule</span>
+                            <span class="ai-tag">Requires Response</span>
+                        </div>
+                    </div>
+                    <div class="ai-message suggestions">
+                        <div class="ai-message-label">Suggested Response</div>
+                        <div class="ai-message-content">
+                            "Hi Sarah! Minor bruising near the injection site is completely normal and should resolve within 5-7 days. Apply cold compresses if needed. I've moved your filler appointment to Thursday at 2pm. Does that work?"
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Metrics Section -->
+    <section class="metrics">
+        <div class="section-container">
+            <div class="section-header">
+                <span class="section-label">Expected Impact</span>
+                <h2 class="section-title">Built for Results</h2>
+                <p class="section-subtitle" style="color: var(--text-secondary);">
+                    Based on industry benchmarks and platform capabilities, here's what medical spas can expect.
+                </p>
+            </div>
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-value">45%</div>
+                    <div class="metric-label">Reduction in No-Shows</div>
+                    <div class="metric-trend">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/></svg>
+                        SMS Reminders
+                    </div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">3x</div>
+                    <div class="metric-label">Faster Payment Cycles</div>
+                    <div class="metric-trend">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/></svg>
+                        15 days → 3 days
+                    </div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">35%</div>
+                    <div class="metric-label">Higher Staff Utilization</div>
+                    <div class="metric-trend">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/></svg>
+                        Smart Scheduling
+                    </div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">40%</div>
+                    <div class="metric-label">Less Product Waste</div>
+                    <div class="metric-trend">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/></svg>
+                        Lot Tracking
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Market Section -->
+    <section class="market" id="market">
+        <div class="section-container">
+            <div class="section-header">
+                <span class="section-label">Market Opportunity</span>
+                <h2 class="section-title">A Rapidly Growing Industry</h2>
+                <p class="section-subtitle" style="color: var(--text-secondary);">
+                    The medical spa industry is experiencing unprecedented growth, with increasing demand for specialized management solutions.
+                </p>
+            </div>
+            <div class="market-grid">
+                <div class="market-card">
+                    <div class="market-icon">📈</div>
+                    <h3>Explosive Growth</h3>
+                    <p>The US medical spa market is growing at one of the fastest rates in healthcare services, driven by non-invasive aesthetic treatments.</p>
+                    <div class="market-stat">
+                        <span class="market-stat-value">$18B+</span>
+                        <span class="market-stat-label">US Market Size by 2028</span>
+                    </div>
+                </div>
+                <div class="market-card">
+                    <div class="market-icon">🏢</div>
+                    <h3>Underserved Market</h3>
+                    <p>Most med spas use generic wellness software or outdated systems. Less than 20% have purpose-built medical aesthetics platforms.</p>
+                    <div class="market-stat">
+                        <span class="market-stat-value">7,000+</span>
+                        <span class="market-stat-label">Medical Spas in the US</span>
+                    </div>
+                </div>
+                <div class="market-card">
+                    <div class="market-icon">💉</div>
+                    <h3>Injectable Dominance</h3>
+                    <p>Neurotoxins and dermal fillers represent the largest treatment category, requiring specialized tracking and billing capabilities.</p>
+                    <div class="market-stat">
+                        <span class="market-stat-value">60%</span>
+                        <span class="market-stat-label">Revenue from Injectables</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta" id="contact">
+        <div class="cta-content">
+            <h2>Ready to Transform Your Med Spa?</h2>
+            <p>
+                Join the waitlist for early access and be among the first to experience the future of medical spa management.
+            </p>
+            <div class="cta-buttons">
+                <a href="mailto:contact@luxemedspa.com" class="btn btn-white">
+                    Schedule a Demo
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </a>
+                <a href="mailto:invest@luxemedspa.com" class="btn btn-outline-white">
+                    Investment Inquiries
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-brand">
+                <a href="#" class="nav-logo">
+                    <div class="nav-logo-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                        </svg>
+                    </div>
+                    <span class="nav-logo-text">Luxe MedSpa</span>
+                </a>
+                <p>
+                    The AI-powered platform purpose-built for modern medical spas. Streamline operations, enhance patient care, and grow your practice.
+                </p>
+            </div>
+            <div class="footer-column">
+                <h4>Platform</h4>
+                <ul>
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#ai">AI Engine</a></li>
+                    <li><a href="#">Pricing</a></li>
+                    <li><a href="#">Integrations</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h4>Company</h4>
+                <ul>
+                    <li><a href="#">About Us</a></li>
+                    <li><a href="#">Careers</a></li>
+                    <li><a href="#">Press</a></li>
+                    <li><a href="#">Contact</a></li>
+                </ul>
+            </div>
+            <div class="footer-column">
+                <h4>Legal</h4>
+                <ul>
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Terms of Service</a></li>
+                    <li><a href="#">HIPAA Compliance</a></li>
+                    <li><a href="#">Security</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p class="footer-copyright">&copy; 2025 Luxe MedSpa Platform. All rights reserved.</p>
+            <div class="footer-social">
+                <a href="#" aria-label="LinkedIn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+                </a>
+                <a href="#" aria-label="Twitter">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                </a>
+                <a href="#" aria-label="Instagram">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+                </a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 3D Scene Script -->
+    <script>
+        // Navigation scroll effect
+        window.addEventListener('scroll', () => {
+            const nav = document.getElementById('nav');
+            if (window.scrollY > 50) {
+                nav.classList.add('scrolled');
+            } else {
+                nav.classList.remove('scrolled');
+            }
+        });
+
+        // 3D Face Scene
+        let scene, camera, renderer, faceModel, controls;
+        let injectionPoints = [];
+        const loader = document.getElementById('loader');
+        const container = document.getElementById('face-canvas');
+
+        function init() {
+            // Scene setup
+            scene = new THREE.Scene();
+
+            // Camera
+            camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
+            camera.position.set(0, 0, 2.5);
+
+            // Renderer
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            renderer.setClearColor(0x000000, 0);
+            container.appendChild(renderer.domElement);
+
+            // Lighting
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+            scene.add(ambientLight);
+
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            directionalLight.position.set(5, 5, 5);
+            scene.add(directionalLight);
+
+            const directionalLight2 = new THREE.DirectionalLight(0xffffff, 0.4);
+            directionalLight2.position.set(-5, 5, 5);
+            scene.add(directionalLight2);
+
+            const pointLight = new THREE.PointLight(0x667eea, 0.3, 10);
+            pointLight.position.set(0, 0, 3);
+            scene.add(pointLight);
+
+            // Load face model
+            const gltfLoader = new THREE.GLTFLoader();
+            gltfLoader.load(
+                '/models/face-3d.glb',
+                (gltf) => {
+                    faceModel = gltf.scene;
+                    faceModel.scale.set(1.2, 1.2, 1.2);
+                    faceModel.position.set(0, -0.3, 0);
+
+                    // Apply material
+                    faceModel.traverse((child) => {
+                        if (child.isMesh) {
+                            child.material = new THREE.MeshStandardMaterial({
+                                color: 0xf5deb3,
+                                roughness: 0.7,
+                                metalness: 0.1,
+                            });
+                        }
+                    });
+
+                    scene.add(faceModel);
+                    loader.style.display = 'none';
+
+                    // Add demo injection points
+                    addDemoInjectionPoints();
+                },
+                (progress) => {
+                    const percent = (progress.loaded / progress.total * 100).toFixed(0);
+                    loader.querySelector('.loader-text').textContent = `Loading 3D Model... ${percent}%`;
+                },
+                (error) => {
+                    console.error('Error loading model:', error);
+                    loader.querySelector('.loader-text').textContent = 'Using placeholder model...';
+                    createPlaceholderFace();
+                }
+            );
+
+            // Controls
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
+            controls.enableZoom = true;
+            controls.enablePan = false;
+            controls.minDistance = 1.5;
+            controls.maxDistance = 4;
+            controls.minPolarAngle = Math.PI / 3;
+            controls.maxPolarAngle = Math.PI / 1.5;
+            controls.autoRotate = true;
+            controls.autoRotateSpeed = 0.5;
+
+            // Handle resize
+            window.addEventListener('resize', onWindowResize);
+
+            animate();
+        }
+
+        function createPlaceholderFace() {
+            // Create a simple face placeholder
+            const geometry = new THREE.SphereGeometry(1, 64, 64);
+            geometry.scale(0.8, 1.1, 0.7);
+            const material = new THREE.MeshStandardMaterial({
+                color: 0xf5deb3,
+                roughness: 0.7,
+                metalness: 0.1,
+            });
+            faceModel = new THREE.Mesh(geometry, material);
+            faceModel.position.set(0, -0.1, 0);
+            scene.add(faceModel);
+            loader.style.display = 'none';
+            addDemoInjectionPoints();
+        }
+
+        function addDemoInjectionPoints() {
+            // Demo neurotoxin points (purple)
+            const neurotoxinPoints = [
+                { pos: [0.15, 0.35, 0.5], units: 8 },
+                { pos: [-0.15, 0.35, 0.5], units: 8 },
+                { pos: [0, 0.42, 0.48], units: 10 },
+                { pos: [0.35, 0.15, 0.4], units: 6 },
+                { pos: [-0.35, 0.15, 0.4], units: 6 },
+            ];
+
+            // Demo filler points (pink)
+            const fillerPoints = [
+                { pos: [0.25, -0.1, 0.55], volume: 0.5 },
+                { pos: [-0.25, -0.1, 0.55], volume: 0.5 },
+                { pos: [0.12, -0.25, 0.6], volume: 0.3 },
+                { pos: [-0.12, -0.25, 0.6], volume: 0.3 },
+            ];
+
+            neurotoxinPoints.forEach((point, i) => {
+                createInjectionPoint(point.pos, 0x7C3AED, point.units + 'u', i * 0.3);
+            });
+
+            fillerPoints.forEach((point, i) => {
+                createInjectionPoint(point.pos, 0xDB2777, point.volume + 'ml', (neurotoxinPoints.length + i) * 0.3);
+            });
+        }
+
+        function createInjectionPoint(position, color, label, delay) {
+            setTimeout(() => {
+                // Main sphere
+                const geometry = new THREE.SphereGeometry(0.025, 16, 16);
+                const material = new THREE.MeshStandardMaterial({
+                    color: color,
+                    emissive: color,
+                    emissiveIntensity: 0.5,
+                    metalness: 0.2,
+                    roughness: 0.3,
+                });
+                const sphere = new THREE.Mesh(geometry, material);
+                sphere.position.set(...position);
+                scene.add(sphere);
+                injectionPoints.push(sphere);
+
+                // Glow ring
+                const ringGeometry = new THREE.RingGeometry(0.03, 0.04, 32);
+                const ringMaterial = new THREE.MeshBasicMaterial({
+                    color: color,
+                    transparent: true,
+                    opacity: 0.5,
+                    side: THREE.DoubleSide,
+                });
+                const ring = new THREE.Mesh(ringGeometry, ringMaterial);
+                ring.position.set(...position);
+                ring.lookAt(camera.position);
+                scene.add(ring);
+
+                // Animate the ring
+                ring.userData.update = (time) => {
+                    ring.lookAt(camera.position);
+                    ring.scale.setScalar(1 + Math.sin(time * 2) * 0.15);
+                    ringMaterial.opacity = 0.3 + Math.sin(time * 2) * 0.2;
+                };
+                injectionPoints.push(ring);
+            }, delay * 1000);
+        }
+
+        function onWindowResize() {
+            camera.aspect = container.clientWidth / container.clientHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(container.clientWidth, container.clientHeight);
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            const time = performance.now() * 0.001;
+
+            // Update controls
+            controls.update();
+
+            // Subtle face movement
+            if (faceModel) {
+                faceModel.rotation.y = Math.sin(time * 0.1) * 0.02;
+            }
+
+            // Update injection point animations
+            injectionPoints.forEach(point => {
+                if (point.userData && point.userData.update) {
+                    point.userData.update(time);
+                }
+            });
+
+            renderer.render(scene, camera);
+        }
+
+        // Initialize when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            init();
+        }
+
+        // Intersection Observer for animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        // Observe elements for animation
+        document.querySelectorAll('.problem-card, .feature-card, .market-card, .metric-card').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(20px)';
+            el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>

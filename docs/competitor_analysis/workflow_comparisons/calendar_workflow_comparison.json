@@ -35,7 +35,7 @@
           "Override regular work hours on-demand"
         ]
       },
-      "lukes_platform": {
+      "luxe_platform": {
         "implemented": "No",
         "workflow_steps": [
           "No create time block functionality found in the provided code snippets",
@@ -71,9 +71,9 @@
       },
       "comparison": {
         "winner": "Mango Mint",
-        "winner_reasoning": "Mango Mint provides a complete, user-friendly time block creation feature with intuitive calendar interaction and visual feedback, while Luke's implementation lacks this functionality entirely.",
+        "winner_reasoning": "Mango Mint provides a complete, user-friendly time block creation feature with intuitive calendar interaction and visual feedback, while Luxe implementation lacks this functionality entirely.",
         "mangomint_score": 8,
-        "lukes_score": 0,
+        "luxe_score": 0,
         "key_differentiators": [
           "Direct calendar click-to-create eliminates form navigation friction",
           "Visual duration selector with drag/resize provides intuitive control",
@@ -127,7 +127,7 @@
           "Prevents booking conflicts for recurring events"
         ]
       },
-      "lukes_platform": {
+      "luxe_platform": {
         "implemented": "No",
         "workflow_steps": [],
         "ux_strengths": [],
@@ -156,9 +156,9 @@
       },
       "comparison": {
         "winner": "Mango Mint",
-        "winner_reasoning": "Mango Mint has a fully implemented repeating time block feature with intuitive workflow and visual preview, while Luke's platform has no recurring appointment functionality at all.",
+        "winner_reasoning": "Mango Mint has a fully implemented repeating time block feature with intuitive workflow and visual preview, while Luxe platform has no recurring appointment functionality at all.",
         "mangomint_score": 8,
-        "lukes_score": 0,
+        "luxe_score": 0,
         "key_differentiators": [
           "Complete recurring appointment system vs. no functionality",
           "One-year visual preview shows users exactly what they're creating",
@@ -215,7 +215,7 @@
           "Handles primary contact designation for group coordination"
         ]
       },
-      "lukes_platform": {
+      "luxe_platform": {
         "implemented": "No",
         "workflow_steps": [
           "No group booking workflow found in the provided code snippets"
@@ -251,10 +251,10 @@
         ]
       },
       "comparison": {
-        "winner": "Luke's Not Implemented",
-        "winner_reasoning": "Mango Mint wins by default as they have a complete group booking implementation while Luke's platform has no group booking functionality at all.",
+        "winner": "Luxe Not Implemented",
+        "winner_reasoning": "Mango Mint wins by default as they have a complete group booking implementation while Luxe platform has no group booking functionality at all.",
         "mangomint_score": 8,
-        "lukes_score": 0,
+        "luxe_score": 0,
         "key_differentiators": [
           "Complete group booking workflow with progressive appointment building",
           "Primary contact management for group coordination",
@@ -310,7 +310,7 @@
           "Streamlines group service delivery workflow"
         ]
       },
-      "lukes_platform": {
+      "luxe_platform": {
         "implemented": "No",
         "workflow_steps": [
           "Individual appointments are managed through AppointmentSlot component",
@@ -347,10 +347,10 @@
         ]
       },
       "comparison": {
-        "winner": "Luke's Not Implemented",
-        "winner_reasoning": "Luke's platform lacks any group booking functionality, making this feature completely unavailable rather than a competitive comparison.",
+        "winner": "Luxe Not Implemented",
+        "winner_reasoning": "Luxe platform lacks any group booking functionality, making this feature completely unavailable rather than a competitive comparison.",
         "mangomint_score": 8,
-        "lukes_score": 0,
+        "luxe_score": 0,
         "key_differentiators": [
           "Mango Mint has dedicated group booking creation and management system",
           "Flexible individual vs group check-in/out operations with visual group indicators",
@@ -408,7 +408,7 @@
           "Provides group organizer control over scheduling changes"
         ]
       },
-      "lukes_platform": {
+      "luxe_platform": {
         "implemented": "No",
         "workflow_steps": [
           "No group booking workflow exists in the current codebase",
@@ -450,9 +450,9 @@
       },
       "comparison": {
         "winner": "Mango Mint",
-        "winner_reasoning": "Mango Mint wins decisively as they have a complete, well-thought-out group booking system while Luke's platform has no group booking functionality at all. This is a critical feature gap for medical spas that offer group services.",
+        "winner_reasoning": "Mango Mint wins decisively as they have a complete, well-thought-out group booking system while Luxe platform has no group booking functionality at all. This is a critical feature gap for medical spas that offer group services.",
         "mangomint_score": 9,
-        "lukes_score": 0,
+        "luxe_score": 0,
         "key_differentiators": [
           "Complete group booking workflow with upfront guest selection",
           "Individual service customization within group context",
@@ -511,7 +511,7 @@
           "Improves communication coordination for related appointments"
         ]
       },
-      "lukes_platform": {
+      "luxe_platform": {
         "implemented": "No",
         "workflow_steps": [],
         "ux_strengths": [],
@@ -538,10 +538,10 @@
         ]
       },
       "comparison": {
-        "winner": "Luke's Not Implemented",
-        "winner_reasoning": "Luke's platform has no implementation of group booking from existing appointments functionality, while Mango Mint provides a complete workflow for converting individual bookings into coordinated group appointments.",
+        "winner": "Luxe Not Implemented",
+        "winner_reasoning": "Luxe platform has no implementation of group booking from existing appointments functionality, while Mango Mint provides a complete workflow for converting individual bookings into coordinated group appointments.",
         "mangomint_score": 8,
-        "lukes_score": 0,
+        "luxe_score": 0,
         "key_differentiators": [
           "Complete workflow for selecting and converting existing appointments into groups",
           "Automatic primary contact assignment from first selected appointment",
@@ -598,7 +598,7 @@
           "Allows location-specific group booking policies"
         ]
       },
-      "lukes_platform": {
+      "luxe_platform": {
         "implemented": "No",
         "workflow_steps": [
           "No group booking functionality exists in current codebase",
@@ -633,9 +633,9 @@
       },
       "comparison": {
         "winner": "Mango Mint",
-        "winner_reasoning": "Mango Mint provides a complete, well-architected group booking configuration system with granular controls, while Luke's platform has no group booking functionality whatsoever.",
+        "winner_reasoning": "Mango Mint provides a complete, well-architected group booking configuration system with granular controls, while Luxe platform has no group booking functionality whatsoever.",
         "mangomint_score": 8,
-        "lukes_score": 0,
+        "luxe_score": 0,
         "key_differentiators": [
           "Complete group booking infrastructure with hierarchical permission controls",
           "Granular configuration options for locations, services, and group sizes",
@@ -693,7 +693,7 @@
           "Manages complex notification requirements automatically"
         ]
       },
-      "lukes_platform": {
+      "luxe_platform": {
         "implemented": "No",
         "workflow_steps": [],
         "ux_strengths": [],
@@ -722,10 +722,10 @@
         ]
       },
       "comparison": {
-        "winner": "Luke's Not Implemented",
-        "winner_reasoning": "Luke's platform has no visible group booking update functionality, while Mango Mint provides a comprehensive system for managing group booking modifications with multiple update options and automatic coordination.",
+        "winner": "Luxe Not Implemented",
+        "winner_reasoning": "Luxe platform has no visible group booking update functionality, while Mango Mint provides a comprehensive system for managing group booking modifications with multiple update options and automatic coordination.",
         "mangomint_score": 9,
-        "lukes_score": 0,
+        "luxe_score": 0,
         "key_differentiators": [
           "Unified group management interface from single calendar selection",
           "Multiple update types (reschedule, add/remove, contact changes) in one workflow",

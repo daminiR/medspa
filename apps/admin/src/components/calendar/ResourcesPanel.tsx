@@ -10,7 +10,7 @@ interface ResourcesPanelProps {
   isOpen: boolean
   onClose: () => void
   selectedDate: Date
-  view: 'day' | 'week'
+  view: 'day' | 'week' | 'month'
   weekDates?: Date[]
 }
 
@@ -56,7 +56,7 @@ export default function ResourcesPanel({
   }
 
   return (
-    <div className={`fixed right-0 top-16 h-[calc(100vh-64px)] w-[400px] bg-white shadow-2xl transform transition-transform duration-300 z-30 ${
+    <div className={`fixed right-0 top-16 h-[calc(100vh-64px)] w-full max-w-[400px] bg-white shadow-2xl transform transition-transform duration-300 z-30 ${
       isOpen ? 'translate-x-0' : 'translate-x-full'
     }`}>
       <div className="h-full flex flex-col">

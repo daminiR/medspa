@@ -2,7 +2,7 @@
 
 import { useMemo, useRef, useEffect, useState, useCallback } from 'react'
 import moment from 'moment'
-import { Clock, Move, ChevronLeft, ChevronRight, Calendar, MapPin, FileText } from 'lucide-react'
+import { Clock, Move, ChevronLeft, ChevronRight, Calendar, MapPin, FileText, AlertTriangle } from 'lucide-react'
 import { CalendarViewProps, CalendarViewType } from '@/types/calendar'
 import { useCalendarState } from '@/hooks/useCalendarState'
 import { getWeekDates, getTimeSlotHeight, mergeSlotsIntoContinuousBlocks } from '@/utils/calendarHelpers'
@@ -20,6 +20,9 @@ import BreakDetails from '../appointments/BreakDetails'
 import GoToDateModal from './GoToDateModal'
 import CalendarSettingsModal from './CalendarSettingsModal'
 import WaitlistPanel from './WaitlistPanel'
+import { mockWaitlistPatients, WaitlistPatient } from '@/lib/data/waitlist'
+import AutoFillNotification from './AutoFillNotification'
+import { createAutoFillSuggestion, AutoFillSuggestion } from '@/utils/waitlistAutoFill'
 import ShiftEditPanel from '../shifts/ShiftEditPanel'
 import ShiftDeleteModal from '../shifts/ShiftDeleteModal'
 import ManageShiftsModalV2 from '../shifts/ManageShiftsModalV2'
@@ -28,12 +31,17 @@ import RoomsPanel from './RoomsPanel'
 import { findAvailableSlots } from '@/utils/slotFinder'
 import type { Note } from '@/lib/data'
 import { patients } from '@/lib/data'
-import { hasConflicts, getConflictMessage, findAppointmentConflicts } from '@/utils/appointmentConflicts'
+import { hasConflicts, getConflictMessage, findAppointmentConflicts, findBreakConflicts, getBreakConflictMessage } from '@/utils/appointmentConflicts'
 import { Shift, ShiftFormData } from '@/types/shifts'
 import { generateShiftsFromForm } from '@/utils/shiftHelpers'
 import PractitionerEditModal from '../practitioners/PractitionerEditModal'
 import ExpressBookingModal from '../appointments/ExpressBookingModal'
 import GroupBookingModal from '../appointments/GroupBookingModal'
+import GroupBookingDetails from '../appointments/GroupBookingDetails'
+import GroupsPanel from './GroupsPanel'
+import MonthView from './MonthView'
+import WalkInModal from '../appointments/WalkInModal'
+import { exportData, columnPresets, formatters, ExportColumn } from '@/lib/export'
 
 export default function CalendarView({
 	selectedPractitionerIds,
@@ -44,7 +52,9 @@ export default function CalendarView({
 	selectedServiceFromSidebar,
 	onClearServiceSelection,
 	createMode: externalCreateMode,
-	onCreateModeChange: externalSetCreateMode
+	onCreateModeChange: externalSetCreateMode,
+	breakType: externalBreakType,
+	onBreakTypeChange: externalSetBreakType
 }: CalendarViewProps) {
 	// For demo purposes, using August 17, 2023 as "today"
 	const TODAY = new Date() // Current date
@@ -57,6 +67,8 @@ export default function CalendarView({
 		setView,
 		createMode: internalCreateMode,
 		setCreateMode: internalSetCreateMode,
+		pendingBreakType,
+		setPendingBreakType,
 		selectedAppointment,
 		setSelectedAppointment,
 		selectedBreak,
@@ -99,9 +111,24 @@ export default function CalendarView({
 	const createMode = externalCreateMode ?? internalCreateMode
 	const setCreateMode = externalSetCreateMode ?? internalSetCreateMode
 
+	// Use external breakType if provided, otherwise use internal
+	// Also sync internal state when external changes
+	const breakType = externalBreakType ?? pendingBreakType
+	const setBreakType = (type: typeof pendingBreakType) => {
+		setPendingBreakType(type)
+		externalSetBreakType?.(type)
+	}
+
 	// Shift-specific state
 	const [shiftMode, setShiftMode] = useState(false)
 	const [showShiftPanel, setShowShiftPanel] = useState(false)
+
+	// Double-Booking Mode State (Override Mode)
+	// Allows booking conflicting appointments when enabled
+	const [showOverrideDialog, setShowOverrideDialog] = useState(false)
+	const [modeTimeoutId, setModeTimeoutId] = useState<NodeJS.Timeout | null>(null)
+	const [modeWarningTimeoutId, setModeWarningTimeoutId] = useState<NodeJS.Timeout | null>(null)
+	const lastInteractionRef = useRef<number>(Date.now())
 
 	// Express Booking state
 	const [showExpressBooking, setShowExpressBooking] = useState(false)
@@ -110,6 +137,10 @@ export default function CalendarView({
 
 	// Group Booking state
 	const [showGroupBooking, setShowGroupBooking] = useState(false)
+
+	// Walk-In state
+	const [showWalkInModal, setShowWalkInModal] = useState(false)
+
 	// Recurring shift templates - synced with practitioner schedules from data.ts
 	const [shiftTemplates] = useState([
 		// Jo-Ellen McKay (ID '1') - Monday to Friday, 8:00-17:00
@@ -195,7 +226,8 @@ export default function CalendarView({
 	const [moveMode, setMoveMode] = useState(false)
 	const [movingAppointment, setMovingAppointment] = useState<Appointment | null>(null)
 	const [selectedLocationId, setSelectedLocationId] = useState<string>('loc-1') // Default to first location
-	
+	const [selectedServiceCategory, setSelectedServiceCategory] = useState<string | null>(null) // Service filter
+
 	// Copy/paste state
 	const [copiedAppointment, setCopiedAppointment] = useState<Appointment | null>(null)
 	
@@ -214,6 +246,10 @@ export default function CalendarView({
 	// Resource state
 	const [showResources, setShowResources] = useState(false)
 	const [showRoomsPanel, setShowRoomsPanel] = useState(false)
+	const [showGroupsPanel, setShowGroupsPanel] = useState(false)
+
+	// Auto-fill suggestion for waitlist
+	const [autoFillSuggestion, setAutoFillSuggestion] = useState<AutoFillSuggestion | null>(null)
 
 	// Calendar view type (practitioners vs rooms)
 	const [calendarViewType, setCalendarViewType] = useState<CalendarViewType>('practitioners')
@@ -745,11 +781,25 @@ export default function CalendarView({
 			})
 		}
 		showToast(
-			status === 'arrived' ? '✓ Patient marked as arrived' : 
-			status === 'no_show' ? '✗ Marked as no-show' : 
+			status === 'arrived' ? '✓ Patient marked as arrived' :
+			status === 'no_show' ? '✗ Marked as no-show' :
 			status === 'cancelled' ? '✗ Appointment cancelled' :
 			'↺ Status reset'
 		)
+
+		// Auto-fill: Check for waitlist matches when appointment is cancelled
+		if (status === 'cancelled') {
+			const cancelledAppointment = appointmentsState.find(apt => apt.id === appointmentId)
+			if (cancelledAppointment) {
+				const suggestion = createAutoFillSuggestion(cancelledAppointment, mockWaitlistPatients)
+				if (suggestion.topMatch) {
+					// Delay showing notification so cancellation toast shows first
+					setTimeout(() => {
+						setAutoFillSuggestion(suggestion)
+					}, 500)
+				}
+			}
+		}
 	}
 
 	// Handle appointment uncancellation
@@ -839,6 +889,7 @@ export default function CalendarView({
 	}
 
 	// Handle save appointment
+	// Respects doubleBookingMode to allow conflicting appointments when enabled
 	const handleSaveAppointment = (appointmentData: any) => {
 		const startTime = new Date(appointmentData.date)
 		startTime.setHours(appointmentData.startTime.hour, appointmentData.startTime.minute, 0, 0)
@@ -848,7 +899,7 @@ export default function CalendarView({
 
 		// Use the room selected in the appointment sidebar, or fall back to shift room
 		const roomId = appointmentData.roomId || (() => {
-			const practitionerShift = shifts.find(shift => 
+			const practitionerShift = shifts.find(shift =>
 				shift.practitionerId === appointmentData.practitioner.id &&
 				moment(shift.startAt).isSameOrBefore(startTime) &&
 				moment(shift.endAt).isSameOrAfter(endTime)
@@ -861,10 +912,10 @@ export default function CalendarView({
 
 		// Check for conflicts before saving (including room conflicts)
 		// Exclude the current appointment from conflict check if updating
-		const appointmentsToCheck = isUpdate 
+		const appointmentsToCheck = isUpdate
 			? appointmentsState.filter(apt => apt.id !== appointmentData.appointmentId)
 			: appointmentsState
-			
+
 		const conflicts = findAppointmentConflicts(
 			{
 				practitionerId: appointmentData.practitioner.id,
@@ -875,7 +926,22 @@ export default function CalendarView({
 			appointmentsToCheck
 		)
 
-		if (conflicts.length > 0 && !appointmentData.overriddenConflicts) {
+		// Check for break/time block conflicts
+		const breakConflicts = findBreakConflicts(
+			{
+				practitionerId: appointmentData.practitioner.id,
+				startTime,
+				endTime
+			},
+			breaks
+		)
+
+		// Determine if we should allow this booking despite conflicts
+		const hasConflicts = conflicts.length > 0 || breakConflicts.length > 0
+		const shouldOverride = doubleBookingMode || appointmentData.overriddenConflicts
+
+		// If conflicts exist and not overriding, block the booking
+		if (conflicts.length > 0 && !shouldOverride) {
 			// Show conflict warning
 			const message = getConflictMessage(conflicts, roomId)
 			showToast(`⚠️ Cannot book: ${message}`)
@@ -883,7 +949,28 @@ export default function CalendarView({
 			return
 		}
 
+		if (breakConflicts.length > 0 && !shouldOverride) {
+			const breakMessage = getBreakConflictMessage(breakConflicts)
+			showToast(`⚠️ Cannot book: ${breakMessage}`)
+			return
+		}
+
+		// If doubleBookingMode is active and there are conflicts, show warning but allow booking
+		if (hasConflicts && doubleBookingMode) {
+			if (conflicts.length > 0) {
+				const message = getConflictMessage(conflicts, roomId)
+				showToast(`⚠️ Warning: ${message} - Booking allowed due to override mode`)
+			}
+			if (breakConflicts.length > 0) {
+				const breakMessage = getBreakConflictMessage(breakConflicts)
+				showToast(`⚠️ Warning: ${breakMessage} - Booking allowed due to override mode`)
+			}
+		}
+
 		const appointmentId = isUpdate ? appointmentData.appointmentId : `apt-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+
+		// Set overriddenConflicts flag if booking with conflicts via doubleBookingMode
+		const wasOverridden = hasConflicts && shouldOverride
 
 		const newAppointment: Appointment = {
 			id: appointmentId,
@@ -914,7 +1001,33 @@ export default function CalendarView({
 			assignedResources: appointmentData.assignedResources,
 			roomId: roomId, // Assign room from shift
 			postTreatmentTime: appointmentData.postTreatmentTime,
-			overriddenConflicts: appointmentData.overriddenConflicts
+			overriddenConflicts: wasOverridden || appointmentData.overriddenConflicts
+		}
+
+		// Audit logging for double-booked appointments
+		if (wasOverridden) {
+			console.log(`[AUDIT] Double-booking mode: Allowed conflicting appointment [${appointmentId}]`, {
+				timestamp: new Date().toISOString(),
+				user: 'Current User', // In real app, get from auth context
+				appointmentId,
+				patientName: newAppointment.patientName,
+				practitionerId: newAppointment.practitionerId,
+				startTime: newAppointment.startTime.toISOString(),
+				endTime: newAppointment.endTime.toISOString(),
+				conflictsOverridden: {
+					appointmentConflicts: conflicts.map(c => ({
+						id: c.id,
+						patientName: c.patientName,
+						time: `${c.startTime.toISOString()} - ${c.endTime.toISOString()}`
+					})),
+					breakConflicts: breakConflicts.map(b => ({
+						id: b.id,
+						type: b.type,
+						time: `${b.startTime.toISOString()} - ${b.endTime.toISOString()}`
+					}))
+				}
+			})
+			// TODO: Send to audit log service
 		}
 
 		if (isUpdate) {
@@ -929,14 +1042,16 @@ export default function CalendarView({
 			// Add new appointment
 			setAppointments([...appointmentsState, newAppointment])
 			// Show appropriate toast message
-			if (appointmentData.assignedResources && appointmentData.assignedResources.length > 0) {
+			if (wasOverridden) {
+				showToast('✓ Appointment booked (conflicts overridden)')
+			} else if (appointmentData.assignedResources && appointmentData.assignedResources.length > 0) {
 				const resourceNames = appointmentData.assignedResources.map((r: any) => r.resourceName).join(', ')
 				showToast(`✓ Appointment booked with resources: ${resourceNames}`)
 			} else {
 				showToast('✓ Appointment booked successfully')
 			}
 		}
-		
+
 		setShowAppointmentSidebar(false)
 		setNewAppointmentData(null)
 		setAppointmentPreview(null) // Clear preview when sidebar closes
@@ -1010,7 +1125,262 @@ export default function CalendarView({
 			showToast('Click an appointment to move it')
 		}
 	}
-	
+
+	// ========== Print & Export Functions ==========
+
+	// Get appointments for the current view (day or week)
+	const getVisibleAppointments = useCallback(() => {
+		const startOfDay = moment(selectedDate).startOf('day')
+		const endOfDay = view === 'week'
+			? moment(selectedDate).add(6, 'days').endOf('day')
+			: moment(selectedDate).endOf('day')
+
+		return appointmentsState.filter(apt => {
+			const aptDate = moment(apt.startTime)
+			return aptDate.isSameOrAfter(startOfDay) && aptDate.isSameOrBefore(endOfDay) && apt.status !== 'cancelled' && apt.status !== 'deleted'
+		}).sort((a, b) => moment(a.startTime).valueOf() - moment(b.startTime).valueOf())
+	}, [appointmentsState, selectedDate, view])
+
+	// Print calendar
+	const handlePrint = useCallback(() => {
+		window.print()
+		showToast('Opening print dialog...')
+	}, [showToast])
+
+	// Export to CSV
+	const handleExportCSV = useCallback(() => {
+		const visibleAppointments = getVisibleAppointments()
+		const dateStr = moment(selectedDate).format('YYYY-MM-DD')
+		const viewLabel = view === 'week' ? 'week' : 'day'
+
+		const columns: ExportColumn[] = [
+			{ key: 'date', header: 'Date', formatter: formatters.date },
+			{ key: 'time', header: 'Time' },
+			{ key: 'patientName', header: 'Patient' },
+			{ key: 'serviceName', header: 'Service' },
+			{ key: 'practitionerName', header: 'Provider' },
+			{ key: 'duration', header: 'Duration (min)', formatter: formatters.number },
+			{ key: 'status', header: 'Status' },
+			{ key: 'roomId', header: 'Room' },
+		]
+
+		const data = visibleAppointments.map(apt => ({
+			date: apt.startTime,
+			time: moment(apt.startTime).format('h:mm A'),
+			patientName: apt.patientName,
+			serviceName: apt.serviceName,
+			practitionerName: practitioners.find(p => p.id === apt.practitionerId)?.name || 'Unknown',
+			duration: apt.duration,
+			status: apt.status,
+			roomId: apt.roomId || '-',
+		}))
+
+		const result = exportData({
+			filename: `calendar-${viewLabel}-${dateStr}`,
+			format: 'csv',
+			columns,
+			data,
+			title: `Calendar Schedule - ${moment(selectedDate).format('MMMM D, YYYY')}${view === 'week' ? ' (Week View)' : ''}`,
+			dateRange: view === 'week' ? {
+				start: moment(selectedDate).format('MMM D, YYYY'),
+				end: moment(selectedDate).add(6, 'days').format('MMM D, YYYY')
+			} : undefined
+		})
+
+		if (result.success) {
+			showToast(`Exported ${data.length} appointments to CSV`)
+		} else {
+			showToast('Export failed: ' + result.error)
+		}
+	}, [getVisibleAppointments, selectedDate, view, showToast])
+
+	// Export to Excel
+	const handleExportExcel = useCallback(() => {
+		const visibleAppointments = getVisibleAppointments()
+		const dateStr = moment(selectedDate).format('YYYY-MM-DD')
+		const viewLabel = view === 'week' ? 'week' : 'day'
+
+		const columns: ExportColumn[] = [
+			{ key: 'date', header: 'Date', formatter: formatters.date },
+			{ key: 'time', header: 'Time' },
+			{ key: 'patientName', header: 'Patient' },
+			{ key: 'serviceName', header: 'Service' },
+			{ key: 'practitionerName', header: 'Provider' },
+			{ key: 'duration', header: 'Duration (min)', formatter: formatters.number },
+			{ key: 'status', header: 'Status' },
+			{ key: 'roomId', header: 'Room' },
+		]
+
+		const data = visibleAppointments.map(apt => ({
+			date: apt.startTime,
+			time: moment(apt.startTime).format('h:mm A'),
+			patientName: apt.patientName,
+			serviceName: apt.serviceName,
+			practitionerName: practitioners.find(p => p.id === apt.practitionerId)?.name || 'Unknown',
+			duration: apt.duration,
+			status: apt.status,
+			roomId: apt.roomId || '-',
+		}))
+
+		const result = exportData({
+			filename: `calendar-${viewLabel}-${dateStr}`,
+			format: 'xlsx',
+			columns,
+			data,
+			title: `Calendar Schedule - ${moment(selectedDate).format('MMMM D, YYYY')}${view === 'week' ? ' (Week View)' : ''}`,
+			dateRange: view === 'week' ? {
+				start: moment(selectedDate).format('MMM D, YYYY'),
+				end: moment(selectedDate).add(6, 'days').format('MMM D, YYYY')
+			} : undefined
+		})
+
+		if (result.success) {
+			showToast(`Exported ${data.length} appointments to Excel`)
+		} else {
+			showToast('Export failed: ' + result.error)
+		}
+	}, [getVisibleAppointments, selectedDate, view, showToast])
+
+	// ========== Double-Booking Override Mode Functions ==========
+	// TESTING CHECKLIST:
+	// [ ] Press D → Dialog appears
+	// [ ] Confirm → Mode enabled, badge shows
+	// [ ] Badge visible and clickable
+	// [ ] After 10 min → Mode auto-disables
+	// [ ] Press D again → Mode disables with confirmation
+	// [ ] Book conflicting appointment → Allowed when mode active
+	// [ ] Book conflicting appointment → Blocked when mode inactive
+
+	const OVERRIDE_MODE_TIMEOUT = 10 * 60 * 1000 // 10 minutes in milliseconds
+	const OVERRIDE_WARNING_TIME = 30 * 1000 // 30 seconds before expiration
+
+	// Reset interaction timer (called on calendar interactions)
+	const resetOverrideModeTimer = useCallback(() => {
+		if (!doubleBookingMode) return
+
+		lastInteractionRef.current = Date.now()
+
+		// Clear existing timers
+		if (modeTimeoutId) {
+			clearTimeout(modeTimeoutId)
+		}
+		if (modeWarningTimeoutId) {
+			clearTimeout(modeWarningTimeoutId)
+		}
+
+		// Set warning timer (30 seconds before expiration)
+		const warningId = setTimeout(() => {
+			showToast('⚠️ Override mode expiring soon. Press D to extend.')
+		}, OVERRIDE_MODE_TIMEOUT - OVERRIDE_WARNING_TIME)
+		setModeWarningTimeoutId(warningId)
+
+		// Set expiration timer (10 minutes)
+		const timeoutId = setTimeout(() => {
+			setDoubleBookingMode(false)
+			showToast('Override mode disabled due to inactivity')
+			setModeTimeoutId(null)
+			setModeWarningTimeoutId(null)
+		}, OVERRIDE_MODE_TIMEOUT)
+		setModeTimeoutId(timeoutId)
+	}, [doubleBookingMode, modeTimeoutId, modeWarningTimeoutId, showToast, setDoubleBookingMode])
+
+	// Enable override mode with timeout
+	const handleEnableOverrideMode = useCallback(() => {
+		setDoubleBookingMode(true)
+		setShowOverrideDialog(false)
+		showToast('Override mode enabled - conflicting appointments allowed')
+
+		// Log for audit purposes
+		console.log('[AUDIT] Double-booking override mode ENABLED', {
+			timestamp: new Date().toISOString(),
+			user: 'Current User' // In real app, get from auth context
+		})
+		// TODO: Send to audit log service
+
+		// Start the timeout
+		lastInteractionRef.current = Date.now()
+
+		// Set warning timer (30 seconds before expiration)
+		const warningId = setTimeout(() => {
+			showToast('⚠️ Override mode expiring soon. Press D to extend.')
+		}, OVERRIDE_MODE_TIMEOUT - OVERRIDE_WARNING_TIME)
+		setModeWarningTimeoutId(warningId)
+
+		// Set expiration timer (10 minutes)
+		const timeoutId = setTimeout(() => {
+			setDoubleBookingMode(false)
+			showToast('Override mode disabled due to inactivity')
+			setModeTimeoutId(null)
+			setModeWarningTimeoutId(null)
+		}, OVERRIDE_MODE_TIMEOUT)
+		setModeTimeoutId(timeoutId)
+	}, [showToast, setDoubleBookingMode])
+
+	// Disable override mode
+	const handleDisableOverrideMode = useCallback(() => {
+		// Clear timers
+		if (modeTimeoutId) {
+			clearTimeout(modeTimeoutId)
+			setModeTimeoutId(null)
+		}
+		if (modeWarningTimeoutId) {
+			clearTimeout(modeWarningTimeoutId)
+			setModeWarningTimeoutId(null)
+		}
+
+		setDoubleBookingMode(false)
+		showToast('Override mode disabled')
+
+		// Log for audit purposes
+		console.log('[AUDIT] Double-booking override mode DISABLED', {
+			timestamp: new Date().toISOString(),
+			user: 'Current User' // In real app, get from auth context
+		})
+		// TODO: Send to audit log service
+	}, [modeTimeoutId, modeWarningTimeoutId, showToast, setDoubleBookingMode])
+
+	// Toggle override mode (called from toolbar badge click)
+	const handleToggleOverrideMode = useCallback(() => {
+		if (doubleBookingMode) {
+			handleDisableOverrideMode()
+		} else {
+			setShowOverrideDialog(true)
+		}
+	}, [doubleBookingMode, handleDisableOverrideMode])
+
+	// Cleanup timeouts on unmount
+	useEffect(() => {
+		return () => {
+			if (modeTimeoutId) {
+				clearTimeout(modeTimeoutId)
+			}
+			if (modeWarningTimeoutId) {
+				clearTimeout(modeWarningTimeoutId)
+			}
+		}
+	}, [modeTimeoutId, modeWarningTimeoutId])
+
+	// Reset timer on calendar interactions when override mode is active
+	useEffect(() => {
+		if (!doubleBookingMode) return
+
+		const handleInteraction = () => {
+			resetOverrideModeTimer()
+		}
+
+		// Listen for various interaction events
+		document.addEventListener('click', handleInteraction)
+		document.addEventListener('keydown', handleInteraction)
+		document.addEventListener('scroll', handleInteraction, true)
+
+		return () => {
+			document.removeEventListener('click', handleInteraction)
+			document.removeEventListener('keydown', handleInteraction)
+			document.removeEventListener('scroll', handleInteraction, true)
+		}
+	}, [doubleBookingMode, resetOverrideModeTimer])
+	// ========== End Double-Booking Override Mode Functions ==========
+
 	// Handle copying appointment
 	const handleCopyAppointment = () => {
 		if (selectedAppointment) {
@@ -1083,6 +1453,18 @@ export default function CalendarView({
 			return
 		}
 
+		// Check for break/time block conflicts
+		const breakConflicts = findBreakConflicts(
+			{ practitionerId, startTime: newStartTime, endTime: newEndTime },
+			breaks
+		)
+
+		if (breakConflicts.length > 0) {
+			const breakMessage = getBreakConflictMessage(breakConflicts)
+			showToast(`⚠️ Cannot move: ${breakMessage}`)
+			return
+		}
+
 		// Update the appointment
 		const updatedAppointment = {
 			...movingAppointment,
@@ -1150,14 +1532,24 @@ export default function CalendarView({
 				}
 			}
 
-			// Double booking mode (D key)
-			if (e.key === 'd' || e.key === 'D') {
+			// Double booking mode (D key) - Show confirmation dialog
+			// Only trigger on standalone D press, not when combined with Ctrl/Cmd
+			if ((e.key === 'd' || e.key === 'D') && !e.ctrlKey && !e.metaKey) {
 				e.preventDefault()
-				setDoubleBookingMode(prev => {
-					const newMode = !prev
-					showToast(newMode ? 'Double booking mode enabled' : 'Double booking mode disabled')
-					return newMode
-				})
+				// Don't trigger if typing in an input field
+				const target = e.target as HTMLElement
+				if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable) {
+					return
+				}
+				// If mode is already active, pressing D again will disable it
+				if (doubleBookingMode) {
+					handleDisableOverrideMode()
+				} else {
+					// Show confirmation dialog before enabling
+					if (!showOverrideDialog) {
+						setShowOverrideDialog(true)
+					}
+				}
 			}
 
 			// Cancel move mode (Escape key)
@@ -1223,10 +1615,17 @@ export default function CalendarView({
 
 		window.addEventListener('keydown', handleKeyDown)
 		return () => window.removeEventListener('keydown', handleKeyDown)
-	}, [moveMode, movingAppointment, selectedLocationId, selectedAppointment, selectedBreak, 
-		showAppointmentSidebar, showShiftPanel, view, handleNavigate, setView, 
-		handleStartMoveAppointment, setShowGoToDate, setSelectedAppointment, 
-		setSelectedBreak, setShowAppointmentSidebar, setShowShiftPanel])
+	}, [moveMode, movingAppointment, selectedLocationId, selectedAppointment, selectedBreak,
+		showAppointmentSidebar, showShiftPanel, view, handleNavigate, setView,
+		handleStartMoveAppointment, setShowGoToDate, setSelectedAppointment,
+		setSelectedBreak, setShowAppointmentSidebar, setShowShiftPanel,
+		doubleBookingMode, showOverrideDialog, handleDisableOverrideMode])
+
+	// Filter appointments by service category
+	const filteredAppointments = useMemo(() => {
+		if (!selectedServiceCategory) return appointmentsState
+		return appointmentsState.filter(apt => apt.serviceCategory === selectedServiceCategory)
+	}, [appointmentsState, selectedServiceCategory])
 
 	// Get all shifts for the current view
 	const allShiftsForView = useMemo(() => {
@@ -1291,7 +1690,7 @@ export default function CalendarView({
 	}, [createMode, view, showToast])
 
 	return (
-		<div className="h-full flex relative bg-gray-50 calendar-grid">
+		<div className="h-full w-full flex relative bg-gray-50 calendar-grid overflow-hidden">
 			{/* Overlay when sidebar is open */}
 			{(selectedAppointment || selectedBreak) && (
 				<div 
@@ -1314,8 +1713,63 @@ export default function CalendarView({
 				</div>
 			)}
 
+			{/* Override Mode Confirmation Dialog */}
+			{showOverrideDialog && (
+				<div
+					className="fixed inset-0 bg-black bg-opacity-50 z-[100] flex items-center justify-center"
+					onClick={() => setShowOverrideDialog(false)}
+					role="dialog"
+					aria-modal="true"
+					aria-labelledby="override-dialog-title"
+				>
+					<div
+						className="bg-white rounded-xl shadow-2xl max-w-md w-full mx-4 transform transition-all"
+						onClick={(e) => e.stopPropagation()}
+					>
+						{/* Dialog Header */}
+						<div className="p-6 pb-4">
+							<div className="flex items-center gap-3 mb-4">
+								<div className="p-3 bg-orange-100 rounded-full">
+									<AlertTriangle className="h-6 w-6 text-orange-600" />
+								</div>
+								<h2 id="override-dialog-title" className="text-xl font-semibold text-gray-900">
+									Override Mode Enabled
+								</h2>
+							</div>
+							<p className="text-gray-600 leading-relaxed">
+								You can now book conflicting appointments. This will be logged for audit purposes.
+							</p>
+							<div className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+								<p className="text-sm text-amber-800">
+									<strong>Note:</strong> Override mode will automatically disable after 10 minutes of inactivity.
+								</p>
+							</div>
+						</div>
+
+						{/* Dialog Footer */}
+						<div className="px-6 py-4 bg-gray-50 rounded-b-xl flex justify-end gap-3">
+							<button
+								onClick={() => setShowOverrideDialog(false)}
+								className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors"
+								aria-label="Cancel override mode"
+							>
+								Cancel
+							</button>
+							<button
+								onClick={handleEnableOverrideMode}
+								className="px-4 py-2 text-sm font-medium text-white bg-orange-600 rounded-lg hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition-colors"
+								aria-label="Enable override mode"
+								autoFocus
+							>
+								Enable Override
+							</button>
+						</div>
+					</div>
+				</div>
+			)}
+
 			{/* Main Calendar Area */}
-			<div className="flex-1 flex flex-col transition-all duration-300">
+			<div className="flex-1 min-w-0 flex flex-col transition-all duration-300 overflow-hidden">
 				<CalendarHeader
 					selectedDate={selectedDate}
 					view={view}
@@ -1477,6 +1931,28 @@ export default function CalendarView({
 				>
 					{/* Main scrollable container */}
 					<div className="absolute inset-0 overflow-auto">
+						{view === 'month' ? (
+							<MonthView
+								selectedDate={selectedDate}
+								today={TODAY}
+								appointments={filteredAppointments}
+								breaks={breaks}
+								calendarSettings={calendarSettings}
+								visiblePractitionerIds={visiblePractitioners.map(p => p.id)}
+								onDateSelect={(date) => {
+									setSelectedDate(date)
+									setView('day')
+								}}
+								onAppointmentClick={(apt) => setSelectedAppointment(apt)}
+								onNavigate={(direction) => {
+									const newDate = direction === 'prev'
+										? moment(selectedDate).subtract(1, 'month').toDate()
+										: moment(selectedDate).add(1, 'month').toDate()
+									setSelectedDate(newDate)
+								}}
+							/>
+						) : (
+						<>
 						{/* Sticky header row */}
 						<div className="sticky top-0 z-20 bg-white flex">
 							{/* Time column header */}
@@ -1578,13 +2054,14 @@ export default function CalendarView({
 							calendarViewType={calendarViewType}
 							selectedDate={selectedDate}
 							weekDates={weekDates}
-							appointments={appointmentsState}
+							appointments={filteredAppointments}
 							breaks={breaks}
 							shifts={allShiftsForView}
 							calendarSettings={calendarSettings}
 							timeSlotHeight={timeSlotHeight}
 							showShiftsOnly={showShiftsOnly}
 							createMode={createMode}
+							pendingBreakType={breakType}
 							shiftMode={shiftMode}
 							moveMode={moveMode}
 							movingAppointment={movingAppointment}
@@ -1648,6 +2125,25 @@ export default function CalendarView({
 									return
 								}
 
+								// Check for break conflicts before allowing appointment creation
+								if (createMode === 'appointment') {
+									const slotStart = new Date(date)
+									slotStart.setHours(time.hour, time.minute, 0, 0)
+									const slotEnd = new Date(slotStart)
+									slotEnd.setMinutes(slotEnd.getMinutes() + 30) // minimum slot check
+
+									const breakConflicts = findBreakConflicts(
+										{ practitionerId: practitioner.id, startTime: slotStart, endTime: slotEnd },
+										breaks
+									)
+
+									if (breakConflicts.length > 0) {
+										const breakMessage = getBreakConflictMessage(breakConflicts)
+										showToast(`⚠️ ${breakMessage}`)
+										return // Don't open sidebar
+									}
+								}
+
 								// In appointment mode - always update position (even if sidebar already open)
 								if (createMode === 'appointment') {
 									// Show blue preview with EXACT drag duration - no snapping
@@ -1693,7 +2189,19 @@ export default function CalendarView({
 										showToast(`⚠️ Cannot paste: ${message}`)
 										return
 									}
-									
+
+									// Check for break/time block conflicts
+									const breakConflicts = findBreakConflicts(
+										{ practitionerId: practitioner.id, startTime, endTime },
+										breaks
+									)
+
+									if (breakConflicts.length > 0) {
+										const breakMessage = getBreakConflictMessage(breakConflicts)
+										showToast(`⚠️ Cannot paste: ${breakMessage}`)
+										return
+									}
+
 									// Create new appointment from copied data
 									const newAppointment: Appointment = {
 										...copiedAppointment,
@@ -1750,6 +2258,8 @@ export default function CalendarView({
 							onAppointmentDragEnd={handleAppointmentDragEnd}
 						/>
 						</div>
+					</>
+					)}
 					</div>
 				</div>
 
@@ -1762,6 +2272,8 @@ export default function CalendarView({
 					onGoToDate={() => setShowGoToDate(true)}
 					selectedLocation={selectedLocationId}
 					onLocationChange={setSelectedLocationId}
+					selectedServiceCategory={selectedServiceCategory}
+					onServiceCategoryChange={setSelectedServiceCategory}
 					createMode={createMode}
 					onCreateModeChange={(mode) => {
 						setCreateMode(mode)
@@ -1772,7 +2284,9 @@ export default function CalendarView({
 							setNewAppointmentData(null)
 						}
 					}}
+					pendingBreakType={breakType}
 					onNewAppointment={() => setCreateMode('appointment')}
+					onWalkIn={() => setShowWalkInModal(true)}
 					onExpressBooking={() => {
 						const defaultPractitioner = practitioners[0]
 						setExpressBookingPractitioner(defaultPractitioner)
@@ -1781,8 +2295,27 @@ export default function CalendarView({
 					}}
 					onGroupBooking={() => setShowGroupBooking(true)}
 					onAddBreak={(type) => {
+						// Map toolbar button types to break types
+						const breakTypeMap: Record<string, typeof pendingBreakType> = {
+							'lunch': 'lunch',
+							'break': 'personal',
+							'meeting': 'meeting'
+						}
+						const mappedBreakType = breakTypeMap[type] || 'personal'
+						setBreakType(mappedBreakType)
 						setCreateMode('break')
-						// Could add logic to set break type here
+
+						const labels: Record<string, string> = {
+							'lunch': '🍽️ Lunch Break',
+							'personal': '👤 Personal Break',
+							'meeting': '👥 Meeting'
+						}
+						showToast(`${labels[mappedBreakType] || 'Break'} mode: Click and drag on the calendar`)
+					}}
+					onBlockTime={() => {
+						setBreakType('out_of_office')
+						setCreateMode('break')
+						showToast('🏖️ Block Time mode: Click and drag to block off time')
 					}}
 					moveMode={moveMode}
 					onToggleMoveMode={handleToggleMoveMode}
@@ -1801,37 +2334,95 @@ export default function CalendarView({
 						setShowWaitlist(!showWaitlist)
 						setShowResources(false)
 						setShowRoomsPanel(false)
+						setShowGroupsPanel(false)
 					}}
 					onToggleRoomsPanel={() => {
 						setShowRoomsPanel(!showRoomsPanel)
 						setShowResources(false)
 						setShowWaitlist(false)
+						setShowGroupsPanel(false)
 					}}
 					onToggleResourcesPanel={() => {
 						setShowResources(!showResources)
 						setShowRoomsPanel(false)
 						setShowWaitlist(false)
+						setShowGroupsPanel(false)
 					}}
+					isGroupsPanelOpen={showGroupsPanel}
+					onToggleGroupsPanel={() => {
+						setShowGroupsPanel(!showGroupsPanel)
+						setShowResources(false)
+						setShowRoomsPanel(false)
+						setShowWaitlist(false)
+					}}
+					appointments={appointmentsState}
+					onAppointmentSelect={(apt) => setSelectedAppointment(apt)}
+					onNavigateToDate={(date) => setSelectedDate(date)}
+					calendarViewType={calendarViewType}
+					onCalendarViewTypeChange={(type) => {
+						setCalendarViewType(type)
+						clearSelections()
+					}}
+					doubleBookingMode={doubleBookingMode}
+					onToggleDoubleBookingMode={handleToggleOverrideMode}
+					onPrint={handlePrint}
+					onExportCSV={handleExportCSV}
+					onExportExcel={handleExportExcel}
 				/>
 				<StatusLegend />
 			</div>
 
-			{/* Appointment Details Panel */}
-			<div className={`fixed right-0 top-0 h-full w-[480px] bg-white shadow-2xl transform transition-transform duration-300 z-50 ${
+			{/* Appointment Details Panel - Shows GroupBookingDetails for group appointments */}
+			<div className={`fixed right-0 top-0 h-full bg-white shadow-2xl transform transition-transform duration-300 z-50 w-full ${
 				selectedAppointment ? 'translate-x-0' : 'translate-x-full'
-			}`}>
+			} ${selectedAppointment?.groupBookingId ? 'max-w-[420px]' : 'max-w-[480px]'}`}>
 				{selectedAppointment && (
-					<AppointmentDetailView
-						appointment={selectedAppointment}
-						isOpen={true}
-						onClose={() => setSelectedAppointment(null)}
-						onEdit={handleEditAppointment}
-					/>
+					selectedAppointment.groupBookingId ? (
+						<GroupBookingDetails
+							groupId={selectedAppointment.groupBookingId}
+							onClose={() => setSelectedAppointment(null)}
+							onAddParticipant={() => {
+								// Could open add participant modal here
+								console.log('Add participant to group')
+							}}
+							onSendSMS={async (type) => {
+								try {
+									const response = await fetch('/api/sms/group', {
+										method: 'POST',
+										headers: { 'Content-Type': 'application/json' },
+										body: JSON.stringify({
+											groupId: selectedAppointment.groupBookingId,
+											type
+										})
+									})
+									const result = await response.json()
+									if (result.success) {
+										showToast(`SMS sent to ${result.totalSent} participants`)
+									} else {
+										showToast('Failed to send SMS: ' + result.error)
+									}
+								} catch (error) {
+									showToast('Error sending SMS')
+								}
+							}}
+							onRefresh={() => {
+								// Refresh appointments
+								setAppointments([...appointmentsState])
+							}}
+						/>
+					) : (
+						<AppointmentDetailView
+							appointment={selectedAppointment}
+							isOpen={true}
+							onClose={() => setSelectedAppointment(null)}
+							onEdit={handleEditAppointment}
+						/>
+					)
 				)}
 			</div>
 
 			{/* Break Details Panel */}
-			<div className={`fixed right-0 top-0 h-full w-96 bg-white shadow-2xl transform transition-transform duration-300 z-50 ${
+			<div className={`fixed right-0 top-0 h-full w-full max-w-[384px] bg-white shadow-2xl transform transition-transform duration-300 z-50 ${
 				selectedBreak ? 'translate-x-0' : 'translate-x-full'
 			}`}>
 				{selectedBreak && (
@@ -1952,7 +2543,7 @@ export default function CalendarView({
 						id: Date.now().toString(),
 						patientName: patient.name,
 						serviceName: patient.requestedService,
-						serviceCategory: patient.serviceCategory,
+						serviceCategory: patient.serviceCategory as 'physiotherapy' | 'chiropractic' | 'aesthetics' | 'massage',
 						practitionerId: practitionerId,
 						startTime: startTime,
 						endTime: endTime,
@@ -1988,6 +2579,17 @@ export default function CalendarView({
 				selectedDate={selectedDate}
 				view={view}
 				weekDates={weekDates}
+			/>
+
+			<GroupsPanel
+				isOpen={showGroupsPanel}
+				onClose={() => setShowGroupsPanel(false)}
+				selectedDate={selectedDate}
+				onCreateGroup={() => {
+					setShowGroupsPanel(false)
+					setShowGroupBooking(true)
+				}}
+				showToast={showToast}
 			/>
 
 			{/* Shift Delete Modal */}
@@ -2080,6 +2682,67 @@ export default function CalendarView({
 					showToast(`✓ Group booking created successfully!`)
 					// Refresh appointments to show the new group appointments
 					setAppointments([...appointmentsState])
+				}}
+			/>
+
+			{/* Walk-In Modal */}
+			<WalkInModal
+				isOpen={showWalkInModal}
+				onClose={() => setShowWalkInModal(false)}
+				selectedDate={selectedDate}
+				selectedLocationId={selectedLocationId}
+				existingAppointments={appointmentsState}
+				onSuccess={(appointment) => {
+					setAppointments([...appointmentsState, appointment])
+					showToast(`✓ Walk-in added for ${appointment.patientName}`)
+				}}
+			/>
+
+			{/* Auto-Fill Notification for Waitlist */}
+			<AutoFillNotification
+				suggestion={autoFillSuggestion}
+				onBook={(patient) => {
+					if (!autoFillSuggestion?.cancelledAppointment) return
+
+					const cancelledApt = autoFillSuggestion.cancelledAppointment
+					const endTime = new Date(cancelledApt.startTime)
+					endTime.setMinutes(endTime.getMinutes() + patient.serviceDuration)
+
+					const categoryColors: Record<string, string> = {
+						injectables: '#8B5CF6',
+						facial: '#F59E0B',
+						laser: '#10B981',
+						wellness: '#EC4899'
+					}
+
+					const newAppointment: Appointment = {
+						id: `apt-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+						patientName: patient.name,
+						serviceName: patient.requestedService,
+						serviceCategory: patient.serviceCategory as 'physiotherapy' | 'chiropractic' | 'aesthetics' | 'massage',
+						practitionerId: cancelledApt.practitionerId,
+						startTime: cancelledApt.startTime,
+						endTime: endTime,
+						status: 'scheduled',
+						color: categoryColors[patient.serviceCategory] || '#8B5CF6',
+						duration: patient.serviceDuration,
+						phone: patient.phone,
+						email: patient.email,
+						notes: `Booked from waitlist (auto-fill). ${patient.notes || ''}`,
+						patientId: patient.id,
+						createdAt: new Date(),
+						updatedAt: new Date()
+					}
+
+					setAppointments([...appointmentsState, newAppointment])
+					setAutoFillSuggestion(null)
+					setWaitlistCount(prev => Math.max(0, prev - 1))
+					showToast(`✓ ${patient.name} booked from waitlist!`)
+				}}
+				onDismiss={() => setAutoFillSuggestion(null)}
+				onViewWaitlist={() => {
+					setAutoFillSuggestion(null)
+					setShowWaitlist(true)
 				}}
 			/>
 		</div>

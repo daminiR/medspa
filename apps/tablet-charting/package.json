@@ -1,0 +1,49 @@
+{
+  "name": "tablet-charting",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "REACT_NATIVE_PACKAGER_HOSTNAME=localhost EXPO_NO_METRO_WORKSPACE_ROOT=1 EXPO_ROUTER_APP_ROOT=app expo start",
+    "android": "REACT_NATIVE_PACKAGER_HOSTNAME=localhost EXPO_NO_METRO_WORKSPACE_ROOT=1 EXPO_ROUTER_APP_ROOT=app expo run:android",
+    "ios": "REACT_NATIVE_PACKAGER_HOSTNAME=localhost EXPO_NO_METRO_WORKSPACE_ROOT=1 EXPO_ROUTER_APP_ROOT=app expo run:ios",
+    "web": "REACT_NATIVE_PACKAGER_HOSTNAME=localhost EXPO_NO_METRO_WORKSPACE_ROOT=1 EXPO_ROUTER_APP_ROOT=app expo start --web"
+  },
+  "dependencies": {
+    "@expo/metro-runtime": "^6.1.2",
+    "@react-native-async-storage/async-storage": "2.2.0",
+    "@react-native-community/netinfo": "11.4.1",
+    "@react-navigation/native": "^7.1.25",
+    "@react-three/fiber": "^9.4.2",
+    "@shopify/react-native-skia": "2.2.12",
+    "expo": "~54.0.27",
+    "expo-camera": "~17.0.10",
+    "expo-constants": "~18.0.11",
+    "expo-dev-client": "~6.0.20",
+    "expo-file-system": "~19.0.20",
+    "expo-gl": "~16.0.8",
+    "expo-haptics": "~15.0.8",
+    "expo-image-picker": "~17.0.9",
+    "expo-linking": "~8.0.10",
+    "expo-router": "~6.0.17",
+    "expo-status-bar": "~3.0.9",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
+    "react-native": "0.81.5",
+    "react-native-gesture-handler": "~2.28.0",
+    "react-native-reanimated": "~4.1.1",
+    "react-native-safe-area-context": "~5.6.0",
+    "react-native-screens": "~4.16.0",
+    "react-native-web": "^0.19.13",
+    "react-native-worklets": "^0.7.1",
+    "three": "^0.182.0",
+    "zustand": "^5.0.9"
+  },
+  "devDependencies": {
+    "@types/react": "~19.1.0",
+    "reactotron-core-client": "^2.9.9",
+    "reactotron-react-js": "^3.3.17",
+    "reactotron-react-native": "^5.1.18",
+    "typescript": "~5.9.2"
+  },
+  "private": true
+}

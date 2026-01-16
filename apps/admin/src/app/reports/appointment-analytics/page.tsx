@@ -24,6 +24,8 @@ import {
   PieChart
 } from 'lucide-react'
 import { format, startOfWeek, endOfWeek, startOfMonth, endOfMonth, subMonths } from 'date-fns'
+import { ExportButton } from '@/components/reports/ExportButton'
+import { formatters, ExportColumn } from '@/lib/export'
 
 // Mock data generation
 const generateAppointmentData = () => {
@@ -88,7 +90,14 @@ export default function AppointmentAnalyticsPage() {
   
   // Provider performance
   const providerStats = useMemo(() => {
-    const stats = {}
+    const stats: Record<string, {
+      total: number
+      completed: number
+      noShows: number
+      cancelled: number
+      revenue: number
+      newClients: number
+    }> = {}
     appointments.forEach(apt => {
       if (!stats[apt.provider]) {
         stats[apt.provider] = {
@@ -117,7 +126,13 @@ export default function AppointmentAnalyticsPage() {
   
   // Service performance
   const serviceStats = useMemo(() => {
-    const stats = {}
+    const stats: Record<string, {
+      total: number
+      completed: number
+      revenue: number
+      avgDuration: number
+      totalDuration: number
+    }> = {}
     appointments.forEach(apt => {
       if (!stats[apt.service]) {
         stats[apt.service] = {
@@ -143,14 +158,14 @@ export default function AppointmentAnalyticsPage() {
 
   // Time slot analysis
   const timeSlotAnalysis = useMemo(() => {
-    const slots = {
+    const slots: Record<string, { total: number; completed: number; noShows: number }> = {
       '8-10 AM': { total: 0, completed: 0, noShows: 0 },
       '10-12 PM': { total: 0, completed: 0, noShows: 0 },
       '12-2 PM': { total: 0, completed: 0, noShows: 0 },
       '2-4 PM': { total: 0, completed: 0, noShows: 0 },
       '4-6 PM': { total: 0, completed: 0, noShows: 0 }
     }
-    
+
     appointments.forEach(apt => {
       const hour = apt.date.getHours()
       let slot = '8-10 AM'
@@ -158,7 +173,7 @@ export default function AppointmentAnalyticsPage() {
       else if (hour >= 12 && hour < 14) slot = '12-2 PM'
       else if (hour >= 14 && hour < 16) slot = '2-4 PM'
       else if (hour >= 16 && hour < 18) slot = '4-6 PM'
-      
+
       slots[slot].total++
       if (apt.status === 'completed') slots[slot].completed++
       if (apt.status === 'no-show') slots[slot].noShows++
@@ -170,6 +185,58 @@ export default function AppointmentAnalyticsPage() {
       completionRate: (data.completed / data.total) * 100 || 0
     }))
   }, [appointments])
+
+  // Prepare export data - combining provider stats, service stats, and time slots
+  const exportData = useMemo(() => {
+    const rows: any[] = []
+
+    // Provider performance
+    providerStats.forEach(p => {
+      rows.push({
+        section: 'Provider Performance',
+        item: p.provider,
+        metric1: `${p.total} appointments`,
+        metric2: `${p.completionRate.toFixed(1)}% completion`,
+        metric3: formatters.currency(p.revenue),
+        metric4: `${p.newClients} new clients`
+      })
+    })
+
+    // Service performance
+    serviceStats.forEach(s => {
+      rows.push({
+        section: 'Service Performance',
+        item: s.service,
+        metric1: `${s.total} appointments`,
+        metric2: `${((s.completed / s.total) * 100).toFixed(1)}% completion`,
+        metric3: formatters.currency(s.revenue),
+        metric4: `${s.avgDuration.toFixed(0)} min avg`
+      })
+    })
+
+    // Time slot analysis
+    timeSlotAnalysis.forEach(t => {
+      rows.push({
+        section: 'Time Slot Analysis',
+        item: t.time,
+        metric1: `${t.total} appointments`,
+        metric2: `${t.completionRate.toFixed(1)}% completion`,
+        metric3: `${t.noShows} no-shows`,
+        metric4: '-'
+      })
+    })
+
+    return rows
+  }, [providerStats, serviceStats, timeSlotAnalysis])
+
+  const exportColumns: ExportColumn[] = [
+    { key: 'section', header: 'Section' },
+    { key: 'item', header: 'Item' },
+    { key: 'metric1', header: 'Volume' },
+    { key: 'metric2', header: 'Completion Rate' },
+    { key: 'metric3', header: 'Revenue/No-Shows' },
+    { key: 'metric4', header: 'Additional' },
+  ]
 
   return (
     <div className="flex h-screen bg-gray-50">
@@ -192,17 +259,19 @@ export default function AppointmentAnalyticsPage() {
             </div>
             
             <div className="flex space-x-3">
-              <button className="px-4 py-2 bg-white border border-gray-200 rounded-lg text-gray-700 hover:bg-gray-50 flex items-center space-x-2">
-                <Download className="h-4 w-4" />
-                <span>Export</span>
-              </button>
+              <ExportButton
+                data={exportData}
+                columns={exportColumns}
+                filename="appointment-analytics"
+                title="Appointment Analytics"
+              />
             </div>
           </div>
 
           {/* Filters */}
           <div className="bg-white rounded-lg p-4 mb-6 shadow-sm">
             <div className="flex flex-wrap items-center space-x-4">
-              <select 
+              <select
                 value={selectedDateRange}
                 onChange={(e) => setSelectedDateRange(e.target.value)}
                 className="px-4 py-2 border border-gray-200 rounded-lg"

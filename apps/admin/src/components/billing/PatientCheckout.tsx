@@ -322,6 +322,7 @@ export function PatientCheckout({ patientId, patientName, appointmentTime = '2:0
       {/* Injectable Billing Modal */}
       {showInjectableBilling && (
         <InjectableBilling
+          patientId={patientId}
           patientName={patientName}
           onClose={() => setShowInjectableBilling(false)}
         />

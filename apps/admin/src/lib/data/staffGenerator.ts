@@ -1,8 +1,8 @@
-import { 
-  StaffMember, 
-  StaffListItem, 
-  StaffRole, 
-  AccessLevel, 
+import {
+  StaffMember,
+  StaffListItem,
+  StaffRole,
+  AccessLevel,
   StaffStatus,
   Specialization,
   License,
@@ -10,7 +10,10 @@ import {
   Schedule,
   TimeOff,
   Commission,
-  PerformanceMetrics
+  PerformanceMetrics,
+  StaffPermissions,
+  NotificationPreferences,
+  ServiceAssignment
 } from '@/types/staff';
 
 const firstNames = [
@@ -343,6 +346,10 @@ export function generateStaffMember(): StaffMember {
     accessLevel: getRoleAccessLevel(role),
     status,
     specializations: getRoleSpecializations(role),
+
+    // New fields for enhanced staff management
+    isServiceProvider: !['Front Desk', 'Office Manager', 'Billing Specialist', 'Marketing Coordinator', 'Patient Coordinator'].includes(role),
+    availableInOnlineBooking: !['Front Desk', 'Office Manager', 'Billing Specialist', 'Marketing Coordinator', 'Patient Coordinator'].includes(role) && Math.random() > 0.1,
     
     hireDate: generateDate(randomBetween(30, 1825)),
     birthDate: generateDate(randomBetween(7300, 18250)),

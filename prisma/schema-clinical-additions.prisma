@@ -1,0 +1,567 @@
+// ============================================================================
+// CLINICAL CHARTING MODELS
+// ============================================================================
+// These models should be added to the main schema.prisma file
+// Also need to add relation to Patient model: treatments Treatment[]
+
+model Treatment {
+  id                String   @id @default(cuid())
+
+  // Relations
+  patientId         String
+  patient           Patient  @relation(fields: [patientId], references: [id])
+  providerId        String
+  appointmentId     String?
+  locationId        String?
+
+  // Service info
+  serviceName       String?
+  serviceCategory   String?
+
+  // Clinical
+  productType       ProductType
+  treatmentArea     String?
+  chiefComplaint    String?
+
+  // Timing
+  startTime         DateTime
+  endTime           DateTime?
+  status            TreatmentStatus @default(IN_PROGRESS)
+
+  // SOAP Notes (stored as JSON)
+  soapNotes         Json
+
+  // Tracking
+  photoIds          String[]
+
+  // Sign-off
+  signedOffBy       String?
+  signedOffAt       DateTime?
+  coSignRequired    Boolean  @default(false)
+  coSignedBy        String?
+  coSignedAt        DateTime?
+
+  // Legacy fields (for backward compatibility)
+  notes             String?
+  consentObtained   Boolean  @default(false)
+  photosBeforeTaken Boolean  @default(false)
+  photosAfterTaken  Boolean  @default(false)
+  followUpScheduled Boolean  @default(false)
+  followUpDate      DateTime?
+  complications     String?
+  outcome           String?
+
+  // Audit
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  createdBy         String
+  lastModifiedBy    String
+
+  // Relations
+  injectionPoints   InjectionPoint[]
+  productUsages     ProductUsage[]
+  treatmentNotes    TreatmentNote[]
+
+  @@index([patientId])
+  @@index([providerId])
+  @@index([status])
+  @@index([startTime])
+}
+
+enum ProductType {
+  NEUROTOXIN
+  FILLER
+  LASER
+  SKIN
+  BODY
+  OTHER
+}
+
+enum TreatmentStatus {
+  IN_PROGRESS
+  COMPLETED
+  PENDING_REVIEW
+  CANCELLED
+}
+
+model TreatmentNote {
+  id            String   @id @default(cuid())
+  treatmentId   String
+  treatment     Treatment @relation(fields: [treatmentId], references: [id], onDelete: Cascade)
+
+  noteType      String   // "clinical", "progress", "complication", etc.
+  content       String
+
+  createdAt     DateTime @default(now())
+  createdBy     String
+
+  @@index([treatmentId])
+}
+
+model InjectionPoint {
+  id            String   @id @default(cuid())
+  treatmentId   String
+  treatment     Treatment @relation(fields: [treatmentId], references: [id], onDelete: Cascade)
+
+  // Position (0-100 percentage on face chart)
+  zoneId        String   // Reference to face zone (e.g., "forehead", "glabella")
+  x             Float    // 0-100 percentage
+  y             Float    // 0-100 percentage
+
+  // Treatment details
+  productId     String
+  productName   String
+  units         Float?
+  volume        Float?
+
+  // Technique
+  depth         InjectionDepth
+  technique     InjectionTechnique
+  needleGauge   String?
+
+  // Inventory tracking
+  lotNumber     String?
+  expirationDate String?
+
+  // Notes
+  notes         String?
+  complications String?
+
+  // Audit
+  timestamp     DateTime @default(now())
+  addedBy       String
+
+  @@index([treatmentId])
+  @@index([zoneId])
+}
+
+enum InjectionDepth {
+  SUPERFICIAL
+  MID_DERMAL
+  DEEP_DERMAL
+  SUBCUTANEOUS
+  SUPRAPERIOSTEAL
+}
+
+enum InjectionTechnique {
+  SERIAL
+  LINEAR
+  FANNING
+  CROSS_HATCHING
+  BOLUS
+  DEPOT
+}
+
+model ProductUsage {
+  id              String   @id @default(cuid())
+  treatmentId     String
+  treatment       Treatment @relation(fields: [treatmentId], references: [id], onDelete: Cascade)
+
+  // Product info
+  productId       String
+  productName     String
+  productCategory ProductCategory
+
+  // Quantity
+  unitsUsed       Float?
+  volumeUsed      Float?
+  packagesUsed    Int?
+
+  // Inventory tracking
+  lotNumber       String
+  expirationDate  String?
+  vialId          String?
+
+  // Billing
+  unitPrice       Float?
+  totalPrice      Float?
+
+  // Audit
+  addedAt         DateTime @default(now())
+  addedBy         String
+
+  @@index([treatmentId])
+  @@index([productId])
+}
+
+enum ProductCategory {
+  NEUROTOXIN
+  FILLER
+  SKINCARE
+  ANESTHETIC
+  OTHER
+}
+
+// ============================================================================
+// MEDICAL PHOTOS & ANNOTATIONS
+// ============================================================================
+// Also need to add relation to Patient model: clinicalPhotos Photo[]
+
+model Photo {
+  id                String   @id @default(cuid())
+
+  // Relations
+  patientId         String
+  patient           Patient  @relation(name: "clinicalPhotos", fields: [patientId], references: [id])
+  treatmentId       String?
+  appointmentId     String?
+
+  // Storage
+  storageKey        String   // e.g., "patients/{patientId}/photos/{timestamp}_{filename}"
+  thumbnailKey      String?
+  originalFilename  String
+  contentType       String
+  fileSize          Int
+
+  // Metadata
+  type              PhotoPhotoType
+  angle             PhotoAngle?
+  bodyRegion        String?
+  description       String?
+
+  // Consent
+  consentFormId     String?
+  photoConsent      Boolean  @default(false)
+  marketingConsent  Boolean  @default(false)
+
+  // Processing
+  isProcessed       Boolean  @default(false)
+  width             Int?
+  height            Int?
+
+  // Audit
+  uploadedAt        DateTime @default(now())
+  uploadedBy        String
+  deletedAt         DateTime?
+  deletedBy         String?
+
+  // Relations
+  annotations       PhotoAnnotation[]
+
+  @@index([patientId])
+  @@index([treatmentId])
+  @@index([type])
+  @@index([uploadedAt])
+}
+
+enum PhotoPhotoType {
+  BEFORE
+  AFTER
+  DURING
+  PROGRESS
+  PROFILE
+  OTHER
+}
+
+enum PhotoAngle {
+  FRONT
+  LEFT
+  RIGHT
+  FORTY_FIVE_LEFT
+  FORTY_FIVE_RIGHT
+  TOP
+  CUSTOM
+}
+
+model PhotoAnnotation {
+  id              String   @id @default(cuid())
+  photoId         String
+  photo           Photo    @relation(fields: [photoId], references: [id], onDelete: Cascade)
+
+  // Position (percentage 0-100)
+  x               Float
+  y               Float
+  width           Float?
+  height          Float?
+
+  // Annotation details
+  type            AnnotationType
+  label           String?
+  notes           String?
+  color           String?
+
+  // Measurements
+  measurementValue Float?
+  measurementUnit  String?
+
+  // Reference linking
+  referenceType    AnnotationReferenceType?
+  referenceId      String?
+
+  // Audit
+  createdAt       DateTime @default(now())
+  createdBy       String
+  updatedAt       DateTime?
+  updatedBy       String?
+
+  @@index([photoId])
+}
+
+enum AnnotationType {
+  MARKER
+  CIRCLE
+  ARROW
+  TEXT
+  MEASUREMENT
+  AREA
+}
+
+enum AnnotationReferenceType {
+  INJECTION_POINT
+  ZONE
+  TREATMENT_AREA
+}
+
+// ============================================================================
+// DIGITAL FORMS & CONSENT MANAGEMENT
+// ============================================================================
+// Also need to add relation to Patient model: formSubmissions FormSubmission[]
+
+model FormTemplate {
+  id                String   @id @default(cuid())
+  slug              String   @unique
+  title             String
+  description       String?
+  type              FormTemplateType
+  category          String?
+
+  // Form structure (stored as JSON)
+  sections          Json     // Array of FormSection objects
+
+  // Signature configuration
+  signature         Json     // SignatureConfig object
+  requiresWitness   Boolean  @default(false)
+
+  // Validity
+  expirationDays    Int?
+  serviceIds        String[]
+
+  // Status
+  isActive          Boolean  @default(true)
+  version           Int      @default(1)
+
+  // Audit
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  createdBy         String
+  lastModifiedBy    String
+  deletedAt         DateTime?
+  deletedBy         String?
+
+  // Relations
+  submissions       FormSubmission[]
+  assignments       PatientFormAssignment[]
+
+  @@index([type])
+  @@index([isActive])
+  @@index([slug])
+}
+
+enum FormTemplateType {
+  INTAKE
+  CONSENT
+  HIPAA
+  PHOTO_RELEASE
+  TREATMENT_SPECIFIC
+  MEDICAL_HISTORY
+  CUSTOM
+}
+
+model FormSubmission {
+  id                String   @id @default(cuid())
+
+  // Relations
+  formId            String
+  form              FormTemplate @relation(fields: [formId], references: [id])
+  patientId         String
+  patient           Patient  @relation(name: "formSubmissions", fields: [patientId], references: [id])
+  appointmentId     String?
+
+  // Form details
+  formTitle         String
+  formType          String
+
+  // Status
+  status            FormSubmissionStatus @default(PENDING)
+
+  // Responses (field ID -> value mapping)
+  responses         Json
+
+  // Signatures (stored as JSON with e-signature metadata)
+  patientSignature  Json?    // SignatureData object
+  witnessSignature  Json?    // SignatureData object
+  providerSignature Json?    // SignatureData object
+
+  // Legal
+  consentGiven      Boolean  @default(false)
+  acknowledgements  String[]
+
+  // PDF
+  pdfUrl            String?
+  pdfGeneratedAt    DateTime?
+
+  // Timing
+  startedAt         DateTime?
+  completedAt       DateTime?
+  expiresAt         DateTime?
+
+  // Submission metadata (for ESIGN compliance)
+  submittedAt       DateTime?
+  ipAddress         String?
+  userAgent         String?
+
+  // Audit
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@index([formId])
+  @@index([patientId])
+  @@index([status])
+}
+
+enum FormSubmissionStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  EXPIRED
+}
+
+model PatientFormAssignment {
+  id            String   @id @default(cuid())
+
+  // Relations
+  formId        String
+  form          FormTemplate @relation(fields: [formId], references: [id])
+  patientId     String
+  appointmentId String?
+
+  // Assignment details
+  dueDate       DateTime?
+  status        PatientFormStatus @default(PENDING)
+
+  // Audit
+  assignedAt    DateTime @default(now())
+  assignedBy    String
+  completedAt   DateTime?
+
+  @@index([formId])
+  @@index([patientId])
+  @@index([status])
+}
+
+enum PatientFormStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  EXPIRED
+}
+
+// ============================================================================
+// TREATMENT TEMPLATES & PROTOCOLS
+// ============================================================================
+
+model TreatmentTemplate {
+  id                    String   @id @default(cuid())
+  name                  String
+  description           String?
+  productType           ProductType
+
+  // Template details (stored as JSON)
+  defaultZones          Json     // Array of TemplateZone objects
+  defaultProducts       Json     // Array of TemplateProduct objects
+  soapDefaults          Json?    // SOAPDefaults object
+
+  // Settings
+  estimatedDuration     Int      // minutes
+  requiredConsents      String[]
+  aftercareInstructions String?
+
+  // Visibility
+  isGlobal              Boolean  @default(false)
+  providerId            String?
+
+  // Audit
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+  createdBy             String
+
+  @@index([productType])
+  @@index([isGlobal])
+  @@index([providerId])
+}
+
+model ProviderPlaybook {
+  id                        String   @id @default(cuid())
+  providerId                String   @unique
+  name                      String
+  description               String?
+
+  // Personal protocols (stored as JSON)
+  protocols                 Json     // Array of PlaybookProtocol objects
+
+  // DOT phrases for quick charting (stored as JSON)
+  dotPhrases                Json     // Array of DotPhrase objects
+
+  // Settings (stored as JSON)
+  defaultProductPreferences Json?    // Record<string, string>
+
+  // Audit
+  createdAt                 DateTime @default(now())
+  updatedAt                 DateTime @updatedAt
+
+  @@index([providerId])
+}
+
+// ============================================================================
+// CHARTING SETTINGS
+// ============================================================================
+
+model ChartingSetting {
+  id                      String   @id @default(cuid())
+
+  // Scope (unique combination)
+  providerId              String?
+  locationId              String?
+
+  // Display preferences
+  defaultView             ChartingView @default(FACE_2D)
+  showInjectionHistory    Boolean  @default(true)
+  showProductSuggestions  Boolean  @default(true)
+  autoSaveInterval        Int      @default(30)
+
+  // Zone configurations (stored as JSON)
+  zoneConfigs             Json     // Array of ZoneConfig objects
+
+  // Unit/Volume defaults
+  defaultMeasurement      MeasurementUnit @default(UNITS)
+
+  // Quick actions (stored as JSON)
+  quickActions            Json     // Array of QuickAction objects
+
+  // Audit
+  updatedAt               DateTime @updatedAt
+  updatedBy               String
+
+  @@unique([providerId, locationId])
+  @@index([providerId])
+  @@index([locationId])
+}
+
+enum ChartingView {
+  FACE_2D
+  FACE_3D
+  BODY
+}
+
+enum MeasurementUnit {
+  UNITS
+  ML
+}
+
+// ============================================================================
+// PATIENT MODEL ADDITIONS
+// ============================================================================
+// Add these relations to the existing Patient model:
+// treatments          Treatment[]      @relation("PatientTreatments")
+// clinicalPhotos      Photo[]          @relation("clinicalPhotos")
+// formSubmissions     FormSubmission[] @relation("formSubmissions")

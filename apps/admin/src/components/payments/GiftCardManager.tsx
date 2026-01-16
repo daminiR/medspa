@@ -44,6 +44,7 @@ interface GiftCard {
   transactions: GiftCardTransaction[]
   design: 'standard' | 'birthday' | 'holiday' | 'spa' | 'custom'
   message?: string
+  scheduledDate?: Date
 }
 
 interface GiftCardTransaction {

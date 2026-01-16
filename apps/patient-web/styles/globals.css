@@ -1,0 +1,297 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Base styles */
+@layer base {
+  :root {
+    --primary: 139 92 246;
+    --primary-foreground: 255 255 255;
+    --secondary: 249 250 251;
+    --secondary-foreground: 31 41 55;
+    --accent: 236 72 153;
+    --accent-foreground: 255 255 255;
+    --background: 255 255 255;
+    --foreground: 31 41 55;
+    --muted: 243 244 246;
+    --muted-foreground: 107 114 128;
+    --border: 229 231 235;
+    --ring: 139 92 246;
+    --radius: 0.5rem;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  html {
+    @apply antialiased;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    @apply bg-white text-gray-900;
+    font-feature-settings: 'rlig' 1, 'calt' 1;
+  }
+
+  /* Improve focus styles for accessibility */
+  :focus-visible {
+    @apply outline-none ring-2 ring-primary-500 ring-offset-2;
+  }
+
+  /* Remove default focus outline */
+  :focus:not(:focus-visible) {
+    @apply outline-none;
+  }
+
+  /* Smooth scrolling */
+  html {
+    scroll-behavior: smooth;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+}
+
+/* Component styles */
+@layer components {
+  /* Button variants */
+  .btn {
+    @apply inline-flex items-center justify-center rounded-lg font-medium transition-all duration-200;
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2;
+    @apply disabled:pointer-events-none disabled:opacity-50;
+  }
+
+  .btn-primary {
+    @apply btn bg-primary-600 text-white;
+    @apply hover:bg-primary-700 active:bg-primary-800;
+    @apply shadow-sm hover:shadow;
+  }
+
+  .btn-secondary {
+    @apply btn bg-gray-100 text-gray-900;
+    @apply hover:bg-gray-200 active:bg-gray-300;
+  }
+
+  .btn-outline {
+    @apply btn border-2 border-primary-600 text-primary-600 bg-transparent;
+    @apply hover:bg-primary-50 active:bg-primary-100;
+  }
+
+  .btn-ghost {
+    @apply btn text-gray-600 bg-transparent;
+    @apply hover:bg-gray-100 active:bg-gray-200;
+  }
+
+  .btn-sm {
+    @apply h-9 px-3 text-sm;
+  }
+
+  .btn-md {
+    @apply h-11 px-4 text-sm;
+  }
+
+  .btn-lg {
+    @apply h-12 px-6 text-base;
+  }
+
+  .btn-xl {
+    @apply h-14 px-8 text-lg;
+  }
+
+  /* Card styles */
+  .card {
+    @apply bg-white rounded-xl border border-gray-200;
+    @apply shadow-soft;
+  }
+
+  .card-hover {
+    @apply card;
+    @apply transition-all duration-200;
+    @apply hover:shadow-md hover:-translate-y-0.5;
+  }
+
+  /* Input styles */
+  .input {
+    @apply w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-gray-900;
+    @apply placeholder:text-gray-400;
+    @apply transition-colors duration-200;
+    @apply focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 focus:outline-none;
+    @apply disabled:bg-gray-50 disabled:text-gray-500 disabled:cursor-not-allowed;
+  }
+
+  .input-error {
+    @apply input border-error-500;
+    @apply focus:border-error-500 focus:ring-error-500/20;
+  }
+
+  /* Label styles */
+  .label {
+    @apply text-sm font-medium text-gray-700;
+  }
+
+  /* Link styles */
+  .link {
+    @apply text-primary-600 font-medium;
+    @apply hover:text-primary-700 hover:underline;
+    @apply transition-colors duration-200;
+  }
+
+  /* Badge styles */
+  .badge {
+    @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium;
+  }
+
+  .badge-primary {
+    @apply badge bg-primary-100 text-primary-800;
+  }
+
+  .badge-success {
+    @apply badge bg-success-100 text-success-800;
+  }
+
+  .badge-warning {
+    @apply badge bg-warning-100 text-warning-800;
+  }
+
+  .badge-error {
+    @apply badge bg-error-100 text-error-800;
+  }
+
+  /* Avatar styles */
+  .avatar {
+    @apply relative inline-flex items-center justify-center overflow-hidden rounded-full bg-primary-100;
+  }
+
+  .avatar-sm {
+    @apply avatar h-8 w-8 text-sm;
+  }
+
+  .avatar-md {
+    @apply avatar h-10 w-10 text-base;
+  }
+
+  .avatar-lg {
+    @apply avatar h-12 w-12 text-lg;
+  }
+
+  /* Container */
+  .container-app {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  /* Page header */
+  .page-header {
+    @apply mb-8;
+  }
+
+  .page-title {
+    @apply text-2xl font-bold text-gray-900;
+  }
+
+  .page-subtitle {
+    @apply text-gray-600 mt-1;
+  }
+}
+
+/* Utility styles */
+@layer utilities {
+  /* Hide scrollbar but keep functionality */
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Text gradient */
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary-600 to-accent-500;
+  }
+
+  /* Glass effect */
+  .glass {
+    @apply bg-white/80 backdrop-blur-sm;
+  }
+
+  /* Safe area padding */
+  .safe-top {
+    padding-top: env(safe-area-inset-top);
+  }
+
+  .safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .safe-left {
+    padding-left: env(safe-area-inset-left);
+  }
+
+  .safe-right {
+    padding-right: env(safe-area-inset-right);
+  }
+
+  /* Animation utilities */
+  .animate-in {
+    animation-duration: 0.2s;
+    animation-fill-mode: forwards;
+  }
+
+  .fade-in {
+    animation-name: fadeIn;
+  }
+
+  .slide-up {
+    animation-name: slideUp;
+  }
+
+  /* Touch improvements */
+  .touch-none {
+    touch-action: none;
+  }
+
+  .touch-pan-x {
+    touch-action: pan-x;
+  }
+
+  .touch-pan-y {
+    touch-action: pan-y;
+  }
+}
+
+/* Print styles */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+
+  .print-break-before {
+    break-before: page;
+  }
+
+  .print-break-after {
+    break-after: page;
+  }
+}
+
+/* PWA install prompt styles */
+.pwa-install-prompt {
+  @apply fixed bottom-4 left-4 right-4 p-4 rounded-xl bg-white shadow-lg border border-gray-200;
+  @apply animate-in slide-up;
+  z-index: 9999;
+}
+
+/* Skeleton loading animation */
+.skeleton {
+  @apply bg-gray-200 animate-pulse rounded;
+}
+
+/* Loading spinner */
+.spinner {
+  @apply animate-spin rounded-full border-2 border-gray-200 border-t-primary-600;
+}

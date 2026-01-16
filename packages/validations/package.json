@@ -1,0 +1,21 @@
+{
+  "name": "@medical-spa/validations",
+  "version": "1.0.0",
+  "description": "Shared Zod validation schemas for Medical Spa Platform",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "test": "vitest",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3",
+    "vitest": "^2.0.0"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  }
+}

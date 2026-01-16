@@ -1,0 +1,589 @@
+MESSAGING WEBHOOKS - FLOW DIAGRAMS
+===================================
+
+FLOW 1: INBOUND SMS - OPT-OUT
+------------------------------
+Patient sends "STOP"
+    ↓
+Twilio → POST /api/webhooks/twilio/inbound
+    ↓
+Parse form data (MessageSid, From, To, Body)
+    ↓
+Validate Twilio signature (skip in dev)
+    ↓
+Find patient by phone (+11234567890)
+    ↓
+Detect opt-out keyword: "STOP" ✓
+    ↓
+Process opt-out:
+  - patient.smsConsent = false
+  - patient.smsOptOutAt = new Date()
+    ↓
+Send auto-reply:
+  "You've been unsubscribed from Luxe Medical Spa.
+   Reply START to resubscribe."
+    ↓
+Store inbound message:
+  {
+    messageSid: "SM123",
+    from: "+11234567890",
+    body: "STOP",
+    isOptOut: true,
+    processed: true
+  }
+    ↓
+Return 200 OK
+    ↓
+✅ Patient opted out successfully
+
+
+FLOW 2: INBOUND SMS - EMERGENCY
+--------------------------------
+Patient sends "Severe pain and swelling"
+    ↓
+Twilio → POST /api/webhooks/twilio/inbound
+    ↓
+Parse form data
+    ↓
+Validate signature
+    ↓
+Find/create patient
+    ↓
+Detect emergency keywords: ["SEVERE PAIN"] ✓
+    ↓
+Create staff alert:
+  {
+    type: "emergency",
+    patientPhone: "+11234567890",
+    message: "Severe pain and swelling",
+    triggerKeywords: ["SEVERE PAIN"],
+    createdAt: NOW
+  }
+    ↓
+Log alert: 🚨 EMERGENCY ALERT CREATED
+    ↓
+Send auto-reply:
+  "We received your message. If this is a medical
+   emergency, please call 911 immediately. Our staff
+   will contact you shortly."
+    ↓
+Find/create conversation
+    ↓
+Store inbound message:
+  {
+    messageSid: "SM456",
+    body: "Severe pain and swelling",
+    isEmergency: true,
+    conversationId: "conv-123",
+    processed: false
+  }
+    ↓
+Update conversation:
+  - messageCount++
+  - unreadCount++
+  - lastMessageAt = NOW
+    ↓
+Return 200 OK
+    ↓
+✅ Emergency alert created, staff notified
+
+
+FLOW 3: INBOUND SMS - SIMPLE COMMAND
+-------------------------------------
+Patient sends "C"
+    ↓
+Twilio → POST /api/webhooks/twilio/inbound
+    ↓
+Parse form data
+    ↓
+Validate signature
+    ↓
+Find patient
+    ↓
+Check opt-out keywords → none
+Check opt-in keywords → none
+Check emergency keywords → none
+    ↓
+Detect simple command: "C" → "confirm" ✓
+    ↓
+Find/create conversation
+    ↓
+Store inbound message:
+  {
+    messageSid: "SM789",
+    body: "C",
+    detectedCommand: "confirm",
+    conversationId: "conv-123"
+  }
+    ↓
+Update conversation
+    ↓
+Return 200 OK
+    ↓
+✅ Command detected, ready for processing
+
+
+FLOW 4: STATUS UPDATE - DELIVERED
+----------------------------------
+Twilio sends delivery status
+    ↓
+Twilio → POST /api/webhooks/twilio/status
+    ↓
+Parse form data:
+  {
+    MessageSid: "SM123",
+    MessageStatus: "delivered",
+    To: "+11234567890"
+  }
+    ↓
+Validate signature
+    ↓
+Store status update:
+  {
+    messageSid: "SM123",
+    messageStatus: "delivered",
+    timestamp: NOW
+  }
+    ↓
+Find outbound message by MessageSid
+    ↓
+Update message:
+  - status = "delivered"
+  - deliveredAt = NOW
+    ↓
+Return 200 OK
+    ↓
+✅ Message marked as delivered
+
+
+FLOW 5: STATUS UPDATE - ERROR 30004 (BLOCKED)
+----------------------------------------------
+Twilio sends error status
+    ↓
+Twilio → POST /api/webhooks/twilio/status
+    ↓
+Parse form data:
+  {
+    MessageSid: "SM999",
+    MessageStatus: "failed",
+    ErrorCode: "30004",
+    ErrorMessage: "Message blocked",
+    To: "+11234567890"
+  }
+    ↓
+Validate signature
+    ↓
+Store status update
+    ↓
+Find outbound message
+    ↓
+Update message:
+  - status = "failed"
+  - errorCode = "30004"
+  - errorMessage = "Message blocked"
+    ↓
+Detect error code 30004 → Carrier blocking
+    ↓
+Find patient by phone
+    ↓
+Process carrier-level opt-out:
+  - patient.smsConsent = false
+  - patient.smsOptOutAt = NOW
+    ↓
+Log: "Message blocked by carrier (30004)"
+    ↓
+Return 200 OK
+    ↓
+⚠️ Patient automatically opted out due to carrier block
+
+
+FLOW 6: STATUS UPDATE - ERROR 30006 (LANDLINE)
+-----------------------------------------------
+Twilio sends error status
+    ↓
+Twilio → POST /api/webhooks/twilio/status
+    ↓
+Parse form data:
+  {
+    MessageSid: "SM888",
+    MessageStatus: "failed",
+    ErrorCode: "30006",
+    ErrorMessage: "Landline or unreachable carrier",
+    To: "+11234567890"
+  }
+    ↓
+Process error code 30006 → Landline detected
+    ↓
+Find patient
+    ↓
+Update patient:
+  - phoneType = "landline"
+  - phoneValid = false
+    ↓
+Log: "Landline detected (30006)"
+    ↓
+Return 200 OK
+    ↓
+⚠️ Phone marked as landline, SMS disabled
+
+
+FLOW 7: STATUS UPDATE - ERROR 30007 (SPAM)
+-------------------------------------------
+Twilio sends spam filter status
+    ↓
+Twilio → POST /api/webhooks/twilio/status
+    ↓
+Parse form data:
+  {
+    MessageSid: "SM777",
+    MessageStatus: "failed",
+    ErrorCode: "30007",
+    ErrorMessage: "Message filtered as spam"
+  }
+    ↓
+Process error code 30007 → Spam filter
+    ↓
+Find outbound message
+    ↓
+Create staff alert:
+  {
+    type: "emergency",
+    message: "Message filtered as spam: [message text]",
+    triggerKeywords: ["SPAM_FILTER"]
+  }
+    ↓
+Log: 🚨 "Message marked as spam (30007)"
+    ↓
+Return 200 OK
+    ↓
+⚠️ Staff alerted to review message content
+
+
+DATA FLOW: COMPLETE CONVERSATION
+---------------------------------
+
+1. Staff sends appointment reminder:
+   ↓
+   System → Twilio API:
+     POST https://api.twilio.com/messages
+     {
+       from: "+10987654321",
+       to: "+11234567890",
+       body: "Reminder: Botox tomorrow at 2pm"
+     }
+   ↓
+   Twilio returns: { sid: "SM123" }
+   ↓
+   Store in outboundMessages:
+     {
+       externalSid: "SM123",
+       status: "queued",
+       sentAt: NOW
+     }
+
+2. Twilio delivers message:
+   ↓
+   Twilio → POST /api/webhooks/twilio/status
+   { MessageSid: "SM123", MessageStatus: "delivered" }
+   ↓
+   Update outboundMessages: status = "delivered"
+
+3. Patient replies "C" (confirm):
+   ↓
+   Twilio → POST /api/webhooks/twilio/inbound
+   { From: "+11234567890", Body: "C" }
+   ↓
+   Detect command: "confirm"
+   ↓
+   Find conversation or create new one
+   ↓
+   Store inbound message
+   ↓
+   Update conversation counts
+
+4. Staff replies "Great! See you tomorrow":
+   ↓
+   System → Twilio API
+   ↓
+   Store outbound message
+
+5. Later, patient cancels with "R":
+   ↓
+   Twilio → POST /api/webhooks/twilio/inbound
+   ↓
+   Detect command: "reschedule"
+   ↓
+   Staff notified in conversation thread
+
+
+SECURITY FLOW: SIGNATURE VALIDATION
+------------------------------------
+
+Twilio sends webhook:
+  POST /api/webhooks/twilio/inbound
+  Headers:
+    X-Twilio-Signature: "abc123..."
+  Body:
+    MessageSid=SM123&From=+1...&Body=Hello
+    ↓
+Backend receives request
+    ↓
+Extract signature from header
+    ↓
+Build full URL:
+  protocol: x-forwarded-proto || "http"
+  host: header("host")
+  path: req.path
+  → "https://api.example.com/api/webhooks/twilio/inbound"
+    ↓
+Parse form data → params object
+    ↓
+Check if TWILIO_AUTH_TOKEN is set
+    ↓
+YES: Validate signature
+  ↓
+  import twilio from 'twilio';
+  const isValid = twilio.validateRequest(
+    authToken,
+    signature,
+    url,
+    params
+  );
+  ↓
+  If invalid:
+    - Log error
+    - Return 200 OK (prevent retries)
+    - Stop processing
+  ↓
+  If valid: Continue processing
+
+NO: Skip validation (dev mode)
+  ↓
+  Log: "Development mode - no validation"
+  ↓
+  Continue processing
+
+
+ERROR HANDLING FLOW
+--------------------
+
+Any error occurs during processing:
+    ↓
+Try-catch block catches error
+    ↓
+Log error to console:
+  console.error("Error processing webhook:", error)
+    ↓
+ALWAYS return 200 OK:
+  return c.text('', 200)
+    ↓
+Why?
+  - Prevents Twilio retrying
+  - Twilio thinks webhook succeeded
+  - Errors are logged for debugging
+  - No patient data exposed
+
+
+DEVELOPMENT MODE FLOW
+----------------------
+
+TWILIO_AUTH_TOKEN not set
+    ↓
+Webhook receives request
+    ↓
+Skip signature validation
+    ↓
+Process normally
+    ↓
+When sending SMS:
+    ↓
+sendSMS() checks config
+    ↓
+No Twilio credentials?
+    ↓
+Console output instead:
+  === SMS Response (Development Mode) ===
+  To: +11234567890
+  Body: You've been unsubscribed...
+  ======================================
+    ↓
+Continue processing
+    ↓
+Return 200 OK
+
+
+TESTING FLOW: DEBUG ENDPOINTS
+------------------------------
+
+Developer wants to check recent messages:
+    ↓
+GET /api/webhooks/twilio/inbound-messages
+    ↓
+Query inboundMessages map
+    ↓
+Sort by timestamp DESC
+    ↓
+Return last 50 messages:
+  {
+    messages: [
+      {
+        id: "msg-1",
+        from: "+11234567890",
+        body: "STOP",
+        isOptOut: true,
+        timestamp: "2024-12-20T15:30:00Z"
+      },
+      ...
+    ],
+    total: 156
+  }
+
+
+Developer checks for emergencies:
+    ↓
+GET /api/webhooks/twilio/alerts
+    ↓
+Query staffAlerts map
+    ↓
+Sort by createdAt DESC
+    ↓
+Return alerts:
+  {
+    alerts: [
+      {
+        type: "emergency",
+        patientPhone: "+11234567890",
+        message: "Severe pain...",
+        triggerKeywords: ["SEVERE PAIN"],
+        acknowledgedAt: null
+      },
+      ...
+    ],
+    total: 3
+  }
+
+
+INTEGRATION FLOW: WITH MAIN API
+--------------------------------
+
+Main app startup:
+    ↓
+src/index.ts imports routes
+    ↓
+import messagingWebhooks from './routes/messaging-webhooks';
+    ↓
+Mount on main app:
+api.route('/webhooks', messagingWebhooks);
+    ↓
+Server starts on port 8080
+    ↓
+Endpoints available:
+  - GET  /api/webhooks/twilio/health
+  - POST /api/webhooks/twilio/inbound
+  - POST /api/webhooks/twilio/status
+  - GET  /api/webhooks/twilio/inbound-messages
+  - GET  /api/webhooks/twilio/status-updates
+  - GET  /api/webhooks/twilio/alerts
+  - GET  /api/webhooks/twilio/conversations
+
+
+Twilio configured:
+  Phone Number: +10987654321
+  Messaging Configuration:
+    - Inbound URL: https://api.example.com/api/webhooks/twilio/inbound
+    - Status URL:  https://api.example.com/api/webhooks/twilio/status
+    ↓
+Patient sends text
+    ↓
+Twilio receives
+    ↓
+Twilio POSTs to inbound URL
+    ↓
+Webhook processes
+    ↓
+Response sent to patient
+    ↓
+Twilio POSTs delivery status
+    ↓
+Status webhook updates message
+    ↓
+Complete!
+
+
+KEYWORD PRIORITY FLOW
+----------------------
+
+Message received: "STOP EMERGENCY"
+    ↓
+Check opt-out first (highest priority)
+    ↓
+Contains "STOP" → OPT-OUT ✓
+    ↓
+Process opt-out immediately
+    ↓
+Send confirmation
+    ↓
+Return 200 OK
+    ↓
+Emergency keywords ignored (patient opted out)
+
+
+Message received: "START YES"
+    ↓
+Check opt-out → none
+    ↓
+Check opt-in
+    ↓
+Contains "START" → OPT-IN ✓
+    ↓
+Process opt-in immediately
+    ↓
+Send confirmation
+    ↓
+Return 200 OK
+    ↓
+"YES" command ignored (opt-in takes priority)
+
+
+Message received: "911 need help"
+    ↓
+Check opt-out → none
+Check opt-in → none
+    ↓
+Check emergency keywords
+    ↓
+Contains "911" → EMERGENCY ✓
+    ↓
+Create staff alert
+    ↓
+Send auto-reply
+    ↓
+Store in conversation
+    ↓
+Return 200 OK
+
+
+Message received: "C"
+    ↓
+Check opt-out → none
+Check opt-in → none
+Check emergency → none
+    ↓
+Check simple commands
+    ↓
+Matches "C" → CONFIRM ✓
+    ↓
+Store with detectedCommand = "confirm"
+    ↓
+Return 200 OK
+
+
+Message received: "Hello, when is my appointment?"
+    ↓
+Check all keywords → none match
+    ↓
+Store as regular conversation message
+    ↓
+Return 200 OK
+    ↓
+Staff sees in unread messages

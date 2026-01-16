@@ -1,0 +1,346 @@
+REMINDER SYSTEM FLOW DIAGRAM
+=============================
+
+APPOINTMENT LIFECYCLE & REMINDER TIMING
+----------------------------------------
+
+Booking Time:
+    |
+    v
+[CONFIRMATION] - Sent immediately
+    |
+    |
+    | (7 days pass...)
+    |
+    v
+Day -3:
+[PREP_REMINDER] - 3 days before (configurable)
+    |          Treatment-specific instructions
+    |          (Botox: avoid alcohol/blood thinners)
+    |
+    v
+Day -2:
+[REMINDER_48HR] - 48 hours before
+    |           "Reply CONFIRM to confirm"
+    |
+    v
+Day -1:
+[REMINDER_24HR] - 24 hours before
+    |           + Pre-treatment instructions
+    |
+    v
+Day 0 - 2hrs before:
+[REMINDER_2HR] - 2 hours before
+    |          + Clinic address
+    |
+    v
+APPOINTMENT TIME
+    |
+    |--- [COMPLETED] -------------> Post-Treatment Follow-ups
+    |                                    |
+    |                                    v
+    |                               Day +1:
+    |                               [FOLLOWUP_24HR]
+    |                                    |  Treatment check-in
+    |                                    |  + Aftercare instructions
+    |                                    v
+    |                               Day +3:
+    |                               [FOLLOWUP_3DAY]
+    |                                    |  "How are you feeling?"
+    |                                    v
+    |                               Day +7:
+    |                               [FOLLOWUP_1WEEK]
+    |                                    |  Results visible
+    |                                    |  Rebooking encouragement
+    |                                    v
+    |                               Day +14:
+    |                               [FOLLOWUP_2WEEK]
+    |                                    |  Full results
+    |                                    |  + Booking link
+    |                                    v
+    |                                  END
+    |
+    |
+    |--- [NO_SHOW] ----------------> 1 hour after:
+                                     [NO_SHOW_REMINDER]
+                                          |  "We missed you"
+                                          |  Reschedule encouragement
+                                          v
+                                        END
+
+
+CRON PROCESSING FLOW
+--------------------
+
+Every 15 minutes:
+    |
+    v
+[Google Cloud Scheduler]
+    |
+    | POST /api/reminders/process
+    | Authorization: Bearer {CRON_SECRET}
+    |
+    v
+[Verify CRON_SECRET] -----> Invalid? --> 401 Unauthorized
+    |
+    | Valid
+    v
+[Check if enabled] -------> Disabled? --> Return "Reminders disabled"
+    |
+    | Enabled
+    v
+[Check quiet hours] ------> In quiet hours? --> Return "Skipping - quiet hours"
+    |                                           (e.g. 9PM - 8AM)
+    | Not quiet hours
+    v
+[Calculate pending reminders]
+    |
+    | For each appointment in database:
+    |   - Calculate time until/since appointment
+    |   - Check if reminder window matches
+    |   - Verify not already sent
+    |   - Check patient SMS opt-in
+    |
+    v
+[Pending reminders list]
+    |
+    v
+For each pending reminder:
+    |
+    v
+[Get appointment] --> Not found? --> Skip
+    |
+    | Found
+    v
+[Generate message]
+    |
+    | - Get patient first name
+    | - Format date/time
+    | - Add treatment-specific prep/aftercare if applicable
+    |
+    v
+[Send via Twilio] -----> Failed? --> Log error, continue
+    |
+    | Success
+    v
+[Log to sent_reminders]
+    |
+    v
+[Mark as sent for this appointment]
+    |
+    v
+Continue to next reminder...
+    |
+    v
+[Return summary]
+    {
+      "processed": 12,
+      "summary": {
+        "prep_reminder": 2,
+        "reminder_48hr": 3,
+        "reminder_24hr": 4,
+        "reminder_2hr": 2,
+        "followup_24hr": 1,
+        ...
+      }
+    }
+
+
+TREATMENT-SPECIFIC INSTRUCTION MAPPING
+---------------------------------------
+
+Service Name                Treatment Prep Logic
+------------                --------------------
+"Botox Treatment"    --->   Contains "botox"
+                             |
+                             v
+                            "Avoid alcohol and blood thinners 24hrs before.
+                             Come with a clean face."
+
+"Dermal Fillers"     --->   Contains "filler"
+                             |
+                             v
+                            "Avoid alcohol, blood thinners, and fish oil 48hrs before.
+                             No aspirin."
+
+"Chemical Peel"      --->   Contains "chemical_peel" OR "peel"
+                             |
+                             v
+                            "No retinol or exfoliants 5 days before.
+                             Come makeup-free."
+
+(Similar for: Microneedling, Laser, Hydrafacial, PRP)
+
+
+QUIET HOURS LOGIC
+-----------------
+
+Example: quietHours = { start: "21:00", end: "08:00" }
+
+Current Time: 7:00 AM
+    |
+    v
+Parse hours: start = 21, end = 8
+    |
+    v
+Check if start > end? --> YES (spans midnight)
+    |
+    v
+Is hour >= 21 OR hour < 8?
+    |
+    | 7 < 8 --> TRUE
+    v
+SKIP SENDING (Quiet Hours)
+
+
+Current Time: 10:00 AM
+    |
+    v
+Is hour >= 21 OR hour < 8?
+    |
+    | 10 >= 21? NO, 10 < 8? NO
+    v
+OK TO SEND (Not Quiet Hours)
+
+
+DUPLICATE PREVENTION
+--------------------
+
+appointmentRemindersStore:
+    Map {
+        "apt-001" => Set { "confirmation", "prep_reminder", "reminder_48hr" },
+        "apt-002" => Set { "confirmation", "reminder_48hr" },
+        ...
+    }
+
+Before sending:
+    |
+    v
+Check: appointmentRemindersStore.get("apt-001")?.has("reminder_24hr")
+    |
+    | Not sent yet
+    v
+Send reminder
+    |
+    v
+Mark as sent: appointmentRemindersStore.get("apt-001").add("reminder_24hr")
+
+
+MESSAGE GENERATION EXAMPLE
+---------------------------
+
+Input:
+    - Appointment: { patientName: "Sarah Johnson", serviceName: "Botox Treatment", startTime: "2024-12-20T10:00:00Z" }
+    - ReminderType: "prep_reminder"
+
+Process:
+    1. Extract firstName: "Sarah"
+    2. Format date: "Fri, Dec 20"
+    3. Format time: "10:00 AM"
+    4. Get treatment prep: getTreatmentPrep("Botox Treatment")
+       --> Returns: "Avoid alcohol and blood thinners 24hrs before. Come with a clean face."
+    5. Build message template
+
+Output:
+    "Hi Sarah, reminder: Botox Treatment appointment on Fri, Dec 20 at 10:00 AM.
+     PREP: Avoid alcohol and blood thinners 24hrs before. Come with a clean face.
+     Questions? Call us! - Luxe Medical Spa"
+
+
+TIME WINDOW CALCULATIONS
+-------------------------
+
+Appointment: Dec 20, 2024 at 10:00 AM
+Current Time: Dec 17, 2024 at 11:00 AM
+
+Hours until appointment: (appointmentTime - now) / (1000 * 60 * 60)
+    = 71 hours
+
+Days until appointment: hoursUntil / 24
+    = 2.96 days
+
+Check prep_reminder (3 days before):
+    daysUntil <= 3 AND daysUntil > 2
+    2.96 <= 3? YES
+    2.96 > 2? YES
+    --> SEND PREP REMINDER
+
+Check reminder_48hr:
+    hoursUntil <= 48 AND hoursUntil > 47
+    71 <= 48? NO
+    --> DON'T SEND YET
+
+
+API REQUEST/RESPONSE EXAMPLES
+------------------------------
+
+GET /api/reminders/settings
+Response:
+{
+  "success": true,
+  "settings": {
+    "enabled": true,
+    "sendConfirmation": true,
+    "sendPrepReminder": true,
+    "prepReminderDays": 3,
+    "send48hrReminder": true,
+    "send24hrReminder": true,
+    "send2hrReminder": true,
+    "sendFollowUps": true,
+    "businessHours": { "start": "09:00", "end": "18:00" },
+    "quietHours": { "start": "21:00", "end": "08:00" },
+    "timezone": "America/New_York"
+  }
+}
+
+POST /api/reminders/send
+Request:
+{
+  "appointmentId": "apt-001",
+  "reminderType": "reminder_24hr"
+}
+
+Response:
+{
+  "success": true,
+  "message": "Reminder sent successfully",
+  "reminder": {
+    "id": "rem-1702994400000-abc123",
+    "appointmentId": "apt-001",
+    "patientId": "pat-001",
+    "patientPhone": "+15551234567",
+    "reminderType": "reminder_24hr",
+    "messageBody": "Hi Sarah, your Botox Treatment appointment is tomorrow at 10:00 AM...",
+    "status": "sent",
+    "sentAt": "2024-12-19T10:00:00.000Z"
+  }
+}
+
+GET /api/reminders/pending
+Response:
+{
+  "success": true,
+  "pending": [
+    {
+      "appointmentId": "apt-001",
+      "patientName": "Sarah Johnson",
+      "patientPhone": "+15551234567",
+      "service": "Botox Treatment",
+      "appointmentDate": "2024-12-20T10:00:00.000Z",
+      "reminderType": "prep_reminder",
+      "scheduledFor": "2024-12-17T15:00:00.000Z",
+      "status": "pending"
+    },
+    {
+      "appointmentId": "apt-002",
+      "patientName": "Michael Davis",
+      "patientPhone": "+15559876543",
+      "service": "Dermal Fillers",
+      "appointmentDate": "2024-12-21T14:00:00.000Z",
+      "reminderType": "reminder_48hr",
+      "scheduledFor": "2024-12-19T15:00:00.000Z",
+      "status": "pending"
+    }
+  ],
+  "total": 2
+}

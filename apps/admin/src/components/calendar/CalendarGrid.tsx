@@ -1,10 +1,10 @@
 import React, { useState, useRef } from 'react'
 import moment from 'moment'
 import { Appointment, Break } from '@/lib/data'
-import { CalendarSettings, ContinuousSlotBlock, DragState } from '@/types/calendar'
+import { CalendarSettings, ContinuousSlotBlock, DragState, BreakType } from '@/types/calendar'
 import { Shift } from '@/types/shifts'
 import { getTimeFromY } from '@/utils/calendarHelpers'
-import { findAppointmentConflicts, getConflictMessage } from '@/utils/appointmentConflicts'
+import { findAppointmentConflicts, getConflictMessage, findBreakConflicts, getBreakConflictMessage } from '@/utils/appointmentConflicts'
 import DayView from './DayView'
 import WeekView from './WeekView'
 
@@ -22,7 +22,8 @@ interface CalendarGridProps {
 	calendarSettings: CalendarSettings
 	timeSlotHeight: number
 	showShiftsOnly: boolean
-	createMode: 'appointment' | 'break'
+	createMode: 'appointment' | 'break' | 'none'
+	pendingBreakType?: BreakType
 	shiftMode: boolean
 	moveMode: boolean
 	movingAppointment: Appointment | null
@@ -76,6 +77,7 @@ export default function CalendarGrid({
 	timeSlotHeight,
 	showShiftsOnly,
 	createMode,
+	pendingBreakType = 'personal',
 	shiftMode,
 	moveMode,
 	movingAppointment,
@@ -236,11 +238,34 @@ export default function CalendarGrid({
 						const breakEndTime = new Date(breakStartTime)
 						breakEndTime.setMinutes(breakEndTime.getMinutes() + finalDuration)
 
+						// Check for conflicts with existing appointments
+						const conflictingAppointments = appointments.filter(apt => {
+							if (apt.practitionerId !== practitioner.id) return false
+							if (apt.status === 'cancelled' || apt.status === 'deleted') return false
+
+							// Check if appointment overlaps with the break time
+							const aptStart = new Date(apt.startTime).getTime()
+							const aptEnd = new Date(apt.endTime).getTime()
+							const breakStart = breakStartTime.getTime()
+							const breakEnd = breakEndTime.getTime()
+
+							return (aptStart < breakEnd && aptEnd > breakStart)
+						})
+
+						if (conflictingAppointments.length > 0) {
+							// Show warning but still create the break
+							const conflictCount = conflictingAppointments.length
+							const message = conflictCount === 1
+								? `⚠️ Warning: 1 appointment exists during this time. Block created anyway.`
+								: `⚠️ Warning: ${conflictCount} appointments exist during this time. Block created anyway.`
+							showToast(message)
+						}
+
 						const newBreak: Break = {
 							id: `break-${Date.now()}`,
 							practitionerId: practitioner.id,
 							practitionerName: practitioner.name,
-							type: 'personal',
+							type: pendingBreakType,
 							startTime: breakStartTime,
 							endTime: breakEndTime,
 							duration: finalDuration,
@@ -395,7 +420,19 @@ export default function CalendarGrid({
 					showToast(`⚠️ Cannot move: ${message}`)
 					return
 				}
-				
+
+				// Check for break/time block conflicts
+				const breakConflicts = findBreakConflicts(
+					{ practitionerId: practitionerId, startTime: newStartTime, endTime: newEndTime, postTreatmentTime: appointment.postTreatmentTime },
+					breaks
+				)
+
+				if (breakConflicts.length > 0) {
+					const breakMessage = getBreakConflictMessage(breakConflicts)
+					showToast(`⚠️ Cannot move: ${breakMessage}`)
+					return
+				}
+
 				// Update the appointment
 				const updatedAppointment = {
 					...appointment,
@@ -459,6 +496,18 @@ export default function CalendarGrid({
 					// Show conflict warning and don't create the appointment
 					const message = getConflictMessage(conflicts)
 					showToast(`⚠️ Cannot book: ${message}`)
+					return
+				}
+
+				// Check for break/time block conflicts
+				const breakConflicts = findBreakConflicts(
+					{ practitionerId: practitionerId, startTime, endTime },
+					breaks
+				)
+
+				if (breakConflicts.length > 0) {
+					const breakMessage = getBreakConflictMessage(breakConflicts)
+					showToast(`⚠️ Cannot book: ${breakMessage}`)
 					return
 				}
 

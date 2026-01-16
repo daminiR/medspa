@@ -60,9 +60,9 @@ export default function ScheduleCommandBar({
   const [selectedProvider, setSelectedProvider] = useState<string>('any');
 
   // Filter practitioners based on search
-  const filteredPractitioners = practitioners.filter(p => 
+  const filteredPractitioners = practitioners.filter(p =>
     p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    p.specialties.some(s => s.toLowerCase().includes(searchQuery.toLowerCase()))
+    p.specialties?.some(s => s.toLowerCase().includes(searchQuery.toLowerCase()))
   );
 
   // Get count of selected practitioners
@@ -294,7 +294,7 @@ export default function ScheduleCommandBar({
                                 {practitioner.name.replace(/^Dr\.\s/, '')}
                               </div>
                               <div className="text-xs text-gray-500">
-                                {practitioner.specialties[0]}
+                                {practitioner.specialties?.[0]}
                               </div>
                             </div>
                             {isSelected && (

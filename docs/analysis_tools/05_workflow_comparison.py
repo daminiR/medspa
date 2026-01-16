@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Workflow Comparison Analysis
-Compares Mango Mint workflows vs Luke's Medical Spa workflows
+Compares Mango Mint workflows vs Luxe Medical Spa EMR workflows
 Shows WHO WINS on UX/seamlessness for each feature
 """
 
@@ -78,7 +78,7 @@ Return JSON:
         return {"features": []}
 
 def analyze_current_platform_feature(feature_name, codebase_components):
-    """Analyze how Luke's platform currently implements a feature"""
+    """Analyze how Luxe platform currently implements a feature"""
 
     # Find relevant components
     relevant_files = []
@@ -104,7 +104,7 @@ def analyze_current_platform_feature(feature_name, codebase_components):
         return {"implemented": False, "workflow": "Not implemented"}
 
     # Analyze with Claude
-    prompt = f"""Analyze how Luke's Medical Spa currently implements "{feature_name}".
+    prompt = f"""Analyze how Luxe Medical Spa EMR currently implements "{feature_name}".
 
 Code snippets:
 {component_code[:10000]}
@@ -152,7 +152,7 @@ Workflow: {json.dumps(mangomint_workflow.get('workflow_steps', []))}
 UX Highlights: {json.dumps(mangomint_workflow.get('ux_highlights', []))}
 Pain Points Solved: {json.dumps(mangomint_workflow.get('pain_points_solved', []))}
 
-**Luke's Medical Spa Implementation:**
+**Luxe Medical Spa EMR Implementation:**
 Status: {current_workflow.get('implemented')}
 Workflow: {json.dumps(current_workflow.get('workflow_steps', []))}
 Strengths: {json.dumps(current_workflow.get('ux_strengths', []))}
@@ -160,12 +160,12 @@ Weaknesses: {json.dumps(current_workflow.get('ux_weaknesses', []))}
 
 Return JSON:
 {{
-  "winner": "Mango Mint / Luke's Platform / Tie / Luke's Not Implemented",
+  "winner": "Mango Mint / Luxe Platform / Tie / Luxe Not Implemented",
   "winner_reasoning": "Why they win (1-2 sentences)",
   "mangomint_score": 0-10,
-  "lukes_score": 0-10,
+  "luxe_score": 0-10,
   "key_differentiators": ["What makes winner better", ...],
-  "how_to_beat_them": ["What Luke needs to do to win", ...]
+  "how_to_beat_them": ["What Luxe needs to do to win", ...]
 }}
 """
 
@@ -220,7 +220,7 @@ def run_workflow_comparison():
         print(f"\n2️⃣  Analyzing feature {idx}: {feature_name}")
 
         # Analyze current platform
-        print(f"   → Checking Luke's implementation...")
+        print(f"   → Checking Luxe implementation...")
         current_analysis = analyze_current_platform_feature(feature_name, CURRENT_CODEBASE_ROOT)
 
         # Compare workflows
@@ -231,7 +231,7 @@ def run_workflow_comparison():
         full_comparison = {
             "feature_name": feature_name,
             "mangomint": feature,
-            "lukes_platform": current_analysis,
+            "luxe_platform": current_analysis,
             "comparison": comparison
         }
 
@@ -255,11 +255,11 @@ def run_workflow_comparison():
 
     # Count winners
     mango_wins = sum(1 for c in comparisons if 'Mango Mint' in c['comparison'].get('winner', ''))
-    luke_wins = sum(1 for c in comparisons if "Luke's" in c['comparison'].get('winner', ''))
+    luxe_wins = sum(1 for c in comparisons if "Luxe" in c['comparison'].get('winner', ''))
 
     print(f"   Mango Mint wins: {mango_wins}")
-    print(f"   Luke's wins: {luke_wins}")
-    print(f"   Not implemented: {len(comparisons) - mango_wins - luke_wins}")
+    print(f"   Luxe wins: {luxe_wins}")
+    print(f"   Not implemented: {len(comparisons) - mango_wins - luxe_wins}")
 
     return output_file
 

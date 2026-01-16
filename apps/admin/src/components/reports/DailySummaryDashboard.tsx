@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import {
   DollarSign,
   Users,
@@ -15,10 +15,11 @@ import {
   ChevronUp,
   ChevronDown,
   ArrowRight,
-  Download,
   Printer,
   RefreshCw
 } from 'lucide-react'
+import { ExportButton } from './ExportButton'
+import { ExportColumn, formatters } from '@/lib/export'
 
 interface DailySummaryData {
   revenue: {
@@ -206,6 +207,52 @@ export function DailySummaryDashboard() {
     }
   }, [autoRefresh])
 
+  // Prepare export data
+  const exportData = useMemo(() => {
+    return [
+      { metric: 'Revenue Today', value: data.revenue.today, category: 'Revenue' },
+      { metric: 'Revenue Week to Date', value: data.revenue.weekToDate, category: 'Revenue' },
+      { metric: 'Revenue Month to Date', value: data.revenue.monthToDate, category: 'Revenue' },
+      { metric: 'Revenue Year to Date', value: data.revenue.yearToDate, category: 'Revenue' },
+      { metric: 'Total Services', value: data.services.total, category: 'Services' },
+      ...data.services.byCategory.map(cat => ({
+        metric: `${cat.name} - Count`, value: cat.count, category: 'Services'
+      })),
+      ...data.services.byCategory.map(cat => ({
+        metric: `${cat.name} - Revenue`, value: cat.revenue, category: 'Services'
+      })),
+      { metric: 'Appointments Total', value: data.appointments.total, category: 'Appointments' },
+      { metric: 'Appointments Completed', value: data.appointments.completed, category: 'Appointments' },
+      { metric: 'No Shows', value: data.appointments.noShows, category: 'Appointments' },
+      { metric: 'Cancellations', value: data.appointments.cancellations, category: 'Appointments' },
+      { metric: 'Utilization %', value: data.appointments.utilization, category: 'Appointments' },
+      { metric: 'New Patients', value: data.patients.newPatients, category: 'Patients' },
+      { metric: 'Returning Patients', value: data.patients.returningPatients, category: 'Patients' },
+      { metric: 'Total Visits', value: data.patients.totalVisits, category: 'Patients' },
+      { metric: 'Average Ticket', value: data.patients.averageTicket, category: 'Patients' },
+      { metric: 'Cash Payments', value: data.payments.cash, category: 'Payments' },
+      { metric: 'Card Payments', value: data.payments.card, category: 'Payments' },
+      { metric: 'Package Credits', value: data.payments.packageCredits, category: 'Payments' },
+      { metric: 'Gift Cards', value: data.payments.giftCards, category: 'Payments' },
+      { metric: 'Total Payments', value: data.payments.total, category: 'Payments' },
+      { metric: 'Packages Sold', value: data.packages.sold, category: 'Packages' },
+      { metric: 'Package Revenue', value: data.packages.revenue, category: 'Packages' },
+      { metric: 'Packages Redeemed', value: data.packages.redeemed, category: 'Packages' },
+      { metric: 'New Memberships', value: data.memberships.newEnrollments, category: 'Memberships' },
+      { metric: 'Membership Cancellations', value: data.memberships.cancellations, category: 'Memberships' },
+      { metric: 'Active Members', value: data.memberships.activeTotal, category: 'Memberships' },
+      { metric: 'Monthly Recurring Revenue', value: data.memberships.mrr, category: 'Memberships' },
+      { metric: 'Products Sold', value: data.products.sold, category: 'Products' },
+      { metric: 'Product Revenue', value: data.products.revenue, category: 'Products' },
+    ]
+  }, [data])
+
+  const exportColumns: ExportColumn[] = [
+    { key: 'category', header: 'Category' },
+    { key: 'metric', header: 'Metric' },
+    { key: 'value', header: 'Value', formatter: (v) => typeof v === 'number' && v > 100 ? formatters.currency(v) : String(v) },
+  ]
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -219,18 +266,21 @@ export function DailySummaryDashboard() {
             <button
               onClick={() => setAutoRefresh(!autoRefresh)}
               className={`px-4 py-2 rounded-lg border ${
-                autoRefresh 
-                  ? 'bg-purple-50 border-purple-200 text-purple-600' 
+                autoRefresh
+                  ? 'bg-purple-50 border-purple-200 text-purple-600'
                   : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'
               }`}
             >
               <RefreshCw className={`w-4 h-4 inline mr-2 ${autoRefresh ? 'animate-spin' : ''}`} />
               Auto Refresh
             </button>
-            <button className="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
-              <Download className="w-4 h-4 inline mr-2" />
-              Export
-            </button>
+            <ExportButton
+              data={exportData}
+              columns={exportColumns}
+              filename="daily-summary"
+              title="Daily Summary Report"
+              dateRange={{ start: selectedDate.toISOString().split('T')[0], end: selectedDate.toISOString().split('T')[0] }}
+            />
             <button className="px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
               <Printer className="w-4 h-4 inline mr-2" />
               Print

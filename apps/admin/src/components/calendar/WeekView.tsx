@@ -219,18 +219,21 @@ export default function WeekView({
 								/>
 							))}
 
-							{/* Current time indicator (only for today) */}
+							{/* Current time indicator (only for today) - unified gray line */}
 							{isToday && (() => {
-								const currentHour = 14
-								const currentMinute = 30
+								const currentHour = new Date().getHours()
+								const currentMinute = new Date().getMinutes()
 								if (currentHour >= calendarSettings.startHour && currentHour < calendarSettings.endHour) {
 									const topOffset = ((currentHour - calendarSettings.startHour) * timeSlotHeight + (currentMinute / 60) * timeSlotHeight)
 									return (
 										<div
-											className="absolute left-0 right-0 h-0.5 bg-red-500 pointer-events-none z-20"
+											className="absolute left-0 right-0 pointer-events-none z-20"
 											style={{ top: `${topOffset}px` }}
 										>
-											<div className="absolute -left-2 -top-1 w-2 h-2 bg-red-500 rounded-full" />
+											{/* Indicator dot on left edge */}
+											<div className="absolute -left-1 -top-1.5 w-3 h-3 bg-slate-500 rounded-full border-2 border-white shadow-sm" />
+											{/* Line spanning column */}
+											<div className="absolute left-0 right-0 h-0.5 bg-slate-500" />
 										</div>
 									)
 								}
@@ -334,19 +337,49 @@ export default function WeekView({
 
 								return (
 									<React.Fragment key={`practitioner-${practitioner.id}-${dateIndex}`}>
-										{/* Shift backgrounds (subtle when not in shift mode) */}
-										{!showShiftsOnly && !shiftMode && shiftsToRender.map((shift, shiftIndex) => (
-											<div
-												key={`shift-bg-${shiftIndex}`}
-												className="absolute pointer-events-none"
-												style={{
-													...getShiftBlockStyle(shift, timeSlotHeight, 0.05, calendarSettings.startHour),
-													left: `${leftOffset}%`,
-													width: `${columnWidth}%`,
-													zIndex: 0
-												}}
-											/>
-										))}
+										{/* Shift backgrounds (visible when not in shift mode) */}
+										{!showShiftsOnly && !shiftMode && shiftsToRender.map((shift, shiftIndex) => {
+											const shiftStyle = getShiftBlockStyle(shift, timeSlotHeight, 0.08, calendarSettings.startHour)
+											return (
+												<React.Fragment key={`shift-bg-${shiftIndex}`}>
+													{/* Subtle background */}
+													<div
+														className="absolute pointer-events-none"
+														style={{
+															...shiftStyle,
+															left: `${leftOffset}%`,
+															width: `${columnWidth}%`,
+															zIndex: 0,
+															borderLeft: '2px solid #a78bfa'
+														}}
+													/>
+													{/* Start line - darker purple (brand-aligned) */}
+													<div
+														className="absolute pointer-events-none"
+														style={{
+															top: shiftStyle.top,
+															left: `${leftOffset}%`,
+															width: `${columnWidth}%`,
+															height: '2px',
+															backgroundColor: '#7c3aed',
+															zIndex: 2
+														}}
+													/>
+													{/* End line - lighter lavender (brand-aligned) */}
+													<div
+														className="absolute pointer-events-none"
+														style={{
+															top: `calc(${shiftStyle.top} + ${shiftStyle.height} - 2px)`,
+															left: `${leftOffset}%`,
+															width: `${columnWidth}%`,
+															height: '2px',
+															backgroundColor: '#c4b5fd',
+															zIndex: 2
+														}}
+													/>
+												</React.Fragment>
+											)
+										})}
 
 										{/* Shifts - only show when showShiftsOnly is true or in shift mode */}
 										{(showShiftsOnly || shiftMode) && practitionerShifts && practitionerShifts.length > 0 && practitionerShifts.map((shift) => (

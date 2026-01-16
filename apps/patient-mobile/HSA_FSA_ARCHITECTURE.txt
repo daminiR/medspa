@@ -1,0 +1,347 @@
+HSA/FSA Payment Support - System Architecture
+==============================================
+
+┌─────────────────────────────────────────────────────────────────┐
+│                        USER INTERFACE LAYER                      │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                   │
+│  Profile Screen                                                   │
+│  ├─> "Payment Methods" button                                    │
+│  │                                                                │
+│  └─> PaymentMethods.tsx ──────────────────┐                     │
+│       ├─ List saved payment methods        │                     │
+│       ├─ HSA/FSA badges                    │                     │
+│       ├─ Set default payment               │                     │
+│       ├─ Toggle HSA/FSA designation        │                     │
+│       ├─ Delete payment method             │                     │
+│       └─> "Add Payment Method" button      │                     │
+│            │                                │                     │
+│            └─> AddPaymentMethod.tsx        │                     │
+│                 ├─ Card input with validation                    │
+│                 ├─ Real-time formatting                          │
+│                 ├─ HSA/FSA checkbox                              │
+│                 ├─ Card preview                                  │
+│                 └─ Save button                                   │
+│                                                                   │
+└───────────────────────────────────────────────────────────────────┘
+                               │
+                               │ calls
+                               ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                      COMPONENT LIBRARY LAYER                      │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                   │
+│  HsaFsaBadge.tsx                    IIASReceipt.tsx             │
+│  ├─ Visual badge                    ├─ IIAS-compliant template  │
+│  ├─ Eligible amount display         ├─ Provider information     │
+│  ├─ Tax savings calculator          ├─ Service itemization      │
+│  ├─ Info modal                      ├─ Financial summary        │
+│  └─ Educational content             ├─ IIAS-90 statement        │
+│                                     └─ Signature section         │
+│                                                                   │
+└───────────────────────────────────────────────────────────────────┘
+                               │
+                               │ uses
+                               ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                       SERVICES LAYER                              │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                   │
+│  stripe.ts (Payment Service)                                     │
+│  │                                                                │
+│  ├─ getPaymentMethods()                                          │
+│  │   └─> GET /payments/methods                                   │
+│  │                                                                │
+│  ├─ addPaymentMethod(cardDetails, isHsaFsa)                      │
+│  │   ├─> POST /payments/stripe/create-payment-method            │
+│  │   │    └─ [MCC 8099 + metadata]                              │
+│  │   └─> POST /payments/methods                                  │
+│  │                                                                │
+│  ├─ processPayment(request)                                      │
+│  │   ├─> POST /payments/process                                  │
+│  │   │    ├─ MCC 8099 for HSA/FSA eligibility                   │
+│  │   │    └─ metadata: { hsa_fsa_eligible: true }               │
+│  │   └─> generateIIASReceipt() if HSA/FSA                       │
+│  │                                                                │
+│  ├─ generateIIASReceipt(paymentId)                               │
+│  │   └─> POST /payments/{id}/receipt/iias                        │
+│  │                                                                │
+│  ├─ setDefaultPaymentMethod(methodId)                            │
+│  │   └─> PUT /payments/methods/{id}/default                      │
+│  │                                                                │
+│  ├─ toggleHsaFsa(methodId, isHsaFsa)                             │
+│  │   └─> PATCH /payments/methods/{id}                            │
+│  │                                                                │
+│  ├─ deletePaymentMethod(methodId)                                │
+│  │   └─> DELETE /payments/methods/{id}                           │
+│  │                                                                │
+│  ├─ validateHsaFsaCard(paymentMethodId)                          │
+│  │   └─> POST /payments/methods/{id}/validate-hsa-fsa           │
+│  │                                                                │
+│  └─ calculateHsaFsaEligibleAmount(items)                         │
+│      └─ Local calculation (no API call)                          │
+│                                                                   │
+└───────────────────────────────────────────────────────────────────┘
+                               │
+                               │ communicates with
+                               ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                         BACKEND API LAYER                         │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                   │
+│  Payment Methods API                                              │
+│  ├─ GET    /payments/methods           (List)                    │
+│  ├─ POST   /payments/methods           (Create)                  │
+│  ├─ PUT    /payments/methods/:id/default (Set default)           │
+│  ├─ PATCH  /payments/methods/:id       (Update)                  │
+│  ├─ DELETE /payments/methods/:id       (Delete)                  │
+│  └─ POST   /payments/methods/:id/validate-hsa-fsa (Validate)     │
+│                                                                   │
+│  Payments API                                                     │
+│  ├─ POST   /payments/process           (Process payment)         │
+│  ├─ GET    /payments                   (Payment history)         │
+│  ├─ POST   /payments/:id/receipt/iias  (Generate receipt)        │
+│  └─ GET    /payments/:id/receipt/iias  (Get receipt)             │
+│                                                                   │
+│  Stripe Integration                                               │
+│  └─ POST   /payments/stripe/create-payment-method                │
+│      └─ Creates Stripe PaymentMethod with MCC 8099              │
+│                                                                   │
+└───────────────────────────────────────────────────────────────────┘
+                               │
+                               │ integrates with
+                               ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                      EXTERNAL SERVICES LAYER                      │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                   │
+│  ┌─────────────────┐              ┌────────────────────┐        │
+│  │  Stripe API     │              │  Database          │        │
+│  ├─────────────────┤              ├────────────────────┤        │
+│  │ PaymentMethods  │◄────────────►│ payment_methods    │        │
+│  │ PaymentIntents  │              │ payments           │        │
+│  │ Charges         │              │ invoices           │        │
+│  │ Customers       │              │ hsa_fsa_accounts   │        │
+│  └─────────────────┘              └────────────────────┘        │
+│         │                                    │                   │
+│         │ MCC 8099                           │ Stores            │
+│         │ (Medical Services)                 │ ├─ Card tokens    │
+│         │                                    │ ├─ HSA/FSA flags  │
+│         └────────────────────────────────────┤ └─ Receipts       │
+│                                               │                   │
+└───────────────────────────────────────────────────────────────────┘
+
+DATA FLOW - Adding HSA/FSA Payment Method
+==========================================
+
+1. User Navigation:
+   Profile → Payment Methods → Add Payment Method
+
+2. User Input:
+   Enter card details + Check "This is an HSA/FSA card"
+
+3. Client Processing:
+   ├─ Validate card number, expiry, CVV, ZIP
+   ├─ Format display (4-digit groups)
+   └─ Update card preview in real-time
+
+4. Submit Flow:
+   AddPaymentMethod.tsx
+   └─> paymentService.addPaymentMethod(cardDetails, isHsaFsa=true)
+       ├─> createStripePaymentMethod(cardDetails)
+       │   └─> POST /api/stripe/create-payment-method
+       │       ├─ cardDetails: { number, exp, cvc, name, zip }
+       │       └─ mccCode: "8099" (CRITICAL for HSA/FSA)
+       │
+       ├─> POST /api/payments/methods
+       │   ├─ type: 'hsa'
+       │   ├─ stripePaymentMethodId: 'pm_...'
+       │   └─ setDefault: false
+       │
+       └─> toggleHsaFsa(methodId, true)
+           └─> PATCH /api/payments/methods/:id
+               ├─ hsaFsaVerified: true
+               └─ type: 'hsa'
+
+5. Backend Processing:
+   ├─ Validate Stripe PaymentMethod
+   ├─ Store in database with HSA/FSA flag
+   ├─ Link to patient account
+   └─ Return PaymentMethod object
+
+6. UI Update:
+   ├─ Show success message
+   ├─ Navigate back to PaymentMethods screen
+   ├─ Display new card with HSA/FSA badge
+   └─ Refresh payment methods list
+
+DATA FLOW - Processing HSA/FSA Payment
+=======================================
+
+1. User Action:
+   Book appointment → Select HSA/FSA payment method → Confirm
+
+2. Service Calculation:
+   ├─ Identify HSA/FSA eligible services
+   ├─ Calculate eligible amount
+   └─ Display with HsaFsaBadge component
+
+3. Payment Processing:
+   paymentService.processPayment({
+     appointmentId: 'apt_123',
+     amount: 450.00,
+     paymentMethodId: 'pm_...',
+     isHsaFsa: true,
+     hsaFsaEligibleAmount: 450.00
+   })
+   └─> POST /api/payments/process
+       ├─ mccCode: "8099" (Medical Services)
+       ├─ metadata: {
+       │   service_type: 'medical_spa',
+       │   hsa_fsa_eligible: true
+       │ }
+       └─> Stripe PaymentIntent.create()
+
+4. Receipt Generation:
+   ├─> generateIIASReceipt(paymentId)
+   │   └─> POST /api/payments/:id/receipt/iias
+   │       ├─ Gather provider information
+   │       ├─ Itemize services
+   │       ├─ Calculate HSA/FSA eligible amount
+   │       ├─ Generate IIAS-90 statement
+   │       └─ Create PDF/HTML receipt
+   │
+   └─> Email receipt to patient
+       └─> Store receipt URL in payment record
+
+5. UI Update:
+   ├─ Show payment success
+   ├─ Display receipt download button
+   ├─ Update appointment status
+   └─> Navigate to confirmation screen
+       └─ Include IIASReceipt component
+
+SECURITY ARCHITECTURE
+======================
+
+┌─────────────────────────────────────────────────────────────────┐
+│                        SECURITY LAYERS                            │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                   │
+│  1. PCI Compliance (via Stripe)                                  │
+│     ├─ Never store raw card numbers                              │
+│     ├─ Stripe tokenization on client                             │
+│     ├─ Only store Stripe tokens                                  │
+│     └─ TLS 1.2+ for all communications                           │
+│                                                                   │
+│  2. Authentication                                                │
+│     ├─ JWT tokens for API requests                               │
+│     ├─ Biometric authentication (Face ID/Touch ID)               │
+│     └─ Expo SecureStore for sensitive data                       │
+│                                                                   │
+│  3. Authorization                                                 │
+│     ├─ User can only access own payment methods                  │
+│     ├─ Patient ID validation on all requests                     │
+│     └─ Role-based access control                                 │
+│                                                                   │
+│  4. Data Encryption                                               │
+│     ├─ TLS in transit                                             │
+│     ├─ AES-256 at rest                                            │
+│     └─ Stripe-managed key storage                                │
+│                                                                   │
+│  5. Compliance                                                    │
+│     ├─ HIPAA-ready architecture                                  │
+│     ├─ PCI DSS Level 1 (Stripe)                                  │
+│     ├─ IIAS-90 compliant receipts                                │
+│     └─ IRS Publication 502 adherence                             │
+│                                                                   │
+└───────────────────────────────────────────────────────────────────┘
+
+TYPE SYSTEM ARCHITECTURE
+========================
+
+@medical-spa/types (Shared Types)
+├─ PaymentMethod
+│  ├─ id: string
+│  ├─ patientId: string
+│  ├─ type: 'card' | 'hsa' | 'fsa' | ...
+│  ├─ cardBrand?: string
+│  ├─ cardLast4?: string
+│  ├─ cardExpMonth?: number
+│  ├─ cardExpYear?: number
+│  ├─ hsaFsaVerified?: boolean
+│  └─ isDefault: boolean
+│
+├─ Payment
+│  ├─ id: string
+│  ├─ amount: number
+│  ├─ paymentMethodId: string
+│  ├─ isHsaFsa: boolean
+│  ├─ hsaFsaEligibleAmount?: number
+│  ├─ iiasApproved?: boolean
+│  ├─ receiptUrl?: string
+│  └─ stripePaymentIntentId?: string
+│
+├─ AddPaymentMethodRequest
+│  ├─ type: PaymentMethodType
+│  ├─ stripePaymentMethodId?: string
+│  └─ setDefault?: boolean
+│
+└─ HsaFsaAccount
+   ├─ id: string
+   ├─ type: 'hsa' | 'fsa'
+   ├─ provider: string
+   ├─ verified: boolean
+   └─ balance?: number
+
+IIAS COMPLIANCE ARCHITECTURE
+=============================
+
+IIAS-90 Substantiation Requirements:
+┌────────────────────────────────────┐
+│ ✅ Service Provider Name            │
+│ ✅ Tax ID (EIN)                     │
+│ ✅ Business Address                 │
+│ ✅ Professional License Number      │
+│ ✅ Date of Service                  │
+│ ✅ Detailed Service Description     │
+│ ✅ Itemized Charges                 │
+│ ✅ HSA/FSA Eligible Amount          │
+│ ✅ IIAS-90 Statement                │
+│ ✅ Provider Signature               │
+└────────────────────────────────────┘
+
+IRS Publication 502 Eligibility:
+Medical spa services qualify when:
+├─ Performed by licensed professionals
+├─ Have therapeutic medical purpose
+├─ Documented as medical treatment
+└─ Properly substantiated with IIAS receipt
+
+MCC 8099 Classification:
+"Medical Services and Health Practitioners,
+Not Elsewhere Classified"
+├─ Required for HSA/FSA card acceptance
+├─ Set in Stripe PaymentIntent metadata
+└─ Verified by HSA/FSA card processors
+
+ENVIRONMENT CONFIGURATION
+==========================
+
+Required Environment Variables:
+├─ EXPO_PUBLIC_STRIPE_KEY=pk_test_...
+├─ EXPO_PUBLIC_API_URL=https://api.example.com
+└─ STRIPE_SECRET_KEY=sk_test_... (backend only)
+
+Stripe Dashboard Configuration:
+├─ Enable Medical Services MCC (8099)
+├─ Configure business as healthcare provider
+├─ Add tax ID and licensing information
+└─ Set up webhook endpoints
+
+Backend Requirements:
+├─ Stripe account with medical MCC
+├─ Database tables for payment methods
+├─ IIAS receipt template system
+├─ Email service for receipts
+└─ Secure token storage

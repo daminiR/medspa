@@ -1,0 +1,339 @@
+================================================================================
+VOICE & AUDIO FEATURES - CODE STRUCTURE MAP
+Synthesis Agent - Group 2
+================================================================================
+
+TARGET FILE: apps/admin/src/components/charting/InteractiveFaceChart.tsx
+
+================================================================================
+SECTION 1: IMPORTS (Line ~1-50)
+================================================================================
+
+EXISTING:
+  import { Mic, MicOff } from 'lucide-react'
+
+ADD:
+  import { Volume2, VolumeX } from 'lucide-react'
+
+================================================================================
+SECTION 2: STATE DECLARATIONS (Line ~230-250)
+================================================================================
+
+EXISTING:
+  const [voiceInput, setVoiceInput] = useState<VoiceInputState>({
+    isListening: false,
+    transcript: '',
+    error: null
+  })
+  const recognitionRef = useRef<SpeechRecognition | null>(null)
+
+ADD:
+  const [audioFeedback, setAudioFeedback] = useState(false)
+
+================================================================================
+SECTION 3: SPEECH HELPER (Line ~326 - After totals calculation)
+================================================================================
+
+ADD:
+  // Speech synthesis helper for audio feedback
+  const speak = useCallback((text: string) => {
+    if (!audioFeedback) return
+    if (typeof window === 'undefined' || !window.speechSynthesis) return
+
+    window.speechSynthesis.cancel()
+
+    const utterance = new SpeechSynthesisUtterance(text)
+    utterance.rate = 1.2
+    utterance.pitch = 1
+    utterance.volume = 0.7
+
+    window.speechSynthesis.speak(utterance)
+  }, [audioFeedback])
+
+================================================================================
+SECTION 4: VOICE PARSING FUNCTION (Line ~688-758)
+================================================================================
+
+REPLACE ENTIRE FUNCTION with enhanced version supporting:
+  - Action commands: "apply", "done", "clear", "cancel"
+  - Decimal patterns: "point two" → 0.2
+  - Fraction words: "half", "quarter", "third"
+  - Complex numbers: "two and a half" → 2.5
+  - Quantity phrases: "five units each" → 5
+  - Enhanced "point X" pattern
+  - Word to number conversion
+  - Audio feedback integration
+  - Haptic feedback (preserved)
+  - Auto-apply logic (preserved)
+
+See: parseVoiceCommand_FINAL.ts for complete implementation
+
+================================================================================
+SECTION 5: ZONE SELECTION HANDLER
+================================================================================
+
+MODIFY handleMultiSelectZone to add audio feedback:
+
+  const handleMultiSelectZone = useCallback((zoneId: string) => {
+    setMultiSelectedZones(prev => {
+      const newSet = new Set(prev)
+      if (newSet.has(zoneId)) {
+        newSet.delete(zoneId)
+      } else {
+        newSet.add(zoneId)
+
+        // ADD THIS: Audio feedback
+        const zoneName = getZoneById(zoneId)?.name
+        speak(zoneName || 'Selected')
+      }
+      if (newSet.size > 0) {
+        setShowBatchPanel(true)
+      }
+      return newSet
+    })
+  }, [getZoneById, speak])  // Add 'speak' to dependencies
+
+================================================================================
+SECTION 6: BATCH APPLY HANDLER
+================================================================================
+
+MODIFY applyBatchUnits to add audio feedback:
+
+  const applyBatchUnits = useCallback(() => {
+    // ... existing logic before toast ...
+
+    const totalSelected = multiSelectedZones.size + multiSelectedFreehand.size
+
+    // ADD THIS: Audio feedback
+    speak(`${batchUnits} units applied to ${totalSelected} zones`)
+
+    toast.success(`Applied ${batchUnits} ... to ${totalSelected} points`, {
+      duration: 2000,
+      icon: '✓'
+    })
+
+    // ... rest of logic ...
+  }, [/* existing dependencies */, speak])  // Add 'speak' to dependencies
+
+================================================================================
+SECTION 7: TOTALS ANNOUNCEMENT (After other useEffects)
+================================================================================
+
+ADD NEW useEffect:
+
+  // Announce total when audio feedback is on and totals change
+  useEffect(() => {
+    if (audioFeedback && (totals.totalUnits > 0 || totals.totalVolume > 0)) {
+      const timeoutId = setTimeout(() => {
+        const value = productType === 'neurotoxin'
+          ? totals.totalUnits
+          : totals.totalVolume.toFixed(1)
+        const unit = productType === 'neurotoxin' ? 'units' : 'milliliters'
+        speak(`Total: ${value} ${unit}`)
+      }, 1000)  // Delay to avoid overlapping with other feedback
+
+      return () => clearTimeout(timeoutId)
+    }
+  }, [totals, audioFeedback, productType, speak])
+
+================================================================================
+SECTION 8: TOOLBAR UI (Line ~977-1018)
+================================================================================
+
+ADD after "Keyboard Help" button:
+
+  {/* Audio Feedback Toggle */}
+  <button
+    onClick={() => setAudioFeedback(!audioFeedback)}
+    className={`p-1.5 rounded-lg transition-colors ${
+      audioFeedback
+        ? 'text-green-600 bg-green-50 hover:bg-green-100'
+        : 'text-gray-400 hover:text-gray-600 hover:bg-gray-100'
+    }`}
+    title={audioFeedback ? 'Audio feedback ON' : 'Audio feedback OFF'}
+  >
+    {audioFeedback
+      ? <Volume2 className="w-4 h-4" />
+      : <VolumeX className="w-4 h-4" />
+    }
+  </button>
+
+================================================================================
+SECTION 9: TRANSCRIPT UI (Line ~1078 - ALREADY IMPLEMENTED)
+================================================================================
+
+VERIFY THIS IS PRESENT:
+
+  <div className="relative p-4" ref={chartRef}>
+    {/* Voice Input Indicator */}
+    {voiceInput.isListening && (
+      <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-50
+                      bg-gray-900/90 text-white px-6 py-3 rounded-full
+                      flex items-center gap-3 shadow-lg animate-fade-in">
+        <Mic className="text-red-400 animate-pulse" size={20} />
+        <div>
+          <div className="text-xs text-gray-400">Listening...</div>
+          <div className="text-sm font-medium">
+            {voiceInput.transcript || 'Say the dosage'}
+          </div>
+        </div>
+      </div>
+    )}
+
+    {/* Voice Error Indicator */}
+    {voiceInput.error && (
+      <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-50
+                      bg-red-900/90 text-white px-6 py-3 rounded-full
+                      flex items-center gap-3 shadow-lg animate-fade-in">
+        <MicOff className="text-red-300" size={20} />
+        <div>
+          <div className="text-xs text-red-200">Error</div>
+          <div className="text-sm font-medium">
+            {voiceInput.error}
+          </div>
+        </div>
+      </div>
+    )}
+
+    {/* ... rest of chart */}
+  </div>
+
+================================================================================
+VOICE PATTERNS SUPPORTED
+================================================================================
+
+Decimal Numbers:
+  "point two"           → 0.2
+  "point five"          → 0.5
+  "zero point one"      → 0.1
+
+Fractions:
+  "half"                → 0.5
+  "quarter"             → 0.25
+  "third"               → 0.33
+  "half a unit"         → 0.5
+
+Complex Numbers:
+  "two and a half"      → 2.5
+  "five and a half"     → 5.5
+
+Quantity Phrases:
+  "five units each"     → 5
+  "ten units each"      → 10
+
+Action Commands:
+  "apply"   → Apply batch units
+  "done"    → Apply batch units
+  "clear"   → Clear selections
+  "cancel"  → Clear selections
+
+Original (Preserved):
+  "five units"          → 5
+  "ten"                 → 10
+  "0.2"                 → 0.2
+
+================================================================================
+AUDIO FEEDBACK EVENTS
+================================================================================
+
+1. Zone Selection       → Speaks zone name (e.g., "Glabella")
+2. Batch Application    → "5 units applied to 3 zones"
+3. Voice Parsed         → "Got it, 0.2 units"
+4. Total Update         → "Total: 15 units" (after 1s delay)
+
+================================================================================
+IMPLEMENTATION CHECKLIST
+================================================================================
+
+[ ] Section 1: Add Volume2, VolumeX imports
+[ ] Section 2: Add audioFeedback state variable
+[ ] Section 3: Add speak() helper function
+[ ] Section 4: Replace parseVoiceCommand function
+[ ] Section 5: Modify handleMultiSelectZone (add speak call)
+[ ] Section 6: Modify applyBatchUnits (add speak call)
+[ ] Section 7: Add totals announcement useEffect
+[ ] Section 8: Add audio toggle button in toolbar
+[ ] Section 9: Verify transcript UI is present
+
+[ ] Test all voice patterns
+[ ] Test audio feedback toggle
+[ ] Test transcript display
+[ ] Check browser console for errors
+[ ] Verify TypeScript compiles
+
+================================================================================
+IMPLEMENTATION SUMMARY
+================================================================================
+
+Total Sections: 9
+Total Changes:
+  - 2 new imports (Volume2, VolumeX)
+  - 1 new state variable (audioFeedback)
+  - 1 new helper function (speak)
+  - 1 function replacement (parseVoiceCommand)
+  - 2 function modifications (handleMultiSelectZone, applyBatchUnits)
+  - 1 new useEffect (totals announcement)
+  - 1 new UI button (audio toggle)
+  - 1 UI section verification (transcript display)
+
+Total Lines Added: ~215
+Files Modified: 1
+Dependencies Updated: Multiple useCallback arrays
+
+Estimated Time: 15-20 minutes
+Testing Time: 10 minutes
+Total: ~30 minutes
+
+================================================================================
+BROWSER APIS USED
+================================================================================
+
+1. Web Speech API
+   - SpeechRecognition interface
+   - Real-time transcript updates
+   - Browser support: Chrome, Edge, Safari (limited)
+
+2. Speech Synthesis API
+   - window.speechSynthesis
+   - SpeechSynthesisUtterance
+   - Browser support: All modern browsers
+
+================================================================================
+PERFORMANCE OPTIMIZATIONS
+================================================================================
+
+Voice Parsing:
+  - Patterns checked in order of frequency
+  - Early returns prevent unnecessary processing
+  - Word mappings use object lookup (O(1))
+
+Audio Feedback:
+  - Rate: 1.2x (faster speech)
+  - Volume: 0.7 (less intrusive)
+  - Auto-cancel previous speech
+  - 1s delay on totals (debounced)
+
+UI Rendering:
+  - Conditional rendering (only when active)
+  - z-index: 50 (minimal layer stacking)
+  - Tailwind classes (no inline styles)
+
+================================================================================
+DEPENDENCIES & IMPORTS
+================================================================================
+
+External:
+  - lucide-react (already installed)
+  - No new npm packages required
+
+React:
+  - useState, useCallback, useEffect, useRef (already imported)
+
+Browser APIs:
+  - Web Speech API (built-in)
+  - Speech Synthesis API (built-in)
+
+TypeScript:
+  - VoiceInputState interface (already defined)
+
+================================================================================

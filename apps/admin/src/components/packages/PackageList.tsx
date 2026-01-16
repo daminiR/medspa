@@ -45,7 +45,10 @@ export function PackageList() {
       createdAt: new Date('2024-01-01'),
       updatedAt: new Date('2024-01-01'),
       createdBy: 'admin',
-      includesProducts: false
+      includesProducts: false,
+      taxable: true,
+      priceIncludesTax: false,
+      automaticallyRedeemOnline: true
     },
     {
       id: '2',
@@ -63,7 +66,10 @@ export function PackageList() {
       createdAt: new Date('2024-01-15'),
       updatedAt: new Date('2024-01-15'),
       createdBy: 'admin',
-      includesProducts: true
+      includesProducts: true,
+      taxable: true,
+      priceIncludesTax: false,
+      automaticallyRedeemOnline: true
     },
     {
       id: '3',
@@ -84,7 +90,10 @@ export function PackageList() {
       createdAt: new Date('2024-02-01'),
       updatedAt: new Date('2024-02-01'),
       createdBy: 'admin',
-      includesProducts: false
+      includesProducts: false,
+      taxable: true,
+      priceIncludesTax: false,
+      automaticallyRedeemOnline: true
     }
   ])
   

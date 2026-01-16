@@ -1,12 +1,15 @@
 // Large-scale patient data generator for production testing
 // Generates realistic patient data for 10,000+ patients
 
-import { 
-  Patient, 
-  PatientListItem, 
-  Gender, 
+import {
+  Patient,
+  PatientListItem,
+  Gender,
   PatientStatus,
-  FitzpatrickType 
+  FitzpatrickType,
+  AlertType,
+  AlertSeverity,
+  RelationshipType
 } from '@/types/patient'
 
 // Name lists for realistic data
@@ -89,8 +92,8 @@ export function generatePatient(index: number): Patient {
   const hasAlerts = Math.random() > 0.8
   const medicalAlerts = hasAlerts ? [{
     id: `alert-${index}`,
-    type: randomFromArray(['allergy', 'condition', 'medication', 'contraindication'] as any),
-    severity: randomFromArray(['low', 'medium', 'high'] as any),
+    type: randomFromArray<AlertType>(['allergy', 'condition', 'medication', 'contraindication', 'other']),
+    severity: randomFromArray<AlertSeverity>(['low', 'medium', 'high', 'critical']),
     description: randomFromArray(['Latex allergy', 'Lidocaine sensitivity', 'Blood thinners', 'Pregnancy', 'Autoimmune condition']),
     addedDate: registrationDate,
     addedBy: 'System',
@@ -133,13 +136,24 @@ export function generatePatient(index: number): Patient {
       phone: generatePhone()
     },
     
-    allergies: Math.random() > 0.8 ? [
-      randomFromArray(['Latex', 'Lidocaine', 'Penicillin', 'Iodine', 'Aspirin', 'Sulfa drugs'])
-    ] : [],
-    
-    medications: Math.random() > 0.7 ? [
-      randomFromArray(['Lisinopril', 'Metformin', 'Levothyroxine', 'Vitamin D', 'Birth control', 'Multivitamin'])
-    ] : [],
+    allergies: Math.random() > 0.8 ? [{
+      id: `allergy-${index}`,
+      allergen: randomFromArray(['Latex', 'Lidocaine', 'Penicillin', 'Iodine', 'Aspirin', 'Sulfa drugs']),
+      reaction: randomFromArray(['Rash', 'Hives', 'Swelling', 'Anaphylaxis', 'Difficulty breathing', 'Itching']),
+      severity: randomFromArray<AlertSeverity>(['low', 'medium', 'high', 'critical']),
+      onsetDate: randomDate(new Date(2000, 0, 1), registrationDate),
+      notes: 'Reported by patient during intake'
+    }] : [],
+
+    medications: Math.random() > 0.7 ? [{
+      id: `med-${index}`,
+      name: randomFromArray(['Lisinopril', 'Metformin', 'Levothyroxine', 'Vitamin D', 'Birth control', 'Multivitamin']),
+      dosage: randomFromArray(['5mg', '10mg', '20mg', '50mg', '100mg', '1000IU']),
+      frequency: randomFromArray(['once daily', 'twice daily', 'as needed', 'weekly']),
+      startDate: randomDate(new Date(2015, 0, 1), registrationDate),
+      prescribedBy: randomFromArray(['Dr. Johnson', 'Dr. Williams', 'Dr. Brown', 'Primary Care']),
+      notes: 'Active medication'
+    }] : [],
     medicalAlerts,
     medicalHistory: [],
     
@@ -177,7 +191,7 @@ export function generatePatient(index: number): Patient {
     lifetimeValue,
     
     communicationPreferences: {
-      preferredMethod: randomFromArray(['email', 'sms', 'phone'] as any),
+      preferredMethod: randomFromArray<'email' | 'sms' | 'phone' | 'none'>(['email', 'sms', 'phone', 'none']),
       appointmentReminders: true,
       marketingEmails: Math.random() > 0.3,
       smsNotifications: Math.random() > 0.4,
@@ -191,7 +205,23 @@ export function generatePatient(index: number): Patient {
       allowResearch: Math.random() > 0.7,
       privacyMode: Math.random() > 0.95 // 5% are VIP
     },
-    
+
+    // Family members for group bookings (15% of patients have linked family)
+    familyMembers: Math.random() > 0.85 ? [
+      {
+        patientId: `patient-${index + 1}`,
+        patientName: `${randomFromArray(['Michael', 'Sarah', 'Emily', 'David'])} ${lastName}`,
+        relationship: randomFromArray<RelationshipType>(['spouse', 'child', 'parent', 'sibling', 'guardian', 'other']),
+        isPrimaryContact: false,
+        hasFinancialAccess: true,
+        hasMedicalAccess: false
+      }
+    ] : [],
+
+    // Top-level photo consent for easy access
+    photoConsent: Math.random() > 0.2,
+    marketingConsent: Math.random() > 0.3,
+
     tags: [],
     createdAt: registrationDate,
     updatedAt: lastVisit || registrationDate,

@@ -40,6 +40,15 @@ import {
   MessageSquare
 } from 'lucide-react'
 import { format, startOfWeek, endOfWeek, startOfMonth, endOfMonth, subDays, subMonths, isWithinInterval } from 'date-fns'
+import { ReferralAnalyticsDashboard } from '@/components/reports/ReferralAnalyticsDashboard'
+import { PatientAcquisitionDashboard } from '@/components/reports/PatientAcquisitionDashboard'
+import WaitlistAnalyticsDashboard from '@/components/reports/WaitlistAnalyticsDashboard'
+import CampaignAnalyticsDashboard from '@/components/reports/CampaignAnalyticsDashboard'
+import { DailyCashReconciliation } from '@/components/reports/DailyCashReconciliation'
+import { DailySummaryDashboard } from '@/components/reports/DailySummaryDashboard'
+import { RevenueAnalyticsReport } from '@/components/reports/RevenueAnalyticsReport'
+import { PaymentTransactionsReport } from '@/components/reports/PaymentTransactionsReport'
+import { ProviderPerformanceDashboard } from '@/components/reports/ProviderPerformanceDashboard'
 
 // Mock data for demonstrations
 const generateMockData = () => {
@@ -216,6 +225,7 @@ export default function ReportsPage() {
       reports: [
         { id: 'appointments', name: 'Appointment Analytics' },
         { id: 'utilization', name: 'Provider Utilization' },
+        { id: 'waitlist-analytics', name: 'Waitlist Analytics', badge: 'New' },
         { id: 'services', name: 'Service Performance' },
         { id: 'room-usage', name: 'Room/Resource Usage' },
         { id: 'no-show', name: 'No-Show Analysis' }
@@ -226,11 +236,12 @@ export default function ReportsPage() {
       name: 'Patient Analytics',
       icon: Users,
       reports: [
+        { id: 'acquisition', name: 'Patient Acquisition', badge: 'New' },
+        { id: 'referral-analytics', name: 'Referral Analytics', badge: 'New' },
         { id: 'retention', name: 'Patient Retention' },
         { id: 'lifetime-value', name: 'Lifetime Value (LTV)' },
         { id: 'demographics', name: 'Demographics' },
-        { id: 'satisfaction', name: 'Satisfaction Scores' },
-        { id: 'referrals', name: 'Referral Analysis' }
+        { id: 'satisfaction', name: 'Satisfaction Scores' }
       ]
     },
     {
@@ -249,6 +260,7 @@ export default function ReportsPage() {
       name: 'Marketing & Growth',
       icon: Target,
       reports: [
+        { id: 'campaign-analytics', name: 'Campaign Analytics', badge: 'New' },
         { id: 'campaigns', name: 'Campaign Performance' },
         { id: 'online-booking', name: 'Online Booking Stats' },
         { id: 'reviews', name: 'Reviews & Ratings' },
@@ -1198,6 +1210,24 @@ export default function ReportsPage() {
         return renderUtilizationReport()
       case 'retention':
         return renderRetentionReport()
+      case 'referral-analytics':
+        return <ReferralAnalyticsDashboard />
+      case 'acquisition':
+        return <PatientAcquisitionDashboard />
+      case 'waitlist-analytics':
+        return <WaitlistAnalyticsDashboard />
+      case 'campaign-analytics':
+        return <CampaignAnalyticsDashboard />
+      case 'cash-reconciliation':
+        return <DailyCashReconciliation />
+      case 'daily-summary':
+        return <DailySummaryDashboard />
+      case 'revenue-analytics':
+        return <RevenueAnalyticsReport />
+      case 'transactions':
+        return <PaymentTransactionsReport />
+      case 'provider-performance':
+        return <ProviderPerformanceDashboard />
       default:
         return (
           <div className="bg-white rounded-xl border border-gray-200 p-12">

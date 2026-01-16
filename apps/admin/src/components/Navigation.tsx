@@ -6,27 +6,27 @@ import {
   LayoutDashboard,
   Calendar,
   Users,
-  FileText,
-  Package,
   CreditCard,
   BarChart3,
   Settings,
-  Bell,
   Search,
   Menu,
   X,
-  Stethoscope
+  Boxes,
+  MessageSquare
 } from 'lucide-react'
 import { useState } from 'react'
+import { NotificationBell } from './notifications/NotificationBell'
 
 const navigationItems = [
   { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
   { name: 'Calendar', href: '/calendar', icon: Calendar },
   { name: 'Patients', href: '/patients', icon: Users },
+  { name: 'Inventory', href: '/inventory', icon: Boxes },
   { name: 'Billing', href: '/billing', icon: CreditCard },
   { name: 'Staff', href: '/staff', icon: Users },
   { name: 'Reports', href: '/reports', icon: BarChart3 },
-  { name: 'Messages', href: '/messages', icon: Bell },
+  { name: 'Messages', href: '/messages', icon: MessageSquare },
   { name: 'Settings', href: '/settings', icon: Settings }
 ]
 
@@ -43,7 +43,7 @@ export function Navigation() {
             <div className="flex-shrink-0 flex items-center">
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 bg-gradient-to-br from-purple-600 to-pink-600 rounded-lg" />
-                <span className="text-xl font-bold text-gray-900">Luxe Medical Spa</span>
+                <span className="text-xl font-bold text-gray-900">Dalphene</span>
               </div>
             </div>
             
@@ -81,10 +81,7 @@ export function Navigation() {
             </button>
             
             {/* Notifications */}
-            <button className="p-2 text-gray-400 hover:text-gray-500 relative">
-              <Bell className="w-5 h-5" />
-              <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full" />
-            </button>
+            <NotificationBell />
             
             {/* Profile */}
             <div className="ml-3 relative">

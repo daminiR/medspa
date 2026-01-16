@@ -21,10 +21,18 @@ import {
   CalendarPlus,
   Ban,
   Move,
+  Filter,
+  Sparkles,
+  Footprints,
+  Printer,
+  Download,
+  FileSpreadsheet,
+  FileText,
 } from 'lucide-react';
 import moment from 'moment';
-import { ViewMode, CreateMode } from '@/types/calendar';
-import { locations } from '@/lib/data';
+import { ViewMode, CreateMode, BreakType, CalendarViewType } from '@/types/calendar';
+import { locations, BREAK_COLORS, Appointment } from '@/lib/data';
+import AppointmentSearch from './AppointmentSearch';
 
 interface CalendarToolbarProps {
   // Date & Navigation
@@ -42,9 +50,11 @@ interface CalendarToolbarProps {
   // Create Mode
   createMode: CreateMode;
   onCreateModeChange: (mode: CreateMode) => void;
+  pendingBreakType?: BreakType;
 
   // Booking Actions
   onNewAppointment: () => void;
+  onWalkIn?: () => void;
   onExpressBooking?: () => void;
   onGroupBooking?: () => void;
   onAddBreak: (type: 'lunch' | 'break' | 'meeting') => void;
@@ -67,10 +77,35 @@ interface CalendarToolbarProps {
   isWaitlistOpen: boolean;
   isRoomsPanelOpen: boolean;
   isResourcesPanelOpen: boolean;
+  isGroupsPanelOpen: boolean;
   onToggleStaffPanel: () => void;
   onToggleWaitlist: () => void;
   onToggleRoomsPanel: () => void;
   onToggleResourcesPanel: () => void;
+  onToggleGroupsPanel: () => void;
+
+  // Service Filter
+  selectedServiceCategory?: string | null;
+  onServiceCategoryChange?: (category: string | null) => void;
+
+  // Global Search
+  appointments?: Appointment[];
+  onAppointmentSelect?: (appointment: Appointment) => void;
+  onNavigateToDate?: (date: Date) => void;
+
+  // Calendar View Type (practitioners vs rooms)
+  calendarViewType?: CalendarViewType;
+  onCalendarViewTypeChange?: (type: CalendarViewType) => void;
+
+  // Double Booking Override Mode
+  // When active, allows booking conflicting appointments
+  doubleBookingMode?: boolean;
+  onToggleDoubleBookingMode?: () => void;
+
+  // Print & Export
+  onPrint?: () => void;
+  onExportCSV?: () => void;
+  onExportExcel?: () => void;
 }
 
 export default function CalendarToolbar({
@@ -84,7 +119,9 @@ export default function CalendarToolbar({
   onLocationChange,
   createMode,
   onCreateModeChange,
+  pendingBreakType = 'personal',
   onNewAppointment,
+  onWalkIn,
   onExpressBooking,
   onGroupBooking,
   onAddBreak,
@@ -99,19 +136,38 @@ export default function CalendarToolbar({
   isWaitlistOpen,
   isRoomsPanelOpen,
   isResourcesPanelOpen,
+  isGroupsPanelOpen,
   onToggleStaffPanel,
   onToggleWaitlist,
   onToggleRoomsPanel,
   onToggleResourcesPanel,
+  onToggleGroupsPanel,
+  selectedServiceCategory,
+  onServiceCategoryChange,
+  appointments,
+  onAppointmentSelect,
+  onNavigateToDate,
+  calendarViewType = 'practitioners',
+  onCalendarViewTypeChange,
+  doubleBookingMode,
+  onToggleDoubleBookingMode,
+  onPrint,
+  onExportCSV,
+  onExportExcel,
 }: CalendarToolbarProps) {
   const [isBookMenuOpen, setIsBookMenuOpen] = useState(false);
+  const [isExportMenuOpen, setIsExportMenuOpen] = useState(false);
   const bookMenuRef = useRef<HTMLDivElement>(null);
+  const exportMenuRef = useRef<HTMLDivElement>(null);
 
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (bookMenuRef.current && !bookMenuRef.current.contains(event.target as Node)) {
         setIsBookMenuOpen(false);
+      }
+      if (exportMenuRef.current && !exportMenuRef.current.contains(event.target as Node)) {
+        setIsExportMenuOpen(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -122,10 +178,10 @@ export default function CalendarToolbar({
   const dateDisplay = moment(selectedDate).format('ddd, MMM D, YYYY');
 
   return (
-    <div className="bg-white border-b px-4 py-2 shadow-sm">
-      <div className="flex items-center justify-between">
+    <div className="bg-white border-b px-2 sm:px-4 py-2 shadow-sm overflow-x-auto">
+      <div className="flex items-center justify-between min-w-max">
         {/* Left Section: Location + Navigation + View + Date */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2 sm:gap-4">
           {/* Location Selector */}
           <div className="flex items-center gap-1.5 px-2 py-1 bg-gray-50 rounded-lg">
             <MapPin className="h-4 w-4 text-gray-500" />
@@ -141,6 +197,26 @@ export default function CalendarToolbar({
               ))}
             </select>
           </div>
+
+          {/* Service Category Filter */}
+          {onServiceCategoryChange && (
+            <div className="flex items-center gap-1.5 px-2 py-1 bg-gray-50 rounded-lg">
+              <Sparkles className="h-4 w-4 text-gray-500" />
+              <select
+                value={selectedServiceCategory || ''}
+                onChange={(e) => onServiceCategoryChange(e.target.value || null)}
+                className={`text-sm font-medium bg-transparent border-none focus:ring-0 cursor-pointer pr-6 ${
+                  selectedServiceCategory ? 'text-purple-700' : 'text-gray-700'
+                }`}
+              >
+                <option value="">All Services</option>
+                <option value="aesthetics">Aesthetics</option>
+                <option value="physiotherapy">Physiotherapy</option>
+                <option value="chiropractic">Chiropractic</option>
+                <option value="massage">Massage</option>
+              </select>
+            </div>
+          )}
 
           <div className="h-6 w-px bg-gray-200" />
 
@@ -194,7 +270,47 @@ export default function CalendarToolbar({
             >
               Week
             </button>
+            <button
+              onClick={() => onViewChange('month')}
+              className={`px-3 py-1 text-sm font-medium rounded-md transition-colors ${
+                view === 'month'
+                  ? 'bg-white text-gray-900 shadow-sm'
+                  : 'text-gray-600 hover:text-gray-900'
+              }`}
+            >
+              Month
+            </button>
           </div>
+
+          {/* Calendar View Type Toggle (Practitioners vs Rooms) */}
+          {onCalendarViewTypeChange && (
+            <div className="flex items-center bg-gray-100 rounded-lg p-0.5">
+              <button
+                onClick={() => onCalendarViewTypeChange('practitioners')}
+                className={`flex items-center gap-1 px-2.5 py-1 text-sm font-medium rounded-md transition-colors ${
+                  calendarViewType === 'practitioners'
+                    ? 'bg-white text-gray-900 shadow-sm'
+                    : 'text-gray-600 hover:text-gray-900'
+                }`}
+                title="View by Practitioners"
+              >
+                <Users className="h-3.5 w-3.5" />
+                <span className="hidden sm:inline">Staff</span>
+              </button>
+              <button
+                onClick={() => onCalendarViewTypeChange('rooms')}
+                className={`flex items-center gap-1 px-2.5 py-1 text-sm font-medium rounded-md transition-colors ${
+                  calendarViewType === 'rooms'
+                    ? 'bg-white text-gray-900 shadow-sm'
+                    : 'text-gray-600 hover:text-gray-900'
+                }`}
+                title="View by Rooms"
+              >
+                <DoorOpen className="h-3.5 w-3.5" />
+                <span className="hidden sm:inline">Rooms</span>
+              </button>
+            </div>
+          )}
 
           {/* Date Display */}
           <button
@@ -239,6 +355,36 @@ export default function CalendarToolbar({
               </>
             )}
           </button>
+
+          {/* Walk-In Button - Quick add walk-in patients */}
+          {onWalkIn && (
+            <button
+              onClick={onWalkIn}
+              className="flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors shadow-sm bg-amber-500 text-white hover:bg-amber-600"
+              title="Add walk-in patient"
+            >
+              <Footprints className="h-4 w-4" />
+              Walk-In
+            </button>
+          )}
+
+          {/* Exit Break Mode button - shown when in break mode */}
+          {createMode === 'break' && (
+            <button
+              onClick={() => onCreateModeChange('none')}
+              className="flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors shadow-sm ring-2"
+              style={{
+                backgroundColor: BREAK_COLORS[pendingBreakType]?.stripe || '#9E9E9E',
+                color: 'white',
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                ['--tw-ring-color' as any]: BREAK_COLORS[pendingBreakType]?.bg || '#E0E0E0'
+              }}
+              title="Click to exit break mode"
+            >
+              <Ban className="h-4 w-4" />
+              Exit {BREAK_COLORS[pendingBreakType]?.label || 'Break'} Mode
+            </button>
+          )}
 
           {/* Find Slot - For phone calls: "Do you have anything Tuesday?" */}
           {onFindSlot && (
@@ -327,45 +473,7 @@ export default function CalendarToolbar({
                   </button>
                 )}
 
-                <div className="border-t border-gray-100 my-2" />
-
-                {/* Staff Time */}
-                <div className="px-4 py-1 text-xs font-medium text-gray-400 uppercase tracking-wide">
-                  Staff Time
                 </div>
-                <button
-                  onClick={() => {
-                    onAddBreak('lunch');
-                    setIsBookMenuOpen(false);
-                  }}
-                  className="w-full flex items-center gap-3 px-4 py-2 text-left text-sm text-gray-600 hover:bg-yellow-50 hover:text-yellow-700 transition-colors"
-                >
-                  <Coffee className="h-4 w-4" />
-                  Lunch Break
-                </button>
-                <button
-                  onClick={() => {
-                    onAddBreak('break');
-                    setIsBookMenuOpen(false);
-                  }}
-                  className="w-full flex items-center gap-3 px-4 py-2 text-left text-sm text-gray-600 hover:bg-orange-50 hover:text-orange-700 transition-colors"
-                >
-                  <Clock className="h-4 w-4" />
-                  Short Break
-                </button>
-                {onBlockTime && (
-                  <button
-                    onClick={() => {
-                      onBlockTime();
-                      setIsBookMenuOpen(false);
-                    }}
-                    className="w-full flex items-center gap-3 px-4 py-2 text-left text-sm text-gray-600 hover:bg-gray-100 transition-colors"
-                  >
-                    <Ban className="h-4 w-4" />
-                    Block Time
-                  </button>
-                )}
-              </div>
             )}
           </div>
         </div>
@@ -430,9 +538,128 @@ export default function CalendarToolbar({
             >
               <Package className="h-5 w-5" />
             </button>
+
+            <button
+              onClick={onToggleGroupsPanel}
+              className={`p-2 rounded-md transition-colors ${
+                isGroupsPanelOpen
+                  ? 'bg-indigo-100 text-indigo-700'
+                  : 'text-gray-500 hover:bg-gray-100 hover:text-gray-700'
+              }`}
+              title="Group Bookings"
+            >
+              <UsersRound className="h-5 w-5" />
+            </button>
           </div>
 
           <div className="h-6 w-px bg-gray-200" />
+
+          {/* Global Appointment Search */}
+          {appointments && onAppointmentSelect && onNavigateToDate && (
+            <AppointmentSearch
+              appointments={appointments}
+              onAppointmentSelect={onAppointmentSelect}
+              onNavigateToDate={onNavigateToDate}
+            />
+          )}
+
+          {/* Double Booking Override Mode Badge */}
+          {/* Visual indicator when override mode is active */}
+          {doubleBookingMode && onToggleDoubleBookingMode && (
+            <button
+              onClick={onToggleDoubleBookingMode}
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-orange-500 text-white text-sm font-semibold rounded-lg hover:bg-orange-600 transition-colors animate-pulse shadow-md"
+              title="Press D to exit override mode"
+              aria-label="Override mode active. Click to disable."
+            >
+              <svg
+                className="h-4 w-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                aria-hidden="true"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                />
+              </svg>
+              <span>D MODE</span>
+            </button>
+          )}
+
+          {/* Print & Export */}
+          {(onPrint || onExportCSV || onExportExcel) && (
+            <>
+              <div className="h-6 w-px bg-gray-200" />
+
+              {/* Print Button */}
+              {onPrint && (
+                <button
+                  onClick={onPrint}
+                  className="p-2 text-gray-500 hover:bg-gray-100 hover:text-gray-700 rounded-md transition-colors"
+                  title="Print Schedule"
+                >
+                  <Printer className="h-5 w-5" />
+                </button>
+              )}
+
+              {/* Export Dropdown */}
+              {(onExportCSV || onExportExcel) && (
+                <div className="relative" ref={exportMenuRef}>
+                  <button
+                    onClick={() => setIsExportMenuOpen(!isExportMenuOpen)}
+                    className={`flex items-center gap-1 p-2 rounded-md transition-colors ${
+                      isExportMenuOpen
+                        ? 'bg-gray-100 text-gray-700'
+                        : 'text-gray-500 hover:bg-gray-100 hover:text-gray-700'
+                    }`}
+                    title="Export Schedule"
+                  >
+                    <Download className="h-5 w-5" />
+                    <ChevronDown className={`h-3 w-3 transition-transform ${isExportMenuOpen ? 'rotate-180' : ''}`} />
+                  </button>
+
+                  {isExportMenuOpen && (
+                    <div className="absolute right-0 top-full mt-1 w-48 bg-white rounded-lg shadow-xl border border-gray-100 py-1 z-50">
+                      {onExportCSV && (
+                        <button
+                          onClick={() => {
+                            onExportCSV();
+                            setIsExportMenuOpen(false);
+                          }}
+                          className="w-full flex items-center gap-3 px-4 py-2.5 text-left text-gray-700 hover:bg-gray-50 transition-colors"
+                        >
+                          <FileText className="h-4 w-4 text-green-600" />
+                          <div>
+                            <div className="text-sm font-medium">Export CSV</div>
+                            <div className="text-xs text-gray-500">Spreadsheet format</div>
+                          </div>
+                        </button>
+                      )}
+                      {onExportExcel && (
+                        <button
+                          onClick={() => {
+                            onExportExcel();
+                            setIsExportMenuOpen(false);
+                          }}
+                          className="w-full flex items-center gap-3 px-4 py-2.5 text-left text-gray-700 hover:bg-gray-50 transition-colors"
+                        >
+                          <FileSpreadsheet className="h-4 w-4 text-blue-600" />
+                          <div>
+                            <div className="text-sm font-medium">Export Excel</div>
+                            <div className="text-xs text-gray-500">Microsoft Excel format</div>
+                          </div>
+                        </button>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
+            </>
+          )}
 
           {/* Settings */}
           <button
