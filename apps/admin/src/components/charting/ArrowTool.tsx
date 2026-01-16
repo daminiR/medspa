@@ -178,17 +178,30 @@ export const ArrowTool = forwardRef<ArrowToolRef, ArrowToolProps>(
 
     // Color selection - supports both controlled and uncontrolled modes
     // When controlledColor is provided, use it; otherwise use internal state
-    // IMPORTANT: Initialize to controlledColor if provided to prevent color mismatch on first render
-    // FIX: Always use a valid default color - the default purple (#8B5CF6) ensures drawing works immediately
+    // IMPORTANT: Default purple (#8B5CF6) must ALWAYS be available as the fallback
     const DEFAULT_ARROW_COLOR = ARROW_COLORS[0].color; // '#8B5CF6' purple
-    const [internalColor, setInternalColor] = useState<string>(controlledColor || DEFAULT_ARROW_COLOR);
-    // FIX: Ensure selectedColor ALWAYS has a valid value by adding final fallback
-    // This fixes the bug where first-selected arrow tool wouldn't draw until color was manually selected
+
+    // FIX for purple color bug: Initialize internal state with DEFAULT_ARROW_COLOR unconditionally
+    // The previous code initialized with `controlledColor || DEFAULT_ARROW_COLOR`, but this caused
+    // issues when controlledColor was the same as DEFAULT_ARROW_COLOR on first render - the
+    // useEffect below wouldn't trigger a state update since the value didn't "change".
+    // By always initializing to DEFAULT_ARROW_COLOR, we ensure a consistent starting state.
+    const [internalColor, setInternalColor] = useState<string>(DEFAULT_ARROW_COLOR);
+
+    // Ref to track the current color for use in callbacks - prevents stale closure issues
+    // This is the KEY FIX: Using a ref ensures callbacks always have the latest color value
+    // even if they were created before the color prop was updated
+    const selectedColorRef = useRef<string>(controlledColor || internalColor || DEFAULT_ARROW_COLOR);
+
+    // Calculate selectedColor with proper fallback chain
     const selectedColor = controlledColor || internalColor || DEFAULT_ARROW_COLOR;
+
+    // Keep the ref in sync with the calculated selectedColor
+    // This runs synchronously on every render, ensuring the ref is always current
+    selectedColorRef.current = selectedColor;
 
     // Sync internal color state when controlled color changes from parent
     // This ensures the internal state stays in sync for the floating color picker (when shown)
-    // FIX: Only sync if controlledColor is a non-empty string to prevent clearing the color
     useEffect(() => {
       if (controlledColor && controlledColor.length > 0) {
         setInternalColor(controlledColor);
@@ -205,8 +218,16 @@ export const ArrowTool = forwardRef<ArrowToolRef, ArrowToolProps>(
     }, [onColorChange]);
 
     // Drawing state
+    // CRITICAL FIX: Use ref for isDrawing to avoid stale closure issues in touch handlers
+    // The touch event handlers (handleTouchStart, handleTouchMove, handleTouchEnd) are
+    // memoized with useCallback and capture the value of isDrawing at creation time.
+    // If we use state, the handlers see stale values when the user moves/lifts their finger.
+    // This was THE BUG causing "finicky" behavior on iPad - the move/end handlers would
+    // see isDrawing=false even after touchStart set it to true!
     const [isDrawing, setIsDrawing] = useState(false);
+    const isDrawingRef = useRef(false);
     const [startPoint, setStartPoint] = useState<{ x: number; y: number } | null>(null);
+    const startPointRef = useRef<{ x: number; y: number } | null>(null);
     const [currentPoint, setCurrentPoint] = useState<{ x: number; y: number } | null>(null);
 
     // Undo/redo stacks
@@ -452,18 +473,20 @@ export const ArrowTool = forwardRef<ArrowToolRef, ArrowToolProps>(
       if (isDrawing && startPoint && currentPoint) {
         const previewLength = distance(startPoint.x, startPoint.y, currentPoint.x, currentPoint.y);
         if (previewLength > 5) {
+          // FIX: Use selectedColorRef.current for preview to match the actual arrow color
           drawArrow(
             ctx,
             startPoint.x,
             startPoint.y,
             currentPoint.x,
             currentPoint.y,
-            selectedColor,
+            selectedColorRef.current,
             DEFAULT_THICKNESS
           );
         }
       }
-    }, [arrows, isDrawing, startPoint, currentPoint, selectedColor, drawArrow, zoomState?.scale]);
+    }, [arrows, isDrawing, startPoint, currentPoint, drawArrow, zoomState?.scale]);
+    // Note: selectedColor removed from deps - we use selectedColorRef.current instead
 
     // Get pointer position relative to canvas in UNSCALED coordinates
     // The canvas is inside a scaled container, so we need to convert visual coordinates
@@ -497,57 +520,48 @@ export const ArrowTool = forwardRef<ArrowToolRef, ArrowToolProps>(
     // Track active touch count for two-finger gesture detection
     const touchCountRef = useRef(0);
 
-    // Track if we're in a two-finger gesture (for canceling single-finger drawing)
-    const isTwoFingerGestureRef = useRef(false);
-
     // State to toggle pointer-events during multi-touch gestures
     // This allows zoom/pan gestures to pass through to parent FaceChartWithZoom
     const [isMultiTouchActive, setIsMultiTouchActive] = useState(false);
-    const isMultiTouchActiveRef = useRef(false);
 
-    // Keep ref in sync with state for use in event handlers
-    useEffect(() => {
-      isMultiTouchActiveRef.current = isMultiTouchActive;
-    }, [isMultiTouchActive]);
+    // Track the active pointer ID we're drawing with
+    // This prevents accidental touches from interrupting drawing
+    const activePointerIdRef = useRef<number | null>(null);
 
-    // Handle pointer down - start drawing
-    // Works with touch, mouse, AND stylus (Apple Pencil)
-    // Two-finger gestures pass through for zoom/pan
+    // =============================================================================
+    // POINTER EVENT HANDLERS - Following SmoothBrushTool Pattern
+    // =============================================================================
+    //
+    // Key insight: PointerEvents have a `pointerType` property:
+    // - "pen" = Apple Pencil or stylus (SHOULD draw)
+    // - "touch" = finger touch (SHOULD draw for arrows - simpler than brush)
+    // - "mouse" = mouse pointer (SHOULD draw for development/testing)
+    //
+    // We track activePointerIdRef to prevent multiple pointers from interfering.
+    // Multi-touch is handled separately via touch events for zoom/pan passthrough.
+    // =============================================================================
+
     const handlePointerDown = useCallback(
       (e: React.PointerEvent<HTMLCanvasElement>) => {
         if (!isActive || readOnly) {
           return;
         }
 
-        // Track touch count for multi-touch detection
-        if (e.pointerType === 'touch') {
-          touchCountRef.current++;
-
-          // If more than one finger, mark as two-finger gesture and let it bubble
-          // This allows the parent FaceChartWithZoom to handle zoom/pan
-          if (touchCountRef.current > 1) {
-            isTwoFingerGestureRef.current = true;
-            // Cancel any in-progress drawing
-            if (isDrawing) {
-              setIsDrawing(false);
-              setStartPoint(null);
-              setCurrentPoint(null);
-            }
-            // IMPORTANT: Do NOT call preventDefault/stopPropagation
-            // Let the event bubble up for zoom/pan handling
-            return;
-          }
+        // If multi-touch is active, let events bubble for zoom/pan
+        if (isMultiTouchActive) {
+          return;
         }
 
-        // Single finger/mouse/stylus - proceed with drawing
-        // Only prevent default for single-touch to allow two-finger gestures
-        if (e.pointerType !== 'touch' || touchCountRef.current === 1) {
-          e.preventDefault();
-          e.stopPropagation();
+        // If we're already drawing with a different pointer, ignore this one
+        if (activePointerIdRef.current !== null && activePointerIdRef.current !== e.pointerId) {
+          return;
         }
+
+        // Prevent default to avoid browser handling
+        e.preventDefault();
+        e.stopPropagation();
 
         // Capture the pointer to ensure we receive all subsequent events
-        // This is critical for stylus/Apple Pencil support
         const target = e.currentTarget;
         if (target && typeof target.setPointerCapture === 'function') {
           try {
@@ -558,58 +572,53 @@ export const ArrowTool = forwardRef<ArrowToolRef, ArrowToolProps>(
         }
 
         const point = getPointerPosition(e);
-        // DEBUG: Uncomment to trace pointer down
-        // console.log('[ArrowTool] handlePointerDown - start point:', point);
+
+        // CRITICAL: Track which pointer we're drawing with AND update refs BEFORE state
+        activePointerIdRef.current = e.pointerId;
+        isDrawingRef.current = true;
+        startPointRef.current = point;
+
+        // Then update state for re-renders
         setIsDrawing(true);
         setStartPoint(point);
         setCurrentPoint(point);
       },
-      [isActive, readOnly, getPointerPosition, isDrawing]
+      [isActive, readOnly, getPointerPosition, isMultiTouchActive]
     );
 
-    // Handle pointer move - update current position
-    // Works with touch, mouse, AND stylus (Apple Pencil)
-    // Two-finger gestures pass through for zoom/pan
     const handlePointerMove = useCallback(
       (e: React.PointerEvent<HTMLCanvasElement>) => {
-        // If in a two-finger gesture, let it bubble for zoom/pan
-        if (isTwoFingerGestureRef.current || (e.pointerType === 'touch' && touchCountRef.current > 1)) {
-          // Do NOT prevent default - let parent handle zoom/pan
+        // If multi-touch is active, let it bubble for zoom/pan
+        if (isMultiTouchActive) {
           return;
         }
 
-        if (!isActive || !isDrawing || readOnly) return;
+        // Only process moves from our active pointer
+        if (activePointerIdRef.current !== null && e.pointerId !== activePointerIdRef.current) {
+          return;
+        }
 
-        // Only prevent default for single-touch/mouse/stylus drawing
+        // Use isDrawingRef.current to avoid stale closure
+        if (!isActive || !isDrawingRef.current || readOnly) return;
+
         e.preventDefault();
         e.stopPropagation();
+
         const point = getPointerPosition(e);
         setCurrentPoint(point);
       },
-      [isActive, isDrawing, readOnly, getPointerPosition]
+      [isActive, readOnly, getPointerPosition, isMultiTouchActive]
     );
 
-    // Handle pointer up - finish drawing
-    // Works with touch, mouse, AND stylus (Apple Pencil)
-    // Two-finger gestures pass through for zoom/pan
     const handlePointerUp = useCallback(
       (e: React.PointerEvent<HTMLCanvasElement>) => {
-        // Track touch count for multi-touch detection
-        if (e.pointerType === 'touch') {
-          touchCountRef.current = Math.max(0, touchCountRef.current - 1);
-
-          // Reset two-finger gesture flag when all fingers are lifted
-          if (touchCountRef.current === 0) {
-            isTwoFingerGestureRef.current = false;
-          }
-        }
-
-        // If we were in a two-finger gesture, just let it pass through
-        if (isTwoFingerGestureRef.current) {
+        // Only finish if this is our active pointer
+        if (activePointerIdRef.current !== null && e.pointerId !== activePointerIdRef.current) {
           return;
         }
 
-        if (!isActive || !isDrawing || readOnly) return;
+        // Use isDrawingRef.current to avoid stale closure
+        if (!isActive || !isDrawingRef.current || readOnly) return;
 
         e.preventDefault();
         e.stopPropagation();
@@ -624,39 +633,43 @@ export const ArrowTool = forwardRef<ArrowToolRef, ArrowToolProps>(
           }
         }
 
+        // Reset tracking state - refs BEFORE state
+        activePointerIdRef.current = null;
+        isDrawingRef.current = false;
         setIsDrawing(false);
 
-        if (startPoint && currentPoint) {
+        // Use startPointRef.current for the start point
+        const currentStartPoint = startPointRef.current;
+        if (currentStartPoint && currentPoint) {
           const container = containerRef.current;
-          if (!container) return;
+          if (!container) {
+            startPointRef.current = null;
+            setStartPoint(null);
+            setCurrentPoint(null);
+            return;
+          }
 
           const rect = container.getBoundingClientRect();
           const scale = zoomState?.scale || 1;
-
-          // Use UNSCALED dimensions (same as canvas sizing and pointer positions)
           const canvasWidth = rect.width / scale;
           const canvasHeight = rect.height / scale;
 
-          const length = distance(startPoint.x, startPoint.y, currentPoint.x, currentPoint.y);
-
-          // DEBUG: Uncomment to trace pointer up
-          // console.log('[ArrowTool] handlePointerUp:', { startPoint, currentPoint, scale, canvasSize: { width: canvasWidth, height: canvasHeight }, arrowLength: length, selectedColor });
+          const length = distance(currentStartPoint.x, currentStartPoint.y, currentPoint.x, currentPoint.y);
 
           // Only create arrow if it meets minimum length
           if (length >= MIN_ARROW_LENGTH) {
+            const currentColor = selectedColorRef.current;
             const newArrow: Arrow = {
               id: generateArrowId(),
-              startX: toPercentage(startPoint.x, canvasWidth),
-              startY: toPercentage(startPoint.y, canvasHeight),
+              startX: toPercentage(currentStartPoint.x, canvasWidth),
+              startY: toPercentage(currentStartPoint.y, canvasHeight),
               endX: toPercentage(currentPoint.x, canvasWidth),
               endY: toPercentage(currentPoint.y, canvasHeight),
-              color: selectedColor,
+              color: currentColor,
               thickness: DEFAULT_THICKNESS,
               productId: productId,
               timestamp: new Date(),
             };
-            // DEBUG: Uncomment to trace arrow creation
-            // console.log('[ArrowTool] Creating arrow with color:', selectedColor, 'newArrow:', newArrow);
 
             // Save current state for undo
             setUndoStack((prev) => [...prev, arrows]);
@@ -669,16 +682,14 @@ export const ArrowTool = forwardRef<ArrowToolRef, ArrowToolProps>(
           }
         }
 
+        startPointRef.current = null;
         setStartPoint(null);
         setCurrentPoint(null);
       },
       [
         isActive,
-        isDrawing,
         readOnly,
-        startPoint,
         currentPoint,
-        selectedColor,
         productId,
         arrows,
         updateArrows,
@@ -687,83 +698,83 @@ export const ArrowTool = forwardRef<ArrowToolRef, ArrowToolProps>(
       ]
     );
 
-    // Handle pointer leave or cancel
-    // Works with touch, mouse, AND stylus (Apple Pencil)
-    // Also handles pointer cancel for multi-touch scenarios
     const handlePointerLeave = useCallback(
       (e: React.PointerEvent<HTMLCanvasElement>) => {
-        // Track touch count for multi-touch detection
-        if (e.pointerType === 'touch') {
-          touchCountRef.current = Math.max(0, touchCountRef.current - 1);
-
-          // Reset two-finger gesture flag when all fingers are lifted
-          if (touchCountRef.current === 0) {
-            isTwoFingerGestureRef.current = false;
-          }
-        }
-
-        // If in two-finger gesture, don't interfere
-        if (isTwoFingerGestureRef.current) {
+        // Only handle cancel for our active pointer
+        if (activePointerIdRef.current === null || e.pointerId !== activePointerIdRef.current) {
           return;
         }
 
-        // For stylus/pen, we may receive pointerleave even when captured
-        // Only end drawing if we're actually drawing
-        if (isDrawing) {
+        // End drawing if we're actually drawing
+        if (isDrawingRef.current) {
           handlePointerUp(e);
         }
       },
-      [isDrawing, handlePointerUp]
+      [handlePointerUp]
     );
 
     // =========================================================================
-    // NATIVE TOUCH EVENT HANDLERS
-    // These are CRITICAL for two-finger zoom/pan to work properly.
-    // The parent FaceChartWithZoom uses native touch events, not pointer events.
-    // We must ensure two-finger gestures bubble up to the parent container.
+    // TOUCH EVENT HANDLERS - For Multi-Touch Detection Only
+    // =========================================================================
+    //
+    // Following SmoothBrushTool pattern:
+    // - Touch events are ONLY used to detect multi-touch (2+ fingers) for zoom/pan passthrough
+    // - ALL drawing is handled via pointer events (which fire for both touch and stylus)
+    // - When multi-touch is detected, we set isMultiTouchActive to disable pointer events
+    //   and let events bubble to parent FaceChartWithZoom for zoom handling
     // =========================================================================
 
-    // Handle native touch start - detect two-finger gestures early
-    const handleTouchStart = useCallback((e: React.TouchEvent<HTMLCanvasElement>) => {
-      // If two or more fingers, this is a zoom/pan gesture
-      // Let it bubble to parent - do NOT prevent default
-      if (e.touches.length >= 2) {
-        isTwoFingerGestureRef.current = true;
-        isMultiTouchActiveRef.current = true;
-        setIsMultiTouchActive(true);
-        // Cancel any in-progress drawing
-        if (isDrawing) {
-          setIsDrawing(false);
-          setStartPoint(null);
-          setCurrentPoint(null);
+    useEffect(() => {
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+
+      const handleTouchStart = (e: TouchEvent) => {
+        touchCountRef.current = e.touches.length;
+
+        // If two or more fingers, this is a zoom/pan gesture
+        if (e.touches.length >= 2) {
+          setIsMultiTouchActive(true);
+          // Cancel any in-progress drawing
+          if (isDrawingRef.current) {
+            activePointerIdRef.current = null;
+            isDrawingRef.current = false;
+            setIsDrawing(false);
+            startPointRef.current = null;
+            setStartPoint(null);
+            setCurrentPoint(null);
+          }
+          // DO NOT call preventDefault() - let it bubble for zoom/pan
         }
-        // DO NOT call preventDefault() - let it bubble for zoom/pan
-        return;
-      }
-      // Single finger: let pointer events handle it (they fire after touch events)
-    }, [isDrawing]);
+      };
 
-    // Handle native touch move - allow two-finger gestures to pass through
-    const handleTouchMove = useCallback((e: React.TouchEvent<HTMLCanvasElement>) => {
-      // If two or more fingers, this is a zoom/pan gesture
-      if (e.touches.length >= 2 || isTwoFingerGestureRef.current) {
-        // DO NOT call preventDefault() - let it bubble for zoom/pan
-        return;
-      }
-      // Single finger drawing is handled by pointer events
-    }, []);
+      const handleTouchMove = (_e: TouchEvent) => {
+        // Let all touch moves pass through - zoom handled by FaceChartWithZoom
+        // Drawing is handled by pointer events
+      };
 
-    // Handle native touch end - reset two-finger gesture flag
-    const handleTouchEnd = useCallback((e: React.TouchEvent<HTMLCanvasElement>) => {
-      // Reset flag when all fingers are lifted
-      if (e.touches.length === 0) {
-        // Delay reset to prevent accidental marks after gesture ends
-        setTimeout(() => {
-          isTwoFingerGestureRef.current = false;
-          isMultiTouchActiveRef.current = false;
-          setIsMultiTouchActive(false);
-        }, 150);
-      }
+      const handleTouchEnd = (e: TouchEvent) => {
+        touchCountRef.current = e.touches.length;
+
+        // Reset flag when all fingers are lifted
+        if (e.touches.length === 0) {
+          // Delay reset to prevent accidental marks after gesture ends
+          setTimeout(() => {
+            setIsMultiTouchActive(false);
+          }, 150);
+        }
+      };
+
+      canvas.addEventListener('touchstart', handleTouchStart, { passive: true });
+      canvas.addEventListener('touchmove', handleTouchMove, { passive: true });
+      canvas.addEventListener('touchend', handleTouchEnd, { passive: true });
+      canvas.addEventListener('touchcancel', handleTouchEnd, { passive: true });
+
+      return () => {
+        canvas.removeEventListener('touchstart', handleTouchStart);
+        canvas.removeEventListener('touchmove', handleTouchMove);
+        canvas.removeEventListener('touchend', handleTouchEnd);
+        canvas.removeEventListener('touchcancel', handleTouchEnd);
+      };
     }, []);
 
     // Handle resize - with multiple retries for initial mount
@@ -826,27 +837,18 @@ export const ArrowTool = forwardRef<ArrowToolRef, ArrowToolProps>(
           }`}
           style={{
             // Canvas dimensions are set programmatically in resizeCanvas()
-            // We use top-0 left-0 positioning instead of inset-0 so explicit
-            // width/height styles are respected.
-            // IMPORTANT: Use 'pinch-zoom' instead of 'none' to allow two-finger zoom gestures
-            // to pass through to the parent FaceChartWithZoom component.
-            // This ensures practitioners can ALWAYS zoom in/out regardless of which tool is active.
-            touchAction: 'pinch-zoom',
-            // CRITICAL: Disable pointer events when tool not active OR during two-finger gestures
-            // This allows other tools to receive clicks and zoom gestures to pass through
+            // IMPORTANT: Use 'manipulation' to allow zoom gestures while allowing pointer events
+            touchAction: 'manipulation',
+            // CRITICAL: Disable pointer events when tool not active OR during multi-touch gestures
             pointerEvents: !isActive ? 'none' : (isMultiTouchActive ? 'none' : 'auto'),
           }}
-          // Pointer events for drawing (single finger, mouse, stylus)
+          // Pointer events for ALL drawing (touch, mouse, stylus)
+          // Touch events are handled separately via useEffect for multi-touch detection only
           onPointerDown={handlePointerDown}
           onPointerMove={handlePointerMove}
           onPointerUp={handlePointerUp}
           onPointerLeave={handlePointerLeave}
           onPointerCancel={handlePointerLeave}
-          // Native touch events to detect and allow two-finger zoom/pan gestures
-          // These fire BEFORE pointer events and let us detect multi-touch early
-          onTouchStart={handleTouchStart}
-          onTouchMove={handleTouchMove}
-          onTouchEnd={handleTouchEnd}
         />
 
         {/* Minimal Floating Color Picker - only when active */}
@@ -922,6 +924,7 @@ export const ArrowTool = forwardRef<ArrowToolRef, ArrowToolProps>(
             </div>
           </div>
         )}
+
       </div>
     );
   }

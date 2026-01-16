@@ -67,6 +67,7 @@ import type { DrawingTool } from '@/components/charting/FloatingToolPalette';
 import type { Product } from '@/components/charting/FloatingProductPicker';
 import { FloatingSummaryBar } from '@/components/charting/FloatingSummaryBar';
 import { RightDock } from '@/components/charting/RightDock';
+import type { SketchMode } from '@/components/charting/RightDock';
 import { FloatingActionButtons } from '@/components/charting/FloatingActionButtons';
 // BottomActionBar available as reusable component for alternative layouts
 // import { BottomActionBarSimple } from '@/components/charting/BottomActionBar';
@@ -88,13 +89,8 @@ import type { BrushPathsByType, TreatmentAreaType as SmoothBrushTreatmentType } 
 // Zone detection summary component for displaying detected treatment areas
 import { ZoneDetectionSummary } from '@/components/charting/ZoneDetectionSummary';
 import type { DetectedZone } from '@/components/charting/zoneDetection';
-// Arrow tool for drawing directional vectors (thread lifts, cannula paths, filler flow)
-import { ArrowTool, ArrowToolRef, useArrowsState } from '@/components/charting/ArrowTool';
-import type { Arrow } from '@/components/charting/ArrowTool';
-// Text label tool for adding text annotations directly on charts (Avoid, Bruise, Notes)
-import { TextLabelTool, useTextLabels, PRESET_LABELS, TEXT_COLORS } from '@/components/charting/TextLabelTool';
-import type { TextLabel } from '@/components/charting/TextLabelTool';
-import { FloatingTextLabelPanel } from '@/components/charting/FloatingTextLabelPanel';
+import type { ZoneTreatmentSummary } from '@/components/charting/ZoneDisplay';
+// Note: ArrowTool removed - arrow functionality is now part of ShapeTool
 // Measurement tool for precise distance measurements on charts
 import { MeasurementTool, useMeasurementState, DEFAULT_CALIBRATION } from '@/components/charting/MeasurementTool';
 import type { Measurement, CalibrationData } from '@/components/charting/MeasurementTool';
@@ -109,6 +105,9 @@ import { DangerZoneOverlay } from '@/components/charting/DangerZoneOverlay';
 // Vein drawing tool for sclerotherapy documentation
 import { VeinDrawingTool, useVeinPathsState } from '@/components/charting/VeinDrawingTool';
 import type { VeinPath, VeinType, VeinDrawingToolRef } from '@/components/charting/VeinDrawingTool';
+// Simple text tool for quick text label placement (Konva-based)
+import { SimpleTextTool, SimpleTextSettingsPanel, useSimpleTextLabels, TEXT_PRESETS } from '@/components/charting/SimpleTextTool';
+import type { SimpleTextLabel, SimpleTextToolRef, TextPreset } from '@/components/charting/SimpleTextTool';
 
 // Zoom-enabled chart wrappers for 2D views
 import { FaceChartWithZoom } from '@/components/charting/FaceChartWithZoom';
@@ -346,8 +345,9 @@ interface FreehandPointsByView {
 // UNDO/REDO HISTORY TYPES AND CONSTANTS
 // =============================================================================
 // Represents a UNIFIED snapshot of ALL chart state for undo/redo
-// This includes injection points, brush strokes, arrows, text labels, veins, shapes, etc.
+// This includes injection points, brush strokes, text labels, veins, shapes, etc.
 // All tools use this single history so ONE undo button works for ANY action.
+// Note: Arrow tool was removed - arrow functionality is now part of ShapeTool
 interface HistorySnapshot {
   // Injection points (2D zone-based)
   injectionPointsByView: {
@@ -373,24 +373,6 @@ interface HistorySnapshot {
     torso: [string, InjectionPoint3D][];
     fullBody: [string, InjectionPoint3D][];
   };
-  // Arrows per view
-  arrowsByView: {
-    femaleFace: Arrow[];
-    maleFace: Arrow[];
-    femaleTorso: Arrow[];
-    maleTorso: Arrow[];
-    femaleFullBody: Arrow[];
-    maleFullBody: Arrow[];
-  };
-  // Text labels per view
-  textLabelsByView: {
-    femaleFace: TextLabel[];
-    maleFace: TextLabel[];
-    femaleTorso: TextLabel[];
-    maleTorso: TextLabel[];
-    femaleFullBody: TextLabel[];
-    maleFullBody: TextLabel[];
-  };
   // Vein paths (for sclerotherapy)
   veinPaths: VeinPath[];
   // Shape annotations
@@ -401,7 +383,7 @@ interface HistorySnapshot {
   cannulaPaths: CannulaPath[];
   // Metadata
   timestamp: number;
-  operation: 'add' | 'move' | 'edit' | 'delete' | 'initial' | 'brush' | 'arrow' | 'text' | 'vein' | 'shape' | 'measurement' | 'cannula';
+  operation: 'add' | 'move' | 'edit' | 'delete' | 'initial' | 'brush' | 'vein' | 'shape' | 'measurement' | 'cannula';
 }
 
 const MAX_HISTORY_SIZE = 50;
@@ -714,48 +696,38 @@ function ChartingPageContent() {
     toast.success('Zones confirmed');
   }, []);
 
-  // =============================================================================
-  // ARROW TOOL STATE - For drawing directional vectors (thread lifts, cannula paths)
-  // =============================================================================
-  // Check if arrow tool is active
-  const isArrowModeActive = activeTool === 'arrow';
+  // Convert detectedZones to ZoneTreatmentSummary format for LeftDock display
+  // This shows detected treatment areas underneath the Layers section
+  const zoneSummaries: ZoneTreatmentSummary[] = useMemo(() => {
+    if (detectedZones.length === 0) return [];
 
-  // Arrow state per view (like injection points)
-  const [arrowsByView, setArrowsByView] = useState<{
-    femaleFace: Arrow[];
-    maleFace: Arrow[];
-    femaleTorso: Arrow[];
-    maleTorso: Arrow[];
-    femaleFullBody: Arrow[];
-    maleFullBody: Arrow[];
-  }>({
-    femaleFace: [],
-    maleFace: [],
-    femaleTorso: [],
-    maleTorso: [],
-    femaleFullBody: [],
-    maleFullBody: [],
-  });
+    // Group detected zones and add treatment info from brush layers
+    return detectedZones.map(zone => {
+      // Get active brush layers to show which treatments are in each zone
+      const activeTreatments = brushLayersState.brushLayers
+        .filter(layer => layer.strokeCount > 0)
+        .map(layer => ({
+          treatmentType: layer.id,
+          treatmentName: layer.name,
+          color: layer.color,
+          strokeCount: layer.strokeCount,
+        }));
 
-  // Arrow tool ref and undo state
-  const arrowToolRef = useRef<ArrowToolRef>(null);
-  const [arrowCanUndo, setArrowCanUndo] = useState(false);
-  const [arrowCanRedo, setArrowCanRedo] = useState(false);
-  // Arrow color state (controlled by RightDock when active)
-  const [arrowColor, setArrowColor] = useState<string>('#8B5CF6');
+      return {
+        zoneId: zone.zoneId,
+        zoneName: zone.zoneName,
+        zoneCategory: zone.category || 'general',
+        treatments: activeTreatments.length > 0 ? activeTreatments : [{
+          treatmentType: 'treatment',
+          treatmentName: 'Treatment Area',
+          color: '#8B5CF6',
+          strokeCount: 1,
+        }],
+      };
+    });
+  }, [detectedZones, brushLayersState.brushLayers]);
 
-  // Arrow undo/redo/clear handlers
-  const handleArrowUndo = useCallback(() => {
-    arrowToolRef.current?.undo();
-  }, []);
-
-  const handleArrowRedo = useCallback(() => {
-    arrowToolRef.current?.redo();
-  }, []);
-
-  const handleArrowClearAll = useCallback(() => {
-    arrowToolRef.current?.clearAll();
-  }, []);
+  // Note: Arrow tool state removed - arrow functionality is now part of ShapeTool
 
   // =============================================================================
   // VEIN/SKETCH TOOL STATE - For drawing veins (sclerotherapy documentation)
@@ -772,61 +744,6 @@ function ChartingPageContent() {
   const handleVeinClearAll = useCallback(() => {
     veinToolRef.current?.clearAll();
   }, []);
-
-  // =============================================================================
-  // TEXT LABEL TOOL STATE - For adding text annotations (Avoid, Bruise, Notes)
-  // =============================================================================
-  // Check if text tool is active
-  const isTextModeActive = activeTool === 'text';
-
-  // Text labels state per view (like injection points)
-  const [textLabelsByView, setTextLabelsByView] = useState<{
-    femaleFace: TextLabel[];
-    maleFace: TextLabel[];
-    femaleTorso: TextLabel[];
-    maleTorso: TextLabel[];
-    femaleFullBody: TextLabel[];
-    maleFullBody: TextLabel[];
-  }>({
-    femaleFace: [],
-    maleFace: [],
-    femaleTorso: [],
-    maleTorso: [],
-    femaleFullBody: [],
-    maleFullBody: [],
-  });
-
-  // Text label color state (size is now auto-calculated based on zoom)
-  const [textLabelColor, setTextLabelColor] = useState('#3B82F6');
-
-  // Chart container ref for text label positioning
-  const chartContainerForTextRef = useRef<HTMLDivElement>(null);
-
-  // Get current view's text labels
-  const currentTextLabels = useMemo(() => {
-    const viewKey = getView2DKey(bodyPart, gender);
-    return textLabelsByView[viewKey];
-  }, [textLabelsByView, bodyPart, gender]);
-
-  // Handler for text labels change - defined later after addToHistory is available
-  // See handleTextLabelsChangeWithHistory in the HISTORY-AWARE HANDLERS section
-
-  // Handler for preset selection - place with next tap
-  const [pendingPresetText, setPendingPresetText] = useState<{ text: string; color: string } | null>(null);
-
-  const handleTextPresetSelect = useCallback((text: string, color: string) => {
-    // Set pending preset - will be used when user taps on chart
-    setPendingPresetText({ text, color });
-  }, []);
-
-  // Clear all text labels for current view
-  const handleClearAllTextLabels = useCallback(() => {
-    const viewKey = getView2DKey(bodyPart, gender);
-    setTextLabelsByView(prev => ({
-      ...prev,
-      [viewKey]: [],
-    }));
-  }, [bodyPart, gender]);
 
   // =============================================================================
   // MEASUREMENT TOOL STATE - For measuring distances on charts
@@ -869,12 +786,23 @@ function ChartingPageContent() {
   }, []);
 
   // =============================================================================
+  // SKETCH MODE STATE - Umbrella for Veins and Cannula sub-modes
+  // =============================================================================
+  // The Sketch tool combines vein drawing (sclerotherapy) and cannula path tools
+  // into a unified tool with sub-mode selection in RightDock.
+  const [sketchMode, setSketchMode] = useState<SketchMode>('veins');
+  const isSketchModeActive = activeTool === 'sketch';
+  // Backwards-compatible: cannula is active when sketch tool is active AND sketchMode is 'cannula'
+  const isCannulaModeActive = isSketchModeActive && sketchMode === 'cannula';
+  // Backwards-compatible: vein is active when sketch tool is active AND sketchMode is 'veins'
+  const isVeinModeActive = isSketchModeActive && sketchMode === 'veins';
+
+  // =============================================================================
   // CANNULA PATH TOOL STATE - For documenting cannula injection paths
   // =============================================================================
   // NOTE: Cannula tool has its OWN product/color state, independent from the
   // injection point tools. This prevents the FloatingProductPicker (which controls
   // pen/freehand injection points) from affecting cannula path colors.
-  const isCannulaModeActive = activeTool === 'cannula';
   const cannulaState = useCannulaPathsState();
   const {
     cannulaPaths,
@@ -905,7 +833,7 @@ function ChartingPageContent() {
   // =============================================================================
   // VEIN DRAWING TOOL STATE - For sclerotherapy documentation
   // =============================================================================
-  const isVeinModeActive = activeTool === 'vein';
+  // Note: isVeinModeActive is now derived from sketchMode above
   const veinState = useVeinPathsState();
   const {
     veinPaths,
@@ -913,6 +841,37 @@ function ChartingPageContent() {
     setVeinPaths,
     setSelectedVeinId,
   } = veinState;
+
+  // DEBUG: Track veinPaths changes at the page level
+  useEffect(() => {
+    console.log('[ChartingPage] ===== veinPaths CHANGED (via useEffect) =====');
+    console.log('[ChartingPage] veinPaths.length:', veinPaths.length);
+    console.log('[ChartingPage] veinPaths ids:', veinPaths.map(v => v.id));
+    console.log('[ChartingPage] ==============================================');
+  }, [veinPaths]);
+
+  // =============================================================================
+  // SIMPLE TEXT TOOL STATE - Quick text annotations using Konva
+  // =============================================================================
+  const isSimpleTextModeActive = activeTool === 'simpleText';
+  const simpleTextState = useSimpleTextLabels();
+  const {
+    labels: simpleTextLabels,
+    setLabels: setSimpleTextLabels,
+    selectedPreset: simpleTextSelectedPreset,
+    setSelectedPreset: setSimpleTextSelectedPreset,
+  } = simpleTextState;
+  const simpleTextToolRef = useRef<SimpleTextToolRef>(null);
+  const [simpleTextCanUndo, setSimpleTextCanUndo] = useState(false);
+
+  // Simple text handlers
+  const handleSimpleTextUndo = useCallback(() => {
+    simpleTextToolRef.current?.undo();
+  }, []);
+
+  const handleSimpleTextClearAll = useCallback(() => {
+    simpleTextToolRef.current?.clearAll();
+  }, []);
 
   // =============================================================================
   // DANGER ZONE OVERLAY STATE - Safety overlay for arteries/nerves
@@ -930,8 +889,8 @@ function ChartingPageContent() {
   // Without this, the FaceChartWithZoom/TorsoChartWithZoom handlers intercept events.
   // NOTE: Brush mode is EXCLUDED - it handles its own zoom passthrough via Konva Stage
   // and needs FaceChartWithZoom to remain active for two-finger zoom gestures.
-  const isOverlayToolActive = isArrowModeActive || isTextModeActive ||
-    isMeasureModeActive || isShapeModeActive || isCannulaModeActive || isVeinModeActive;
+  // NOTE: SimpleText mode uses Konva like Brush, so it also handles its own zoom passthrough.
+  const isOverlayToolActive = isMeasureModeActive || isShapeModeActive || isSketchModeActive || isSimpleTextModeActive;
 
   // Get the current view key based on body part and gender
   const currentView2DKey = useMemo(() => getView2DKey(bodyPart, gender), [bodyPart, gender]);
@@ -990,8 +949,6 @@ function ChartingPageContent() {
   const injectionPointsByViewRef = useRef(injectionPointsByView);
   const freehandPointsByViewRef = useRef(freehandPointsByView);
   const injectionPoints3DByBodyPartRef = useRef(injectionPoints3DByBodyPart);
-  const arrowsByViewRef = useRef(arrowsByView);
-  const textLabelsByViewRef = useRef(textLabelsByView);
   const veinPathsRef = useRef(veinPaths);
   const shapesRef = useRef(shapes);
   const measurementsRef = useRef(measurements);
@@ -1009,14 +966,6 @@ function ChartingPageContent() {
   useEffect(() => {
     injectionPoints3DByBodyPartRef.current = injectionPoints3DByBodyPart;
   }, [injectionPoints3DByBodyPart]);
-
-  useEffect(() => {
-    arrowsByViewRef.current = arrowsByView;
-  }, [arrowsByView]);
-
-  useEffect(() => {
-    textLabelsByViewRef.current = textLabelsByView;
-  }, [textLabelsByView]);
 
   useEffect(() => {
     veinPathsRef.current = veinPaths;
@@ -1123,8 +1072,6 @@ function ChartingPageContent() {
     const ipbv = injectionPointsByViewRef.current;
     const fpbv = freehandPointsByViewRef.current;
     const ip3d = injectionPoints3DByBodyPartRef.current;
-    const arrows = arrowsByViewRef.current;
-    const textLabels = textLabelsByViewRef.current;
     const veins = veinPathsRef.current;
     const shapeAnnotations = shapesRef.current;
     const measurementData = measurementsRef.current;
@@ -1154,24 +1101,6 @@ function ChartingPageContent() {
         face: Array.from(ip3d.face.entries()),
         torso: Array.from(ip3d.torso.entries()),
         fullBody: Array.from(ip3d.fullBody.entries()),
-      },
-      // Arrows per view (deep copy to avoid reference issues)
-      arrowsByView: {
-        femaleFace: [...arrows.femaleFace],
-        maleFace: [...arrows.maleFace],
-        femaleTorso: [...arrows.femaleTorso],
-        maleTorso: [...arrows.maleTorso],
-        femaleFullBody: [...arrows.femaleFullBody],
-        maleFullBody: [...arrows.maleFullBody],
-      },
-      // Text labels per view (deep copy)
-      textLabelsByView: {
-        femaleFace: [...textLabels.femaleFace],
-        maleFace: [...textLabels.maleFace],
-        femaleTorso: [...textLabels.femaleTorso],
-        maleTorso: [...textLabels.maleTorso],
-        femaleFullBody: [...textLabels.femaleFullBody],
-        maleFullBody: [...textLabels.maleFullBody],
       },
       // Other tools (deep copy)
       veinPaths: [...veins],
@@ -1214,26 +1143,6 @@ function ChartingPageContent() {
       face: new Map(snapshot.injectionPoints3DByBodyPart.face),
       torso: new Map(snapshot.injectionPoints3DByBodyPart.torso),
       fullBody: new Map(snapshot.injectionPoints3DByBodyPart.fullBody),
-    });
-
-    // Restore arrows per view
-    setArrowsByView({
-      femaleFace: [...snapshot.arrowsByView.femaleFace],
-      maleFace: [...snapshot.arrowsByView.maleFace],
-      femaleTorso: [...snapshot.arrowsByView.femaleTorso],
-      maleTorso: [...snapshot.arrowsByView.maleTorso],
-      femaleFullBody: [...snapshot.arrowsByView.femaleFullBody],
-      maleFullBody: [...snapshot.arrowsByView.maleFullBody],
-    });
-
-    // Restore text labels per view
-    setTextLabelsByView({
-      femaleFace: [...snapshot.textLabelsByView.femaleFace],
-      maleFace: [...snapshot.textLabelsByView.maleFace],
-      femaleTorso: [...snapshot.textLabelsByView.femaleTorso],
-      maleTorso: [...snapshot.textLabelsByView.maleTorso],
-      femaleFullBody: [...snapshot.textLabelsByView.femaleFullBody],
-      maleFullBody: [...snapshot.textLabelsByView.maleFullBody],
     });
 
     // Restore other tools
@@ -1336,10 +1245,10 @@ function ChartingPageContent() {
   // The HistorySnapshot now captures ALL tool states, so ONE undo works for ANY action:
   // - Botox point placement -> undo
   // - Brush stroke -> undo
-  // - Arrow drawing -> undo
   // - Vein drawing -> undo
   // - Text label -> undo
   // - Shape/Measurement/Cannula -> undo
+  // Note: Arrow tool was removed - arrow shapes are now part of ShapeTool
   //
   // IMPORTANT: Brush strokes are a special case - they use react-sketch-canvas which has
   // its own internal undo. For brush strokes, we still route to the brush tool's undo
@@ -1350,7 +1259,7 @@ function ChartingPageContent() {
     if (isBrushModeActive && brushCanUndo) {
       smoothBrushRef.current?.undo();
     } else if (canUndo) {
-      // Use the global history for everything else (including arrows, text labels, veins, etc.)
+      // Use the global history for everything else (text labels, veins, shapes, etc.)
       undo();
     }
   }, [isBrushModeActive, brushCanUndo, canUndo, undo]);
@@ -1377,16 +1286,6 @@ function ChartingPageContent() {
   // then call addToHistory AFTER the state has been updated and refs are synced.
   // This ensures the snapshot captures the NEW state, not the old state.
 
-  // Text labels - use deferred history pattern
-  const handleTextLabelsChange = useCallback((labels: TextLabel[]) => {
-    pendingHistoryOperation.current = 'text';
-    const viewKey = getView2DKey(bodyPart, gender);
-    setTextLabelsByView(prev => ({
-      ...prev,
-      [viewKey]: labels,
-    }));
-  }, [bodyPart, gender]);
-
   // Measurements - use deferred history pattern
   const handleMeasurementsChange = useCallback((newMeasurements: Measurement[]) => {
     pendingHistoryOperation.current = 'measurement';
@@ -1407,18 +1306,14 @@ function ChartingPageContent() {
 
   // Vein paths - use deferred history pattern
   const handleVeinPathsChange = useCallback((newPaths: VeinPath[]) => {
+    console.log('[ChartingPage] handleVeinPathsChange CALLED');
+    console.log('[ChartingPage] newPaths count:', newPaths.length);
+    console.log('[ChartingPage] newPaths ids:', newPaths.map(v => v.id));
     pendingHistoryOperation.current = 'vein';
+    console.log('[ChartingPage] About to call setVeinPaths...');
     setVeinPaths(newPaths);
+    console.log('[ChartingPage] setVeinPaths CALLED');
   }, [setVeinPaths]);
-
-  // Arrows - use deferred history pattern (for current view)
-  const handleArrowsChange = useCallback((newArrows: Arrow[]) => {
-    pendingHistoryOperation.current = 'arrow';
-    setArrowsByView(prev => ({
-      ...prev,
-      [currentView2DKey]: newArrows,
-    }));
-  }, [currentView2DKey]);
 
   // =============================================================================
   // CLEAR ALL - Global action to reset all chart markings
@@ -2086,12 +1981,10 @@ function ChartingPageContent() {
     freehandPointsByView,
     injectionPoints3DByBodyPart,
     // Other tools - these MUST be included for unified undo to work
-    textLabelsByView,
     shapes,
     measurements,
     cannulaPaths,
     veinPaths,
-    arrowsByView,
   ]);
 
   const handleToolChange = useCallback((tool: DrawingTool) => {
@@ -2164,28 +2057,6 @@ function ChartingPageContent() {
                   readOnly={activeTool !== 'brush'}
                   zoomState={zoomState}
                 />
-                <ArrowTool
-                  ref={arrowToolRef}
-                  isActive={isArrowModeActive}
-                  arrows={arrowsByView[currentView2DKey]}
-                  onArrowsChange={handleArrowsChange}
-                  onCanUndoChange={setArrowCanUndo}
-                  onCanRedoChange={setArrowCanRedo}
-                  readOnly={activeTool !== 'arrow'}
-                  productId={selectedProduct?.id}
-                  showColorPicker={false}
-                  zoomState={zoomState}
-                  color={arrowColor}
-                />
-                <TextLabelTool
-                  labels={currentTextLabels}
-                  onLabelsChange={handleTextLabelsChange}
-                  isActive={isTextModeActive}
-                  zoom={1}
-                  readOnly={activeTool !== 'text'}
-                  containerRef={chartContainerRef}
-                  zoomState={zoomState}
-                />
                 <MeasurementTool
                   isActive={isMeasureModeActive}
                   measurements={measurements}
@@ -2210,6 +2081,7 @@ function ChartingPageContent() {
                   onShapeTypeChange={setShapeType}
                   fillColor={shapeColor}
                   onFillColorChange={setShapeColor}
+                  fillEnabled={shapeFilled}
                   showToolbar={false}
                   zoomState={zoomState}
                 />
@@ -2219,7 +2091,7 @@ function ChartingPageContent() {
                   onCannulaPathsChange={handleCannulaPathsChange}
                   selectedPathId={selectedCannulaPathId}
                   onSelectionChange={setSelectedCannulaPathId}
-                  readOnly={activeTool !== 'cannula'}
+                  readOnly={!isCannulaModeActive}
                   productColor={cannulaProductColor}
                   productId={cannulaProductId}
                   initialTechnique={cannulaType}
@@ -2234,13 +2106,23 @@ function ChartingPageContent() {
                   onVeinPathsChange={handleVeinPathsChange}
                   selectedVeinId={selectedVeinId}
                   onSelectionChange={setSelectedVeinId}
-                  readOnly={activeTool !== 'vein'}
+                  readOnly={!isVeinModeActive}
                   showToolbar={false}
                   zoom={1}
                   zoomState={zoomState}
                   veinType={veinType}
                   onVeinTypeChange={setVeinType}
                   onCanUndoChange={setVeinCanUndo}
+                />
+                <SimpleTextTool
+                  ref={simpleTextToolRef}
+                  isActive={isSimpleTextModeActive}
+                  selectedPreset={simpleTextSelectedPreset}
+                  onLabelsChange={setSimpleTextLabels}
+                  onCanUndoChange={setSimpleTextCanUndo}
+                  readOnly={activeTool !== 'simpleText'}
+                  initialLabels={simpleTextLabels}
+                  zoomState={zoomState}
                 />
                 {bodyPart === 'face' && showDangerZones && (
                   <DangerZoneOverlay
@@ -2473,17 +2355,6 @@ function ChartingPageContent() {
     handleInjectionPointsChange,
     handleFreehandPointsChange,
     dosage,
-    // Arrow tool deps
-    isArrowModeActive,
-    arrowsByView,
-    currentView2DKey,
-    arrowToolRef,
-    handleArrowsChange,
-    // Text label deps
-    isTextModeActive,
-    currentTextLabels,
-    handleTextLabelsChange,
-    chartContainerRef,
     // Measurement tool deps
     isMeasureModeActive,
     measurements,
@@ -2624,30 +2495,14 @@ function ChartingPageContent() {
         isMeasurementModeActive={isMeasureModeActive}
         measurements={measurements.map(m => ({ id: m.id, length: m.distancePx, label: m.label }))}
         onMeasurementClearAll={() => setMeasurements([])}
+        // Detected treatment zones - shows underneath Layers section
+        zoneSummaries={zoneSummaries}
         // Patient context (shown in dock for quick reference)
         patient={{
           name: MOCK_PATIENT.name,
           mrn: MOCK_PATIENT.mrn,
         }}
       />
-
-      {/* =============================================================================
-          FLOATING PANELS - Only shown when NOT using the docked layout
-          When using the injection-map view with docked layout, RightDock handles
-          Tools, Products, and Summary - so we hide these floating versions
-          ============================================================================= */}
-
-      {/* Floating Text Label Panel - Shows when text tool is active */}
-      {/* This remains floating as it's a contextual panel for the text tool */}
-      <FloatingTextLabelPanel
-        visible={isTextModeActive && viewMode === '2D'}
-        selectedColor={textLabelColor}
-        onColorChange={setTextLabelColor}
-        onPresetSelect={handleTextPresetSelect}
-        onClearAll={handleClearAllTextLabels}
-        labelCount={currentTextLabels.length}
-      />
-
 
     </>
   );
@@ -2692,11 +2547,9 @@ function ChartingPageContent() {
         // Product picker props - mode determines which tool settings to show
         mode={
           isBrushModeActive ? 'brush' :
-          isVeinModeActive ? 'sketch' :
-          isCannulaModeActive ? 'cannula' :
+          isSketchModeActive ? 'sketch' :
           isShapeModeActive ? 'shape' :
-          isArrowModeActive ? 'arrow' :
-          isTextModeActive ? 'text' :
+          isSimpleTextModeActive ? 'simpleText' :
           isMeasureModeActive ? 'measure' :
           'injection'
         }
@@ -2720,13 +2573,16 @@ function ChartingPageContent() {
         onBrushUndo={handleBrushUndo}
         onBrushClearAll={handleBrushClearAll}
         canBrushUndo={brushCanUndo}
-        // Sketch mode props (for VeinDrawingTool)
+        // Sketch mode props (umbrella for Veins and Cannula)
+        sketchMode={sketchMode}
+        onSketchModeChange={setSketchMode}
+        // Sketch > Veins sub-mode props
         sketchType={veinType}
         onSketchTypeChange={setVeinType}
         onSketchUndo={handleVeinUndo}
         onSketchClearAll={handleVeinClearAll}
         canSketchUndo={veinCanUndo}
-        // Cannula mode props
+        // Sketch > Cannula sub-mode props
         cannulaType={cannulaType as 'linear' | 'fanning'}
         onCannulaTypeChange={(type) => setCannulaType(type as CannulaTechnique)}
         cannulaColor={cannulaProductColor}
@@ -2735,7 +2591,7 @@ function ChartingPageContent() {
         onCannulaClearAll={handleCannulaClearAll}
         canCannulaUndo={cannulaPaths.length > 0}
         // Shape mode props
-        shapeType={shapeType as 'circle' | 'rectangle' | 'ellipse' | 'line'}
+        shapeType={shapeType as 'circle' | 'rectangle' | 'ellipse' | 'line' | 'arrow'}
         onShapeTypeChange={(type) => setShapeType(type as ShapeType)}
         shapeColor={shapeColor}
         onShapeColorChange={setShapeColor}
@@ -2744,15 +2600,13 @@ function ChartingPageContent() {
         onShapeUndo={handleShapeUndo}
         onShapeClearAll={handleShapeClearAll}
         canShapeUndo={shapes.length > 0}
-        // Arrow mode props
-        arrowColor={arrowColor}
-        onArrowColorChange={setArrowColor}
-        onArrowUndo={handleArrowUndo}
-        onArrowClearAll={handleArrowClearAll}
-        canArrowUndo={arrowCanUndo}
-        // Text mode props
-        textColor={textLabelColor}
-        onTextColorChange={setTextLabelColor}
+        // Simple text mode props
+        simpleTextSelectedPreset={simpleTextSelectedPreset}
+        onSimpleTextPresetChange={setSimpleTextSelectedPreset}
+        simpleTextLabels={simpleTextLabels}
+        onSimpleTextUndo={handleSimpleTextUndo}
+        onSimpleTextClearAll={handleSimpleTextClearAll}
+        canSimpleTextUndo={simpleTextCanUndo}
         // Measure mode props
         measurements={measurements.map(m => ({ id: m.id, length: m.distancePx, label: m.label }))}
         onMeasurementClearAll={() => setMeasurements([])}

@@ -25,7 +25,7 @@ import {
 // =============================================================================
 // DEBUG FLAG - Set to true to enable verbose logging
 // =============================================================================
-const DEBUG_VEIN_DRAWING = true; // Temporarily enabled to debug delete issue
+const DEBUG_VEIN_DRAWING = false; // Set to true for verbose logging
 
 // =============================================================================
 // TYPES
@@ -604,6 +604,17 @@ export const VeinDrawingTool = forwardRef<VeinDrawingToolRef, VeinDrawingToolPro
     },
     ref
   ) {
+    // DEBUG: Log every render of this component
+    if (DEBUG_VEIN_DRAWING) {
+      console.log('[VeinDrawingTool] ##### COMPONENT RENDER #####');
+      console.log('[VeinDrawingTool] Props received:');
+      console.log('[VeinDrawingTool]   - isActive:', isActive);
+      console.log('[VeinDrawingTool]   - veinPaths.length:', veinPaths.length);
+      console.log('[VeinDrawingTool]   - veinPaths ids:', veinPaths.map(v => v.id));
+      console.log('[VeinDrawingTool]   - selectedVeinId:', selectedVeinId);
+      console.log('[VeinDrawingTool] #############################');
+    }
+
     // Refs
     const containerRef = useRef<HTMLDivElement>(null);
     const stageRef = useRef<Konva.Stage>(null);
@@ -639,7 +650,7 @@ export const VeinDrawingTool = forwardRef<VeinDrawingToolRef, VeinDrawingToolPro
     // Ref to track current vein type (avoid stale closure)
     const veinTypeRef = useRef<VeinType>(veinType);
 
-    // Ref to track current veinPaths (avoid stale closure in delete handler)
+    // Ref to track current veinPaths (used by pointer event handlers during drawing)
     const veinPathsRef = useRef<VeinPath[]>(veinPaths);
 
     const { theme } = useChartingTheme();
@@ -650,11 +661,11 @@ export const VeinDrawingTool = forwardRef<VeinDrawingToolRef, VeinDrawingToolPro
       veinTypeRef.current = veinType;
     }, [veinType]);
 
-    // Keep veinPaths ref updated (critical for delete to work properly)
+    // Keep veinPaths ref updated (used by pointer event handlers during drawing)
     useEffect(() => {
       veinPathsRef.current = veinPaths;
       if (DEBUG_VEIN_DRAWING) {
-        console.log('[VeinDrawingTool] veinPaths updated, count:', veinPaths.length, 'ids:', veinPaths.map(v => v.id));
+        console.log('[VeinDrawingTool] veinPaths prop UPDATED - count:', veinPaths.length);
       }
     }, [veinPaths]);
 
@@ -684,20 +695,50 @@ export const VeinDrawingTool = forwardRef<VeinDrawingToolRef, VeinDrawingToolPro
     // CONVERT EXISTING VEIN PATHS TO KONVA STROKES
     // ==========================================================================
 
-    const konvaStrokes = useMemo((): KonvaVeinStroke[] => {
-      if (dimensions.width === 0 || dimensions.height === 0) return [];
-
+    // Generate a stable key based on vein IDs for debugging and to help with re-renders
+    const veinPathsKey = useMemo(() => {
+      const key = veinPaths.map(v => v.id).join(',');
       if (DEBUG_VEIN_DRAWING) {
-        console.log('[VeinDrawingTool] konvaStrokes memo recomputing');
-        console.log('[VeinDrawingTool] veinPaths input count:', veinPaths.length, 'ids:', veinPaths.map(v => v.id));
+        console.log('[VeinDrawingTool] veinPathsKey computed:', key || '(empty)');
+      }
+      return key;
+    }, [veinPaths]);
+
+    const konvaStrokes = useMemo((): KonvaVeinStroke[] => {
+      if (DEBUG_VEIN_DRAWING) {
+        console.log('[VeinDrawingTool] ===== konvaStrokes MEMO RECOMPUTING =====');
+        console.log('[VeinDrawingTool] Triggered by dependency change');
+        console.log('[VeinDrawingTool] dimensions:', dimensions);
+        console.log('[VeinDrawingTool] veinPaths input count:', veinPaths.length);
+        console.log('[VeinDrawingTool] veinPaths input ids:', veinPaths.map(v => v.id));
+      }
+
+      if (dimensions.width === 0 || dimensions.height === 0) {
+        if (DEBUG_VEIN_DRAWING) {
+          console.log('[VeinDrawingTool] Returning empty strokes due to zero dimensions');
+        }
+        return [];
       }
 
       const strokes = veinPaths
-        .filter(vein => vein.visible)
+        .filter(vein => {
+          const keep = vein.visible;
+          if (DEBUG_VEIN_DRAWING) {
+            console.log(`[VeinDrawingTool] konvaStrokes filter: vein ${vein.id} visible=${vein.visible}, keeping=${keep}`);
+          }
+          return keep;
+        })
         .map(vein => {
           // If we have a stored konvaStroke, use it
           if (vein.konvaStroke) {
+            if (DEBUG_VEIN_DRAWING) {
+              console.log(`[VeinDrawingTool] konvaStrokes map: vein ${vein.id} using stored konvaStroke`);
+            }
             return vein.konvaStroke;
+          }
+
+          if (DEBUG_VEIN_DRAWING) {
+            console.log(`[VeinDrawingTool] konvaStrokes map: vein ${vein.id} converting from VeinPoints`);
           }
 
           // Otherwise, convert VeinPoints (percentages) to pixel coordinates
@@ -723,11 +764,42 @@ export const VeinDrawingTool = forwardRef<VeinDrawingToolRef, VeinDrawingToolPro
         });
 
       if (DEBUG_VEIN_DRAWING) {
-        console.log('[VeinDrawingTool] konvaStrokes output count:', strokes.length, 'ids:', strokes.map(s => s.id));
+        console.log('[VeinDrawingTool] konvaStrokes OUTPUT count:', strokes.length);
+        console.log('[VeinDrawingTool] konvaStrokes OUTPUT ids:', strokes.map(s => s.id));
+        console.log('[VeinDrawingTool] =========================================');
       }
 
       return strokes;
     }, [veinPaths, dimensions]);
+
+    // Debug: Log when konvaStrokes changes (this should fire after delete)
+    // Also force Konva to redraw when strokes change, in case react-konva misses the update
+    useEffect(() => {
+      if (DEBUG_VEIN_DRAWING) {
+        console.log('[VeinDrawingTool] ===== konvaStrokes useEffect (batchDraw) =====');
+        console.log('[VeinDrawingTool] konvaStrokes.length:', konvaStrokes.length);
+        console.log('[VeinDrawingTool] konvaStrokes ids:', konvaStrokes.map(s => s.id));
+        console.log('[VeinDrawingTool] stageRef.current exists:', !!stageRef.current);
+      }
+      // Force Konva to redraw the stage when strokes change
+      // This ensures deleted strokes are actually removed from the canvas
+      if (stageRef.current) {
+        if (DEBUG_VEIN_DRAWING) {
+          console.log('[VeinDrawingTool] Calling stageRef.current.batchDraw()');
+        }
+        stageRef.current.batchDraw();
+        if (DEBUG_VEIN_DRAWING) {
+          console.log('[VeinDrawingTool] batchDraw() called successfully');
+        }
+      } else {
+        if (DEBUG_VEIN_DRAWING) {
+          console.log('[VeinDrawingTool] WARNING: stageRef.current is null, cannot batchDraw');
+        }
+      }
+      if (DEBUG_VEIN_DRAWING) {
+        console.log('[VeinDrawingTool] =============================================');
+      }
+    }, [konvaStrokes]);
 
     // ==========================================================================
     // POINTER EVENT HANDLERS - Stylus vs Touch Detection
@@ -1077,34 +1149,61 @@ export const VeinDrawingTool = forwardRef<VeinDrawingToolRef, VeinDrawingToolPro
 
     /**
      * Delete selected vein
-     * Uses ref to ensure we're working with the current veinPaths, not a stale closure
+     * Uses veinPaths prop directly (not ref) to ensure we have the latest data.
+     * The ref approach was causing issues where stale data could be used.
      */
     const handleDeleteSelected = useCallback(() => {
-      if (!selectedVeinId) return;
-
-      // Use ref to get current veinPaths (avoids stale closure issues)
-      const currentPaths = veinPathsRef.current;
-
       if (DEBUG_VEIN_DRAWING) {
-        console.log('[VeinDrawingTool] handleDeleteSelected called');
+        console.log('[VeinDrawingTool] ########## DELETE BUTTON CLICKED ##########');
         console.log('[VeinDrawingTool] selectedVeinId:', selectedVeinId);
-        console.log('[VeinDrawingTool] veinPaths from ref BEFORE delete:', currentPaths.length, 'ids:', currentPaths.map(v => v.id));
       }
 
-      const remainingVeins = currentPaths.filter((vein) => vein.id !== selectedVeinId);
+      if (!selectedVeinId) {
+        if (DEBUG_VEIN_DRAWING) {
+          console.log('[VeinDrawingTool] DELETE ABORTED: selectedVeinId is falsy');
+        }
+        return;
+      }
+
+      // Use veinPaths prop directly instead of ref to ensure we have the latest data
+      // The ref approach was potentially causing stale closure issues
+      if (DEBUG_VEIN_DRAWING) {
+        console.log('[VeinDrawingTool] ===== DELETE FLOW START =====');
+        console.log('[VeinDrawingTool] selectedVeinId to delete:', selectedVeinId);
+        console.log('[VeinDrawingTool] veinPaths BEFORE filter:');
+        console.log('[VeinDrawingTool]   - count:', veinPaths.length);
+        console.log('[VeinDrawingTool]   - ids:', veinPaths.map(v => v.id));
+        console.log('[VeinDrawingTool]   - Does selectedVeinId exist in paths?', veinPaths.some(v => v.id === selectedVeinId));
+      }
+
+      const remainingVeins = veinPaths.filter((vein) => {
+        const keep = vein.id !== selectedVeinId;
+        if (DEBUG_VEIN_DRAWING) {
+          console.log(`[VeinDrawingTool] filter: vein ${vein.id} - keep=${keep}`);
+        }
+        return keep;
+      });
 
       if (DEBUG_VEIN_DRAWING) {
-        console.log('[VeinDrawingTool] veinPaths AFTER filter:', remainingVeins.length, 'ids:', remainingVeins.map(v => v.id));
-        console.log('[VeinDrawingTool] Calling onVeinPathsChange with', remainingVeins.length, 'veins');
+        console.log('[VeinDrawingTool] remainingVeins AFTER filter:');
+        console.log('[VeinDrawingTool]   - count:', remainingVeins.length);
+        console.log('[VeinDrawingTool]   - ids:', remainingVeins.map(v => v.id));
+        console.log('[VeinDrawingTool]   - Is this a NEW array?', remainingVeins !== veinPaths);
+        console.log('[VeinDrawingTool] About to call onVeinPathsChange...');
       }
 
-      onVeinPathsChange(remainingVeins);
+      // First clear selection (so UI immediately responds)
       onSelectionChange?.(null);
 
+      // Then update paths (this triggers parent state update and re-render)
+      onVeinPathsChange(remainingVeins);
+
       if (DEBUG_VEIN_DRAWING) {
-        console.log('[VeinDrawingTool/Konva] Deleted vein:', selectedVeinId);
+        console.log('[VeinDrawingTool] onVeinPathsChange and onSelectionChange CALLED');
+        console.log('[VeinDrawingTool] ===== DELETE FLOW END =====');
+        console.log('[VeinDrawingTool] ##################################################');
       }
-    }, [selectedVeinId, onVeinPathsChange, onSelectionChange]);
+    }, [selectedVeinId, veinPaths, onVeinPathsChange, onSelectionChange]);
 
     /**
      * Cancel current drawing
@@ -1182,9 +1281,21 @@ export const VeinDrawingTool = forwardRef<VeinDrawingToolRef, VeinDrawingToolPro
         </svg>
 
         {/* Main Konva canvas for drawing */}
+        {(() => {
+          if (DEBUG_VEIN_DRAWING) {
+            console.log('[VeinDrawingTool] RENDER CHECK for Stage:');
+            console.log('[VeinDrawingTool]   - isActive:', isActive);
+            console.log('[VeinDrawingTool]   - readOnly:', readOnly);
+            console.log('[VeinDrawingTool]   - dimensions:', dimensions);
+            console.log('[VeinDrawingTool]   - WILL RENDER STAGE:', isActive && !readOnly && dimensions.width > 0 && dimensions.height > 0);
+          }
+          return null;
+        })()}
         {isActive && !readOnly && dimensions.width > 0 && dimensions.height > 0 && (
           <div
             className="absolute inset-0 z-10"
+            data-vein-ids={veinPathsKey}
+            data-stroke-count={konvaStrokes.length}
             style={{
               // Allow touch events to pass through for zoom/pan when multi-touch
               touchAction: 'manipulation',
@@ -1206,11 +1317,25 @@ export const VeinDrawingTool = forwardRef<VeinDrawingToolRef, VeinDrawingToolPro
                 // Ensure stage captures stylus events
                 touchAction: 'none',
               }}
+              // DEBUG: Add key based on stroke IDs to help track re-renders
+              // This won't force remount, but data attribute helps with debugging
+              data-strokes-key={veinPathsKey}
             >
               <Layer>
                 {/* Render completed strokes */}
-                {konvaStrokes.map((stroke) => {
+                {(() => {
+                  if (DEBUG_VEIN_DRAWING) {
+                    console.log('[VeinDrawingTool] ===== RENDER: Mapping konvaStrokes to Lines =====');
+                    console.log('[VeinDrawingTool] RENDER: konvaStrokes.length:', konvaStrokes.length);
+                    console.log('[VeinDrawingTool] RENDER: konvaStrokes ids:', konvaStrokes.map(s => s.id));
+                  }
+                  return null;
+                })()}
+                {konvaStrokes.map((stroke, index) => {
                   const isSelected = selectedVeinId === stroke.id;
+                  if (DEBUG_VEIN_DRAWING) {
+                    console.log(`[VeinDrawingTool] RENDER: Rendering Line ${index} - id=${stroke.id}, color=${stroke.color}, points=${stroke.points.length}`);
+                  }
                   return (
                     <Line
                       key={stroke.id}
@@ -1360,6 +1485,15 @@ export const VeinDrawingTool = forwardRef<VeinDrawingToolRef, VeinDrawingToolPro
         )}
 
         {/* Selection controls */}
+        {(() => {
+          if (DEBUG_VEIN_DRAWING) {
+            console.log('[VeinDrawingTool] RENDER CHECK for Selection Controls:');
+            console.log('[VeinDrawingTool]   - selectedVeinId:', selectedVeinId);
+            console.log('[VeinDrawingTool]   - isActive:', isActive);
+            console.log('[VeinDrawingTool]   - WILL RENDER:', selectedVeinId && isActive);
+          }
+          return null;
+        })()}
         {selectedVeinId && isActive && (
           <div
             className={`absolute top-2 right-2 flex gap-2 z-30 p-2 rounded-lg ${
@@ -1440,8 +1574,27 @@ export function useVeinPathsState({
   const [veinPaths, setVeinPathsInternal] = useState<VeinPath[]>(initialPaths);
   const [selectedVeinId, setSelectedVeinId] = useState<string | null>(null);
 
+  // DEBUG: Log when this hook's state changes
+  useEffect(() => {
+    if (DEBUG_VEIN_DRAWING) {
+      console.log('[useVeinPathsState] ===== HOOK STATE CHANGED =====');
+      console.log('[useVeinPathsState] veinPaths.length:', veinPaths.length);
+      console.log('[useVeinPathsState] veinPaths ids:', veinPaths.map(v => v.id));
+      console.log('[useVeinPathsState] selectedVeinId:', selectedVeinId);
+      console.log('[useVeinPathsState] ==============================');
+    }
+  }, [veinPaths, selectedVeinId]);
+
   const setVeinPaths = useCallback((paths: VeinPath[]) => {
+    if (DEBUG_VEIN_DRAWING) {
+      console.log('[useVeinPathsState] setVeinPaths CALLED');
+      console.log('[useVeinPathsState] New paths count:', paths.length);
+      console.log('[useVeinPathsState] New paths ids:', paths.map(v => v.id));
+    }
     setVeinPathsInternal(paths);
+    if (DEBUG_VEIN_DRAWING) {
+      console.log('[useVeinPathsState] setVeinPathsInternal CALLED - state update scheduled');
+    }
   }, []);
 
   const addVein = useCallback((vein: VeinPath) => {

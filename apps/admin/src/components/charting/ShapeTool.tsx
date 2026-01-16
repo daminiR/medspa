@@ -3,7 +3,7 @@
 import React, { useRef, useEffect, useState, useCallback, forwardRef, useImperativeHandle } from 'react';
 import { DraggablePanel } from './DraggablePanel';
 import { useChartingTheme } from '@/contexts/ChartingThemeContext';
-import { Circle, Square, PenTool, Trash2, Undo2, Plus } from 'lucide-react';
+import { Circle, Square, PenTool, Trash2, Undo2, Plus, Minus, MoveRight } from 'lucide-react';
 
 // =============================================================================
 // TYPES
@@ -12,7 +12,7 @@ import { Circle, Square, PenTool, Trash2, Undo2, Plus } from 'lucide-react';
 /**
  * Shape type options
  */
-export type ShapeType = 'circle' | 'rectangle' | 'freeform';
+export type ShapeType = 'circle' | 'rectangle' | 'ellipse' | 'line' | 'arrow' | 'freeform';
 
 /**
  * A single point in a shape path (for freeform)
@@ -49,6 +49,11 @@ export interface ShapeAnnotation {
   y?: number;
   width?: number;
   height?: number;
+  // Line specific
+  startX?: number;
+  startY?: number;
+  endX?: number;
+  endY?: number;
   // Freeform specific
   points?: ShapePoint[];
 }
@@ -114,6 +119,13 @@ export interface ShapeToolProps {
   fillOpacity?: number;
   /** Callback when fill opacity changes */
   onFillOpacityChange?: (opacity: number) => void;
+  /**
+   * Whether fill is enabled (from the Fill toggle in RightDock)
+   * - When false: shapes have no fill (just stroke)
+   * - When true for arrows: arrows are fully opaque (1.0)
+   * - When true for other shapes: shapes are semi-transparent (0.35)
+   */
+  fillEnabled?: boolean;
   /** Current stroke width */
   strokeWidth?: number;
   /** Callback when stroke width changes */
@@ -189,14 +201,29 @@ export const DEFAULT_CLOSE_THRESHOLD = 20;
  */
 export const SHAPE_TYPE_CONFIG: Record<ShapeType, { name: string; icon: React.ReactNode; description: string }> = {
   circle: {
-    name: 'Circle/Oval',
+    name: 'Circle',
     icon: <Circle className="w-4 h-4" />,
-    description: 'Tap center, drag to set size',
+    description: 'Tap center, drag to set radius',
   },
   rectangle: {
     name: 'Rectangle',
     icon: <Square className="w-4 h-4" />,
     description: 'Tap corner, drag to opposite',
+  },
+  ellipse: {
+    name: 'Ellipse',
+    icon: <Circle className="w-4 h-4" style={{ transform: 'scaleY(0.6)' }} />,
+    description: 'Tap center, drag to set size',
+  },
+  line: {
+    name: 'Line',
+    icon: <Minus className="w-4 h-4" style={{ transform: 'rotate(-45deg)' }} />,
+    description: 'Tap start point, drag to end',
+  },
+  arrow: {
+    name: 'Arrow',
+    icon: <MoveRight className="w-4 h-4" />,
+    description: 'Tap start, drag to end with arrowhead',
   },
   freeform: {
     name: 'Freeform',
@@ -232,8 +259,17 @@ export function isPointInShape(x: number, y: number, shape: ShapeAnnotation): bo
   switch (shape.type) {
     case 'circle': {
       if (shape.centerX === undefined || shape.centerY === undefined) return false;
+      const radius = shape.radiusX || 0;
+      // Circle: distance from center <= radius
+      const dx = x - shape.centerX;
+      const dy = y - shape.centerY;
+      return dx * dx + dy * dy <= radius * radius;
+    }
+    case 'ellipse': {
+      if (shape.centerX === undefined || shape.centerY === undefined) return false;
       const radiusX = shape.radiusX || 0;
       const radiusY = shape.radiusY || radiusX;
+      if (radiusX === 0 || radiusY === 0) return false;
       // Ellipse equation: ((x-h)/a)^2 + ((y-k)/b)^2 <= 1
       const normalizedX = (x - shape.centerX) / radiusX;
       const normalizedY = (y - shape.centerY) / radiusY;
@@ -247,6 +283,57 @@ export function isPointInShape(x: number, y: number, shape: ShapeAnnotation): bo
         y >= shape.y &&
         y <= shape.y + (shape.height || 0)
       );
+    }
+    case 'line': {
+      // Check if point is near the line (within stroke width + tolerance)
+      if (shape.startX === undefined || shape.startY === undefined ||
+          shape.endX === undefined || shape.endY === undefined) return false;
+
+      const tolerance = (shape.strokeWidth || 2) + 5; // 5px extra tolerance for easier selection
+
+      // Calculate distance from point to line segment
+      const dx = shape.endX - shape.startX;
+      const dy = shape.endY - shape.startY;
+      const lengthSquared = dx * dx + dy * dy;
+
+      if (lengthSquared === 0) {
+        // Line is a point
+        const dist = Math.sqrt((x - shape.startX) ** 2 + (y - shape.startY) ** 2);
+        return dist <= tolerance;
+      }
+
+      // Project point onto line segment
+      const t = Math.max(0, Math.min(1, ((x - shape.startX) * dx + (y - shape.startY) * dy) / lengthSquared));
+      const projX = shape.startX + t * dx;
+      const projY = shape.startY + t * dy;
+
+      const dist = Math.sqrt((x - projX) ** 2 + (y - projY) ** 2);
+      return dist <= tolerance;
+    }
+    case 'arrow': {
+      // Arrow selection is similar to line - check if point is near the line or arrowhead
+      if (shape.startX === undefined || shape.startY === undefined ||
+          shape.endX === undefined || shape.endY === undefined) return false;
+
+      const tolerance = (shape.strokeWidth || 2) + 8; // Slightly larger tolerance for arrow
+
+      // Calculate distance from point to line segment
+      const dx = shape.endX - shape.startX;
+      const dy = shape.endY - shape.startY;
+      const lengthSquared = dx * dx + dy * dy;
+
+      if (lengthSquared === 0) {
+        const dist = Math.sqrt((x - shape.startX) ** 2 + (y - shape.startY) ** 2);
+        return dist <= tolerance;
+      }
+
+      // Project point onto line segment
+      const t = Math.max(0, Math.min(1, ((x - shape.startX) * dx + (y - shape.startY) * dy) / lengthSquared));
+      const projX = shape.startX + t * dx;
+      const projY = shape.startY + t * dy;
+
+      const dist = Math.sqrt((x - projX) ** 2 + (y - projY) ** 2);
+      return dist <= tolerance;
     }
     case 'freeform': {
       if (!shape.points || shape.points.length < 3) return false;
@@ -275,6 +362,15 @@ export function isPointInShape(x: number, y: number, shape: ShapeAnnotation): bo
 export function getShapeBounds(shape: ShapeAnnotation): { x: number; y: number; width: number; height: number } {
   switch (shape.type) {
     case 'circle': {
+      const radius = shape.radiusX || 0;
+      return {
+        x: (shape.centerX || 0) - radius,
+        y: (shape.centerY || 0) - radius,
+        width: radius * 2,
+        height: radius * 2,
+      };
+    }
+    case 'ellipse': {
       const radiusX = shape.radiusX || 0;
       const radiusY = shape.radiusY || radiusX;
       return {
@@ -290,6 +386,40 @@ export function getShapeBounds(shape: ShapeAnnotation): { x: number; y: number; 
         y: shape.y || 0,
         width: shape.width || 0,
         height: shape.height || 0,
+      };
+    }
+    case 'line': {
+      const x1 = shape.startX || 0;
+      const y1 = shape.startY || 0;
+      const x2 = shape.endX || 0;
+      const y2 = shape.endY || 0;
+      const minX = Math.min(x1, x2);
+      const minY = Math.min(y1, y2);
+      const maxX = Math.max(x1, x2);
+      const maxY = Math.max(y1, y2);
+      return {
+        x: minX,
+        y: minY,
+        width: maxX - minX || 1, // Ensure minimum width for selection
+        height: maxY - minY || 1, // Ensure minimum height for selection
+      };
+    }
+    case 'arrow': {
+      // Arrow bounds include the arrowhead (15px headLength)
+      const x1 = shape.startX || 0;
+      const y1 = shape.startY || 0;
+      const x2 = shape.endX || 0;
+      const y2 = shape.endY || 0;
+      const headLength = 15;
+      const minX = Math.min(x1, x2) - headLength;
+      const minY = Math.min(y1, y2) - headLength;
+      const maxX = Math.max(x1, x2) + headLength;
+      const maxY = Math.max(y1, y2) + headLength;
+      return {
+        x: minX,
+        y: minY,
+        width: maxX - minX || 1,
+        height: maxY - minY || 1,
       };
     }
     case 'freeform': {
@@ -545,6 +675,7 @@ export const ShapeTool = forwardRef<ShapeToolRef, ShapeToolProps>(
       onFillColorChange,
       fillOpacity: controlledFillOpacity,
       onFillOpacityChange,
+      fillEnabled = false,
       strokeWidth: controlledStrokeWidth,
       onStrokeWidthChange,
       showToolbar = true,
@@ -619,6 +750,23 @@ export const ShapeTool = forwardRef<ShapeToolRef, ShapeToolProps>(
       }
     }, [onStrokeWidthChange]);
 
+    /**
+     * Get the correct fill opacity for a shape type based on fillEnabled setting.
+     * - Fill OFF: returns 0 (no fill, just stroke)
+     * - Fill ON + Arrow: returns 1.0 (fully opaque - arrows cannot be translucent)
+     * - Fill ON + Other shapes: returns 0.35 (semi-transparent)
+     */
+    const getEffectiveFillOpacity = useCallback((type: ShapeType): number => {
+      if (!fillEnabled) {
+        return 0; // No fill when toggle is OFF
+      }
+      if (type === 'arrow') {
+        return 1.0; // Arrows are fully opaque when fill is ON
+      }
+      // Use controlled fillOpacity if provided, otherwise use default translucent value
+      return controlledFillOpacity ?? DEFAULT_FILL_OPACITY;
+    }, [fillEnabled, controlledFillOpacity]);
+
     // ==========================================================================
     // CANVAS SIZING & RENDERING
     // ==========================================================================
@@ -664,6 +812,16 @@ export const ShapeTool = forwardRef<ShapeToolRef, ShapeToolProps>(
         switch (shape.type) {
           case 'circle': {
             if (shape.centerX === undefined || shape.centerY === undefined) break;
+            const radius = shape.radiusX || 0;
+
+            ctx.beginPath();
+            ctx.arc(shape.centerX, shape.centerY, radius, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.stroke();
+            break;
+          }
+          case 'ellipse': {
+            if (shape.centerX === undefined || shape.centerY === undefined) break;
             const radiusX = shape.radiusX || 0;
             const radiusY = shape.radiusY || radiusX;
 
@@ -680,6 +838,56 @@ export const ShapeTool = forwardRef<ShapeToolRef, ShapeToolProps>(
 
             ctx.beginPath();
             ctx.rect(shape.x, shape.y, width, height);
+            ctx.fill();
+            ctx.stroke();
+            break;
+          }
+          case 'line': {
+            if (shape.startX === undefined || shape.startY === undefined ||
+                shape.endX === undefined || shape.endY === undefined) break;
+
+            ctx.beginPath();
+            ctx.moveTo(shape.startX, shape.startY);
+            ctx.lineTo(shape.endX, shape.endY);
+            ctx.lineCap = 'round';
+            ctx.stroke();
+            break;
+          }
+          case 'arrow': {
+            if (shape.startX === undefined || shape.startY === undefined ||
+                shape.endX === undefined || shape.endY === undefined) break;
+
+            const startX = shape.startX;
+            const startY = shape.startY;
+            const endX = shape.endX;
+            const endY = shape.endY;
+
+            // Draw the line
+            ctx.beginPath();
+            ctx.moveTo(startX, startY);
+            ctx.lineTo(endX, endY);
+            ctx.lineCap = 'round';
+            ctx.stroke();
+
+            // Draw arrowhead - ALWAYS filled solid with stroke color
+            // The arrowhead is part of the arrow indicator, not a fillable shape area.
+            // It should always be fully opaque regardless of the fill toggle setting.
+            const angle = Math.atan2(endY - startY, endX - startX);
+            const headLength = 15; // Size of arrowhead
+
+            ctx.beginPath();
+            ctx.moveTo(endX, endY);
+            ctx.lineTo(
+              endX - headLength * Math.cos(angle - Math.PI / 6),
+              endY - headLength * Math.sin(angle - Math.PI / 6)
+            );
+            ctx.lineTo(
+              endX - headLength * Math.cos(angle + Math.PI / 6),
+              endY - headLength * Math.sin(angle + Math.PI / 6)
+            );
+            ctx.closePath();
+            // Arrowhead always uses solid stroke color (fully opaque)
+            ctx.fillStyle = shape.color;
             ctx.fill();
             ctx.stroke();
             break;
@@ -744,7 +952,7 @@ export const ShapeTool = forwardRef<ShapeToolRef, ShapeToolProps>(
           id: 'preview',
           type: shapeType,
           color: fillColor,
-          fillOpacity: fillOpacity,
+          fillOpacity: getEffectiveFillOpacity(shapeType),
           strokeWidth: strokeWidth,
           createdAt: new Date(),
           updatedAt: new Date(),
@@ -754,6 +962,17 @@ export const ShapeTool = forwardRef<ShapeToolRef, ShapeToolProps>(
 
         switch (shapeType) {
           case 'circle': {
+            // Circle: use the larger of dx/dy as radius for uniform circle
+            const dx = Math.abs(drawingState.currentX - drawingState.startX);
+            const dy = Math.abs(drawingState.currentY - drawingState.startY);
+            const radius = Math.max(dx, dy);
+            previewShape.centerX = drawingState.startX;
+            previewShape.centerY = drawingState.startY;
+            previewShape.radiusX = radius;
+            break;
+          }
+          case 'ellipse': {
+            // Ellipse: use separate radiusX and radiusY
             const radiusX = Math.abs(drawingState.currentX - drawingState.startX);
             const radiusY = Math.abs(drawingState.currentY - drawingState.startY);
             previewShape.centerX = drawingState.startX;
@@ -773,6 +992,20 @@ export const ShapeTool = forwardRef<ShapeToolRef, ShapeToolProps>(
             previewShape.height = height;
             break;
           }
+          case 'line': {
+            previewShape.startX = drawingState.startX;
+            previewShape.startY = drawingState.startY;
+            previewShape.endX = drawingState.currentX;
+            previewShape.endY = drawingState.currentY;
+            break;
+          }
+          case 'arrow': {
+            previewShape.startX = drawingState.startX;
+            previewShape.startY = drawingState.startY;
+            previewShape.endX = drawingState.currentX;
+            previewShape.endY = drawingState.currentY;
+            break;
+          }
           case 'freeform': {
             if (drawingState.points.length >= 2) {
               previewShape.points = drawingState.points;
@@ -783,7 +1016,7 @@ export const ShapeTool = forwardRef<ShapeToolRef, ShapeToolProps>(
 
         drawShape(ctx, previewShape, true);
       }
-    }, [shapes, drawingState, shapeType, fillColor, fillOpacity, strokeWidth, drawShape]);
+    }, [shapes, drawingState, shapeType, fillColor, fillOpacity, strokeWidth, drawShape, getEffectiveFillOpacity]);
 
     // Handle resize
     useEffect(() => {
@@ -1048,6 +1281,31 @@ export const ShapeTool = forwardRef<ShapeToolRef, ShapeToolProps>(
 
         switch (shapeType) {
           case 'circle': {
+            // Circle: use the larger of dx/dy as radius for uniform circle
+            const dx = Math.abs(pos.x - drawingState.startX);
+            const dy = Math.abs(pos.y - drawingState.startY);
+            const radius = Math.max(dx, dy);
+
+            // Only create if has meaningful size
+            if (radius > 5) {
+              newShape = {
+                id: generateShapeId(),
+                type: 'circle',
+                color: fillColor,
+                fillOpacity: getEffectiveFillOpacity('circle'),
+                strokeWidth: strokeWidth,
+                centerX: drawingState.startX,
+                centerY: drawingState.startY,
+                radiusX: radius,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+                visible: true,
+                locked: false,
+              };
+            }
+            break;
+          }
+          case 'ellipse': {
             const radiusX = Math.abs(pos.x - drawingState.startX);
             const radiusY = Math.abs(pos.y - drawingState.startY);
 
@@ -1055,9 +1313,9 @@ export const ShapeTool = forwardRef<ShapeToolRef, ShapeToolProps>(
             if (radiusX > 5 || radiusY > 5) {
               newShape = {
                 id: generateShapeId(),
-                type: 'circle',
+                type: 'ellipse',
                 color: fillColor,
-                fillOpacity: fillOpacity,
+                fillOpacity: getEffectiveFillOpacity('ellipse'),
                 strokeWidth: strokeWidth,
                 centerX: drawingState.startX,
                 centerY: drawingState.startY,
@@ -1081,12 +1339,64 @@ export const ShapeTool = forwardRef<ShapeToolRef, ShapeToolProps>(
                 id: generateShapeId(),
                 type: 'rectangle',
                 color: fillColor,
-                fillOpacity: fillOpacity,
+                fillOpacity: getEffectiveFillOpacity('rectangle'),
                 strokeWidth: strokeWidth,
                 x: Math.min(drawingState.startX, pos.x),
                 y: Math.min(drawingState.startY, pos.y),
                 width: width,
                 height: height,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+                visible: true,
+                locked: false,
+              };
+            }
+            break;
+          }
+          case 'line': {
+            const length = calculateDistance(
+              drawingState.startX, drawingState.startY,
+              pos.x, pos.y
+            );
+
+            // Only create if has meaningful length
+            if (length > 5) {
+              newShape = {
+                id: generateShapeId(),
+                type: 'line',
+                color: fillColor,
+                fillOpacity: getEffectiveFillOpacity('line'),
+                strokeWidth: strokeWidth,
+                startX: drawingState.startX,
+                startY: drawingState.startY,
+                endX: pos.x,
+                endY: pos.y,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+                visible: true,
+                locked: false,
+              };
+            }
+            break;
+          }
+          case 'arrow': {
+            const arrowLength = calculateDistance(
+              drawingState.startX, drawingState.startY,
+              pos.x, pos.y
+            );
+
+            // Only create if has meaningful length
+            if (arrowLength > 5) {
+              newShape = {
+                id: generateShapeId(),
+                type: 'arrow',
+                color: fillColor,
+                fillOpacity: getEffectiveFillOpacity('arrow'),
+                strokeWidth: strokeWidth,
+                startX: drawingState.startX,
+                startY: drawingState.startY,
+                endX: pos.x,
+                endY: pos.y,
                 createdAt: new Date(),
                 updatedAt: new Date(),
                 visible: true,
@@ -1112,7 +1422,7 @@ export const ShapeTool = forwardRef<ShapeToolRef, ShapeToolProps>(
                 id: generateShapeId(),
                 type: 'freeform',
                 color: fillColor,
-                fillOpacity: fillOpacity,
+                fillOpacity: getEffectiveFillOpacity('freeform'),
                 strokeWidth: strokeWidth,
                 points: smoothedPoints,
                 createdAt: new Date(),

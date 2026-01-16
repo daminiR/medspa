@@ -439,15 +439,35 @@ function MeasurementOverlay({
       )}
 
       {/* Pending point indicator (when waiting for second point) */}
-      {isActive && pendingPoint && !mousePosition && (
-        <circle
-          cx={`${pendingPoint.x}%`}
-          cy={`${pendingPoint.y}%`}
-          r={6 * pointScale}
-          fill={isDark ? '#60A5FA' : '#3B82F6'}
-          stroke={isDark ? '#1F2937' : '#FFFFFF'}
-          strokeWidth={2 * pointScale}
-        />
+      {/* Design rationale: Following PRACTITIONER_CONTEXT.md principles:
+          - Non-jittery: No animations or pulsing (was removed for being too distracting)
+          - Subtle but visible: Dashed outer ring clearly shows "waiting" state at a glance
+          - Consistent visual language: Dashed = in-progress (matches the preview line style)
+          - Quick recognition: Different from completed measurement endpoints
+          - ALWAYS visible when pendingPoint exists (regardless of mouse movement) */}
+      {isActive && pendingPoint && (
+        <g className="pending-point-indicator">
+          {/* Outer dashed ring - indicates "waiting for second point" state */}
+          <circle
+            cx={`${pendingPoint.x}%`}
+            cy={`${pendingPoint.y}%`}
+            r={12 * pointScale}
+            fill="none"
+            stroke={isDark ? '#60A5FA' : '#3B82F6'}
+            strokeWidth={1.5 * pointScale}
+            strokeDasharray={`${3 * pointScale} ${2 * pointScale}`}
+            opacity={0.7}
+          />
+          {/* Inner solid point - the actual measurement start point */}
+          <circle
+            cx={`${pendingPoint.x}%`}
+            cy={`${pendingPoint.y}%`}
+            r={6 * pointScale}
+            fill={isDark ? '#60A5FA' : '#3B82F6'}
+            stroke={isDark ? '#1F2937' : '#FFFFFF'}
+            strokeWidth={2 * pointScale}
+          />
+        </g>
       )}
     </svg>
   );

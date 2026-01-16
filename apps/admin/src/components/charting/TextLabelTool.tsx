@@ -18,6 +18,12 @@
  * - 4 color quick picks (red, blue, amber, gray)
  * - Long-press to drag labels
  * - Custom text input available
+ *
+ * POSITIONING FIX (2024):
+ * - Uses EXACT same pattern as MeasurementTool which works correctly
+ * - Interactive layer uses `absolute inset-0` to fill the container
+ * - Labels positioned with CSS % relative to the SAME container
+ * - NO mx-auto or centering logic - just simple absolute positioning
  */
 
 import React, {
@@ -28,7 +34,6 @@ import React, {
   useMemo,
 } from 'react';
 import {
-  Type,
   X,
   Trash2,
   GripVertical,
@@ -83,6 +88,10 @@ export interface TextLabelToolProps {
    * When provided, labels will transform to stay attached to the zoomed/panned chart.
    */
   zoomState?: ZoomState;
+  /**
+   * Gender - kept for API compatibility but not used in simplified version
+   */
+  gender?: 'female' | 'male';
 }
 
 // =============================================================================
@@ -122,7 +131,6 @@ export function getAutoFontSize(zoom: number): TextLabelSize {
 
 // Default color for new labels
 const DEFAULT_COLOR = '#3B82F6';
-const DEFAULT_SIZE: TextLabelSize = 'medium';
 
 // Drag detection constants
 const LONG_PRESS_DURATION = 300; // ms
@@ -144,7 +152,6 @@ interface TextLabelOverlayProps {
   isDark: boolean;
   isMultiTouchActive: boolean;
   isActive: boolean;
-  /** Zoom state for following chart zoom/pan transforms */
   zoomState?: ZoomState;
 }
 
@@ -173,14 +180,11 @@ function TextLabelOverlay({
 
   const longPressTimerRef = useRef<NodeJS.Timeout | null>(null);
   const pointerStartRef = useRef<{ x: number; y: number } | null>(null);
-
-  // Track active touch count for two-finger gesture detection
   const touchCountRef = useRef(0);
 
   // Counter-scale to keep labels fixed size when zoomed
   const labelScale = 1 / zoom;
 
-  // Clear long-press timer
   const clearLongPressTimer = useCallback(() => {
     if (longPressTimerRef.current) {
       clearTimeout(longPressTimerRef.current);
@@ -188,16 +192,12 @@ function TextLabelOverlay({
     }
   }, []);
 
-  // Handle pointer down - start long-press detection
-  // Two-finger gestures pass through for zoom/pan
   const handlePointerDown = useCallback(
     (e: React.PointerEvent, label: TextLabel) => {
       if (readOnly) return;
 
-      // Track touch count for multi-touch detection
       if (e.pointerType === 'touch') {
         touchCountRef.current++;
-        // If more than one finger, don't start interaction - let parent handle zoom/pan
         if (touchCountRef.current > 1) {
           clearLongPressTimer();
           return;
@@ -205,11 +205,9 @@ function TextLabelOverlay({
       }
 
       e.stopPropagation();
-
       pointerStartRef.current = { x: e.clientX, y: e.clientY };
       clearLongPressTimer();
 
-      // Start long-press timer for drag mode
       longPressTimerRef.current = setTimeout(() => {
         setDragState({
           isDragging: true,
@@ -219,7 +217,6 @@ function TextLabelOverlay({
           originalX: label.x,
           originalY: label.y,
         });
-        // Haptic feedback
         if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
           navigator.vibrate([30]);
         }
@@ -228,17 +225,13 @@ function TextLabelOverlay({
     [readOnly, clearLongPressTimer]
   );
 
-  // Handle pointer move - update drag position
-  // Two-finger gestures pass through for zoom/pan
   const handlePointerMove = useCallback(
     (e: React.PointerEvent) => {
-      // Don't process if multi-touch gesture is happening
       if (e.pointerType === 'touch' && touchCountRef.current > 1) {
         clearLongPressTimer();
         return;
       }
 
-      // Check if moved too much before drag mode activated
       if (pointerStartRef.current && !dragState?.isDragging && longPressTimerRef.current) {
         const dx = e.clientX - pointerStartRef.current.x;
         const dy = e.clientY - pointerStartRef.current.y;
@@ -248,38 +241,36 @@ function TextLabelOverlay({
         }
       }
 
-      // If dragging, update position
       if (dragState?.isDragging && dragState.labelId) {
-        const rect = containerRef.current?.getBoundingClientRect();
-        if (!rect) return;
+        const container = containerRef.current;
+        if (!container) return;
 
-        // COORDINATE CONVERSION (same as click handler):
-        // getBoundingClientRect() returns visual bounds after CSS transforms.
-        // Convert screen position to percentage - scale cancels out.
+        const rect = container.getBoundingClientRect();
+        const scale = zoomState?.scale || 1;
 
-        // Get pointer position relative to the container's visual bounds
         const relX = e.clientX - rect.left;
         const relY = e.clientY - rect.top;
 
-        // Convert directly to percentage
-        const newX = (relX / rect.width) * 100;
-        const newY = (relY / rect.height) * 100;
+        const contentX = relX / scale;
+        const contentY = relY / scale;
 
-        // Clamp to bounds
+        const contentWidth = rect.width / scale;
+        const contentHeight = rect.height / scale;
+
+        const newX = (contentX / contentWidth) * 100;
+        const newY = (contentY / contentHeight) * 100;
+
         const clampedX = Math.max(0, Math.min(100, newX));
         const clampedY = Math.max(0, Math.min(100, newY));
 
         onLabelMove(dragState.labelId, clampedX, clampedY);
       }
     },
-    [dragState, clearLongPressTimer, containerRef, onLabelMove]
+    [dragState, clearLongPressTimer, containerRef, onLabelMove, zoomState]
   );
 
-  // Handle pointer up - end drag or handle tap
-  // Two-finger gestures pass through for zoom/pan
   const handlePointerUp = useCallback(
     (e: React.PointerEvent, label: TextLabel) => {
-      // Track touch count for multi-touch detection
       if (e.pointerType === 'touch') {
         touchCountRef.current = Math.max(0, touchCountRef.current - 1);
       }
@@ -287,10 +278,8 @@ function TextLabelOverlay({
       clearLongPressTimer();
 
       if (dragState?.isDragging) {
-        // End drag mode
         setDragState(null);
       } else {
-        // It was a tap - select the label
         onLabelSelect(label);
       }
 
@@ -299,20 +288,15 @@ function TextLabelOverlay({
     [dragState, clearLongPressTimer, onLabelSelect]
   );
 
-  // Handle pointer cancel
-  // Also handles pointer cancel for multi-touch scenarios
   const handlePointerCancel = useCallback((e?: React.PointerEvent) => {
-    // Track touch count for multi-touch detection
     if (e && e.pointerType === 'touch') {
       touchCountRef.current = Math.max(0, touchCountRef.current - 1);
     }
-
     clearLongPressTimer();
     setDragState(null);
     pointerStartRef.current = null;
   }, [clearLongPressTimer]);
 
-  // Cleanup timer on unmount
   useEffect(() => {
     return () => {
       if (longPressTimerRef.current) {
@@ -322,9 +306,7 @@ function TextLabelOverlay({
   }, []);
 
   return (
-    <div
-      className="absolute inset-0 pointer-events-none"
-    >
+    <div className="absolute inset-0 pointer-events-none">
       {labels.map((label) => {
         const isSelected = selectedLabelId === label.id;
         const isDraggingThis = dragState?.isDragging && dragState.labelId === label.id;
@@ -340,12 +322,7 @@ function TextLabelOverlay({
               left: `${label.x}%`,
               top: `${label.y}%`,
               transform: `translate(-50%, -50%) scale(${labelScale})`,
-              // IMPORTANT: Use 'pinch-zoom' instead of 'none' to allow two-finger zoom gestures
-              // to pass through to the parent FaceChartWithZoom component.
-              // This ensures practitioners can ALWAYS zoom in/out regardless of which tool is active.
               touchAction: 'pinch-zoom',
-              // CRITICAL: Disable pointer events when tool not active OR during two-finger gestures
-              // This allows other tools to receive clicks and zoom gestures to pass through
               pointerEvents: !isActive ? 'none' : (isMultiTouchActive ? 'none' : 'auto'),
             }}
             onPointerDown={(e) => handlePointerDown(e, label)}
@@ -353,7 +330,6 @@ function TextLabelOverlay({
             onPointerUp={(e) => handlePointerUp(e, label)}
             onPointerCancel={handlePointerCancel}
           >
-            {/* Text with shadow/outline for readability */}
             <div
               className={`
                 relative px-2 py-1 rounded-md font-semibold whitespace-nowrap
@@ -364,11 +340,9 @@ function TextLabelOverlay({
               style={{
                 fontSize: `${fontConfig.px}px`,
                 color: label.color,
-                // Background with transparency for readability
                 backgroundColor: isDark
                   ? 'rgba(0, 0, 0, 0.75)'
                   : 'rgba(255, 255, 255, 0.9)',
-                // Text shadow for extra contrast
                 textShadow: isDark
                   ? '0 1px 2px rgba(0, 0, 0, 0.8)'
                   : '0 1px 2px rgba(255, 255, 255, 0.8)',
@@ -377,7 +351,6 @@ function TextLabelOverlay({
             >
               {label.text}
 
-              {/* Delete button when selected */}
               {isSelected && !readOnly && (
                 <button
                   onClick={(e) => {
@@ -391,7 +364,6 @@ function TextLabelOverlay({
                 </button>
               )}
 
-              {/* Drag indicator when selected */}
               {isSelected && !readOnly && (
                 <div className="absolute -left-1 top-1/2 -translate-y-1/2 text-gray-400">
                   <GripVertical className="w-3 h-3" />
@@ -399,7 +371,6 @@ function TextLabelOverlay({
               )}
             </div>
 
-            {/* Dragging indicator */}
             {isDraggingThis && (
               <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 text-xs text-gray-500 whitespace-nowrap bg-black/70 px-2 py-0.5 rounded">
                 Dragging...
@@ -434,14 +405,12 @@ function TextInputModal({
   const [text, setText] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Focus input when modal opens
   useEffect(() => {
     if (isOpen && inputRef.current) {
       inputRef.current.focus();
     }
   }, [isOpen]);
 
-  // Reset text when modal closes
   useEffect(() => {
     if (!isOpen) {
       setText('');
@@ -534,7 +503,6 @@ function TextInputModal({
         </button>
       </form>
 
-      {/* Pointer arrow */}
       <div
         className={`
           absolute left-1/2 -translate-x-1/2 top-full
@@ -570,7 +538,6 @@ function TextLabelSettingsPanel({
 }: TextLabelSettingsPanelProps) {
   return (
     <div className="space-y-3">
-      {/* Quick-add Presets - Primary focus */}
       <div className="grid grid-cols-1 gap-1.5">
         {PRESET_LABELS.map((preset) => (
           <button
@@ -592,7 +559,6 @@ function TextLabelSettingsPanel({
         ))}
       </div>
 
-      {/* Color Quick Picks - Inline row */}
       <div className="flex items-center gap-2 pt-1">
         <span className={`text-xs ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>Color:</span>
         <div className="flex gap-1.5">
@@ -615,7 +581,6 @@ function TextLabelSettingsPanel({
         </div>
       </div>
 
-      {/* Clear All - Only show if labels exist */}
       {labelCount > 0 && (
         <button
           onClick={onClearAll}
@@ -647,19 +612,17 @@ export function TextLabelTool({
   onActiveChange,
   zoom = 1,
   readOnly = false,
-  containerRef: externalContainerRef,
+  containerRef,
   zoomState,
+  gender = 'female',
 }: TextLabelToolProps) {
-  // Theme
   const { theme } = useChartingTheme();
   const isDark = theme === 'dark';
 
-  // Click capture layer ref - this ref is attached to the click-capturing div
-  // that fills the content area with absolute inset-0. Using this ref ensures
-  // getBoundingClientRect() returns the correct scaled bounds for coordinate conversion.
-  const clickLayerRef = useRef<HTMLDivElement>(null);
+  // Internal container ref - uses absolute inset-0 like MeasurementTool
+  const internalContainerRef = useRef<HTMLDivElement>(null);
 
-  // Settings state - size is auto-calculated from zoom
+  // Settings state
   const [selectedColor, setSelectedColor] = useState(DEFAULT_COLOR);
   const [selectedLabelId, setSelectedLabelId] = useState<string | null>(null);
 
@@ -671,56 +634,127 @@ export function TextLabelTool({
   const [inputScreenPosition, setInputScreenPosition] = useState<{ x: number; y: number } | null>(null);
   const [usePresetText, setUsePresetText] = useState<{ text: string; color: string } | null>(null);
 
-  // State to toggle pointer-events during multi-touch gestures
-  // This allows zoom/pan gestures to pass through to parent FaceChartWithZoom
-  const [isMultiTouchActive, setIsMultiTouchActive] = useState(false);
-  const isMultiTouchActiveRef = useRef(false);
-  const touchCountRef = useRef(0);
+  // Two-finger gesture state
+  const [isTwoFingerGesture, setIsTwoFingerGesture] = useState(false);
 
-  // Keep ref in sync with state for use in event handlers
+  // Prevent double-firing on iOS (touchend + click both fire)
+  const justHandledTouchRef = useRef(false);
+
+  // Store zoomState in ref for stable callback references
+  const zoomStateRef = useRef(zoomState);
   useEffect(() => {
-    isMultiTouchActiveRef.current = isMultiTouchActive;
-  }, [isMultiTouchActive]);
+    zoomStateRef.current = zoomState;
+  }, [zoomState]);
 
-  // Native touch event handlers for multi-touch detection
-  // Using document-level listeners to detect two-finger gestures early
+  // =============================================================================
+  // COORDINATE CONVERSION - EXACT SAME PATTERN AS MEASUREMENTTOOL
+  // =============================================================================
+  const clientToPercent = useCallback(
+    (clientX: number, clientY: number): { x: number; y: number } | null => {
+      const container = internalContainerRef.current;
+      if (!container) return null;
+
+      const rect = container.getBoundingClientRect();
+      const scale = zoomStateRef.current?.scale || 1;
+
+      // Get position relative to container's visual bounds
+      const relX = clientX - rect.left;
+      const relY = clientY - rect.top;
+
+      // Convert to content space by dividing by scale
+      const contentX = relX / scale;
+      const contentY = relY / scale;
+
+      // Content dimensions (unscaled)
+      const contentWidth = rect.width / scale;
+      const contentHeight = rect.height / scale;
+
+      // Calculate percentage
+      const x = (contentX / contentWidth) * 100;
+      const y = (contentY / contentHeight) * 100;
+
+      // Clamp to bounds (0-100%)
+      return {
+        x: Math.max(0, Math.min(100, x)),
+        y: Math.max(0, Math.min(100, y)),
+      };
+    },
+    []
+  );
+
+  // =============================================================================
+  // TWO-FINGER GESTURE DETECTION
+  // =============================================================================
   useEffect(() => {
-    if (!isActive) return;
+    if (!isActive || readOnly) return;
 
-    const handleTouchStart = (e: TouchEvent) => {
-      touchCountRef.current = e.touches.length;
+    const handleGlobalTouchStart = (e: TouchEvent) => {
       if (e.touches.length >= 2) {
-        isMultiTouchActiveRef.current = true;
-        setIsMultiTouchActive(true);
+        setIsTwoFingerGesture(true);
       }
     };
 
-    const handleTouchEnd = (e: TouchEvent) => {
-      touchCountRef.current = e.touches.length;
+    const handleGlobalTouchEnd = (e: TouchEvent) => {
       if (e.touches.length === 0) {
-        // Delay reset to prevent accidental marks after gesture ends
-        setTimeout(() => {
-          isMultiTouchActiveRef.current = false;
-          setIsMultiTouchActive(false);
-        }, 150);
+        setTimeout(() => setIsTwoFingerGesture(false), 150);
       }
     };
 
-    // Listen at document level to catch all touch events
-    document.addEventListener('touchstart', handleTouchStart, { passive: true, capture: true });
-    document.addEventListener('touchend', handleTouchEnd, { passive: true, capture: true });
-    document.addEventListener('touchcancel', handleTouchEnd, { passive: true, capture: true });
+    document.addEventListener('touchstart', handleGlobalTouchStart, { capture: true, passive: true });
+    document.addEventListener('touchend', handleGlobalTouchEnd, { capture: true, passive: true });
 
     return () => {
-      document.removeEventListener('touchstart', handleTouchStart, { capture: true });
-      document.removeEventListener('touchend', handleTouchEnd, { capture: true });
-      document.removeEventListener('touchcancel', handleTouchEnd, { capture: true });
+      document.removeEventListener('touchstart', handleGlobalTouchStart, { capture: true });
+      document.removeEventListener('touchend', handleGlobalTouchEnd, { capture: true });
     };
-  }, [isActive]);
+  }, [isActive, readOnly]);
 
-  // NOTE: Click handling for new labels is now done via React's onClick handler
-  // on the interactive layer div in the render method. This provides more reliable
-  // click capture compared to addEventListener on the container ref.
+  // =============================================================================
+  // TOUCH HANDLER
+  // =============================================================================
+  const handleTouchEnd = useCallback(
+    (e: React.TouchEvent) => {
+      if (isTwoFingerGesture) return;
+      if (e.changedTouches.length === 0) return;
+
+      // Set flag to prevent click from double-firing
+      justHandledTouchRef.current = true;
+      setTimeout(() => {
+        justHandledTouchRef.current = false;
+      }, 300);
+
+      const touch = e.changedTouches[0];
+      const point = clientToPercent(touch.clientX, touch.clientY);
+      if (!point) return;
+
+      setPendingPosition({ x: point.x, y: point.y });
+      setInputScreenPosition({ x: touch.clientX, y: touch.clientY - 10 });
+      setSelectedLabelId(null);
+    },
+    [isTwoFingerGesture, clientToPercent]
+  );
+
+  // =============================================================================
+  // CLICK HANDLER
+  // =============================================================================
+  const handleClick = useCallback(
+    (e: React.MouseEvent) => {
+      if (justHandledTouchRef.current) {
+        justHandledTouchRef.current = false;
+        return;
+      }
+
+      e.stopPropagation();
+
+      const point = clientToPercent(e.clientX, e.clientY);
+      if (!point) return;
+
+      setPendingPosition({ x: point.x, y: point.y });
+      setInputScreenPosition({ x: e.clientX, y: e.clientY - 10 });
+      setSelectedLabelId(null);
+    },
+    [clientToPercent]
+  );
 
   // Handle text input submission
   const handleTextSubmit = useCallback(
@@ -745,11 +779,10 @@ export function TextLabelTool({
     [pendingPosition, autoSize, selectedColor, usePresetText, labels, onLabelsChange]
   );
 
-  // Handle preset selection - place immediately with preset text
+  // Handle preset selection
   const handlePresetSelect = useCallback(
     (text: string, color: string) => {
       setUsePresetText({ text, color });
-      // If there's a pending position, place immediately
       if (pendingPosition) {
         const newLabel: TextLabel = {
           id: `label-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
@@ -769,19 +802,16 @@ export function TextLabelTool({
     [pendingPosition, autoSize, labels, onLabelsChange]
   );
 
-  // Handle input close
   const handleInputClose = useCallback(() => {
     setPendingPosition(null);
     setInputScreenPosition(null);
     setUsePresetText(null);
   }, []);
 
-  // Handle label selection
   const handleLabelSelect = useCallback((label: TextLabel) => {
     setSelectedLabelId(label.id);
   }, []);
 
-  // Handle label move
   const handleLabelMove = useCallback(
     (labelId: string, x: number, y: number) => {
       const updatedLabels = labels.map((label) =>
@@ -794,7 +824,6 @@ export function TextLabelTool({
     [labels, onLabelsChange]
   );
 
-  // Handle label delete
   const handleLabelDelete = useCallback(
     (labelId: string) => {
       const updatedLabels = labels.filter((label) => label.id !== labelId);
@@ -806,21 +835,17 @@ export function TextLabelTool({
     [labels, onLabelsChange, selectedLabelId]
   );
 
-  // Handle clear all
   const handleClearAll = useCallback(() => {
     onLabelsChange([]);
     setSelectedLabelId(null);
   }, [onLabelsChange]);
 
-  // Auto-close text input when tool becomes inactive (user switches to another tool)
-  // This is standard UX - when a tool deactivates, its UI should close
+  // Auto-close when tool becomes inactive
   useEffect(() => {
     if (!isActive) {
-      // Close any pending text input
       setPendingPosition(null);
       setInputScreenPosition(null);
       setUsePresetText(null);
-      // Also deselect any selected label
       setSelectedLabelId(null);
     }
   }, [isActive]);
@@ -829,7 +854,6 @@ export function TextLabelTool({
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
-      // Don't deselect if clicking on the settings panel or a label
       if (target.closest('[data-text-label-panel]') || target.closest('[data-text-label]')) {
         return;
       }
@@ -840,80 +864,36 @@ export function TextLabelTool({
     return () => document.removeEventListener('click', handleClickOutside);
   }, []);
 
-  // Debug logging
-  console.log('[TextLabelTool] Rendering, isActive:', isActive, 'readOnly:', readOnly, 'labels:', labels.length);
+  // =============================================================================
+  // RENDER - EXACT SAME PATTERN AS MEASUREMENTTOOL
+  // =============================================================================
+  // Uses simple absolute inset-0 structure:
+  // - Interactive layer captures clicks when active
+  // - Labels overlay renders existing labels
+  // - Both use the same container for coordinate calculations
 
   return (
-    <div
-      className={`absolute inset-0 ${isActive ? 'z-30' : 'z-10 pointer-events-none'}`}
-      style={{
-        // IMPORTANT: Use 'pinch-zoom' to allow two-finger zoom gestures to pass through
-        touchAction: 'pinch-zoom',
-      }}
-    >
-      {/* Interactive click capture layer - MUST be present when tool is active */}
-      {/* This layer captures clicks for placing new text labels */}
-      {/* Following the EXACT pattern from MeasurementTool for reliable click handling */}
+    <>
+      {/* Interactive overlay that captures clicks when tool is active */}
       {isActive && !readOnly && (
         <div
-          ref={clickLayerRef}
-          className="absolute inset-0 z-[5] cursor-crosshair"
-          onClick={(e) => {
-            console.log('[TextLabelTool] Click captured on interactive layer');
-            // Prevent propagation to parent
-            e.stopPropagation();
-
-            // Get the click layer bounds - this div has absolute inset-0 and fills
-            // the transformed content area. getBoundingClientRect() returns the
-            // SCALED visual bounds after CSS transforms.
-            const rect = clickLayerRef.current?.getBoundingClientRect();
-            if (!rect) {
-              console.log('[TextLabelTool] No click layer rect found');
-              return;
+          ref={internalContainerRef}
+          className="absolute inset-0 z-[100] cursor-crosshair"
+          onClick={handleClick}
+          onTouchStart={(e) => {
+            if (e.touches.length >= 2) {
+              setIsTwoFingerGesture(true);
             }
-
-            // COORDINATE CONVERSION (same formula as ArrowTool/MeasurementTool):
-            // Since this div is INSIDE the transformed contentRef, getBoundingClientRect()
-            // returns the SCALED visual bounds. Both click position and rect dimensions
-            // are in the same coordinate space (screen pixels), so the scale cancels out.
-            //
-            // Formula: percentage = ((clientPos - rectOrigin) / rectDimension) * 100
-            const x = ((e.clientX - rect.left) / rect.width) * 100;
-            const y = ((e.clientY - rect.top) / rect.height) * 100;
-
-            // Clamp to bounds (0-100%)
-            const clampedX = Math.max(0, Math.min(100, x));
-            const clampedY = Math.max(0, Math.min(100, y));
-
-            console.log('[TextLabelTool] Click coordinates:', {
-              clientX: e.clientX,
-              clientY: e.clientY,
-              rectLeft: rect.left,
-              rectTop: rect.top,
-              rectWidth: rect.width,
-              rectHeight: rect.height,
-              percentX: clampedX,
-              percentY: clampedY,
-            });
-
-            // Store the position and show input
-            setPendingPosition({ x: clampedX, y: clampedY });
-            setInputScreenPosition({ x: e.clientX, y: e.clientY - 10 });
-            setSelectedLabelId(null);
           }}
+          onTouchEnd={handleTouchEnd}
           style={{
-            // Toggle pointer-events based on gesture type:
-            // - 'auto' for single-finger/mouse (label placement)
-            // - 'none' for two-finger (let parent handle zoom/pan)
-            pointerEvents: isMultiTouchActive ? 'none' : 'auto',
-            // Use pinch-zoom to hint to browser about gesture handling
+            pointerEvents: isTwoFingerGesture ? 'none' : 'auto',
             touchAction: 'pinch-zoom',
           }}
         />
       )}
 
-      {/* Text Labels Overlay - renders existing labels on top of click layer */}
-      {/* Pass clickLayerRef when active (for accurate drag coordinates), otherwise externalContainerRef */}
+      {/* Text Labels Overlay - renders existing labels */}
       <TextLabelOverlay
         labels={labels}
         onLabelSelect={handleLabelSelect}
@@ -922,14 +902,14 @@ export function TextLabelTool({
         selectedLabelId={selectedLabelId}
         zoom={zoom}
         readOnly={readOnly}
-        containerRef={isActive ? clickLayerRef : externalContainerRef}
+        containerRef={isActive ? internalContainerRef : containerRef}
         isDark={isDark}
-        isMultiTouchActive={isMultiTouchActive}
+        isMultiTouchActive={isTwoFingerGesture}
         isActive={isActive}
         zoomState={zoomState}
       />
 
-      {/* Text Input Modal */}
+      {/* Text Input Modal - rendered outside container */}
       <TextInputModal
         isOpen={!!pendingPosition && !usePresetText}
         position={inputScreenPosition}
@@ -937,12 +917,12 @@ export function TextLabelTool({
         onClose={handleInputClose}
         isDark={isDark}
       />
-    </div>
+    </>
   );
 }
 
 // =============================================================================
-// SETTINGS PANEL EXPORT (for use in FloatingToolPalette or similar)
+// SETTINGS PANEL EXPORT
 // =============================================================================
 
 export { TextLabelSettingsPanel };

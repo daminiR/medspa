@@ -321,6 +321,21 @@ export type {
 export { FloatingTextLabelPanel } from './FloatingTextLabelPanel'
 export type { FloatingTextLabelPanelProps } from './FloatingTextLabelPanel'
 
+// Simple Text Tool - Konva-based text annotations (copies SmoothBrushTool pattern)
+// Use this for reliable positioning - it uses the exact same coordinate system as the brush tool
+export {
+  SimpleTextTool,
+  SimpleTextSettingsPanel,
+  useSimpleTextLabels,
+  TEXT_PRESETS,
+} from './SimpleTextTool'
+export type {
+  SimpleTextLabel,
+  SimpleTextToolRef,
+  SimpleTextToolProps,
+  TextPreset,
+} from './SimpleTextTool'
+
 // Cannula Path Tool - For documenting cannula injection techniques
 export {
   CannulaPathTool,

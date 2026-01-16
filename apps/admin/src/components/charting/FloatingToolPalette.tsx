@@ -1,11 +1,14 @@
 'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
-import { Grid3X3, Pencil, MousePointer, Paintbrush, MoveRight, Type, Ruler, GitBranch, Shapes, PenLine, AlertTriangle } from 'lucide-react';
+import { Grid3X3, Pencil, MousePointer, Paintbrush, Type, Ruler, Shapes, PenLine, AlertTriangle } from 'lucide-react';
 import { DraggablePanel } from './DraggablePanel';
 import { useChartingTheme } from '@/contexts/ChartingThemeContext';
 
-export type DrawingTool = 'zone' | 'freehand' | 'select' | 'brush' | 'arrow' | 'text' | 'measure' | 'shape' | 'cannula' | 'vein' | 'danger';
+// IMPORTANT: This type MUST match RightDock.tsx DrawingTool - keep them in sync
+export type DrawingTool = 'zone' | 'freehand' | 'select' | 'brush' | 'simpleText' | 'measure' | 'shape' | 'sketch' | 'danger';
+// Note: 'arrow' type removed - arrow functionality is now part of ShapeTool
+// Note: 'cannula' and 'vein' are now sub-modes under 'sketch' tool
 
 // Tool visibility settings type
 interface ToolVisibilitySettings {
@@ -140,12 +143,11 @@ export function FloatingToolPalette({
     { id: 'freehand', Icon: Pencil, label: 'Draw - Place injection points', isBasic: true },
     // Advanced tools - visibility controlled by settings
     { id: 'brush', Icon: Paintbrush, label: 'Brush tool - Paint treatment areas', visibilityKey: 'brushTool' },
-    { id: 'text', Icon: Type, label: 'Text tool - Add text labels (Avoid, Bruise, Notes)', visibilityKey: 'textLabels' },
-    { id: 'arrow', Icon: MoveRight, label: 'Arrow tool - Draw directional arrows for thread lifts', visibilityKey: 'arrowTool' },
-    { id: 'shape', Icon: Shapes, label: 'Shape tool - Draw circles, rectangles, and freeform areas', visibilityKey: 'shapeTool' },
+    { id: 'simpleText', Icon: Type, label: 'Text tool - Add text labels (Avoid, Bruise, Notes)', visibilityKey: 'textLabels' },
+    // Arrow tool removed - arrow functionality available in Shape tool
+    { id: 'shape', Icon: Shapes, label: 'Shape tool - Draw circles, rectangles, arrows, and freeform areas', visibilityKey: 'shapeTool' },
     { id: 'measure', Icon: Ruler, label: 'Measure tool - Measure distances (brow lift, lip ratio, symmetry)', visibilityKey: 'measurementTool' },
-    { id: 'cannula', Icon: GitBranch, label: 'Cannula tool - Document cannula entry points and fanning paths', visibilityKey: 'cannulaPathTool' },
-    { id: 'vein', Icon: PenLine, label: 'Sketch tool - Draw smooth strokes for vein mapping', visibilityKey: 'veinDrawingTool' },
+    { id: 'sketch', Icon: PenLine, label: 'Sketch tool - Draw veins and cannula paths', visibilityKey: 'veinDrawingTool' },
     { id: 'danger', Icon: AlertTriangle, label: 'Anatomical safety overlay - Show arteries, nerves, and vascular danger zones to prevent complications', visibilityKey: 'dangerZoneOverlay' },
   ];
 

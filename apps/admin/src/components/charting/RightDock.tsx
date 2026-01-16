@@ -6,7 +6,6 @@ import {
   Pencil,
   MousePointer,
   Paintbrush,
-  MoveRight,
   Type,
   Ruler,
   GitBranch,
@@ -20,6 +19,8 @@ import {
   Trash2,
 } from 'lucide-react';
 import { useChartingTheme } from '@/contexts/ChartingThemeContext';
+import { SimpleTextSettingsPanel, TEXT_PRESETS } from '@/components/charting/SimpleTextTool';
+import type { TextPreset, SimpleTextLabel } from '@/components/charting/SimpleTextTool';
 
 // =============================================================================
 // RIGHT DOCK COMPONENT
@@ -38,7 +39,13 @@ import { useChartingTheme } from '@/contexts/ChartingThemeContext';
 // =============================================================================
 
 // Types imported from related components
-export type DrawingTool = 'zone' | 'freehand' | 'select' | 'brush' | 'arrow' | 'text' | 'measure' | 'shape' | 'cannula' | 'vein' | 'danger';
+// IMPORTANT: These types MUST match FloatingToolPalette.tsx - keep them in sync
+export type DrawingTool = 'zone' | 'freehand' | 'select' | 'brush' | 'simpleText' | 'measure' | 'shape' | 'sketch' | 'danger';
+// Note: 'arrow' type removed - arrow functionality is now part of ShapeTool
+// Note: 'cannula' and 'vein' are now sub-modes under 'sketch' tool
+
+// Sub-modes for the Sketch umbrella tool
+export type SketchMode = 'veins' | 'cannula';
 
 export interface Product {
   id: string;
@@ -56,12 +63,13 @@ export interface TreatmentTypeOption {
   defaultOpacity: number;
 }
 
-export type ToolSettingsMode = 'injection' | 'brush' | 'sketch' | 'cannula' | 'shape' | 'arrow' | 'text' | 'measure';
+export type ToolSettingsMode = 'injection' | 'brush' | 'sketch' | 'shape' | 'simpleText' | 'measure';
+// Note: 'arrow' mode removed - arrow functionality is now part of shape mode
+// Note: 'cannula' mode removed - cannula is now a sub-mode of 'sketch'
 
 // Tool visibility settings
 interface ToolVisibilitySettings {
   brushTool: boolean;
-  arrowTool: boolean;
   textLabels: boolean;
   shapeTool: boolean;
   measurementTool: boolean;
@@ -76,7 +84,6 @@ interface ToolVisibilitySettings {
 // ALL tools visible by default - no settings required to enable tools
 const DEFAULT_TOOL_VISIBILITY: ToolVisibilitySettings = {
   brushTool: true,
-  arrowTool: true,
   textLabels: true,
   shapeTool: true,
   measurementTool: true,
@@ -212,7 +219,11 @@ interface RightDockProps {
   onBrushClearAll?: () => void;
   canBrushUndo?: boolean;
 
-  // Sketch mode props (for VeinDrawingTool)
+  // Sketch mode props (umbrella for Veins and Cannula sub-modes)
+  sketchMode?: SketchMode;
+  onSketchModeChange?: (mode: SketchMode) => void;
+
+  // Sketch > Veins sub-mode props
   sketchType?: 'spider' | 'reticular';
   onSketchTypeChange?: (type: 'spider' | 'reticular') => void;
   onSketchUndo?: () => void;
@@ -220,7 +231,7 @@ interface RightDockProps {
   canSketchUndo?: boolean;
   isSketchDrawing?: boolean;
 
-  // Cannula mode props
+  // Sketch > Cannula sub-mode props
   cannulaType?: 'linear' | 'fanning';
   onCannulaTypeChange?: (type: 'linear' | 'fanning') => void;
   cannulaColor?: string;
@@ -230,8 +241,8 @@ interface RightDockProps {
   canCannulaUndo?: boolean;
 
   // Shape mode props
-  shapeType?: 'circle' | 'rectangle' | 'ellipse' | 'line';
-  onShapeTypeChange?: (type: 'circle' | 'rectangle' | 'ellipse' | 'line') => void;
+  shapeType?: 'circle' | 'rectangle' | 'ellipse' | 'line' | 'arrow';
+  onShapeTypeChange?: (type: 'circle' | 'rectangle' | 'ellipse' | 'line' | 'arrow') => void;
   shapeColor?: string;
   onShapeColorChange?: (color: string) => void;
   shapeFilled?: boolean;
@@ -240,18 +251,13 @@ interface RightDockProps {
   onShapeClearAll?: () => void;
   canShapeUndo?: boolean;
 
-  // Arrow mode props
-  arrowColor?: string;
-  onArrowColorChange?: (color: string) => void;
-  onArrowUndo?: () => void;
-  onArrowClearAll?: () => void;
-  canArrowUndo?: boolean;
-
-  // Text mode props
-  textColor?: string;
-  onTextColorChange?: (color: string) => void;
-  fontSize?: number;
-  onFontSizeChange?: (size: number) => void;
+  // Simple text mode props (Labels tool)
+  simpleTextSelectedPreset?: TextPreset | null;
+  onSimpleTextPresetChange?: (preset: TextPreset | null) => void;
+  simpleTextLabels?: SimpleTextLabel[];
+  onSimpleTextUndo?: () => void;
+  onSimpleTextClearAll?: () => void;
+  canSimpleTextUndo?: boolean;
 
   // Measure mode props
   measurements?: Array<{ id: string; length: number; label?: string }>;
@@ -291,14 +297,17 @@ export function RightDock({
   onBrushUndo,
   onBrushClearAll,
   canBrushUndo = false,
-  // Sketch mode
+  // Sketch mode (umbrella for Veins and Cannula)
+  sketchMode = 'veins',
+  onSketchModeChange,
+  // Sketch > Veins sub-mode
   sketchType = 'spider',
   onSketchTypeChange,
   onSketchUndo,
   onSketchClearAll,
   canSketchUndo = false,
   isSketchDrawing = false,
-  // Cannula mode
+  // Sketch > Cannula sub-mode
   cannulaType = 'linear',
   onCannulaTypeChange,
   cannulaColor = '#10B981',
@@ -316,17 +325,13 @@ export function RightDock({
   onShapeUndo,
   onShapeClearAll,
   canShapeUndo = false,
-  // Arrow mode
-  arrowColor = '#8B5CF6',
-  onArrowColorChange,
-  onArrowUndo,
-  onArrowClearAll,
-  canArrowUndo = false,
-  // Text mode
-  textColor = '#1F2937',
-  onTextColorChange,
-  fontSize = 14,
-  onFontSizeChange,
+  // Simple text mode (Labels tool)
+  simpleTextSelectedPreset,
+  onSimpleTextPresetChange,
+  simpleTextLabels = [],
+  onSimpleTextUndo,
+  onSimpleTextClearAll,
+  canSimpleTextUndo = false,
   // Measure mode
   measurements = [],
   onMeasurementClearAll,
@@ -360,17 +365,18 @@ export function RightDock({
   }, [dosage, isQuickDosageSelected]);
 
   // Define all available tools
+  // Note: 'sketch' is now an umbrella tool containing Veins and Cannula sub-modes
   const allTools: { id: DrawingTool; Icon: React.ComponentType<{ size?: number }>; label: string; visibilityKey?: keyof ToolVisibilitySettings; isBasic?: boolean }[] = [
     { id: 'select', Icon: MousePointer, label: 'Select', isBasic: true },
     { id: 'zone', Icon: Grid3X3, label: 'Zone', isBasic: true },
     { id: 'freehand', Icon: Pencil, label: 'Draw', isBasic: true },
     { id: 'brush', Icon: Paintbrush, label: 'Brush', visibilityKey: 'brushTool' },
-    { id: 'text', Icon: Type, label: 'Text', visibilityKey: 'textLabels' },
-    { id: 'arrow', Icon: MoveRight, label: 'Arrow', visibilityKey: 'arrowTool' },
+    { id: 'simpleText', Icon: Type, label: 'Labels', visibilityKey: 'textLabels' },
+    // Arrow tool removed - arrow functionality available in Shape tool
     { id: 'shape', Icon: Shapes, label: 'Shape', visibilityKey: 'shapeTool' },
     { id: 'measure', Icon: Ruler, label: 'Measure', visibilityKey: 'measurementTool' },
-    { id: 'cannula', Icon: GitBranch, label: 'Cannula', visibilityKey: 'cannulaPathTool' },
-    { id: 'vein', Icon: PenLine, label: 'Sketch', visibilityKey: 'veinDrawingTool' },
+    // Sketch tool: umbrella for Veins (sclerotherapy) and Cannula paths
+    { id: 'sketch', Icon: PenLine, label: 'Sketch', visibilityKey: 'veinDrawingTool' },
     { id: 'danger', Icon: AlertTriangle, label: 'Anatomy', visibilityKey: 'dangerZoneOverlay' },
   ];
 
@@ -587,119 +593,275 @@ export function RightDock({
             <div className={`p-3 border-b ${isDark ? 'border-gray-700' : 'border-gray-200'} flex-shrink-0`}>
               <h3 className={`text-xs font-semibold uppercase tracking-wider mb-2 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
                 {mode === 'brush' ? 'Treatment' :
-                 mode === 'sketch' ? 'Sketch Options' :
-                 mode === 'cannula' ? 'Cannula Path' :
+                 mode === 'sketch' ? 'Sketch Tool' :
                  mode === 'shape' ? 'Shape Tool' :
-                 mode === 'arrow' ? 'Arrow Tool' :
-                 mode === 'text' ? 'Text Label' :
+                 mode === 'simpleText' ? 'Quick Labels' :
                  mode === 'measure' ? 'Measurements' :
                  'Product & Dosage'}
               </h3>
 
               {mode === 'sketch' ? (
-                // SKETCH MODE CONTENT
+                // SKETCH MODE CONTENT - Umbrella for Veins and Cannula sub-modes
                 <>
-                  {/* Drawing indicator */}
-                  {isSketchDrawing && (
-                    <div
-                      className={`flex items-center gap-2 p-2 rounded-lg mb-3 ${
-                        isDark
-                          ? 'bg-blue-900/30 text-blue-400'
-                          : 'bg-blue-50 text-blue-700'
-                      }`}
-                    >
-                      <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
-                      <span className="text-sm font-medium">Drawing...</span>
-                    </div>
-                  )}
-
-                  {/* Sketch Type Selector */}
-                  <div className="grid grid-cols-2 gap-2 mb-3">
-                    {(['spider', 'reticular'] as const).map((type) => {
-                      const isSelected = sketchType === type;
-                      const config = type === 'spider'
-                        ? { name: 'Spider', color: '#DC2626', strokeWidth: 1.5 }
-                        : { name: 'Reticular', color: '#2563EB', strokeWidth: 2.5 };
-                      return (
-                        <button
-                          key={type}
-                          onClick={() => onSketchTypeChange?.(type)}
-                          className={`
-                            flex flex-col items-center gap-1.5 px-3 py-2 rounded-lg text-sm
-                            transition-colors
-                            ${
-                              isSelected
-                                ? isDark
-                                  ? 'bg-blue-600 text-white'
-                                  : 'bg-blue-100 text-blue-800 ring-1 ring-blue-300'
-                                : isDark
-                                ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                            }
-                          `}
-                        >
-                          {/* Sketch preview line */}
-                          <svg width="36" height="8" className="flex-shrink-0">
-                            <line
-                              x1="2"
-                              y1="4"
-                              x2="34"
-                              y2="4"
-                              stroke={config.color}
-                              strokeWidth={config.strokeWidth}
-                              strokeLinecap="round"
-                            />
-                          </svg>
-                          <span className="font-medium text-xs">{config.name}</span>
-                        </button>
-                      );
-                    })}
-                  </div>
-
-                  {/* Quick tip */}
-                  <p
-                    className={`text-xs mb-3 ${
-                      isDark ? 'text-gray-500' : 'text-gray-400'
-                    }`}
-                  >
-                    Draw to trace, click to select
-                  </p>
-
-                  {/* Undo / Clear */}
-                  <div className="flex gap-2">
+                  {/* Sub-mode selector: Veins vs Cannula */}
+                  <div className="grid grid-cols-2 gap-2 mb-4">
                     <button
-                      onClick={onSketchUndo}
-                      disabled={!canSketchUndo}
-                      className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-sm font-medium rounded-lg transition-colors ${
-                        canSketchUndo
-                          ? isDark
-                            ? 'bg-gray-700 text-gray-200 hover:bg-gray-600'
+                      onClick={() => onSketchModeChange?.('veins')}
+                      className={`
+                        flex flex-col items-center gap-1 px-3 py-2.5 rounded-lg text-sm
+                        transition-all duration-150
+                        ${sketchMode === 'veins'
+                          ? 'bg-purple-600 text-white shadow-md'
+                          : isDark
+                            ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
                             : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                          : isDark
-                            ? 'bg-gray-800 text-gray-600 cursor-not-allowed'
-                            : 'bg-gray-50 text-gray-400 cursor-not-allowed'
-                      }`}
+                        }
+                      `}
                     >
-                      <Undo2 className="w-4 h-4" />
-                      Undo
+                      <PenLine className="w-4 h-4" />
+                      <span className="font-medium text-xs">Veins</span>
                     </button>
                     <button
-                      onClick={onSketchClearAll}
-                      disabled={!canSketchUndo}
-                      className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-sm font-medium rounded-lg transition-colors ${
-                        canSketchUndo
-                          ? isDark
-                            ? 'bg-red-900/50 text-red-300 hover:bg-red-900/70'
-                            : 'bg-red-50 text-red-600 hover:bg-red-100'
+                      onClick={() => onSketchModeChange?.('cannula')}
+                      className={`
+                        flex flex-col items-center gap-1 px-3 py-2.5 rounded-lg text-sm
+                        transition-all duration-150
+                        ${sketchMode === 'cannula'
+                          ? 'bg-purple-600 text-white shadow-md'
                           : isDark
-                            ? 'bg-gray-800 text-gray-600 cursor-not-allowed'
-                            : 'bg-gray-50 text-gray-400 cursor-not-allowed'
-                      }`}
+                            ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        }
+                      `}
                     >
-                      <Trash2 className="w-4 h-4" />
-                      Clear
+                      <GitBranch className="w-4 h-4" />
+                      <span className="font-medium text-xs">Cannula</span>
                     </button>
                   </div>
+
+                  {/* Divider */}
+                  <div className={`border-t mb-3 ${isDark ? 'border-gray-700' : 'border-gray-200'}`} />
+
+                  {/* Conditional content based on sketchMode */}
+                  {sketchMode === 'veins' ? (
+                    // VEINS SUB-MODE CONTENT
+                    <>
+                      {/* Drawing indicator */}
+                      {isSketchDrawing && (
+                        <div
+                          className={`flex items-center gap-2 p-2 rounded-lg mb-3 ${
+                            isDark
+                              ? 'bg-blue-900/30 text-blue-400'
+                              : 'bg-blue-50 text-blue-700'
+                          }`}
+                        >
+                          <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
+                          <span className="text-sm font-medium">Drawing...</span>
+                        </div>
+                      )}
+
+                      {/* Vein Type Selector */}
+                      <div className="mb-3">
+                        <label className={`text-xs font-medium uppercase tracking-wide block mb-1.5 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                          Vein Type
+                        </label>
+                        <div className="grid grid-cols-2 gap-2">
+                          {(['spider', 'reticular'] as const).map((type) => {
+                            const isSelected = sketchType === type;
+                            const config = type === 'spider'
+                              ? { name: 'Spider', color: '#DC2626', strokeWidth: 1.5 }
+                              : { name: 'Reticular', color: '#2563EB', strokeWidth: 2.5 };
+                            return (
+                              <button
+                                key={type}
+                                onClick={() => onSketchTypeChange?.(type)}
+                                className={`
+                                  flex flex-col items-center gap-1.5 px-3 py-2 rounded-lg text-sm
+                                  transition-colors
+                                  ${isSelected
+                                    ? isDark
+                                      ? 'bg-blue-600 text-white'
+                                      : 'bg-blue-100 text-blue-800 ring-1 ring-blue-300'
+                                    : isDark
+                                      ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                  }
+                                `}
+                              >
+                                <svg width="36" height="8" className="flex-shrink-0">
+                                  <line
+                                    x1="2"
+                                    y1="4"
+                                    x2="34"
+                                    y2="4"
+                                    stroke={config.color}
+                                    strokeWidth={config.strokeWidth}
+                                    strokeLinecap="round"
+                                  />
+                                </svg>
+                                <span className="font-medium text-xs">{config.name}</span>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+
+                      {/* Quick tip */}
+                      <p className={`text-xs mb-3 ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
+                        Draw to trace veins, click to select
+                      </p>
+
+                      {/* Undo / Clear for Veins */}
+                      <div className="flex gap-2">
+                        <button
+                          onClick={onSketchUndo}
+                          disabled={!canSketchUndo}
+                          className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-sm font-medium rounded-lg transition-colors ${
+                            canSketchUndo
+                              ? isDark
+                                ? 'bg-gray-700 text-gray-200 hover:bg-gray-600'
+                                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                              : isDark
+                                ? 'bg-gray-800 text-gray-600 cursor-not-allowed'
+                                : 'bg-gray-50 text-gray-400 cursor-not-allowed'
+                          }`}
+                        >
+                          <Undo2 className="w-4 h-4" />
+                          Undo
+                        </button>
+                        <button
+                          onClick={onSketchClearAll}
+                          disabled={!canSketchUndo}
+                          className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-sm font-medium rounded-lg transition-colors ${
+                            canSketchUndo
+                              ? isDark
+                                ? 'bg-red-900/50 text-red-300 hover:bg-red-900/70'
+                                : 'bg-red-50 text-red-600 hover:bg-red-100'
+                              : isDark
+                                ? 'bg-gray-800 text-gray-600 cursor-not-allowed'
+                                : 'bg-gray-50 text-gray-400 cursor-not-allowed'
+                          }`}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                          Clear
+                        </button>
+                      </div>
+                    </>
+                  ) : (
+                    // CANNULA SUB-MODE CONTENT
+                    <>
+                      {/* Cannula Type Selector */}
+                      <div className="mb-3">
+                        <label className={`text-xs font-medium uppercase tracking-wide block mb-1.5 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                          Path Type
+                        </label>
+                        <div className="grid grid-cols-2 gap-2">
+                          {(['linear', 'fanning'] as const).map((type) => {
+                            const isSelected = cannulaType === type;
+                            return (
+                              <button
+                                key={type}
+                                onClick={() => onCannulaTypeChange?.(type)}
+                                className={`
+                                  flex flex-col items-center gap-1.5 px-3 py-2 rounded-lg text-sm
+                                  transition-colors
+                                  ${isSelected
+                                    ? isDark
+                                      ? 'bg-green-600 text-white'
+                                      : 'bg-green-100 text-green-800 ring-1 ring-green-300'
+                                    : isDark
+                                      ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                  }
+                                `}
+                              >
+                                <svg width="36" height="16" className="flex-shrink-0">
+                                  {type === 'linear' ? (
+                                    <line
+                                      x1="4"
+                                      y1="8"
+                                      x2="32"
+                                      y2="8"
+                                      stroke={cannulaColor}
+                                      strokeWidth={2}
+                                      strokeLinecap="round"
+                                    />
+                                  ) : (
+                                    <>
+                                      <line x1="4" y1="8" x2="32" y2="2" stroke={cannulaColor} strokeWidth={1.5} strokeLinecap="round" />
+                                      <line x1="4" y1="8" x2="32" y2="8" stroke={cannulaColor} strokeWidth={1.5} strokeLinecap="round" />
+                                      <line x1="4" y1="8" x2="32" y2="14" stroke={cannulaColor} strokeWidth={1.5} strokeLinecap="round" />
+                                    </>
+                                  )}
+                                </svg>
+                                <span className="font-medium text-xs capitalize">{type}</span>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+
+                      {/* Cannula Color Picker */}
+                      <div className="mb-3">
+                        <label className={`text-xs font-medium uppercase tracking-wide block mb-1.5 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
+                          Color
+                        </label>
+                        <div className="grid grid-cols-6 gap-1.5">
+                          {['#10B981', '#3B82F6', '#8B5CF6', '#EF4444', '#F59E0B', '#EC4899'].map((color) => (
+                            <button
+                              key={color}
+                              onClick={() => onCannulaColorChange?.(color)}
+                              className={`w-8 h-8 rounded-lg transition-all ${
+                                cannulaColor === color ? 'ring-2 ring-offset-2 ring-purple-500 scale-110' : 'hover:scale-105'
+                              }`}
+                              style={{ backgroundColor: color }}
+                            />
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Quick tip */}
+                      <p className={`text-xs mb-3 ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
+                        Click entry point, drag to end
+                      </p>
+
+                      {/* Undo / Clear for Cannula */}
+                      <div className="flex gap-2">
+                        <button
+                          onClick={onCannulaUndo}
+                          disabled={!canCannulaUndo}
+                          className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-sm font-medium rounded-lg transition-colors ${
+                            canCannulaUndo
+                              ? isDark
+                                ? 'bg-gray-700 text-gray-200 hover:bg-gray-600'
+                                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                              : isDark
+                                ? 'bg-gray-800 text-gray-600 cursor-not-allowed'
+                                : 'bg-gray-50 text-gray-400 cursor-not-allowed'
+                          }`}
+                        >
+                          <Undo2 className="w-4 h-4" />
+                          Undo
+                        </button>
+                        <button
+                          onClick={onCannulaClearAll}
+                          disabled={!canCannulaUndo}
+                          className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-sm font-medium rounded-lg transition-colors ${
+                            canCannulaUndo
+                              ? isDark
+                                ? 'bg-red-900/50 text-red-300 hover:bg-red-900/70'
+                                : 'bg-red-50 text-red-600 hover:bg-red-100'
+                              : isDark
+                                ? 'bg-gray-800 text-gray-600 cursor-not-allowed'
+                                : 'bg-gray-50 text-gray-400 cursor-not-allowed'
+                          }`}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                          Clear
+                        </button>
+                      </div>
+                    </>
+                  )}
                 </>
               ) : mode === 'brush' ? (
                 // BRUSH MODE CONTENT
@@ -844,122 +1006,6 @@ export function RightDock({
                     </button>
                   </div>
                 </>
-              ) : mode === 'cannula' ? (
-                // CANNULA MODE CONTENT
-                <>
-                  {/* Cannula Type Selector */}
-                  <div className="mb-3">
-                    <label className={`text-xs font-medium uppercase tracking-wide block mb-1.5 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
-                      Path Type
-                    </label>
-                    <div className="grid grid-cols-2 gap-2">
-                      {(['linear', 'fanning'] as const).map((type) => {
-                        const isSelected = cannulaType === type;
-                        return (
-                          <button
-                            key={type}
-                            onClick={() => onCannulaTypeChange?.(type)}
-                            className={`
-                              flex flex-col items-center gap-1.5 px-3 py-2 rounded-lg text-sm
-                              transition-colors
-                              ${
-                                isSelected
-                                  ? isDark
-                                    ? 'bg-green-600 text-white'
-                                    : 'bg-green-100 text-green-800 ring-1 ring-green-300'
-                                  : isDark
-                                  ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                              }
-                            `}
-                          >
-                            {/* Cannula path preview */}
-                            <svg width="36" height="16" className="flex-shrink-0">
-                              {type === 'linear' ? (
-                                <line
-                                  x1="4"
-                                  y1="8"
-                                  x2="32"
-                                  y2="8"
-                                  stroke={cannulaColor}
-                                  strokeWidth={2}
-                                  strokeLinecap="round"
-                                />
-                              ) : (
-                                <>
-                                  <line x1="4" y1="8" x2="32" y2="2" stroke={cannulaColor} strokeWidth={1.5} strokeLinecap="round" />
-                                  <line x1="4" y1="8" x2="32" y2="8" stroke={cannulaColor} strokeWidth={1.5} strokeLinecap="round" />
-                                  <line x1="4" y1="8" x2="32" y2="14" stroke={cannulaColor} strokeWidth={1.5} strokeLinecap="round" />
-                                </>
-                              )}
-                            </svg>
-                            <span className="font-medium text-xs capitalize">{type}</span>
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-
-                  {/* Cannula Color Picker */}
-                  <div className="mb-3">
-                    <label className={`text-xs font-medium uppercase tracking-wide block mb-1.5 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
-                      Color
-                    </label>
-                    <div className="grid grid-cols-6 gap-1.5">
-                      {['#10B981', '#3B82F6', '#8B5CF6', '#EF4444', '#F59E0B', '#EC4899'].map((color) => (
-                        <button
-                          key={color}
-                          onClick={() => onCannulaColorChange?.(color)}
-                          className={`w-8 h-8 rounded-lg transition-all ${
-                            cannulaColor === color ? 'ring-2 ring-offset-2 ring-purple-500 scale-110' : 'hover:scale-105'
-                          }`}
-                          style={{ backgroundColor: color }}
-                        />
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Quick tip */}
-                  <p className={`text-xs mb-3 ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
-                    Click entry point, drag to end
-                  </p>
-
-                  {/* Undo / Clear */}
-                  <div className="flex gap-2">
-                    <button
-                      onClick={onCannulaUndo}
-                      disabled={!canCannulaUndo}
-                      className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-sm font-medium rounded-lg transition-colors ${
-                        canCannulaUndo
-                          ? isDark
-                            ? 'bg-gray-700 text-gray-200 hover:bg-gray-600'
-                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                          : isDark
-                            ? 'bg-gray-800 text-gray-600 cursor-not-allowed'
-                            : 'bg-gray-50 text-gray-400 cursor-not-allowed'
-                      }`}
-                    >
-                      <Undo2 className="w-4 h-4" />
-                      Undo
-                    </button>
-                    <button
-                      onClick={onCannulaClearAll}
-                      disabled={!canCannulaUndo}
-                      className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-sm font-medium rounded-lg transition-colors ${
-                        canCannulaUndo
-                          ? isDark
-                            ? 'bg-red-900/50 text-red-300 hover:bg-red-900/70'
-                            : 'bg-red-50 text-red-600 hover:bg-red-100'
-                          : isDark
-                            ? 'bg-gray-800 text-gray-600 cursor-not-allowed'
-                            : 'bg-gray-50 text-gray-400 cursor-not-allowed'
-                      }`}
-                    >
-                      <Trash2 className="w-4 h-4" />
-                      Clear
-                    </button>
-                  </div>
-                </>
               ) : mode === 'shape' ? (
                 // SHAPE MODE CONTENT
                 <>
@@ -968,15 +1014,15 @@ export function RightDock({
                     <label className={`text-xs font-medium uppercase tracking-wide block mb-1.5 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
                       Shape
                     </label>
-                    <div className="grid grid-cols-4 gap-1.5">
-                      {(['circle', 'rectangle', 'ellipse', 'line'] as const).map((type) => {
+                    <div className="grid grid-cols-5 gap-1.5">
+                      {(['circle', 'rectangle', 'ellipse', 'line', 'arrow'] as const).map((type) => {
                         const isSelected = shapeType === type;
                         return (
                           <button
                             key={type}
                             onClick={() => onShapeTypeChange?.(type)}
                             className={`
-                              flex flex-col items-center gap-1 px-2 py-2 rounded-lg text-xs
+                              flex flex-col items-center gap-1 px-1.5 py-2 rounded-lg text-xs
                               transition-colors
                               ${
                                 isSelected
@@ -1002,6 +1048,12 @@ export function RightDock({
                               )}
                               {type === 'line' && (
                                 <line x1="2" y1="14" x2="22" y2="2" stroke={shapeColor} strokeWidth={2} strokeLinecap="round" />
+                              )}
+                              {type === 'arrow' && (
+                                <>
+                                  <line x1="2" y1="10" x2="18" y2="10" stroke={shapeColor} strokeWidth={2} strokeLinecap="round" />
+                                  <polyline points="14,6 18,10 14,14" stroke={shapeColor} strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" fill="none" />
+                                </>
                               )}
                             </svg>
                             <span className="font-medium capitalize">{type === 'rectangle' ? 'Rect' : type}</span>
@@ -1030,7 +1082,7 @@ export function RightDock({
                     </div>
                   </div>
 
-                  {/* Fill Toggle */}
+                  {/* Fill Toggle - iOS-style switch */}
                   <div className="mb-3">
                     <button
                       onClick={() => onShapeFilledChange?.(!shapeFilled)}
@@ -1041,14 +1093,19 @@ export function RightDock({
                       }`}
                     >
                       <span className={`text-sm ${isDark ? 'text-gray-200' : 'text-gray-700'}`}>Fill Shape</span>
-                      <div className={`w-10 h-6 rounded-full transition-colors ${
-                        shapeFilled
-                          ? 'bg-purple-600'
-                          : isDark ? 'bg-gray-600' : 'bg-gray-300'
-                      }`}>
-                        <div className={`w-5 h-5 rounded-full bg-white shadow-md transition-transform mt-0.5 ${
-                          shapeFilled ? 'translate-x-4.5 ml-0.5' : 'translate-x-0.5'
-                        }`} />
+                      <div
+                        className={`relative w-11 h-6 rounded-full transition-colors duration-200 ${
+                          shapeFilled
+                            ? 'bg-purple-600'
+                            : isDark ? 'bg-gray-600' : 'bg-gray-300'
+                        }`}
+                      >
+                        <div
+                          className="absolute top-0.5 w-5 h-5 rounded-full bg-white shadow-md transition-transform duration-200 ease-in-out"
+                          style={{
+                            transform: shapeFilled ? 'translateX(22px)' : 'translateX(2px)',
+                          }}
+                        />
                       </div>
                     </button>
                   </div>
@@ -1089,70 +1146,27 @@ export function RightDock({
                     </button>
                   </div>
                 </>
-              ) : mode === 'arrow' ? (
-                // ARROW MODE CONTENT
+              ) : mode === 'simpleText' ? (
+                // SIMPLE TEXT MODE CONTENT - Uses SimpleTextSettingsPanel component
                 <>
-                  {/* Arrow Color Picker */}
-                  <div className="mb-3">
-                    <label className={`text-xs font-medium uppercase tracking-wide block mb-1.5 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
-                      Color
-                    </label>
-                    <div className="grid grid-cols-6 gap-1.5">
-                      {['#EF4444', '#F59E0B', '#10B981', '#3B82F6', '#8B5CF6', '#1F2937'].map((color) => (
-                        <button
-                          key={color}
-                          onClick={() => onArrowColorChange?.(color)}
-                          className={`w-8 h-8 rounded-lg transition-all ${
-                            arrowColor === color ? 'ring-2 ring-offset-2 ring-purple-500 scale-110' : 'hover:scale-105'
-                          }`}
-                          style={{ backgroundColor: color }}
-                        />
-                      ))}
-                    </div>
-                  </div>
+                  <SimpleTextSettingsPanel
+                    selectedPreset={simpleTextSelectedPreset ?? null}
+                    onPresetSelect={onSimpleTextPresetChange ?? (() => {})}
+                    onClearAll={onSimpleTextClearAll ?? (() => {})}
+                    labelCount={simpleTextLabels.length}
+                    isDark={isDark}
+                  />
 
-                  {/* Arrow Preview */}
-                  <div className={`mb-3 p-3 rounded-lg ${isDark ? 'bg-gray-700' : 'bg-gray-100'}`}>
-                    <svg width="100%" height="32" className="flex-shrink-0">
-                      <defs>
-                        <marker
-                          id="arrowhead-preview"
-                          markerWidth="10"
-                          markerHeight="7"
-                          refX="9"
-                          refY="3.5"
-                          orient="auto"
-                        >
-                          <polygon points="0 0, 10 3.5, 0 7" fill={arrowColor} />
-                        </marker>
-                      </defs>
-                      <line
-                        x1="20"
-                        y1="16"
-                        x2="180"
-                        y2="16"
-                        stroke={arrowColor}
-                        strokeWidth={2.5}
-                        markerEnd="url(#arrowhead-preview)"
-                      />
-                    </svg>
-                  </div>
-
-                  {/* Quick tip */}
-                  <p className={`text-xs mb-3 ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
-                    Click and drag to draw arrow
-                  </p>
-
-                  {/* Undo / Clear */}
-                  <div className="flex gap-2">
+                  {/* Undo/Clear buttons */}
+                  <div className="flex gap-2 mt-3">
                     <button
-                      onClick={onArrowUndo}
-                      disabled={!canArrowUndo}
-                      className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-sm font-medium rounded-lg transition-colors ${
-                        canArrowUndo
+                      onClick={onSimpleTextUndo}
+                      disabled={!canSimpleTextUndo}
+                      className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-md text-sm font-medium transition-all ${
+                        canSimpleTextUndo
                           ? isDark
-                            ? 'bg-gray-700 text-gray-200 hover:bg-gray-600'
-                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                            ? 'bg-gray-700 hover:bg-gray-600 text-gray-200'
+                            : 'bg-gray-100 hover:bg-gray-200 text-gray-700'
                           : isDark
                             ? 'bg-gray-800 text-gray-600 cursor-not-allowed'
                             : 'bg-gray-50 text-gray-400 cursor-not-allowed'
@@ -1161,91 +1175,7 @@ export function RightDock({
                       <Undo2 className="w-4 h-4" />
                       Undo
                     </button>
-                    <button
-                      onClick={onArrowClearAll}
-                      disabled={!canArrowUndo}
-                      className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-sm font-medium rounded-lg transition-colors ${
-                        canArrowUndo
-                          ? isDark
-                            ? 'bg-red-900/50 text-red-300 hover:bg-red-900/70'
-                            : 'bg-red-50 text-red-600 hover:bg-red-100'
-                          : isDark
-                            ? 'bg-gray-800 text-gray-600 cursor-not-allowed'
-                            : 'bg-gray-50 text-gray-400 cursor-not-allowed'
-                      }`}
-                    >
-                      <Trash2 className="w-4 h-4" />
-                      Clear
-                    </button>
                   </div>
-                </>
-              ) : mode === 'text' ? (
-                // TEXT MODE CONTENT
-                <>
-                  {/* Text Color Picker */}
-                  <div className="mb-3">
-                    <label className={`text-xs font-medium uppercase tracking-wide block mb-1.5 ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
-                      Color
-                    </label>
-                    <div className="grid grid-cols-6 gap-1.5">
-                      {['#1F2937', '#EF4444', '#F59E0B', '#10B981', '#3B82F6', '#8B5CF6'].map((color) => (
-                        <button
-                          key={color}
-                          onClick={() => onTextColorChange?.(color)}
-                          className={`w-8 h-8 rounded-lg transition-all flex items-center justify-center ${
-                            textColor === color ? 'ring-2 ring-offset-2 ring-purple-500 scale-110' : 'hover:scale-105'
-                          }`}
-                          style={{ backgroundColor: color }}
-                        >
-                          <Type className="w-4 h-4 text-white" />
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Font Size */}
-                  <div className="mb-3">
-                    <div className="flex items-center justify-between mb-1.5">
-                      <label className={`text-xs font-medium uppercase tracking-wide ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
-                        Font Size
-                      </label>
-                      <span className={`text-xs font-medium ${isDark ? 'text-gray-300' : 'text-gray-600'}`}>
-                        {fontSize}px
-                      </span>
-                    </div>
-                    <div className="grid grid-cols-5 gap-1">
-                      {[10, 12, 14, 16, 20].map((size) => (
-                        <button
-                          key={size}
-                          onClick={() => onFontSizeChange?.(size)}
-                          className={`py-2 text-sm font-medium rounded-md transition-all ${
-                            fontSize === size
-                              ? 'bg-purple-600 text-white shadow-md'
-                              : isDark
-                                ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                          }`}
-                        >
-                          {size}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Text Preview */}
-                  <div className={`mb-3 p-3 rounded-lg ${isDark ? 'bg-gray-700' : 'bg-gray-100'}`}>
-                    <p
-                      className="text-center font-medium"
-                      style={{ color: textColor, fontSize: `${fontSize}px` }}
-                    >
-                      Sample Text
-                    </p>
-                  </div>
-
-                  {/* Quick tip */}
-                  <p className={`text-xs ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
-                    Click on chart to add text label
-                  </p>
                 </>
               ) : mode === 'measure' ? (
                 // MEASURE MODE CONTENT - Measurements shown in Left Dock
