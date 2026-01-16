@@ -18,6 +18,8 @@ export interface UseChartZoomPanOptions {
   enableMomentum?: boolean
   /** Friction factor for momentum (0-1, lower = more friction, default: 0.92) */
   momentumFriction?: number
+  /** External state to sync with (optional - for controlled zoom from parent) */
+  externalState?: ZoomPanState
 }
 
 export interface UseChartZoomPanReturn {
@@ -69,7 +71,8 @@ export function useChartZoomPan(options: UseChartZoomPanOptions = {}): UseChartZ
     onInteractionStart,
     onInteractionEnd,
     enableMomentum = true,
-    momentumFriction = 0.92
+    momentumFriction = 0.92,
+    externalState
   } = options
 
   // State - only updated at end of gestures for React re-renders
@@ -104,6 +107,47 @@ export function useChartZoomPan(options: UseChartZoomPanOptions = {}): UseChartZ
   const velocityRef = useRef({ x: 0, y: 0 })
   const lastMoveTimeRef = useRef(0)
   const momentumRAFRef = useRef<number | null>(null)
+
+  // ============================================================================
+  // EXTERNAL STATE SYNC
+  // When externalState is provided and changes (e.g., from SmoothBrushTool's
+  // pinch-zoom gesture), sync it to our internal state and DOM.
+  // This enables controlled zoom from parent components.
+  //
+  // JITTER FIX: Use tolerance-based comparison to avoid micro-updates from
+  // floating-point differences. Only update if the change is visually significant.
+  // ============================================================================
+  useEffect(() => {
+    if (!externalState) return
+
+    // Check if external state differs SIGNIFICANTLY from current internal state
+    // Use tolerance to avoid jitter from floating-point differences
+    const current = currentTransform.current
+    const SCALE_TOLERANCE = 0.001  // ~0.1% scale change is significant
+    const TRANSLATE_TOLERANCE = 0.5  // ~0.5px translation change is significant
+
+    const scaleDiff = Math.abs(externalState.scale - current.scale)
+    const translateXDiff = Math.abs(externalState.translateX - current.translateX)
+    const translateYDiff = Math.abs(externalState.translateY - current.translateY)
+
+    const hasSignificantChange =
+      scaleDiff > SCALE_TOLERANCE ||
+      translateXDiff > TRANSLATE_TOLERANCE ||
+      translateYDiff > TRANSLATE_TOLERANCE
+
+    if (hasSignificantChange) {
+      // Update internal refs and state to match external state
+      currentTransform.current = { ...externalState }
+      setState(externalState)
+
+      // Apply transform directly to DOM for immediate visual update
+      if (contentRef.current) {
+        const { scale, translateX, translateY } = externalState
+        contentRef.current.style.transform =
+          `scale(${scale}) translate(${translateX / scale}px, ${translateY / scale}px)`
+      }
+    }
+  }, [externalState])
 
   // ============================================================================
   // RUBBER-BAND EFFECT

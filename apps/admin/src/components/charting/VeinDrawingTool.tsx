@@ -7,8 +7,10 @@ import React, {
   useCallback,
   forwardRef,
   useImperativeHandle,
+  useMemo,
 } from 'react';
-import { ReactSketchCanvas, ReactSketchCanvasRef, CanvasPath } from 'react-sketch-canvas';
+import { Stage, Layer, Line, Circle, Text, Group } from 'react-konva';
+import Konva from 'konva';
 import { DraggablePanel } from './DraggablePanel';
 import { useChartingTheme } from '@/contexts/ChartingThemeContext';
 import {
@@ -16,9 +18,14 @@ import {
   Undo2,
   X,
   CheckCircle,
-  Circle,
+  Circle as CircleIcon,
   Syringe,
 } from 'lucide-react';
+
+// =============================================================================
+// DEBUG FLAG - Set to true to enable verbose logging
+// =============================================================================
+const DEBUG_VEIN_DRAWING = false;
 
 // =============================================================================
 // TYPES
@@ -72,6 +79,19 @@ export interface InjectionSite {
 }
 
 /**
+ * Internal representation of a vein stroke in Konva
+ */
+interface KonvaVeinStroke {
+  id: string;
+  points: number[]; // Flattened [x1, y1, x2, y2, ...] in pixel coordinates
+  veinType: VeinType;
+  color: string;
+  strokeWidth: number;
+  /** Original points with pressure for export */
+  originalPoints: Array<{ x: number; y: number; pressure?: number }>;
+}
+
+/**
  * A complete vein path
  */
 export interface VeinPath {
@@ -84,8 +104,17 @@ export interface VeinPath {
   createdAt: Date;
   updatedAt: Date;
   visible: boolean;
-  /** Internal: stores the react-sketch-canvas path data for smooth rendering */
-  canvasPath?: CanvasPath;
+  /** Internal: stores the Konva stroke data for smooth rendering */
+  konvaStroke?: KonvaVeinStroke;
+}
+
+/**
+ * Zoom state for coordinating with parent zoom/pan container
+ */
+export interface ZoomState {
+  scale: number;
+  translateX: number;
+  translateY: number;
 }
 
 /**
@@ -114,6 +143,11 @@ export interface VeinDrawingToolProps {
   legView?: 'front' | 'back' | 'left' | 'right';
   /** Background image URL (optional) */
   backgroundImage?: string;
+  /**
+   * Zoom state from parent (FaceChartWithZoom, etc.)
+   * When provided, veins will transform to stay attached to the zoomed/panned chart.
+   */
+  zoomState?: ZoomState;
 }
 
 /**
@@ -206,49 +240,6 @@ function generateId(prefix: string = 'vein'): string {
  */
 function distanceBetweenPoints(p1: { x: number; y: number }, p2: { x: number; y: number }): number {
   return Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2));
-}
-
-/**
- * Convert canvas path points to VeinPoints (for backwards compatibility)
- */
-function canvasPathToVeinPoints(canvasPath: CanvasPath, containerWidth: number, containerHeight: number): VeinPoint[] {
-  return canvasPath.paths.map(point => ({
-    x: (point.x / containerWidth) * 100,
-    y: (point.y / containerHeight) * 100,
-    timestamp: Date.now(),
-  }));
-}
-
-/**
- * Smooth points using Catmull-Rom splines for natural vein appearance
- * Used only for rendering existing paths in the overlay SVG
- */
-function smoothPoints(points: VeinPoint[]): string {
-  if (points.length < 2) return '';
-  if (points.length === 2) {
-    return `M ${points[0].x} ${points[0].y} L ${points[1].x} ${points[1].y}`;
-  }
-
-  let pathD = `M ${points[0].x} ${points[0].y}`;
-
-  for (let i = 1; i < points.length - 1; i++) {
-    const p0 = points[i - 1];
-    const p1 = points[i];
-    const p2 = points[i + 1];
-
-    // Calculate control point for smooth bezier
-    const midX = (p1.x + p2.x) / 2;
-    const midY = (p1.y + p2.y) / 2;
-
-    pathD += ` Q ${p1.x} ${p1.y} ${midX} ${midY}`;
-  }
-
-  // Add final segment
-  const last = points[points.length - 1];
-  const secondLast = points[points.length - 2];
-  pathD += ` Q ${secondLast.x} ${secondLast.y} ${last.x} ${last.y}`;
-
-  return pathD;
 }
 
 // =============================================================================
@@ -574,7 +565,7 @@ export function VeinDrawingToolbar({
 
 // =============================================================================
 // MAIN VEIN DRAWING TOOL COMPONENT
-// Uses react-sketch-canvas for smooth, professional drawing experience
+// Uses Konva for smooth, professional drawing experience with stylus support
 // =============================================================================
 
 export const VeinDrawingTool = forwardRef<VeinDrawingToolRef, VeinDrawingToolProps>(
@@ -591,159 +582,353 @@ export const VeinDrawingTool = forwardRef<VeinDrawingToolRef, VeinDrawingToolPro
       zoom = 1,
       legView = 'front',
       backgroundImage,
+      zoomState,
     },
     ref
   ) {
     // Refs
-    const canvasRef = useRef<ReactSketchCanvasRef>(null);
     const containerRef = useRef<HTMLDivElement>(null);
-    const overlayRef = useRef<SVGSVGElement>(null);
+    const stageRef = useRef<Konva.Stage>(null);
 
     // Drawing state
     const [isDrawing, setIsDrawing] = useState(false);
+    const isDrawingRef = useRef(false);
 
-    // Track which vein paths have been loaded to canvas (by their ID)
-    const loadedPathIdsRef = useRef<Set<string>>(new Set());
+    // Current stroke being drawn
+    const [currentStroke, setCurrentStroke] = useState<KonvaVeinStroke | null>(null);
 
-    // Track mapping from canvas path index to vein ID
-    const canvasPathToVeinIdRef = useRef<Map<number, string>>(new Map());
-    const nextCanvasPathIndexRef = useRef(0);
+    // Track if multi-touch is happening (for zoom/pan passthrough)
+    const [isMultiTouchActive, setIsMultiTouchActive] = useState(false);
+    const touchCountRef = useRef(0);
+
+    // Container dimensions
+    const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
 
     // Tool settings
     const [veinType, setVeinType] = useState<VeinType>(initialVeinType);
     const [injectionMode, setInjectionMode] = useState(false);
     const [concentration, setConcentration] = useState('0.5%');
 
+    // Ref to track current vein type (avoid stale closure)
+    const veinTypeRef = useRef<VeinType>(veinType);
+
     const { theme } = useChartingTheme();
     const isDark = theme === 'dark';
+
+    // Keep veinType ref updated
+    useEffect(() => {
+      veinTypeRef.current = veinType;
+    }, [veinType]);
 
     // Get current vein config
     const currentConfig = VEIN_TYPE_CONFIGS[veinType];
 
+    // Track container size
+    useEffect(() => {
+      const updateDimensions = () => {
+        if (containerRef.current) {
+          const rect = containerRef.current.getBoundingClientRect();
+          setDimensions({ width: rect.width, height: rect.height });
+        }
+      };
+
+      updateDimensions();
+
+      const resizeObserver = new ResizeObserver(updateDimensions);
+      if (containerRef.current) {
+        resizeObserver.observe(containerRef.current);
+      }
+
+      return () => resizeObserver.disconnect();
+    }, []);
+
     // ==========================================================================
-    // SYNC EXISTING PATHS TO CANVAS
-    // Load existing vein paths into the canvas on mount or when paths change
+    // CONVERT EXISTING VEIN PATHS TO KONVA STROKES
+    // ==========================================================================
+
+    const konvaStrokes = useMemo((): KonvaVeinStroke[] => {
+      if (dimensions.width === 0 || dimensions.height === 0) return [];
+
+      return veinPaths
+        .filter(vein => vein.visible)
+        .map(vein => {
+          // If we have a stored konvaStroke, use it
+          if (vein.konvaStroke) {
+            return vein.konvaStroke;
+          }
+
+          // Otherwise, convert VeinPoints (percentages) to pixel coordinates
+          const config = VEIN_TYPE_CONFIGS[vein.veinType];
+          const points: number[] = [];
+          const originalPoints: Array<{ x: number; y: number; pressure?: number }> = [];
+
+          for (const point of vein.points) {
+            const pixelX = (point.x / 100) * dimensions.width;
+            const pixelY = (point.y / 100) * dimensions.height;
+            points.push(pixelX, pixelY);
+            originalPoints.push({ x: pixelX, y: pixelY, pressure: point.pressure });
+          }
+
+          return {
+            id: vein.id,
+            points,
+            veinType: vein.veinType,
+            color: vein.treatmentStatus === 'treated' ? config.treatedColor : config.color,
+            strokeWidth: config.strokeWidth,
+            originalPoints,
+          };
+        });
+    }, [veinPaths, dimensions]);
+
+    // ==========================================================================
+    // POINTER EVENT HANDLERS - Stylus vs Touch Detection
+    // ==========================================================================
+    //
+    // Key insight: PointerEvents have a `pointerType` property that tells us
+    // exactly what type of input device is being used:
+    // - "pen" = Apple Pencil or other stylus (SHOULD draw)
+    // - "touch" = finger touch (should NOT draw, allows zoom/pan)
+    // - "mouse" = mouse pointer (SHOULD draw for desktop testing)
+    //
+    // This is the cleanest way to implement pen-only drawing on tablets
+    // while still supporting mouse for desktop development.
+    // ==========================================================================
+
+    const handlePointerDown = useCallback((e: Konva.KonvaEventObject<PointerEvent>) => {
+      if (readOnly || injectionMode) return;
+
+      const evt = e.evt;
+
+      // Only allow drawing with pen (stylus) or mouse (for desktop testing)
+      // Reject touch events (fingers) to allow zoom/pan
+      if (evt.pointerType === 'touch') {
+        if (DEBUG_VEIN_DRAWING) {
+          console.log('[VeinDrawingTool/Konva] Ignoring touch pointer for zoom/pan passthrough');
+        }
+        return;
+      }
+
+      // Prevent default to stop touch events from also firing
+      evt.preventDefault();
+
+      const stage = stageRef.current;
+      if (!stage) return;
+
+      const pos = stage.getPointerPosition();
+      if (!pos) return;
+
+      // Get pressure (Apple Pencil provides pressure in the range 0-1)
+      const pressure = evt.pressure || 0.5;
+
+      isDrawingRef.current = true;
+      setIsDrawing(true);
+
+      const config = VEIN_TYPE_CONFIGS[veinTypeRef.current];
+      const newStroke: KonvaVeinStroke = {
+        id: generateId('vein'),
+        points: [pos.x, pos.y],
+        veinType: veinTypeRef.current,
+        color: config.color,
+        strokeWidth: config.strokeWidth,
+        originalPoints: [{ x: pos.x, y: pos.y, pressure }],
+      };
+
+      setCurrentStroke(newStroke);
+
+      if (DEBUG_VEIN_DRAWING) {
+        console.log('[VeinDrawingTool/Konva] Started stroke with', evt.pointerType, 'pressure:', pressure);
+      }
+    }, [readOnly, injectionMode]);
+
+    const handlePointerMove = useCallback((e: Konva.KonvaEventObject<PointerEvent>) => {
+      if (!isDrawingRef.current || readOnly) return;
+
+      const evt = e.evt;
+
+      // Only continue drawing with pen or mouse
+      if (evt.pointerType === 'touch') return;
+
+      evt.preventDefault();
+
+      const stage = stageRef.current;
+      if (!stage) return;
+
+      const pos = stage.getPointerPosition();
+      if (!pos) return;
+
+      const pressure = evt.pressure || 0.5;
+
+      setCurrentStroke(prev => {
+        if (!prev) return null;
+        return {
+          ...prev,
+          points: [...prev.points, pos.x, pos.y],
+          originalPoints: [...prev.originalPoints, { x: pos.x, y: pos.y, pressure }],
+        };
+      });
+    }, [readOnly]);
+
+    const handlePointerUp = useCallback((e: Konva.KonvaEventObject<PointerEvent>) => {
+      if (!isDrawingRef.current) return;
+
+      const evt = e.evt;
+
+      // Only finish drawing if we started with pen or mouse
+      if (evt.pointerType === 'touch') return;
+
+      isDrawingRef.current = false;
+      setIsDrawing(false);
+
+      if (currentStroke && currentStroke.points.length >= 4) {
+        // Stroke has at least 2 points (4 values: x1,y1,x2,y2)
+
+        // Convert pixel coordinates to percentages for VeinPath
+        const veinPoints: VeinPoint[] = currentStroke.originalPoints.map(p => ({
+          x: (p.x / dimensions.width) * 100,
+          y: (p.y / dimensions.height) * 100,
+          pressure: p.pressure,
+          timestamp: Date.now(),
+        }));
+
+        // Create new vein path
+        const newVein: VeinPath = {
+          id: currentStroke.id,
+          points: veinPoints,
+          veinType: currentStroke.veinType,
+          treatmentStatus: 'untreated',
+          injectionSites: [],
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          visible: true,
+          konvaStroke: currentStroke, // Store the Konva stroke for smooth rendering
+        };
+
+        if (DEBUG_VEIN_DRAWING) {
+          console.log('[VeinDrawingTool/Konva] Completed stroke:', {
+            id: newVein.id,
+            veinType: newVein.veinType,
+            pointCount: veinPoints.length,
+          });
+        }
+
+        onVeinPathsChange([...veinPaths, newVein]);
+        onSelectionChange?.(null);
+      }
+
+      setCurrentStroke(null);
+    }, [currentStroke, dimensions, veinPaths, onVeinPathsChange, onSelectionChange]);
+
+    // ==========================================================================
+    // TOUCH EVENT HANDLERS - For Zoom/Pan Passthrough
+    // ==========================================================================
+    //
+    // Native touch events are used to detect multi-touch gestures.
+    // When two fingers touch, we disable drawing and let events propagate
+    // to the parent FaceChartWithZoom for zoom/pan handling.
     // ==========================================================================
 
     useEffect(() => {
-      if (!canvasRef.current || !isActive) return;
+      const container = containerRef.current;
+      if (!container) return;
 
-      const loadExistingPaths = async () => {
-        // Find paths that need to be loaded (have canvasPath data but not yet loaded)
-        const pathsToLoad: CanvasPath[] = [];
+      const handleTouchStart = (e: TouchEvent) => {
+        touchCountRef.current = e.touches.length;
 
-        for (const vein of veinPaths) {
-          if (vein.canvasPath && !loadedPathIdsRef.current.has(vein.id) && vein.visible) {
-            pathsToLoad.push(vein.canvasPath);
-            loadedPathIdsRef.current.add(vein.id);
+        if (e.touches.length >= 2) {
+          // Multi-touch detected - disable drawing, allow zoom/pan
+          setIsMultiTouchActive(true);
+          isDrawingRef.current = false;
+          setIsDrawing(false);
+          setCurrentStroke(null);
+
+          if (DEBUG_VEIN_DRAWING) {
+            console.log('[VeinDrawingTool/Konva] Multi-touch detected, disabling drawing');
           }
-        }
-
-        if (pathsToLoad.length > 0) {
-          await canvasRef.current?.loadPaths(pathsToLoad);
         }
       };
 
-      loadExistingPaths();
-    }, [veinPaths, isActive]);
+      const handleTouchEnd = (e: TouchEvent) => {
+        touchCountRef.current = e.touches.length;
 
-    // ==========================================================================
-    // HANDLE STROKE COMPLETION
-    // When a stroke is finished, create a VeinPath from it
-    // ==========================================================================
-
-    const handleStroke = useCallback(async () => {
-      if (!canvasRef.current || !containerRef.current) return;
-
-      setIsDrawing(false);
-
-      // Get the latest paths from canvas
-      const allCanvasPaths = await canvasRef.current.exportPaths();
-      if (!allCanvasPaths || allCanvasPaths.length === 0) return;
-
-      // The last path is the newly drawn one
-      const newCanvasPath = allCanvasPaths[allCanvasPaths.length - 1];
-      if (!newCanvasPath || newCanvasPath.paths.length < 2) return;
-
-      // Get container dimensions for percentage conversion
-      const rect = containerRef.current.getBoundingClientRect();
-
-      // Convert canvas path to VeinPoints (as percentages)
-      const veinPoints: VeinPoint[] = newCanvasPath.paths.map(point => ({
-        x: (point.x / rect.width) * 100,
-        y: (point.y / rect.height) * 100,
-        timestamp: Date.now(),
-      }));
-
-      // Create new vein path
-      const newVein: VeinPath = {
-        id: generateId('vein'),
-        points: veinPoints,
-        veinType,
-        treatmentStatus: 'untreated',
-        injectionSites: [],
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        visible: true,
-        canvasPath: newCanvasPath, // Store the smooth canvas path
+        if (e.touches.length <= 1) {
+          // Delay reset to prevent accidental strokes after gesture
+          setTimeout(() => {
+            setIsMultiTouchActive(false);
+          }, 150);
+        }
       };
 
-      // Track this path
-      canvasPathToVeinIdRef.current.set(nextCanvasPathIndexRef.current, newVein.id);
-      loadedPathIdsRef.current.add(newVein.id);
-      nextCanvasPathIndexRef.current++;
+      // Use passive: true to allow gestures to propagate
+      container.addEventListener('touchstart', handleTouchStart, { passive: true });
+      container.addEventListener('touchend', handleTouchEnd, { passive: true });
+      container.addEventListener('touchcancel', handleTouchEnd, { passive: true });
 
-      onVeinPathsChange([...veinPaths, newVein]);
-      onSelectionChange?.(null);
-    }, [veinType, veinPaths, onVeinPathsChange, onSelectionChange]);
+      return () => {
+        container.removeEventListener('touchstart', handleTouchStart);
+        container.removeEventListener('touchend', handleTouchEnd);
+        container.removeEventListener('touchcancel', handleTouchEnd);
+      };
+    }, []);
+
+    // Reset multi-touch state when tool becomes active
+    useEffect(() => {
+      if (isActive) {
+        touchCountRef.current = 0;
+        setIsMultiTouchActive(false);
+      }
+    }, [isActive]);
 
     // ==========================================================================
-    // SELECTION & INJECTION HANDLING (via overlay)
+    // SELECTION & INJECTION HANDLING
     // ==========================================================================
 
-    const handleOverlayClick = useCallback(
-      (e: React.MouseEvent<SVGSVGElement>) => {
-        if (!isActive || readOnly || !overlayRef.current) return;
+    const handleStageClick = useCallback((e: Konva.KonvaEventObject<MouseEvent | TouchEvent>) => {
+      if (!isActive || readOnly) return;
+      if (isDrawingRef.current) return; // Don't select while drawing
 
-        const rect = overlayRef.current.getBoundingClientRect();
-        const x = ((e.clientX - rect.left) / rect.width) * 100;
-        const y = ((e.clientY - rect.top) / rect.height) * 100;
-        const clickPoint = { x, y };
+      const stage = stageRef.current;
+      if (!stage) return;
 
-        // If in injection mode, try to add injection site to clicked vein
-        if (injectionMode) {
-          for (const vein of [...veinPaths].reverse()) {
-            if (vein.visible && vein.points.length > 0) {
-              for (const veinPoint of vein.points) {
-                const dist = distanceBetweenPoints(clickPoint, veinPoint);
-                if (dist < 5) {
-                  addInjectionSiteToVein(vein.id, x, y);
-                  return;
-                }
-              }
-            }
-          }
-          return;
-        }
+      const pos = stage.getPointerPosition();
+      if (!pos) return;
 
-        // Check if clicking on existing vein for selection
+      // Convert to percentage coordinates
+      const x = (pos.x / dimensions.width) * 100;
+      const y = (pos.y / dimensions.height) * 100;
+      const clickPoint = { x, y };
+
+      // If in injection mode, try to add injection site to clicked vein
+      if (injectionMode) {
         for (const vein of [...veinPaths].reverse()) {
           if (vein.visible && vein.points.length > 0) {
             for (const veinPoint of vein.points) {
               const dist = distanceBetweenPoints(clickPoint, veinPoint);
               if (dist < 5) {
-                onSelectionChange?.(vein.id);
+                addInjectionSiteToVein(vein.id, x, y);
                 return;
               }
             }
           }
         }
+        return;
+      }
 
-        // Clicked empty space - clear selection
-        onSelectionChange?.(null);
-      },
-      [isActive, readOnly, injectionMode, veinPaths, onSelectionChange]
-    );
+      // Check if clicking on existing vein for selection
+      for (const vein of [...veinPaths].reverse()) {
+        if (vein.visible && vein.points.length > 0) {
+          for (const veinPoint of vein.points) {
+            const dist = distanceBetweenPoints(clickPoint, veinPoint);
+            if (dist < 5) {
+              onSelectionChange?.(vein.id);
+              return;
+            }
+          }
+        }
+      }
+
+      // Clicked empty space - clear selection
+      onSelectionChange?.(null);
+    }, [isActive, readOnly, injectionMode, veinPaths, dimensions, onSelectionChange]);
 
     // ==========================================================================
     // ACTION HANDLERS
@@ -752,33 +937,28 @@ export const VeinDrawingTool = forwardRef<VeinDrawingToolRef, VeinDrawingToolPro
     /**
      * Undo last vein
      */
-    const handleUndo = useCallback(async () => {
+    const handleUndo = useCallback(() => {
       if (veinPaths.length === 0) return;
-
-      // Remove from canvas
-      await canvasRef.current?.undo();
-
-      // Remove from vein paths
-      const removedVein = veinPaths[veinPaths.length - 1];
-      if (removedVein) {
-        loadedPathIdsRef.current.delete(removedVein.id);
-      }
 
       const newPaths = veinPaths.slice(0, -1);
       onVeinPathsChange(newPaths);
       onSelectionChange?.(null);
+
+      if (DEBUG_VEIN_DRAWING) {
+        console.log('[VeinDrawingTool/Konva] Undo, veins remaining:', newPaths.length);
+      }
     }, [veinPaths, onVeinPathsChange, onSelectionChange]);
 
     /**
      * Clear all veins
      */
-    const handleClearAll = useCallback(async () => {
-      await canvasRef.current?.clearCanvas();
-      loadedPathIdsRef.current.clear();
-      canvasPathToVeinIdRef.current.clear();
-      nextCanvasPathIndexRef.current = 0;
+    const handleClearAll = useCallback(() => {
       onVeinPathsChange([]);
       onSelectionChange?.(null);
+
+      if (DEBUG_VEIN_DRAWING) {
+        console.log('[VeinDrawingTool/Konva] Cleared all veins');
+      }
     }, [onVeinPathsChange, onSelectionChange]);
 
     /**
@@ -788,12 +968,25 @@ export const VeinDrawingTool = forwardRef<VeinDrawingToolRef, VeinDrawingToolPro
       (veinId: string) => {
         const updatedPaths = veinPaths.map((vein) => {
           if (vein.id === veinId) {
+            const newStatus: VeinTreatmentStatus =
+              vein.treatmentStatus === 'treated' ? 'untreated' : 'treated';
+            const config = VEIN_TYPE_CONFIGS[vein.veinType];
+
+            // Update the konvaStroke color if present
+            let updatedKonvaStroke = vein.konvaStroke;
+            if (updatedKonvaStroke) {
+              updatedKonvaStroke = {
+                ...updatedKonvaStroke,
+                color: newStatus === 'treated' ? config.treatedColor : config.color,
+              };
+            }
+
             return {
               ...vein,
-              treatmentStatus:
-                vein.treatmentStatus === 'treated' ? 'untreated' : 'treated',
+              treatmentStatus: newStatus,
               updatedAt: new Date(),
-            } as VeinPath;
+              konvaStroke: updatedKonvaStroke,
+            };
           }
           return vein;
         });
@@ -834,41 +1027,16 @@ export const VeinDrawingTool = forwardRef<VeinDrawingToolRef, VeinDrawingToolPro
     /**
      * Delete selected vein
      */
-    const handleDeleteSelected = useCallback(async () => {
+    const handleDeleteSelected = useCallback(() => {
       if (!selectedVeinId) return;
 
-      // Find the index of the vein to remove
-      const veinIndex = veinPaths.findIndex(v => v.id === selectedVeinId);
-      if (veinIndex === -1) return;
-
-      // We need to clear and reload all paths except the deleted one
-      // This is necessary because react-sketch-canvas doesn't have a "delete specific path" API
       const remainingVeins = veinPaths.filter((vein) => vein.id !== selectedVeinId);
-      const canvasPathsToReload: CanvasPath[] = [];
-
-      // Reset tracking
-      loadedPathIdsRef.current.clear();
-      canvasPathToVeinIdRef.current.clear();
-      nextCanvasPathIndexRef.current = 0;
-
-      // Collect canvas paths from remaining veins
-      for (const vein of remainingVeins) {
-        if (vein.canvasPath && vein.visible) {
-          canvasPathsToReload.push(vein.canvasPath);
-          canvasPathToVeinIdRef.current.set(nextCanvasPathIndexRef.current, vein.id);
-          loadedPathIdsRef.current.add(vein.id);
-          nextCanvasPathIndexRef.current++;
-        }
-      }
-
-      // Clear and reload
-      await canvasRef.current?.clearCanvas();
-      if (canvasPathsToReload.length > 0) {
-        await canvasRef.current?.loadPaths(canvasPathsToReload);
-      }
-
       onVeinPathsChange(remainingVeins);
       onSelectionChange?.(null);
+
+      if (DEBUG_VEIN_DRAWING) {
+        console.log('[VeinDrawingTool/Konva] Deleted vein:', selectedVeinId);
+      }
     }, [selectedVeinId, veinPaths, onVeinPathsChange, onSelectionChange]);
 
     /**
@@ -876,7 +1044,8 @@ export const VeinDrawingTool = forwardRef<VeinDrawingToolRef, VeinDrawingToolPro
      */
     const handleCancelDraw = useCallback(() => {
       setIsDrawing(false);
-      canvasRef.current?.undo();
+      isDrawingRef.current = false;
+      setCurrentStroke(null);
     }, []);
 
     // ==========================================================================
@@ -929,114 +1098,145 @@ export const VeinDrawingTool = forwardRef<VeinDrawingToolRef, VeinDrawingToolPro
           />
         </svg>
 
-        {/* Main smooth drawing canvas - using react-sketch-canvas */}
-        {isActive && !injectionMode && !readOnly && (
+        {/* Main Konva canvas for drawing */}
+        {isActive && !readOnly && dimensions.width > 0 && dimensions.height > 0 && (
           <div
             className="absolute inset-0 z-10"
             style={{
-              // IMPORTANT: Use 'pinch-zoom' instead of 'none' to allow two-finger zoom gestures
-              // to pass through to the parent FaceChartWithZoom component.
-              // This ensures practitioners can ALWAYS zoom in/out regardless of which tool is active.
-              touchAction: 'pinch-zoom'
+              // Allow touch events to pass through for zoom/pan when multi-touch
+              touchAction: 'manipulation',
+              // CRITICAL: Only capture pointer events when NOT in multi-touch mode
+              // and only when not in injection mode (injection mode uses click handling)
+              pointerEvents: isMultiTouchActive ? 'none' : (injectionMode ? 'none' : 'auto'),
             }}
           >
-            <ReactSketchCanvas
-              ref={canvasRef}
-              width="100%"
-              height="100%"
-              strokeWidth={currentConfig.strokeWidth}
-              strokeColor={currentConfig.color}
-              canvasColor="transparent"
+            <Stage
+              ref={stageRef}
+              width={dimensions.width}
+              height={dimensions.height}
+              onPointerDown={handlePointerDown}
+              onPointerMove={handlePointerMove}
+              onPointerUp={handlePointerUp}
+              onClick={handleStageClick}
+              onTap={handleStageClick}
               style={{
-                border: 'none',
-                borderRadius: 0,
+                // Ensure stage captures stylus events
+                touchAction: 'none',
               }}
-              svgStyle={{
-                pointerEvents: 'all',
-              }}
-              exportWithBackgroundImage={false}
-              withTimestamp={false}
-              allowOnlyPointerType="all"
-              onStroke={handleStroke}
-            />
+            >
+              <Layer>
+                {/* Render completed strokes */}
+                {konvaStrokes.map((stroke) => {
+                  const isSelected = selectedVeinId === stroke.id;
+                  return (
+                    <Line
+                      key={stroke.id}
+                      points={stroke.points}
+                      stroke={stroke.color}
+                      strokeWidth={stroke.strokeWidth}
+                      lineCap="round"
+                      lineJoin="round"
+                      tension={0.5}
+                      globalCompositeOperation="source-over"
+                      shadowColor={isSelected ? stroke.color : undefined}
+                      shadowBlur={isSelected ? 8 : 0}
+                      shadowOpacity={isSelected ? 0.6 : 0}
+                    />
+                  );
+                })}
+
+                {/* Render current stroke being drawn */}
+                {currentStroke && (
+                  <Line
+                    points={currentStroke.points}
+                    stroke={currentStroke.color}
+                    strokeWidth={currentStroke.strokeWidth}
+                    lineCap="round"
+                    lineJoin="round"
+                    tension={0.5}
+                    globalCompositeOperation="source-over"
+                  />
+                )}
+
+                {/* Render injection sites */}
+                {veinPaths.map((vein) => {
+                  if (!vein.visible) return null;
+                  return vein.injectionSites.map((site) => {
+                    const pixelX = (site.x / 100) * dimensions.width;
+                    const pixelY = (site.y / 100) * dimensions.height;
+                    return (
+                      <Group key={site.id}>
+                        <Circle
+                          x={pixelX}
+                          y={pixelY}
+                          radius={8}
+                          fill="#F97316"
+                          stroke="#FFFFFF"
+                          strokeWidth={2}
+                        />
+                        <Text
+                          x={pixelX + 10}
+                          y={pixelY - 6}
+                          text={site.concentration || ''}
+                          fontSize={12}
+                          fill={isDark ? '#FFFFFF' : '#333333'}
+                        />
+                      </Group>
+                    );
+                  });
+                })}
+
+                {/* Render treatment status indicators */}
+                {veinPaths.map((vein) => {
+                  if (!vein.visible || vein.treatmentStatus !== 'treated' || vein.points.length === 0) {
+                    return null;
+                  }
+                  const config = VEIN_TYPE_CONFIGS[vein.veinType];
+                  const firstPoint = vein.points[0];
+                  const pixelX = (firstPoint.x / 100) * dimensions.width;
+                  const pixelY = (firstPoint.y / 100) * dimensions.height;
+                  return (
+                    <Circle
+                      key={`treated-${vein.id}`}
+                      x={pixelX}
+                      y={pixelY}
+                      radius={10}
+                      fill={config.treatedColor}
+                      stroke="#FFFFFF"
+                      strokeWidth={2}
+                    />
+                  );
+                })}
+
+                {/* Render selection indicator */}
+                {selectedVeinId && (() => {
+                  const selectedVein = veinPaths.find(v => v.id === selectedVeinId);
+                  if (!selectedVein || selectedVein.points.length === 0) return null;
+                  const config = VEIN_TYPE_CONFIGS[selectedVein.veinType];
+                  const firstPoint = selectedVein.points[0];
+                  const pixelX = (firstPoint.x / 100) * dimensions.width;
+                  const pixelY = (firstPoint.y / 100) * dimensions.height;
+                  return (
+                    <Circle
+                      x={pixelX}
+                      y={pixelY}
+                      radius={14}
+                      fill="transparent"
+                      stroke={config.color}
+                      strokeWidth={2}
+                      dash={[4, 4]}
+                    />
+                  );
+                })()}
+              </Layer>
+            </Stage>
           </div>
         )}
 
-        {/* Overlay SVG for selections, injection sites, and treatment indicators */}
-        <svg
-          ref={overlayRef}
-          className={`absolute inset-0 w-full h-full z-20 ${
-            injectionMode ? 'cursor-pointer' : 'pointer-events-none'
-          }`}
-          viewBox="0 0 100 100"
-          preserveAspectRatio="none"
-          onClick={injectionMode ? handleOverlayClick : undefined}
-        >
-          {/* Render injection sites and treatment status for all veins */}
-          {veinPaths.map((vein) => {
-            if (!vein.visible) return null;
-            const config = VEIN_TYPE_CONFIGS[vein.veinType];
-            const isSelected = selectedVeinId === vein.id;
-
-            return (
-              <g key={vein.id}>
-                {/* Selection highlight ring at start point */}
-                {isSelected && vein.points.length > 0 && (
-                  <circle
-                    cx={vein.points[0].x}
-                    cy={vein.points[0].y}
-                    r={2}
-                    fill="none"
-                    stroke={config.color}
-                    strokeWidth={0.5}
-                    strokeDasharray="1,1"
-                    opacity={0.8}
-                  />
-                )}
-
-                {/* Injection site markers */}
-                {vein.injectionSites.map((site) => (
-                  <g key={site.id}>
-                    <circle
-                      cx={site.x}
-                      cy={site.y}
-                      r={1.2}
-                      fill="#F97316"
-                      stroke="#FFF"
-                      strokeWidth={0.3}
-                    />
-                    <text
-                      x={site.x + 1.5}
-                      y={site.y - 0.5}
-                      fontSize={2}
-                      fill={isDark ? '#FFF' : '#333'}
-                      className="pointer-events-none select-none"
-                    >
-                      {site.concentration}
-                    </text>
-                  </g>
-                ))}
-
-                {/* Treatment status indicator */}
-                {vein.treatmentStatus === 'treated' && vein.points.length > 0 && (
-                  <circle
-                    cx={vein.points[0].x}
-                    cy={vein.points[0].y}
-                    r={1.5}
-                    fill={config.treatedColor}
-                    stroke="#FFF"
-                    strokeWidth={0.3}
-                  />
-                )}
-              </g>
-            );
-          })}
-        </svg>
-
-        {/* Click layer for selection (when not in drawing mode) */}
-        {isActive && (injectionMode || readOnly) && (
+        {/* Click layer for injection mode */}
+        {isActive && injectionMode && !readOnly && (
           <div
-            className="absolute inset-0 z-25"
+            className="absolute inset-0 z-25 cursor-pointer"
             style={{ pointerEvents: 'auto' }}
             onClick={(e) => {
               const rect = containerRef.current?.getBoundingClientRect();
@@ -1049,17 +1249,12 @@ export const VeinDrawingTool = forwardRef<VeinDrawingToolRef, VeinDrawingToolPro
                 if (vein.visible && vein.points.length > 0) {
                   for (const point of vein.points) {
                     if (distanceBetweenPoints({ x, y }, point) < 5) {
-                      if (injectionMode) {
-                        addInjectionSiteToVein(vein.id, x, y);
-                      } else {
-                        onSelectionChange?.(vein.id);
-                      }
+                      addInjectionSiteToVein(vein.id, x, y);
                       return;
                     }
                   }
                 }
               }
-              onSelectionChange?.(null);
             }}
           />
         )}
@@ -1104,7 +1299,7 @@ export const VeinDrawingTool = forwardRef<VeinDrawingToolRef, VeinDrawingToolPro
               {veinPaths.find((v) => v.id === selectedVeinId)?.treatmentStatus ===
               'treated' ? (
                 <>
-                  <Circle className="w-4 h-4" />
+                  <CircleIcon className="w-4 h-4" />
                   Mark Untreated
                 </>
               ) : (

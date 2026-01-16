@@ -46,6 +46,15 @@ export interface CalibrationData {
   referencePx: number;
 }
 
+/**
+ * Zoom state for coordinating with parent zoom/pan container
+ */
+export interface ZoomState {
+  scale: number;
+  translateX: number;
+  translateY: number;
+}
+
 export interface MeasurementToolProps {
   /** Whether the measurement tool is active */
   isActive: boolean;
@@ -65,6 +74,11 @@ export interface MeasurementToolProps {
   showCm?: boolean;
   /** Read-only mode */
   readOnly?: boolean;
+  /**
+   * Zoom state from parent (FaceChartWithZoom, etc.)
+   * When provided, measurements will transform to stay attached to the zoomed/panned chart.
+   */
+  zoomState?: ZoomState;
 }
 
 // =============================================================================
@@ -163,6 +177,8 @@ interface MeasurementOverlayProps {
   containerRef: React.RefObject<HTMLDivElement | null>;
   isActive: boolean;
   readOnly: boolean;
+  /** Zoom state for following chart zoom/pan transforms */
+  zoomState?: ZoomState;
 }
 
 function MeasurementOverlay({
@@ -178,6 +194,7 @@ function MeasurementOverlay({
   containerRef,
   isActive,
   readOnly,
+  zoomState,
 }: MeasurementOverlayProps) {
   const { theme } = useChartingTheme();
   const isDark = theme === 'dark';
@@ -201,10 +218,22 @@ function MeasurementOverlay({
     return { distancePx, distanceMm };
   }, [pendingPoint, mousePosition, containerRef, calibration]);
 
+  // Calculate the transform to match the parent zoom/pan container
+  // This ensures measurements stay "attached to the map" when zooming/panning
+  const svgTransform = zoomState
+    ? `scale(${zoomState.scale}) translate(${zoomState.translateX / zoomState.scale}px, ${zoomState.translateY / zoomState.scale}px)`
+    : undefined;
+
   return (
     <svg
       className="absolute inset-0 w-full h-full pointer-events-none"
-      style={{ overflow: 'visible' }}
+      style={{
+        overflow: 'visible',
+        // Apply the same transform as the parent zoom/pan container so measurements follow the chart
+        // This makes measurements "attached to the map" - when you zoom in, measurements move with the face chart
+        transform: svgTransform,
+        transformOrigin: 'center center',
+      }}
     >
       <defs>
         {/* Gradient for lines */}
@@ -489,6 +518,7 @@ export function MeasurementTool({
   zoom = 1,
   showCm = false,
   readOnly = false,
+  zoomState,
 }: MeasurementToolProps) {
   // Pending point state (first point of a new measurement)
   const [pendingPoint, setPendingPoint] = useState<MeasurementPoint | null>(null);
@@ -821,6 +851,7 @@ export function MeasurementTool({
         containerRef={containerRef}
         isActive={isActive}
         readOnly={readOnly}
+        zoomState={zoomState}
       />
 
       {/* Minimal toolbar - only shows when there are measurements */}

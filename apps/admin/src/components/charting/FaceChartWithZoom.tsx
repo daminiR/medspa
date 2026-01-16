@@ -48,6 +48,10 @@ export interface FaceChartWithZoomProps extends Omit<FaceChartCoreProps, 'zoom'>
   hasContent?: boolean
   // External zoom state management (optional - for bottom bar integration)
   onZoomStateChange?: (state: ZoomState, controls: ZoomControls, isZoomed: boolean) => void
+  /** External zoom state (optional - for controlled zoom from parent, e.g., when SmoothBrushTool updates zoom) */
+  zoomState?: ZoomState
+  /** Children to render as overlay (e.g., SmoothBrushTool) */
+  children?: React.ReactNode
 }
 
 export function FaceChartWithZoom({
@@ -65,6 +69,10 @@ export function FaceChartWithZoom({
   hasContent,
   // External zoom state management
   onZoomStateChange,
+  // External zoom state (for controlled zoom from parent)
+  zoomState: externalZoomState,
+  // Children overlay (e.g., SmoothBrushTool)
+  children,
   ...chartProps
 }: FaceChartWithZoomProps) {
   // Debug: log the drawingMode being passed through
@@ -88,7 +96,9 @@ export function FaceChartWithZoom({
     onInteractionEnd: () => {
       // Small delay to prevent click events right after gesture ends
       setTimeout(() => setIsGesturing(false), 100)
-    }
+    },
+    // Pass external zoom state for controlled zoom from parent (e.g., SmoothBrushTool's pinch-zoom)
+    externalState: externalZoomState
   })
 
   // NOTE: We do NOT wrap click handlers here - let them pass through to FaceChartCore
@@ -138,6 +148,8 @@ export function FaceChartWithZoom({
             zoom={state.scale}
             selectedDosage={selectedDosage}
           />
+          {/* Overlay tools - rendered inside contentRef so they move with zoom transform */}
+          {children}
         </div>
       </div>
 

@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useRef, useImperativeHandle, forwardRef, useState, useEffect, useCallback, useMemo } from 'react';
-import { ReactSketchCanvas, ReactSketchCanvasRef, CanvasPath } from 'react-sketch-canvas';
+import { Stage, Layer, Line } from 'react-konva';
+import Konva from 'konva';
 import { MapPin, X, ChevronDown } from 'lucide-react';
 import { detectZoneFromStroke, detectMultipleZones, FACE_ZONE_DEFINITIONS, type DetectedZone } from './zoneDetection';
 
@@ -9,6 +10,19 @@ import { detectZoneFromStroke, detectMultipleZones, FACE_ZONE_DEFINITIONS, type 
 // DEBUG FLAG - Set to true to enable verbose logging for brush layer tracking
 // =============================================================================
 const DEBUG_BRUSH_LAYERS = true;
+
+// =============================================================================
+// KONVA GLOBAL PERFORMANCE SETTINGS
+// =============================================================================
+// Optimize for mobile/retina devices - reduce pixel ratio for better performance
+// See: https://konvajs.org/docs/performance/All_Performance_Tips.html
+// Note: Only apply this if drawing feels sluggish on retina devices
+if (typeof window !== 'undefined') {
+  // On high-DPI devices, Konva automatically scales up which can hurt performance
+  // Setting pixelRatio to 1 trades visual crispness for better drawing speed
+  // Uncomment the following line if performance is an issue on retina displays:
+  // Konva.pixelRatio = 1;
+}
 
 // =============================================================================
 // TYPES
@@ -33,6 +47,32 @@ export interface TreatmentTypeConfig {
 
 export type BrushSize = 'small' | 'medium' | 'large';
 
+/** A single point in a brush stroke with optional pressure */
+interface BrushPoint {
+  x: number;
+  y: number;
+  pressure?: number;
+}
+
+/** Internal representation of a brush stroke in Konva */
+interface KonvaStroke {
+  id: string;
+  points: number[]; // Flattened [x1, y1, x2, y2, ...]
+  treatmentType: TreatmentAreaType;
+  color: string;
+  strokeWidth: number;
+  /** Original points with pressure for export */
+  originalPoints: BrushPoint[];
+}
+
+/** CanvasPath format for compatibility with react-sketch-canvas exports */
+export interface CanvasPath {
+  drawMode: boolean;
+  strokeColor: string;
+  strokeWidth: number;
+  paths: Array<{ x: number; y: number }>;
+}
+
 /** Extended path with treatment type metadata */
 export interface BrushPath extends CanvasPath {
   treatmentType: TreatmentAreaType;
@@ -52,6 +92,15 @@ export interface SmoothBrushToolRef {
   getPathCountByType: () => Record<TreatmentAreaType, number>;
   /** Detect zones from ALL current brush strokes - call when user is done drawing */
   detectAllZones: () => Promise<DetectedZone[]>;
+}
+
+/**
+ * Zoom state for coordinating with parent zoom/pan container
+ */
+export interface ZoomState {
+  scale: number;
+  translateX: number;
+  translateY: number;
 }
 
 export interface SmoothBrushToolProps {
@@ -87,85 +136,71 @@ export interface SmoothBrushToolProps {
   onZoneDetected?: (zoneName: string, confidence: number) => void;
   /** Callback when detectAllZones completes - receives all detected zones from all strokes */
   onAllZonesDetected?: (zones: DetectedZone[]) => void;
+  /**
+   * Zoom state from parent (FaceChartWithZoom, etc.)
+   * When provided, brush strokes will transform to stay attached to the zoomed/panned chart.
+   * NOTE: Zoom is handled by FaceChartWithZoom - this is read-only for applying transforms.
+   */
+  zoomState?: ZoomState;
 }
 
 // =============================================================================
 // DEFAULT TREATMENT TYPES - Uniform colors with no opacity stacking
 // =============================================================================
 
-// SOLUTION FOR OPACITY STACKING:
-// The issue was that overlapping brush strokes would create darker areas where they
-// overlapped - unacceptable for medical charting where uniform color is needed.
-//
-// ROOT CAUSE: react-sketch-canvas renders each stroke as a separate SVG <path>.
-// When paths overlap with any opacity < 1.0, colors accumulate (stack), creating
-// darker regions. Even mix-blend-mode doesn't solve this because each path is
-// rendered independently before blending.
-//
-// THE FIX: Layer-based opacity with solid vibrant colors.
-// - Colors are defined as vibrant hex (#XXXXXX) with NO alpha channel
-// - NO rgba() conversion - we use the hex color as-is at 100% solid
-// - With fully opaque solid colors, overlapping strokes simply paint over each other
-//   with the same color, resulting in uniform appearance (no stacking/darkening)
-// - The CONTAINER div has opacity: 0.6, making all strokes uniformly translucent
-// - This gives us vibrant, distinct colors that are still see-through to the face chart
 export const DEFAULT_TREATMENT_TYPES: TreatmentTypeConfig[] = [
   {
     id: 'fractional_laser',
     name: 'Fractional Laser',
-    color: '#DC2626', // Bold red (red-600) - ablative/aggressive treatments
+    color: '#DC2626',
     defaultOpacity: 1.0,
     description: 'Non-ablative fractional resurfacing',
   },
   {
     id: 'co2_laser',
     name: 'CO2 Laser',
-    color: '#EA580C', // Bold orange (orange-600) - moderate/ablative treatments
+    color: '#EA580C',
     defaultOpacity: 1.0,
     description: 'Ablative CO2 laser resurfacing',
   },
   {
     id: 'ipl',
     name: 'IPL',
-    color: '#F59E0B', // Bold amber (amber-500) - light treatments
+    color: '#F59E0B',
     defaultOpacity: 1.0,
     description: 'Intense pulsed light therapy',
   },
   {
     id: 'microneedling',
     name: 'Microneedling',
-    color: '#9333EA', // Bold purple (purple-600) - combination therapy
+    color: '#9333EA',
     defaultOpacity: 1.0,
     description: 'Collagen induction therapy',
   },
   {
     id: 'chemical_peel',
     name: 'Chemical Peel',
-    color: '#0891B2', // Bold cyan (cyan-600) - cooling/chemical treatments
+    color: '#0891B2',
     defaultOpacity: 1.0,
     description: 'Chemical exfoliation treatment',
   },
   {
     id: 'radiofrequency',
     name: 'Radiofrequency',
-    color: '#DB2777', // Bold pink (pink-600) - RF/energy treatments
+    color: '#DB2777',
     defaultOpacity: 1.0,
     description: 'RF skin tightening',
   },
   {
     id: 'custom',
     name: 'Custom',
-    color: '#4B5563', // Darker gray (gray-600) - neutral for custom
+    color: '#4B5563',
     defaultOpacity: 1.0,
     description: 'Custom treatment area',
   },
 ];
 
 // Brush size to stroke width mapping
-// Sized for practitioners marking treatment areas quickly:
-// - Small: for precise edges, fine detail (15-20px)
-// - Medium: for moderate areas like forehead bands (35-45px)
-// - Large: for quickly covering large areas like cheeks (60-80px)
 const BRUSH_SIZE_TO_WIDTH: Record<BrushSize, number> = {
   small: 18,
   medium: 40,
@@ -184,14 +219,23 @@ function getTreatmentTypeConfig(
   return types.find((t) => t.id === typeId) || types[types.length - 1];
 }
 
-// NOTE: We intentionally do NOT convert hex to rgba.
-// Using solid hex colors (#XXXXXX) without any alpha channel ensures that
-// overlapping brush strokes don't accumulate/stack to create darker regions.
-// The vibrant hex colors remain bold and distinct while the container-level
-// opacity (0.6) makes them uniformly translucent to see the face chart beneath.
+/** Generate a unique ID for strokes */
+function generateStrokeId(): string {
+  return `stroke_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+}
+
+/** Convert KonvaStroke to CanvasPath format for compatibility */
+function konvaStrokeToCanvasPath(stroke: KonvaStroke): CanvasPath {
+  return {
+    drawMode: true,
+    strokeColor: stroke.color,
+    strokeWidth: stroke.strokeWidth,
+    paths: stroke.originalPoints.map(p => ({ x: p.x, y: p.y })),
+  };
+}
 
 // =============================================================================
-// SMOOTH BRUSH TOOL COMPONENT
+// SMOOTH BRUSH TOOL COMPONENT - KONVA IMPLEMENTATION
 // =============================================================================
 
 export const SmoothBrushTool = forwardRef<SmoothBrushToolRef, SmoothBrushToolProps>(
@@ -201,7 +245,7 @@ export const SmoothBrushTool = forwardRef<SmoothBrushToolRef, SmoothBrushToolPro
       treatmentType = 'fractional_laser',
       treatmentTypes = DEFAULT_TREATMENT_TYPES,
       brushSize = 'medium',
-      opacity: _opacity, // Deprecated - ignored to prevent stacking (we use 100% solid colors)
+      opacity: _opacity,
       onDrawingChange,
       onStrokeComplete,
       onPathsByTypeChange,
@@ -212,56 +256,64 @@ export const SmoothBrushTool = forwardRef<SmoothBrushToolRef, SmoothBrushToolPro
       showZoneFeedback = false,
       onZoneDetected,
       onAllZonesDetected,
+      zoomState,
     },
     ref
   ) {
-    const canvasRef = useRef<ReactSketchCanvasRef>(null);
     const containerRef = useRef<HTMLDivElement>(null);
-    const [canUndo, setCanUndo] = useState(false);
-    const [canRedo, setCanRedo] = useState(false);
+    const stageRef = useRef<Konva.Stage>(null);
 
-    // Zone feedback state - shows a temporary label when zone is detected
+    // All strokes (history)
+    const [strokes, setStrokes] = useState<KonvaStroke[]>([]);
+    // Undo stack (strokes that were undone)
+    const [undoneStrokes, setUndoneStrokes] = useState<KonvaStroke[]>([]);
+    // Current stroke being drawn
+    const [currentStroke, setCurrentStroke] = useState<KonvaStroke | null>(null);
+    // Track if we're currently drawing
+    const isDrawingRef = useRef(false);
+    // Track the active pointer ID we're drawing with (to prevent accidental touches from stopping pen strokes)
+    // This is the KEY FIX: we only respond to pointer events that match our active pointer
+    const activePointerIdRef = useRef<number | null>(null);
+    // Track if multi-touch is happening (for zoom/pan passthrough)
+    // When multi-touch is active, we disable pointer events to let events bubble to parent
+    // FaceChartWithZoom handles the actual zoom calculation
+    const [isMultiTouchActive, setIsMultiTouchActive] = useState(false);
+    const touchCountRef = useRef(0);
+
+    // ==========================================================================
+    // PERFORMANCE OPTIMIZATION: Point accumulation with batched updates
+    // ==========================================================================
+    // Instead of updating state on every pointermove (which causes a re-render),
+    // we accumulate points in refs and sync to state at a throttled rate.
+    // This dramatically reduces render calls during fast drawing.
+    const pendingPointsRef = useRef<number[]>([]);
+    const pendingOriginalPointsRef = useRef<BrushPoint[]>([]);
+    const syncTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const SYNC_INTERVAL_MS = 16; // ~60fps sync rate
+
+    // Container dimensions
+    const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+
+    // Client-side mounting check - Konva requires client-side rendering
+    const [isMounted, setIsMounted] = useState(false);
+    useEffect(() => {
+      setIsMounted(true);
+    }, []);
+
+    // Zone feedback state
     const [zoneFeedback, setZoneFeedback] = useState<{
       zoneName: string;
       position: { x: number; y: number };
       confidence: number;
     } | null>(null);
-
-    // Zone picker state for manual override
     const [zonePickerOpen, setZonePickerOpen] = useState(false);
 
-    // Track paths by treatment type (maps color to treatment type for lookup)
-    const [pathsByType, setPathsByType] = useState<BrushPathsByType>({});
-    const [pathTypeMapping, setPathTypeMapping] = useState<Map<number, TreatmentAreaType>>(new Map());
-    const pathIndexRef = useRef(0);
-
-    // CRITICAL: Use ref to track current path type mapping to avoid stale closure issues
-    // When handleStroke updates pathTypeMapping state, the updatePathsByType callback
-    // may still have the old pathTypeMapping in its closure. Using a ref ensures
-    // updatePathsByType always sees the latest mapping, fixing the bug where the first
-    // stroke after switching products doesn't register correctly in the layers panel.
-    const pathTypeMappingRef = useRef<Map<number, TreatmentAreaType>>(new Map());
-    useEffect(() => {
-      pathTypeMappingRef.current = pathTypeMapping;
-    }, [pathTypeMapping]);
-
-    // CRITICAL: Use ref to track current treatment type to avoid stale closure issues
-    // When user switches products, the first stroke must use the NEW product, not the old one.
-    // Without this ref, the handleStroke callback would capture the old treatmentType value
-    // and the first stroke after switching wouldn't register correctly in the layers panel.
-    const treatmentTypeRef = useRef<TreatmentAreaType>(treatmentType);
-    useEffect(() => {
-      treatmentTypeRef.current = treatmentType;
-    }, [treatmentType]);
-
-    // Ref to track previous pathsByType for comparison (prevents unnecessary callback invocations)
-    const prevPathsByTypeRef = useRef<BrushPathsByType>({});
-
-    // Refs to store callbacks - prevents recreating effects when callbacks change
+    // Refs for callbacks to avoid stale closures
     const onCanUndoChangeRef = useRef(onCanUndoChange);
     const onPathsByTypeChangeRef = useRef(onPathsByTypeChange);
+    const treatmentTypeRef = useRef<TreatmentAreaType>(treatmentType);
 
-    // Keep callback refs up to date
+    // Keep refs updated
     useEffect(() => {
       onCanUndoChangeRef.current = onCanUndoChange;
     }, [onCanUndoChange]);
@@ -270,16 +322,104 @@ export const SmoothBrushTool = forwardRef<SmoothBrushToolRef, SmoothBrushToolPro
       onPathsByTypeChangeRef.current = onPathsByTypeChange;
     }, [onPathsByTypeChange]);
 
-    // Notify parent when undo availability changes
-    // IMPORTANT: Uses ref for callback to avoid dependency on onCanUndoChange which could change frequently
+    useEffect(() => {
+      treatmentTypeRef.current = treatmentType;
+    }, [treatmentType]);
+
+    // Track container size - ALWAYS run to capture dimensions even before tool is active
+    // This ensures the Stage is ready to render immediately when tool becomes active
+    useEffect(() => {
+      const container = containerRef.current;
+
+      const updateDimensions = () => {
+        if (container) {
+          const rect = container.getBoundingClientRect();
+          if (DEBUG_BRUSH_LAYERS) {
+            console.log('[SmoothBrushTool/Konva] Container dimensions update:', {
+              width: rect.width,
+              height: rect.height,
+              isActive,
+              isMounted,
+              containerElement: container.tagName,
+              containerClasses: container.className,
+            });
+          }
+          if (rect.width > 0 && rect.height > 0) {
+            setDimensions({ width: rect.width, height: rect.height });
+          } else if (DEBUG_BRUSH_LAYERS) {
+            console.warn('[SmoothBrushTool/Konva] WARNING: Container has zero dimensions!', {
+              parentElement: container.parentElement?.tagName,
+              parentWidth: container.parentElement?.clientWidth,
+              parentHeight: container.parentElement?.clientHeight,
+            });
+          }
+        } else if (DEBUG_BRUSH_LAYERS) {
+          console.warn('[SmoothBrushTool/Konva] WARNING: containerRef.current is null');
+        }
+      };
+
+      // Try multiple times to capture dimensions with increasing delays
+      // This handles cases where the container hasn't fully rendered yet
+      const timeouts = [0, 50, 100, 200, 500].map((delay, i) =>
+        setTimeout(() => {
+          if (DEBUG_BRUSH_LAYERS && i > 0) {
+            console.log(`[SmoothBrushTool/Konva] Retry ${i} measuring dimensions (delay: ${delay}ms)`);
+          }
+          updateDimensions();
+        }, delay)
+      );
+
+      const resizeObserver = new ResizeObserver((entries) => {
+        if (DEBUG_BRUSH_LAYERS) {
+          console.log('[SmoothBrushTool/Konva] ResizeObserver triggered', entries.length, 'entries');
+        }
+        updateDimensions();
+      });
+
+      if (container) {
+        resizeObserver.observe(container);
+        if (DEBUG_BRUSH_LAYERS) {
+          console.log('[SmoothBrushTool/Konva] ResizeObserver attached to container');
+        }
+      }
+
+      return () => {
+        timeouts.forEach(clearTimeout);
+        resizeObserver.disconnect();
+      };
+    }, [isActive, isMounted]);
+
+    // Get current treatment config
+    const currentTypeConfig = useMemo(
+      () => getTreatmentTypeConfig(treatmentType, treatmentTypes),
+      [treatmentType, treatmentTypes]
+    );
+    const strokeColor = currentTypeConfig.color;
+    const strokeWidth = BRUSH_SIZE_TO_WIDTH[brushSize];
+
+    // Compute paths by type for callbacks
+    const pathsByType = useMemo((): BrushPathsByType => {
+      const result: BrushPathsByType = {};
+      for (const stroke of strokes) {
+        if (!result[stroke.treatmentType]) {
+          result[stroke.treatmentType] = [];
+        }
+        result[stroke.treatmentType]!.push(konvaStrokeToCanvasPath(stroke));
+      }
+      return result;
+    }, [strokes]);
+
+    // Notify parent of undo availability
+    const canUndo = strokes.length > 0;
+    const canRedo = undoneStrokes.length > 0;
+
     useEffect(() => {
       onCanUndoChangeRef.current?.(canUndo);
     }, [canUndo]);
 
-    // Notify parent when paths by type change
-    // IMPORTANT: Uses ref for callback to prevent infinite loops when callback reference changes
+    // Notify parent of paths by type changes
+    const prevPathsByTypeRef = useRef<BrushPathsByType>({});
     useEffect(() => {
-      // Compare path counts to determine if we actually have meaningful changes
       const prevCounts = Object.entries(prevPathsByTypeRef.current).reduce<Record<string, number>>(
         (acc, [key, paths]) => {
           acc[key] = paths?.length || 0;
@@ -295,110 +435,540 @@ export const SmoothBrushTool = forwardRef<SmoothBrushToolRef, SmoothBrushToolPro
         {}
       );
 
-      // Check if counts actually changed
       const countsChanged =
         Object.keys(newCounts).length !== Object.keys(prevCounts).length ||
         Object.entries(newCounts).some(([key, count]) => prevCounts[key] !== count);
 
-      // DEBUG: Log the comparison
-      if (DEBUG_BRUSH_LAYERS) {
-        console.log('[SmoothBrushTool] pathsByType effect:', {
-          prevCounts,
-          newCounts,
-          countsChanged,
-          hasCallback: !!onPathsByTypeChangeRef.current,
-        });
-      }
-
       if (countsChanged) {
         prevPathsByTypeRef.current = pathsByType;
         if (DEBUG_BRUSH_LAYERS) {
-          console.log('[SmoothBrushTool] Calling onPathsByTypeChange callback');
+          console.log('[SmoothBrushTool/Konva] pathsByType changed:', newCounts);
         }
         onPathsByTypeChangeRef.current?.(pathsByType);
       }
-    }, [pathsByType]); // Note: only depends on pathsByType, not the callback
+    }, [pathsByType]);
 
-    // Get current treatment config
-    const currentTypeConfig = getTreatmentTypeConfig(treatmentType, treatmentTypes);
-    // Use the hex color directly - NO rgba conversion!
-    // This ensures overlapping strokes don't accumulate/stack to darker colors.
-    // The container opacity (0.6) handles transparency uniformly for all strokes.
-    const strokeColor = currentTypeConfig.color;
-    const strokeWidth = BRUSH_SIZE_TO_WIDTH[brushSize];
+    // =============================================================================
+    // POINTER EVENT HANDLERS - Stylus vs Touch Detection
+    // =============================================================================
+    //
+    // Key insight: PointerEvents have a `pointerType` property that tells us
+    // exactly what type of input device is being used:
+    // - "pen" = Apple Pencil or other stylus (SHOULD draw)
+    // - "touch" = finger touch (should NOT draw, allows zoom/pan)
+    // - "mouse" = mouse pointer (should NOT draw for consistency)
+    //
+    // This is the cleanest way to implement pen-only drawing.
+    // =============================================================================
 
-    // Update paths by type from canvas paths
-    // IMPORTANT: Uses pathTypeMappingRef.current instead of pathTypeMapping state to avoid
-    // stale closure issues. When handleStroke calls setPathTypeMapping and then updatePathsByType
-    // in quick succession (via setTimeout), the state update may not have propagated yet.
-    // Using the ref ensures we always get the latest mapping.
-    const updatePathsByType = useCallback(async () => {
-      const allPaths = await canvasRef.current?.exportPaths();
-      if (!allPaths) return;
+    const handlePointerDown = useCallback((e: Konva.KonvaEventObject<PointerEvent>) => {
+      const evt = e.evt;
 
-      const newPathsByType: BrushPathsByType = {};
-      // Use ref to get the LATEST mapping, not the potentially stale closure value
-      const currentMapping = pathTypeMappingRef.current;
-
-      // DEBUG: Log path count and mapping state
       if (DEBUG_BRUSH_LAYERS) {
-        console.log('[SmoothBrushTool] updatePathsByType called:', {
-          pathCount: allPaths.length,
-          mappingSize: currentMapping.size,
-          mappingEntries: Array.from(currentMapping.entries()),
+        console.log('[SmoothBrushTool/Konva] handlePointerDown fired!', {
+          pointerType: evt.pointerType,
+          pointerId: evt.pointerId,
+          readOnly,
+          isMultiTouchActive,
+          pressure: evt.pressure,
+          activePointerId: activePointerIdRef.current,
         });
       }
 
-      allPaths.forEach((path, index) => {
-        // Get the treatment type from our mapping, or try to infer from color
-        let pathTreatmentType = currentMapping.get(index);
-
-        // DEBUG: Log each path lookup
+      if (readOnly) {
         if (DEBUG_BRUSH_LAYERS) {
-          console.log('[SmoothBrushTool] Path lookup:', {
-            index,
-            mappedType: pathTreatmentType,
-            strokeColor: path.strokeColor,
+          console.log('[SmoothBrushTool/Konva] Blocked: readOnly is true');
+        }
+        return;
+      }
+
+      // Allow drawing with pen (stylus) OR mouse (for development/testing)
+      // Touch input is blocked to allow two-finger zoom/pan gestures
+      if (evt.pointerType === 'touch') {
+        if (DEBUG_BRUSH_LAYERS) {
+          console.log('[SmoothBrushTool/Konva] Ignoring touch pointer (reserved for zoom/pan)');
+        }
+        return;
+      }
+
+      // If we're already drawing with a different pointer, ignore this one
+      // This prevents issues with multiple pointers interfering
+      if (activePointerIdRef.current !== null && activePointerIdRef.current !== evt.pointerId) {
+        if (DEBUG_BRUSH_LAYERS) {
+          console.log('[SmoothBrushTool/Konva] Ignoring pointer - already drawing with different pointer', {
+            activePointerId: activePointerIdRef.current,
+            newPointerId: evt.pointerId,
+          });
+        }
+        return;
+      }
+
+      // Prevent default to stop touch events from also firing
+      evt.preventDefault();
+
+      const stage = stageRef.current;
+      if (!stage) {
+        if (DEBUG_BRUSH_LAYERS) {
+          console.log('[SmoothBrushTool/Konva] ERROR: stageRef.current is null!');
+        }
+        return;
+      }
+
+      const pos = stage.getPointerPosition();
+      if (!pos) {
+        if (DEBUG_BRUSH_LAYERS) {
+          console.log('[SmoothBrushTool/Konva] ERROR: getPointerPosition() returned null!');
+        }
+        return;
+      }
+
+      // Get pressure (Apple Pencil provides pressure in the range 0-1)
+      // Mouse clicks have pressure 0.5 as default
+      const pressure = evt.pressure || 0.5;
+
+      // CRITICAL: Track which pointer we're drawing with
+      // This prevents accidental touches from interrupting pen strokes
+      activePointerIdRef.current = evt.pointerId;
+      isDrawingRef.current = true;
+
+      const newStroke: KonvaStroke = {
+        id: generateStrokeId(),
+        points: [pos.x, pos.y],
+        treatmentType: treatmentTypeRef.current,
+        color: strokeColor,
+        strokeWidth: strokeWidth,
+        originalPoints: [{ x: pos.x, y: pos.y, pressure }],
+      };
+
+      setCurrentStroke(newStroke);
+      // Clear redo stack when starting new stroke
+      setUndoneStrokes([]);
+
+      if (DEBUG_BRUSH_LAYERS) {
+        console.log('[SmoothBrushTool/Konva] Started stroke:', {
+          pointerType: evt.pointerType,
+          pointerId: evt.pointerId,
+          pressure,
+          position: pos,
+          color: strokeColor,
+          width: strokeWidth,
+          stageDimensions: dimensions,
+          stageRef: stageRef.current ? 'attached' : 'null',
+        });
+      }
+    }, [readOnly, strokeColor, strokeWidth, isMultiTouchActive, dimensions]);
+
+    // Sync pending points to state (called at throttled intervals during drawing)
+    const syncPendingPoints = useCallback(() => {
+      if (pendingPointsRef.current.length === 0) return;
+
+      const pointsToAdd = [...pendingPointsRef.current];
+      const originalPointsToAdd = [...pendingOriginalPointsRef.current];
+
+      // Clear pending refs
+      pendingPointsRef.current = [];
+      pendingOriginalPointsRef.current = [];
+
+      setCurrentStroke(prev => {
+        if (!prev) return null;
+        return {
+          ...prev,
+          points: [...prev.points, ...pointsToAdd],
+          originalPoints: [...prev.originalPoints, ...originalPointsToAdd],
+        };
+      });
+    }, []);
+
+    const handlePointerMove = useCallback((e: Konva.KonvaEventObject<PointerEvent>) => {
+      if (!isDrawingRef.current || readOnly) return;
+
+      const evt = e.evt;
+
+      // Only continue drawing with pen or mouse (not touch)
+      if (evt.pointerType === 'touch') return;
+
+      // CRITICAL FIX: Only process moves from our active pointer
+      // This prevents accidental palm touches from interfering with stylus drawing
+      if (activePointerIdRef.current !== null && evt.pointerId !== activePointerIdRef.current) {
+        if (DEBUG_BRUSH_LAYERS) {
+          console.log('[SmoothBrushTool/Konva] Ignoring pointer move - not our active pointer', {
+            activePointerId: activePointerIdRef.current,
+            eventPointerId: evt.pointerId,
+          });
+        }
+        return;
+      }
+
+      evt.preventDefault();
+
+      const stage = stageRef.current;
+      if (!stage) return;
+
+      const pos = stage.getPointerPosition();
+      if (!pos) return;
+
+      const pressure = evt.pressure || 0.5;
+
+      // PERFORMANCE: Accumulate points in refs instead of updating state immediately
+      // This reduces re-renders during fast drawing from potentially 100s to ~60/sec
+      pendingPointsRef.current.push(pos.x, pos.y);
+      pendingOriginalPointsRef.current.push({ x: pos.x, y: pos.y, pressure });
+
+      // Schedule a throttled sync to state if not already scheduled
+      if (!syncTimeoutRef.current) {
+        syncTimeoutRef.current = setTimeout(() => {
+          syncTimeoutRef.current = null;
+          syncPendingPoints();
+        }, SYNC_INTERVAL_MS);
+      }
+    }, [readOnly, syncPendingPoints]);
+
+    const handlePointerUp = useCallback((e: Konva.KonvaEventObject<PointerEvent>) => {
+      const evt = e.evt;
+
+      if (DEBUG_BRUSH_LAYERS) {
+        console.log('[SmoothBrushTool/Konva] handlePointerUp fired!', {
+          pointerType: evt.pointerType,
+          pointerId: evt.pointerId,
+          activePointerId: activePointerIdRef.current,
+          isDrawing: isDrawingRef.current,
+        });
+      }
+
+      // Only finish drawing with pen or mouse (not touch)
+      if (evt.pointerType === 'touch') return;
+
+      // CRITICAL FIX: Only finish if this is our active pointer
+      // This prevents accidental touches from prematurely ending strokes
+      if (activePointerIdRef.current !== null && evt.pointerId !== activePointerIdRef.current) {
+        if (DEBUG_BRUSH_LAYERS) {
+          console.log('[SmoothBrushTool/Konva] Ignoring pointer up - not our active pointer', {
+            activePointerId: activePointerIdRef.current,
+            eventPointerId: evt.pointerId,
+          });
+        }
+        return;
+      }
+
+      if (!isDrawingRef.current) return;
+
+      // Reset tracking state
+      activePointerIdRef.current = null;
+      isDrawingRef.current = false;
+
+      // PERFORMANCE: Clear any pending sync timeout and immediately sync remaining points
+      if (syncTimeoutRef.current) {
+        clearTimeout(syncTimeoutRef.current);
+        syncTimeoutRef.current = null;
+      }
+
+      // Get any remaining pending points that haven't been synced yet
+      const finalPoints = [...pendingPointsRef.current];
+      const finalOriginalPoints = [...pendingOriginalPointsRef.current];
+      pendingPointsRef.current = [];
+      pendingOriginalPointsRef.current = [];
+
+      // Build the complete stroke with all points
+      const completeStroke = currentStroke ? {
+        ...currentStroke,
+        points: [...currentStroke.points, ...finalPoints],
+        originalPoints: [...currentStroke.originalPoints, ...finalOriginalPoints],
+      } : null;
+
+      if (completeStroke && completeStroke.points.length >= 4) {
+        // Stroke has at least 2 points (4 values: x1,y1,x2,y2)
+        setStrokes(prev => [...prev, completeStroke]);
+
+        if (DEBUG_BRUSH_LAYERS) {
+          console.log('[SmoothBrushTool/Konva] Completed stroke:', {
+            id: completeStroke.id,
+            treatmentType: completeStroke.treatmentType,
+            pointCount: completeStroke.points.length / 2,
           });
         }
 
-        if (!pathTreatmentType) {
-          // Try to match by color (for paths created before tracking)
-          // Normalize both colors to lowercase for comparison
-          const strokeColorLower = path.strokeColor.toLowerCase();
-          const matchedType = treatmentTypes.find(t => {
-            const typeColorLower = t.color.toLowerCase();
-            return strokeColorLower === typeColorLower ||
-                   strokeColorLower.includes(typeColorLower) ||
-                   typeColorLower.includes(strokeColorLower);
+        onDrawingChange?.();
+        onStrokeComplete?.(completeStroke.treatmentType, strokes.length + 1);
+
+        // Zone detection
+        if (enableZoneDetection && containerRef.current) {
+          const points = completeStroke.originalPoints.map(p => ({
+            x: p.x,
+            y: p.y,
+            pressure: p.pressure || 0.5,
+            timestamp: Date.now(),
+          }));
+
+          const rect = containerRef.current.getBoundingClientRect();
+          const detectedZone = detectZoneFromStroke(points, rect.width, rect.height);
+
+          if (detectedZone && showZoneFeedback) {
+            const centroid = points.reduce(
+              (acc, p) => ({ x: acc.x + p.x, y: acc.y + p.y }),
+              { x: 0, y: 0 }
+            );
+            centroid.x /= points.length;
+            centroid.y /= points.length;
+
+            setZoneFeedback({
+              zoneName: detectedZone.zoneName,
+              position: { x: centroid.x, y: centroid.y - 30 },
+              confidence: detectedZone.confidence,
+            });
+
+            onZoneDetected?.(detectedZone.zoneName, detectedZone.confidence);
+
+            setTimeout(() => setZoneFeedback(null), 2000);
+          }
+        }
+      }
+
+      setCurrentStroke(null);
+    }, [currentStroke, strokes.length, enableZoneDetection, showZoneFeedback, onDrawingChange, onStrokeComplete, onZoneDetected]);
+
+    // Handle pointer cancel events (e.g., when system takes over, palm rejection kicks in late, etc.)
+    // This ensures strokes are properly finalized even when the pointer is unexpectedly lost
+    const handlePointerCancel = useCallback((e: Konva.KonvaEventObject<PointerEvent>) => {
+      const evt = e.evt;
+
+      if (DEBUG_BRUSH_LAYERS) {
+        console.log('[SmoothBrushTool/Konva] handlePointerCancel fired!', {
+          pointerType: evt.pointerType,
+          pointerId: evt.pointerId,
+          activePointerId: activePointerIdRef.current,
+          isDrawing: isDrawingRef.current,
+        });
+      }
+
+      // Only handle cancel for our active pointer
+      if (activePointerIdRef.current === null || evt.pointerId !== activePointerIdRef.current) {
+        return;
+      }
+
+      if (!isDrawingRef.current) {
+        // Just reset the active pointer
+        activePointerIdRef.current = null;
+        return;
+      }
+
+      // Reset tracking state
+      activePointerIdRef.current = null;
+      isDrawingRef.current = false;
+
+      // Clear any pending sync
+      if (syncTimeoutRef.current) {
+        clearTimeout(syncTimeoutRef.current);
+        syncTimeoutRef.current = null;
+      }
+
+      // Sync remaining points
+      const finalPoints = [...pendingPointsRef.current];
+      const finalOriginalPoints = [...pendingOriginalPointsRef.current];
+      pendingPointsRef.current = [];
+      pendingOriginalPointsRef.current = [];
+
+      // Try to save what we have
+      const partialStroke = currentStroke ? {
+        ...currentStroke,
+        points: [...currentStroke.points, ...finalPoints],
+        originalPoints: [...currentStroke.originalPoints, ...finalOriginalPoints],
+      } : null;
+
+      if (partialStroke && partialStroke.points.length >= 4) {
+        setStrokes(prev => [...prev, partialStroke]);
+        if (DEBUG_BRUSH_LAYERS) {
+          console.log('[SmoothBrushTool/Konva] Saved partial stroke on cancel:', {
+            id: partialStroke.id,
+            pointCount: partialStroke.points.length / 2,
           });
-          pathTreatmentType = matchedType?.id || 'custom';
+        }
+        onDrawingChange?.();
+      }
+
+      setCurrentStroke(null);
+    }, [currentStroke, onDrawingChange]);
+
+    // =============================================================================
+    // TOUCH EVENT HANDLERS - For Zoom/Pan Passthrough
+    // =============================================================================
+    //
+    // IMPORTANT: Touch events and Pointer events are SEPARATE event systems!
+    //
+    // - TouchEvents: Used for multi-finger gestures (pinch-zoom, pan)
+    // - PointerEvents: Used for stylus/pen drawing (Apple Pencil)
+    //
+    // When two fingers touch, we enable zoom/pan mode but we DO NOT stop any
+    // ongoing pen strokes. This is critical because:
+    // 1. Palm rejection isn't perfect - accidental touches happen while drawing
+    // 2. The pen uses PointerEvents which are separate from TouchEvents
+    // 3. Stopping pen strokes on multi-touch was THE BUG causing "brush works then stops"
+    //
+    // The activePointerIdRef tracking in the Pointer event handlers ensures
+    // only the correct pointer can continue/complete a stroke.
+    // =============================================================================
+
+    // =========================================================================
+    // TOUCH EVENT HANDLERS - For Zoom/Pan Passthrough (Pattern: ArrowTool)
+    // =========================================================================
+    // Multi-touch detection ONLY - zoom calculation is handled by FaceChartWithZoom
+    // When multi-touch is detected:
+    //   1. Set isMultiTouchActive to disable pointer events
+    //   2. Let touch events bubble to parent for zoom/pan handling
+    //   3. Do NOT calculate zoom ourselves - parent handles that
+    // =========================================================================
+
+    useEffect(() => {
+      const container = containerRef.current;
+      if (!container) return;
+
+      const handleTouchStart = (e: TouchEvent) => {
+        touchCountRef.current = e.touches.length;
+
+        // If two or more fingers, this is a zoom/pan gesture
+        // Let it bubble to parent - do NOT prevent default
+        if (e.touches.length >= 2) {
+          setIsMultiTouchActive(true);
+
+          // CRITICAL: Do NOT stop pen drawing when multi-touch occurs!
+          // Pen uses PointerEvents which are separate from TouchEvents.
+          // This prevents palm touches from interrupting stylus strokes.
+
           if (DEBUG_BRUSH_LAYERS) {
-            console.log('[SmoothBrushTool] Fallback color match:', {
-              index,
-              strokeColor: path.strokeColor,
-              matchedType: pathTreatmentType,
+            console.log('[SmoothBrushTool/Konva] Multi-touch detected, disabling pointer events for zoom passthrough', {
+              isCurrentlyDrawing: isDrawingRef.current,
+              activePointerId: activePointerIdRef.current,
+              note: 'Letting events bubble to FaceChartWithZoom for zoom handling',
             });
           }
         }
+        // Single finger: let pointer events handle it (they fire after touch events)
+      };
 
-        if (!newPathsByType[pathTreatmentType]) {
-          newPathsByType[pathTreatmentType] = [];
+      const handleTouchMove = (e: TouchEvent) => {
+        // If two or more fingers, this is a zoom/pan gesture
+        // DO NOT call preventDefault() - let it bubble for zoom/pan
+        // FaceChartWithZoom handles the actual zoom calculation
+        // Single finger drawing is handled by pointer events
+      };
+
+      const handleTouchEnd = (e: TouchEvent) => {
+        touchCountRef.current = e.touches.length;
+
+        // Reset flag when all fingers are lifted
+        if (e.touches.length <= 1) {
+          // Delay reset to prevent accidental marks after gesture ends
+          setTimeout(() => {
+            setIsMultiTouchActive(false);
+          }, 150);
         }
-        newPathsByType[pathTreatmentType]!.push(path);
-      });
+      };
 
-      // DEBUG: Log final result
-      if (DEBUG_BRUSH_LAYERS) {
-        console.log('[SmoothBrushTool] newPathsByType:', Object.fromEntries(
-          Object.entries(newPathsByType).map(([key, paths]) => [key, paths?.length || 0])
-        ));
+      container.addEventListener('touchstart', handleTouchStart, { passive: true });
+      container.addEventListener('touchmove', handleTouchMove, { passive: true });
+      container.addEventListener('touchend', handleTouchEnd, { passive: true });
+      container.addEventListener('touchcancel', handleTouchEnd, { passive: true });
+
+      return () => {
+        container.removeEventListener('touchstart', handleTouchStart);
+        container.removeEventListener('touchmove', handleTouchMove);
+        container.removeEventListener('touchend', handleTouchEnd);
+        container.removeEventListener('touchcancel', handleTouchEnd);
+      };
+    }, []);
+
+    // Reset state when tool becomes active/inactive
+    useEffect(() => {
+      if (isActive) {
+        // Reset multi-touch and pointer tracking when becoming active
+        touchCountRef.current = 0;
+        setIsMultiTouchActive(false);
+        activePointerIdRef.current = null;
+        isDrawingRef.current = false;
+      } else {
+        // Reset drawing state when becoming inactive
+        // This ensures we don't have orphaned drawing state
+        activePointerIdRef.current = null;
+        isDrawingRef.current = false;
+        // Don't clear currentStroke here - it will be cleared naturally
       }
+    }, [isActive]);
 
-      setPathsByType(newPathsByType);
-    }, [treatmentTypes]); // Note: removed pathTypeMapping from deps since we use the ref
+    // PERFORMANCE: Cleanup sync timeout on unmount to prevent memory leaks
+    useEffect(() => {
+      return () => {
+        if (syncTimeoutRef.current) {
+          clearTimeout(syncTimeoutRef.current);
+          syncTimeoutRef.current = null;
+        }
+      };
+    }, []);
 
-    // Get path count by type for layer display
+    // =============================================================================
+    // REF METHODS - Undo, Redo, Clear, Export
+    // =============================================================================
+
+    const handleUndo = useCallback(() => {
+      if (strokes.length === 0) return;
+
+      const lastStroke = strokes[strokes.length - 1];
+      setStrokes(prev => prev.slice(0, -1));
+      setUndoneStrokes(prev => [...prev, lastStroke]);
+      onDrawingChange?.();
+
+      if (DEBUG_BRUSH_LAYERS) {
+        console.log('[SmoothBrushTool/Konva] Undo, strokes remaining:', strokes.length - 1);
+      }
+    }, [strokes, onDrawingChange]);
+
+    const handleRedo = useCallback(() => {
+      if (undoneStrokes.length === 0) return;
+
+      const strokeToRedo = undoneStrokes[undoneStrokes.length - 1];
+      setUndoneStrokes(prev => prev.slice(0, -1));
+      setStrokes(prev => [...prev, strokeToRedo]);
+      onDrawingChange?.();
+
+      if (DEBUG_BRUSH_LAYERS) {
+        console.log('[SmoothBrushTool/Konva] Redo, strokes now:', strokes.length + 1);
+      }
+    }, [undoneStrokes, strokes.length, onDrawingChange]);
+
+    const handleClearAll = useCallback(() => {
+      setStrokes([]);
+      setUndoneStrokes([]);
+      setCurrentStroke(null);
+      onDrawingChange?.();
+
+      if (DEBUG_BRUSH_LAYERS) {
+        console.log('[SmoothBrushTool/Konva] Cleared all strokes');
+      }
+    }, [onDrawingChange]);
+
+    const clearByTreatmentType = useCallback((typeToRemove: TreatmentAreaType) => {
+      setStrokes(prev => prev.filter(s => s.treatmentType !== typeToRemove));
+      onDrawingChange?.();
+
+      if (DEBUG_BRUSH_LAYERS) {
+        console.log('[SmoothBrushTool/Konva] Cleared strokes for type:', typeToRemove);
+      }
+    }, [onDrawingChange]);
+
+    const handleExportPaths = useCallback(async (): Promise<CanvasPath[]> => {
+      return strokes.map(konvaStrokeToCanvasPath);
+    }, [strokes]);
+
+    const handleExportPathsByType = useCallback(async (): Promise<BrushPathsByType> => {
+      return pathsByType;
+    }, [pathsByType]);
+
+    const handleExportImage = useCallback(async (imageType: 'png' | 'jpeg'): Promise<string> => {
+      const stage = stageRef.current;
+      if (!stage) return '';
+
+      const mimeType = imageType === 'jpeg' ? 'image/jpeg' : 'image/png';
+      return stage.toDataURL({ mimeType });
+    }, []);
+
     const getPathCountByType = useCallback((): Record<TreatmentAreaType, number> => {
       const counts: Record<TreatmentAreaType, number> = {
         fractional_laser: 0,
@@ -410,149 +980,15 @@ export const SmoothBrushTool = forwardRef<SmoothBrushToolRef, SmoothBrushToolPro
         custom: 0,
       };
 
-      Object.entries(pathsByType).forEach(([type, paths]) => {
-        if (paths) {
-          counts[type as TreatmentAreaType] = paths.length;
-        }
-      });
-
-      return counts;
-    }, [pathsByType]);
-
-    // Clear paths for a specific treatment type
-    const clearByTreatmentType = useCallback(async (typeToRemove: TreatmentAreaType) => {
-      const allPaths = await canvasRef.current?.exportPaths();
-      if (!allPaths) return;
-
-      // Filter out paths of the specified type
-      // Use ref to get the latest mapping
-      const currentMapping = pathTypeMappingRef.current;
-      const pathsToKeep: CanvasPath[] = [];
-      const newMapping = new Map<number, TreatmentAreaType>();
-
-      allPaths.forEach((path, index) => {
-        const pathType = currentMapping.get(index);
-        if (pathType !== typeToRemove) {
-          newMapping.set(pathsToKeep.length, pathType || 'custom');
-          pathsToKeep.push(path);
-        }
-      });
-
-      // Clear and reload paths
-      await canvasRef.current?.clearCanvas();
-      if (pathsToKeep.length > 0) {
-        await canvasRef.current?.loadPaths(pathsToKeep);
+      for (const stroke of strokes) {
+        counts[stroke.treatmentType]++;
       }
 
-      // Update both ref and state
-      pathTypeMappingRef.current = newMapping;
-      setPathTypeMapping(newMapping);
-      pathIndexRef.current = pathsToKeep.length;
+      return counts;
+    }, [strokes]);
 
-      // Update paths by type
-      setTimeout(updatePathsByType, 50);
-      onDrawingChange?.();
-    }, [updatePathsByType, onDrawingChange]); // Removed pathTypeMapping from deps since we use ref
-
-    // Track previous hidden types to detect changes
-    const prevHiddenTypesRef = useRef<Set<TreatmentAreaType>>(new Set());
-
-    // Apply visibility by loading/unloading paths based on hidden types
-    // Only runs when hiddenTreatmentTypes changes (not when pathsByType changes)
-    useEffect(() => {
-      const applyVisibility = async () => {
-        if (!canvasRef.current) return;
-
-        // Check if hiddenTreatmentTypes actually changed
-        const prevHidden = prevHiddenTypesRef.current;
-        const currentHidden = hiddenTreatmentTypes || new Set();
-
-        // Compare sets
-        const setsEqual = prevHidden.size === currentHidden.size &&
-          Array.from(prevHidden).every(item => currentHidden.has(item));
-
-        if (setsEqual) return;
-
-        // Update ref for next comparison
-        prevHiddenTypesRef.current = new Set(currentHidden);
-
-        // Get all paths from canvas
-        const allPaths = await canvasRef.current.exportPaths();
-        if (!allPaths || allPaths.length === 0) return;
-
-        // Build visibility based on path type mapping
-        const visiblePaths: CanvasPath[] = [];
-
-        allPaths.forEach((path, index) => {
-          const pathType = pathTypeMapping.get(index);
-          if (!pathType || !currentHidden.has(pathType)) {
-            visiblePaths.push(path);
-          }
-        });
-
-        // Clear and reload only visible paths
-        await canvasRef.current.clearCanvas();
-        if (visiblePaths.length > 0) {
-          await canvasRef.current.loadPaths(visiblePaths);
-        }
-      };
-
-      applyVisibility();
-    }, [hiddenTreatmentTypes, pathTypeMapping]);
-
-    // Memoized undo handler
-    const handleUndo = useCallback(() => {
-      canvasRef.current?.undo();
-      // Update path tracking after undo
-      pathIndexRef.current = Math.max(0, pathIndexRef.current - 1);
-      setTimeout(updatePathsByType, 50);
-      onDrawingChange?.();
-    }, [updatePathsByType, onDrawingChange]);
-
-    // Memoized redo handler
-    const handleRedo = useCallback(() => {
-      canvasRef.current?.redo();
-      setTimeout(updatePathsByType, 50);
-      onDrawingChange?.();
-    }, [updatePathsByType, onDrawingChange]);
-
-    // Memoized clear all handler
-    const handleClearAll = useCallback(() => {
-      canvasRef.current?.clearCanvas();
-      setPathsByType({});
-      // Reset both ref and state
-      pathTypeMappingRef.current = new Map();
-      setPathTypeMapping(new Map());
-      pathIndexRef.current = 0;
-      onDrawingChange?.();
-    }, [onDrawingChange]);
-
-    // Memoized export paths handler
-    const handleExportPaths = useCallback(async () => {
-      const paths = await canvasRef.current?.exportPaths();
-      return paths || [];
-    }, []);
-
-    // Memoized export paths by type handler
-    const handleExportPathsByType = useCallback(async () => {
-      await updatePathsByType();
-      return pathsByType;
-    }, [updatePathsByType, pathsByType]);
-
-    // Memoized export image handler
-    const handleExportImage = useCallback(async (imageType: 'png' | 'jpeg') => {
-      const image = await canvasRef.current?.exportImage(imageType);
-      return image || '';
-    }, []);
-
-    /**
-     * Detect zones from ALL current brush strokes at once.
-     * This is the preferred way to detect zones - user draws freely, then calls this
-     * when done to get a summary of all treated areas.
-     */
     const detectAllZones = useCallback(async (): Promise<DetectedZone[]> => {
-      const paths = await canvasRef.current?.exportPaths();
-      if (!paths || paths.length === 0) return [];
+      if (strokes.length === 0) return [];
 
       const container = containerRef.current;
       if (!container) return [];
@@ -562,29 +998,24 @@ export const SmoothBrushTool = forwardRef<SmoothBrushToolRef, SmoothBrushToolPro
       // Collect ALL points from ALL strokes
       const allPoints: Array<{ x: number; y: number; pressure: number; timestamp: number }> = [];
 
-      for (const path of paths) {
-        if (path.paths && path.paths.length > 0) {
-          for (const p of path.paths) {
-            allPoints.push({
-              x: p.x,
-              y: p.y,
-              pressure: 0.5,
-              timestamp: Date.now(),
-            });
-          }
+      for (const stroke of strokes) {
+        for (const p of stroke.originalPoints) {
+          allPoints.push({
+            x: p.x,
+            y: p.y,
+            pressure: p.pressure || 0.5,
+            timestamp: Date.now(),
+          });
         }
       }
 
       if (allPoints.length === 0) return [];
 
-      // Detect all zones that these points cover
       const detectedZones = detectMultipleZones(allPoints, rect.width, rect.height, 0.05);
-
-      // Notify parent if callback provided
       onAllZonesDetected?.(detectedZones);
 
       return detectedZones;
-    }, [onAllZonesDetected]);
+    }, [strokes, onAllZonesDetected]);
 
     // Expose methods via ref
     useImperativeHandle(ref, () => ({
@@ -599,320 +1030,146 @@ export const SmoothBrushTool = forwardRef<SmoothBrushToolRef, SmoothBrushToolPro
       detectAllZones,
     }), [handleUndo, handleRedo, handleClearAll, clearByTreatmentType, handleExportPaths, handleExportPathsByType, handleExportImage, getPathCountByType, detectAllZones]);
 
-    // Handle stroke changes to update undo/redo state, track treatment type, and detect zone
-    const handleStroke = useCallback(async () => {
-      // CRITICAL: Use treatmentTypeRef.current to get the CURRENT treatment type
-      // This avoids stale closure issues when the user switches products.
-      // The ref is always up-to-date, whereas treatmentType from props could be stale.
-      const currentTreatmentType = treatmentTypeRef.current;
+    // =============================================================================
+    // VISIBLE STROKES - Filter by hidden treatment types
+    // =============================================================================
 
-      // Track this path's treatment type
-      const currentIndex = pathIndexRef.current;
-
-      // DEBUG: Log stroke start
-      if (DEBUG_BRUSH_LAYERS) {
-        console.log('[SmoothBrushTool] handleStroke called:', {
-          currentTreatmentType,
-          currentIndex,
-        });
+    const visibleStrokes = useMemo(() => {
+      if (!hiddenTreatmentTypes || hiddenTreatmentTypes.size === 0) {
+        return strokes;
       }
-
-      // CRITICAL FIX: Update the ref IMMEDIATELY (synchronously) so that when
-      // updatePathsByType runs in the setTimeout, it will see the new mapping.
-      // State updates (setPathTypeMapping) are batched and asynchronous, so they
-      // won't be visible to the setTimeout callback. But ref updates are synchronous.
-      const newMapping = new Map(pathTypeMappingRef.current);
-      newMapping.set(currentIndex, currentTreatmentType);
-      pathTypeMappingRef.current = newMapping;
-
-      // Also update state for React re-renders and other state-dependent code
-      setPathTypeMapping(newMapping);
-      pathIndexRef.current++;
-
-      setCanUndo(true);
-      setCanRedo(false);
-
-      // Update paths by type after a brief delay to ensure canvas state is updated
-      setTimeout(() => {
-        updatePathsByType();
-        onStrokeComplete?.(currentTreatmentType, pathIndexRef.current);
-      }, 50);
-
-      onDrawingChange?.();
-
-      // Zone detection - extract the last stroke and detect zone
-      if (enableZoneDetection && containerRef.current) {
-        // Wait a bit for canvas to update
-        setTimeout(async () => {
-          const paths = await canvasRef.current?.exportPaths();
-          if (!paths || paths.length === 0) return;
-
-          // Get the last path (most recent stroke)
-          const lastPath = paths[paths.length - 1];
-          if (!lastPath.paths || lastPath.paths.length === 0) return;
-
-          // Convert path points to the format expected by zone detection
-          const points = lastPath.paths.map(p => ({
-            x: p.x,
-            y: p.y,
-            pressure: 0.5,
-            timestamp: Date.now(),
-          }));
-
-          // Get container dimensions for coordinate normalization
-          const container = containerRef.current;
-          if (!container) return;
-          const rect = container.getBoundingClientRect();
-
-          // Detect zone from stroke
-          const detectedZone = detectZoneFromStroke(points, rect.width, rect.height);
-
-          if (detectedZone && showZoneFeedback) {
-            // Calculate centroid for feedback position
-            const centroid = points.reduce(
-              (acc, p) => ({ x: acc.x + p.x, y: acc.y + p.y }),
-              { x: 0, y: 0 }
-            );
-            centroid.x /= points.length;
-            centroid.y /= points.length;
-
-            // Show zone feedback
-            setZoneFeedback({
-              zoneName: detectedZone.zoneName,
-              position: { x: centroid.x, y: centroid.y - 30 },
-              confidence: detectedZone.confidence,
-            });
-
-            // Notify parent
-            onZoneDetected?.(detectedZone.zoneName, detectedZone.confidence);
-
-            // Auto-dismiss after 2 seconds
-            setTimeout(() => {
-              setZoneFeedback(null);
-            }, 2000);
-          }
-        }, 100);
-      }
-    // Note: treatmentType is NOT in dependencies because we use treatmentTypeRef.current
-    // This is intentional to avoid stale closure issues - the ref always has the current value
-    }, [updatePathsByType, onStrokeComplete, onDrawingChange, enableZoneDetection, showZoneFeedback, onZoneDetected]);
+      return strokes.filter(s => !hiddenTreatmentTypes.has(s.treatmentType));
+    }, [strokes, hiddenTreatmentTypes]);
 
     // =============================================================================
-    // TWO-FINGER ZOOM/PAN GESTURE HANDLING
+    // RENDER
     // =============================================================================
-    // Problem: ReactSketchCanvas uses pointer events to capture drawing. When a user
-    // starts a two-finger gesture, the first finger touch starts a stroke before we
-    // know the second finger is coming. We need to:
-    // 1. Detect two-finger gestures as early as possible
-    // 2. Cancel any in-progress stroke when second finger touches
-    // 3. Prevent the canvas from receiving further events during the gesture
-    // 4. Allow the gesture to pass through to parent FaceChartWithZoom for zoom/pan
-    //
-    // Solution:
-    // - Use native event listeners with { passive: false } for earliest detection
-    // - Track touch count and set isMultiTouchActive flag
-    // - When second finger detected, undo any partial stroke that was started
-    // - Disable pointer-events on canvas wrapper during multi-touch
 
-    const [isMultiTouchActive, setIsMultiTouchActive] = useState(false);
-    const touchCountRef = useRef(0);
-    const hadStrokeBeforeMultiTouch = useRef(false);
-    const pathCountBeforeMultiTouch = useRef(0);
-    const isMultiTouchActiveRef = useRef(false);
-
-    // Keep ref in sync with state for use in event handlers
-    useEffect(() => {
-      isMultiTouchActiveRef.current = isMultiTouchActive;
-    }, [isMultiTouchActive]);
-
-    // SAFETY: Reset multi-touch state when component becomes active
-    // This prevents the brush from being stuck in a disabled state if a previous
-    // gesture didn't complete properly (e.g., user switched away during a gesture)
-    useEffect(() => {
-      if (isActive) {
-        // Reset touch tracking when tool becomes active
-        touchCountRef.current = 0;
-        isMultiTouchActiveRef.current = false;
-        setIsMultiTouchActive(false);
-      }
-    }, [isActive]);
-
-    // Use native event listeners for earliest possible detection of multi-touch
-    useEffect(() => {
-      const container = containerRef.current;
-      if (!container) return;
-
-      const handleTouchStartNative = (e: TouchEvent) => {
-        const previousCount = touchCountRef.current;
-        touchCountRef.current = e.touches.length;
-
-        if (e.touches.length === 1 && previousCount === 0) {
-          // First finger down - record current path count so we can undo if this
-          // turns out to be the start of a two-finger gesture
-          hadStrokeBeforeMultiTouch.current = false;
-          canvasRef.current?.exportPaths().then(paths => {
-            pathCountBeforeMultiTouch.current = paths?.length || 0;
-          });
-        }
-
-        if (e.touches.length >= 2) {
-          // Two-finger gesture detected!
-          isMultiTouchActiveRef.current = true;
-          setIsMultiTouchActive(true);
-
-          // CRITICAL: Stop the event from reaching ReactSketchCanvas
-          // This prevents the canvas from interpreting the gesture as a stroke
-          e.stopPropagation();
-
-          // CRITICAL: If the first finger already started a partial stroke,
-          // we need to undo it. The user intended a zoom/pan gesture, not a stroke.
-          // We do this by comparing current path count to what it was before.
-          canvasRef.current?.exportPaths().then(paths => {
-            const currentPathCount = paths?.length || 0;
-            if (currentPathCount > pathCountBeforeMultiTouch.current) {
-              // A stroke was started - undo it
-              canvasRef.current?.undo();
-              hadStrokeBeforeMultiTouch.current = true;
-            }
-          });
-
-          // Don't prevent default here - let the gesture propagate to parent
-          // The parent FaceChartWithZoom will handle the zoom/pan
-        }
-      };
-
-      const handleTouchEndNative = (e: TouchEvent) => {
-        touchCountRef.current = e.touches.length;
-
-        // Reset multi-touch state when we're down to 0 or 1 finger
-        // Previously we only reset at 0 fingers, which could leave the state stuck
-        // if the user lifted one finger but kept one down
-        if (e.touches.length <= 1) {
-          // Small delay to prevent accidental strokes right after the gesture ends
-          // but only if we were actually in multi-touch mode
-          const wasMultiTouch = isMultiTouchActiveRef.current;
-          const delay = wasMultiTouch ? 150 : 0;
-
-          setTimeout(() => {
-            isMultiTouchActiveRef.current = false;
-            setIsMultiTouchActive(false);
-            hadStrokeBeforeMultiTouch.current = false;
-          }, delay);
-        }
-      };
-
-      const handleTouchMoveNative = (e: TouchEvent) => {
-        // If multi-touch is active, allow the event to propagate (don't prevent default)
-        // This lets the parent handle the zoom/pan gesture
-        // Use ref to get current value without stale closure issues
-        if (e.touches.length >= 2 || isMultiTouchActiveRef.current) {
-          // The parent FaceChartWithZoom will handle this
-          return;
-        }
-      };
-
-      // Use { passive: true } to allow browser zoom gestures to work smoothly
-      container.addEventListener('touchstart', handleTouchStartNative, { passive: true });
-      container.addEventListener('touchend', handleTouchEndNative, { passive: true });
-      container.addEventListener('touchcancel', handleTouchEndNative, { passive: true });
-      container.addEventListener('touchmove', handleTouchMoveNative, { passive: true });
-
-      return () => {
-        container.removeEventListener('touchstart', handleTouchStartNative);
-        container.removeEventListener('touchend', handleTouchEndNative);
-        container.removeEventListener('touchcancel', handleTouchEndNative);
-        container.removeEventListener('touchmove', handleTouchMoveNative);
-      };
-    }, []); // Empty deps - event listeners set up once
-
-    if (!isActive) {
-      return null;
+    if (DEBUG_BRUSH_LAYERS) {
+      console.log('[SmoothBrushTool/Konva] Render check:', {
+        isActive,
+        readOnly,
+        isMounted,
+        dimensions,
+        willRenderStage: isMounted && dimensions.width > 0 && dimensions.height > 0,
+        strokesCount: strokes.length,
+        currentStroke: currentStroke ? `drawing (${currentStroke.points.length / 2} points)` : 'none',
+        isMultiTouchActive,
+        containerRef: containerRef.current ? 'attached' : 'null',
+      });
     }
 
+    // Additional debug: log why Stage might not render
+    if (DEBUG_BRUSH_LAYERS && isActive && !(isMounted && dimensions.width > 0 && dimensions.height > 0)) {
+      console.warn('[SmoothBrushTool/Konva] Stage will NOT render! Conditions:', {
+        isMounted,
+        'dimensions.width > 0': dimensions.width > 0,
+        'dimensions.height > 0': dimensions.height > 0,
+        dimensionValues: dimensions,
+      });
+    }
+
+    // CRITICAL FIX: Always render the container div to allow dimension capture
+    // Only the content inside (Stage) is conditionally rendered based on isActive
+    // This ensures dimensions are captured before the tool becomes active
     return (
       <div
         ref={containerRef}
-        className={`absolute inset-0 z-20 ${readOnly ? 'pointer-events-none' : ''}`}
+        className={`absolute inset-0 z-20 ${!isActive || readOnly ? 'pointer-events-none' : ''}`}
         style={{
-          // Allow pinch-zoom gestures
+          // Allow touch events to pass through for zoom/pan when multi-touch
           touchAction: 'manipulation',
-          pointerEvents: 'auto',
-          // LAYER-BASED OPACITY SOLUTION:
-          // Strokes are drawn at 100% solid color (no alpha in stroke color) to prevent
-          // overlapping strokes from stacking/darkening. Then we apply uniform opacity
-          // to the ENTIRE container, making all strokes uniformly translucent.
-          // This way: individual strokes don't stack, but the whole layer is see-through
-          // so the underlying face image remains visible.
-          opacity: 0.6,
+          // CRITICAL: Only capture pointer events when active and NOT in multi-touch mode
+          // This allows two-finger zoom/pan to pass through to parent
+          pointerEvents: !isActive || isMultiTouchActive ? 'none' : 'auto',
+          // Layer-based opacity for uniform translucency - increased for better visibility
+          opacity: isActive ? 0.85 : 0,
+          // Hide visually when not active but keep in DOM for dimension tracking
+          visibility: isActive ? 'visible' : 'hidden',
         }}
-        // NOTE: Touch events are handled by native event listeners in useEffect above
-        // for earliest possible detection of two-finger gestures
       >
-        {/*
-          TWO-FINGER ZOOM/PAN SOLUTION:
+        {isActive && isMounted && dimensions.width > 0 && dimensions.height > 0 ? (
+          <>
+            {DEBUG_BRUSH_LAYERS && console.log('[SmoothBrushTool/Konva] STAGE IS RENDERING with dimensions:', dimensions.width, 'x', dimensions.height)}
+            <Stage
+              ref={stageRef}
+              width={dimensions.width}
+              height={dimensions.height}
+              onPointerDown={handlePointerDown}
+              onPointerMove={handlePointerMove}
+              onPointerUp={handlePointerUp}
+              onPointerCancel={handlePointerCancel}
+              onPointerLeave={handlePointerCancel}
+              style={{
+                // CRITICAL FOR ZOOM PASSTHROUGH:
+                // When multi-touch is active, disable pointer events on the Stage itself
+                // This allows touch events to pass through to FaceChartWithZoom for pinch-zoom
+                pointerEvents: isMultiTouchActive ? 'none' : 'auto',
+                // ALWAYS allow manipulation gestures (pinch-zoom, pan)
+                // Stylus drawing uses Pointer Events which are separate from Touch Events
+                // This lets the browser handle pinch-zoom while Konva handles stylus drawing
+                touchAction: 'manipulation',
+              }}
+            >
+            {/*
+              KONVA PERFORMANCE OPTIMIZATIONS:
+              1. listening={false} - Disables hit detection for strokes (not needed for drawing)
+              2. perfectDrawEnabled={false} - Skips extra rendering for fill+stroke+opacity combo
+              3. hitGraphEnabled={false} - Skips hit graph generation entirely
+              4. transformsEnabled="position" - Only allow position transforms (no scale/rotation)
 
-          The ReactSketchCanvas component uses pointer events internally to capture drawing.
-          When two-finger gestures occur, we need to:
-          1. Completely disable pointer events on the canvas wrapper
-          2. Allow the gesture to propagate to the parent FaceChartWithZoom for zoom/pan
+              These optimizations are critical for smooth drawing performance, especially
+              with many strokes on screen. See: https://konvajs.org/docs/performance/All_Performance_Tips.html
+            */}
+            <Layer listening={false}>
+              {/* Render completed strokes */}
+              {DEBUG_BRUSH_LAYERS && visibleStrokes.length > 0 && console.log('[SmoothBrushTool/Konva] Rendering', visibleStrokes.length, 'strokes')}
+              {visibleStrokes.map((stroke) => (
+                <Line
+                  key={stroke.id}
+                  points={stroke.points}
+                  stroke={stroke.color}
+                  strokeWidth={stroke.strokeWidth}
+                  lineCap="round"
+                  lineJoin="round"
+                  tension={0.5}
+                  globalCompositeOperation="source-over"
+                  listening={false}
+                  perfectDrawEnabled={false}
+                  transformsEnabled="position"
+                />
+              ))}
 
-          Implementation:
-          - Native event listeners (useEffect above) detect multi-touch gestures early
-          - When second finger touches, we undo any partial stroke that was started
-          - isMultiTouchActive flag disables pointer-events on the canvas wrapper
-          - touchAction: 'pinch-zoom' on container allows browser zoom gestures to pass through
-          - Parent FaceChartWithZoom's useChartZoomPan hook handles the zoom/pan
+              {/* Render current stroke being drawn */}
+              {currentStroke && (
+                <>
+                  {DEBUG_BRUSH_LAYERS && console.log('[SmoothBrushTool/Konva] Rendering currentStroke with', currentStroke.points.length / 2, 'points, color:', currentStroke.color, 'strokeWidth:', currentStroke.strokeWidth)}
+                  <Line
+                    points={currentStroke.points}
+                    stroke={currentStroke.color}
+                    strokeWidth={currentStroke.strokeWidth}
+                    lineCap="round"
+                    lineJoin="round"
+                    tension={0.5}
+                    globalCompositeOperation="source-over"
+                    listening={false}
+                    perfectDrawEnabled={false}
+                    transformsEnabled="position"
+                  />
+                </>
+              )}
+            </Layer>
+          </Stage>
+          </>
+        ) : (
+          DEBUG_BRUSH_LAYERS && isActive && (
+            <div className="absolute inset-0 flex items-center justify-center text-red-500 text-sm bg-red-100/50">
+              Stage not rendered: isActive={String(isActive)}, mounted={String(isMounted)}, dimensions={JSON.stringify(dimensions)}
+            </div>
+          )
+        )}
 
-          Why native event listeners instead of React events:
-          - Native events fire before React synthetic events
-          - We can detect multi-touch ASAP to minimize partial stroke issues
-          - We can undo any partial stroke that was started before second finger detected
-        */}
-        <div
-          style={{
-            width: '100%',
-            height: '100%',
-            // Allow stylus events to reach the canvas
-            pointerEvents: 'auto',
-          }}
-        >
-          <ReactSketchCanvas
-            ref={canvasRef}
-            width="100%"
-            height="100%"
-            strokeWidth={strokeWidth}
-            strokeColor={strokeColor}
-            canvasColor="transparent"
-            style={{
-              border: 'none',
-              borderRadius: 0,
-              // Override library's internal touch-action: none to allow pinch-zoom
-              touchAction: 'manipulation',
-            }}
-            svgStyle={{
-              // Ensure SVG captures all pointer events including on transparent areas
-              pointerEvents: 'all',
-              // Allow pinch-zoom gestures to pass through to parent
-              touchAction: 'manipulation',
-              // NOTE: We removed mixBlendMode: 'darken' because it doesn't actually
-              // solve opacity stacking - each SVG path is rendered independently before
-              // blending occurs. The correct solution (implemented above) is to use
-              // 100% solid hex colors with no alpha channel whatsoever.
-            }}
-            exportWithBackgroundImage={false}
-            withTimestamp={false}
-            // STYLUS-ONLY DRAWING: Only Apple Pencil/stylus can draw.
-            // Finger touch gestures pass through for zoom/pan.
-            // This is the cleanest solution for brush + zoom conflict:
-            // - Pen draws brush strokes with precision
-            // - One finger pans the chart
-            // - Two fingers pinch to zoom
-            allowOnlyPointerType="pen"
-            onStroke={handleStroke}
-          />
-        </div>
-
-        {/* Zone Detection Feedback Label - subtle, non-intrusive */}
+        {/* Zone Detection Feedback Label */}
         {zoneFeedback && showZoneFeedback && (
           <div
             className="
@@ -950,10 +1207,9 @@ export const SmoothBrushTool = forwardRef<SmoothBrushToolRef, SmoothBrushToolPro
           </div>
         )}
 
-        {/* Zone Picker Dropdown for override */}
+        {/* Zone Picker Dropdown */}
         {zonePickerOpen && zoneFeedback && (
           <>
-            {/* Click-away handler */}
             <div
               className="fixed inset-0 z-35"
               onClick={() => setZonePickerOpen(false)}
@@ -991,11 +1247,10 @@ export const SmoothBrushTool = forwardRef<SmoothBrushToolRef, SmoothBrushToolPro
                       setZoneFeedback({
                         ...zoneFeedback,
                         zoneName: zone.name,
-                        confidence: 1.0, // User-selected = 100% confidence
+                        confidence: 1.0,
                       });
                       onZoneDetected?.(zone.name, 1.0);
                       setZonePickerOpen(false);
-                      // Auto-dismiss after 2 seconds
                       setTimeout(() => setZoneFeedback(null), 2000);
                     }}
                     className="

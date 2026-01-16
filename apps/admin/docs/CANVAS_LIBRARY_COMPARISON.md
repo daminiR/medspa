@@ -9,11 +9,186 @@ This document compares canvas/drawing libraries for the charting feature, specif
 
 ---
 
-## Current Problem
+## Migration Completed: react-sketch-canvas to Konva
 
-The current implementation uses `react-sketch-canvas` for the Brush tool. This library has a **known bug** (GitHub issue #128) where touch events cannot pass through to the parent for zoom/pan when `allowOnlyPointerType="pen"` is set. This means:
-- Stylus can draw ✅
-- Two-finger zoom does NOT work while brush is active ❌
+**Status:** COMPLETE (January 2025)
+
+The `SmoothBrushTool` component has been fully migrated from `react-sketch-canvas` to `Konva` / `react-konva`. This resolves the critical zoom/pan passthrough issue.
+
+### What Was Changed
+
+| Aspect | Before (react-sketch-canvas) | After (Konva) |
+|--------|------------------------------|---------------|
+| **Library** | `react-sketch-canvas` | `konva` + `react-konva` |
+| **Drawing Surface** | `<ReactSketchCanvas>` | `<Stage>` + `<Layer>` + `<Line>` |
+| **Stroke Storage** | Library-managed paths | Custom `KonvaStroke[]` state |
+| **Pointer Events** | `allowOnlyPointerType="pen"` | Manual `evt.pointerType === 'pen'` check |
+| **Multi-touch Detection** | N/A (broken) | Native touch event listeners |
+| **Export Format** | `CanvasPath[]` (native) | Compatible `CanvasPath[]` (converted) |
+
+### Key Files Modified
+
+- `/src/components/charting/SmoothBrushTool.tsx` - Complete rewrite using Konva
+
+### New Dependencies
+
+```bash
+npm install konva react-konva
+```
+
+---
+
+## How Stylus Detection Works Now
+
+The migration uses the **PointerEvent API** for clean stylus vs. touch discrimination:
+
+```typescript
+const handlePointerDown = (e: Konva.KonvaEventObject<PointerEvent>) => {
+  const evt = e.evt;
+
+  // Only allow drawing with pen (stylus)
+  if (evt.pointerType !== 'pen') {
+    return; // Ignore touch and mouse
+  }
+
+  // Start drawing...
+};
+```
+
+### PointerEvent.pointerType Values
+
+| Value | Device | Behavior |
+|-------|--------|----------|
+| `"pen"` | Apple Pencil / stylus | DRAWS on canvas |
+| `"touch"` | Finger touch | IGNORED - allows zoom/pan |
+| `"mouse"` | Mouse pointer | IGNORED for consistency |
+
+### Pressure Support
+
+Apple Pencil pressure is captured via `evt.pressure` (range 0-1):
+
+```typescript
+const pressure = evt.pressure || 0.5;
+// Stored in originalPoints for potential pressure-sensitive rendering
+```
+
+---
+
+## How Zoom/Pan Passthrough Works
+
+The critical fix for two-finger zoom/pan involves two mechanisms:
+
+### 1. Multi-Touch Detection (Native Events)
+
+Native touch event listeners detect when multiple fingers touch the screen:
+
+```typescript
+useEffect(() => {
+  const handleTouchStart = (e: TouchEvent) => {
+    if (e.touches.length >= 2) {
+      // Multi-touch detected - disable drawing
+      setIsMultiTouchActive(true);
+      isDrawingRef.current = false;
+      setCurrentStroke(null);
+    }
+  };
+
+  // Listeners attached with { passive: true } to allow gesture propagation
+  container.addEventListener('touchstart', handleTouchStart, { passive: true });
+}, []);
+```
+
+### 2. Pointer Events Passthrough
+
+When multi-touch is active, the component disables its pointer events:
+
+```typescript
+<div
+  style={{
+    // CRITICAL: Only capture events when NOT in multi-touch mode
+    pointerEvents: isMultiTouchActive ? 'none' : 'auto',
+    touchAction: 'manipulation',
+  }}
+>
+```
+
+### Event Flow During Zoom/Pan
+
+```
+User performs two-finger pinch
+    |
+    v
+touchstart fires (passive listener)
+    |
+    v
+touchCountRef.current >= 2
+    |
+    v
+setIsMultiTouchActive(true)
+    |
+    v
+pointerEvents: 'none' applied to brush container
+    |
+    v
+Touch events pass through to parent FaceChartWithZoom
+    |
+    v
+Parent handles zoom/pan transformation
+```
+
+### Debounced Reset
+
+After multi-touch ends, there's a 150ms delay before re-enabling drawing:
+
+```typescript
+const handleTouchEnd = (e: TouchEvent) => {
+  if (e.touches.length <= 1) {
+    setTimeout(() => {
+      setIsMultiTouchActive(false);
+    }, 150);
+  }
+};
+```
+
+This prevents accidental strokes immediately after a zoom gesture.
+
+---
+
+## Known Limitations
+
+### 1. No Pressure-Variable Stroke Width
+
+Currently, pressure is captured but not used for variable stroke width. All strokes use a uniform width based on the selected brush size. Pressure data is stored in `originalPoints` for potential future use.
+
+### 2. Stroke Rendering Differences
+
+Konva's `<Line>` component with `tension={0.5}` produces slightly different smoothing than react-sketch-canvas. The visual difference is minimal but noticeable on very fast strokes.
+
+### 3. No Native SVG Export
+
+Konva is canvas-based, not SVG-based. Export methods return:
+- `exportImage()` - PNG/JPEG data URL from canvas
+- `exportPaths()` - `CanvasPath[]` array (coordinates, not SVG)
+
+If SVG output is required, paths would need to be converted to SVG path data manually.
+
+### 4. Initial Touch Ignored on Tool Activation
+
+When switching to the brush tool, the first touch may be briefly ignored while the multi-touch state resets. This is by design to prevent unintended marks.
+
+### 5. Mouse Input Disabled
+
+For consistency with the stylus-only medical charting workflow, mouse input is disabled. This may need to be configurable for desktop testing.
+
+---
+
+## Original Problem
+
+The original implementation used `react-sketch-canvas` for the Brush tool. This library has a **known bug** (GitHub issue #128) where touch events cannot pass through to the parent for zoom/pan when `allowOnlyPointerType="pen"` is set. This meant:
+- Stylus can draw (checkmark)
+- Two-finger zoom does NOT work while brush is active (X)
+
+This was a critical usability issue for medical practitioners using iPads with Apple Pencil.
 
 ---
 
@@ -66,7 +241,7 @@ These are the charting tools in the admin app and how well each library supports
 
 ## Library Details
 
-### Konva / react-konva
+### Konva / react-konva (SELECTED)
 - **Website**: https://konvajs.org/
 - **React**: https://github.com/konvajs/react-konva
 - **License**: MIT (100% free)
@@ -123,39 +298,52 @@ These are the charting tools in the admin app and how well each library supports
 
 ---
 
-## Recommendation
+## Architecture After Migration
 
-### Best Choice: **Konva / react-konva**
+### Component Structure
 
-**Why:**
-1. **FREE** (MIT license, no watermark)
-2. **Native pinch-zoom** while drawing works out of the box
-3. **All your tools supported**:
-   - Freehand brush via Line tool
-   - Shapes (Circle, Rect, etc.)
-   - Arrows (Konva.Arrow)
-   - Text (Konva.Text)
-   - Lines for cannula paths
-   - Points for injection dots
-4. **Mature and well-documented**
-5. **Native React support** via react-konva
-6. **High performance**
+```
+SmoothBrushTool (Konva-based)
+├── containerRef (div) - Touch event listeners
+│   └── Stage (Konva)
+│       └── Layer
+│           ├── Line (completed strokes)
+│           └── Line (current stroke)
+├── Zone Feedback UI (optional)
+└── Zone Picker Dropdown (optional)
+```
 
-### Alternative: **js-draw**
+### State Management
 
-If brush/freehand is the primary use case and you want the best stylus experience, js-draw is excellent. However, you'd need to build shapes, arrows, and other tools custom.
+```typescript
+// All completed strokes
+const [strokes, setStrokes] = useState<KonvaStroke[]>([]);
 
----
+// Undo stack (strokes that were undone)
+const [undoneStrokes, setUndoneStrokes] = useState<KonvaStroke[]>([]);
 
-## Migration Path
+// Current stroke being drawn
+const [currentStroke, setCurrentStroke] = useState<KonvaStroke | null>(null);
 
-To migrate from react-sketch-canvas to Konva:
+// Drawing state
+const isDrawingRef = useRef(false);
 
-1. Install: `npm install konva react-konva`
-2. Replace SmoothBrushTool's ReactSketchCanvas with Konva Stage/Layer
-3. Implement freehand drawing using Konva.Line
-4. Touch gestures (zoom/pan) work automatically
-5. Other tools (Arrow, Shape, Text) can use built-in Konva components
+// Multi-touch state for zoom/pan passthrough
+const [isMultiTouchActive, setIsMultiTouchActive] = useState(false);
+```
+
+### KonvaStroke Interface
+
+```typescript
+interface KonvaStroke {
+  id: string;
+  points: number[];           // Flattened [x1, y1, x2, y2, ...]
+  treatmentType: TreatmentAreaType;
+  color: string;
+  strokeWidth: number;
+  originalPoints: BrushPoint[]; // With pressure for export
+}
+```
 
 ---
 

@@ -880,7 +880,9 @@ function ChartingPageContent() {
   // These tools render on top of the chart and need the underlying chart to have
   // pointer-events-none so their overlays can receive mouse/touch/stylus events.
   // Without this, the FaceChartWithZoom/TorsoChartWithZoom handlers intercept events.
-  const isOverlayToolActive = isBrushModeActive || isArrowModeActive || isTextModeActive ||
+  // NOTE: Brush mode is EXCLUDED - it handles its own zoom passthrough via Konva Stage
+  // and needs FaceChartWithZoom to remain active for two-finger zoom gestures.
+  const isOverlayToolActive = isArrowModeActive || isTextModeActive ||
     isMeasureModeActive || isShapeModeActive || isCannulaModeActive || isVeinModeActive;
 
   // Get the current view key based on body part and gender
@@ -2100,7 +2102,97 @@ function ChartingPageContent() {
                 onClearAll={clearAllMarkings}
                 hasContent={hasChartContent}
                 onZoomStateChange={handleZoomStateChange}
-              />
+                zoomState={zoomState}
+              >
+                <SmoothBrushTool
+                  ref={smoothBrushRef}
+                  isActive={isBrushModeActive}
+                  treatmentType={brushTreatmentType}
+                  brushSize={brushSize}
+                  opacity={brushOpacity}
+                  onCanUndoChange={setBrushCanUndo}
+                  onPathsByTypeChange={handleBrushPathsByTypeChange}
+                  hiddenTreatmentTypes={hiddenBrushTreatmentTypes}
+                  readOnly={activeTool !== 'brush'}
+                  zoomState={zoomState}
+                />
+                <ArrowTool
+                  ref={arrowToolRef}
+                  isActive={isArrowModeActive}
+                  arrows={arrowsByView[currentView2DKey]}
+                  onArrowsChange={handleArrowsChange}
+                  onCanUndoChange={setArrowCanUndo}
+                  onCanRedoChange={setArrowCanRedo}
+                  readOnly={activeTool !== 'arrow'}
+                  productId={selectedProduct?.id}
+                  showColorPicker={true}
+                  zoomState={zoomState}
+                />
+                <TextLabelTool
+                  labels={currentTextLabels}
+                  onLabelsChange={handleTextLabelsChange}
+                  isActive={isTextModeActive}
+                  zoom={1}
+                  readOnly={activeTool !== 'text'}
+                  containerRef={chartContainerRef}
+                  zoomState={zoomState}
+                />
+                <MeasurementTool
+                  isActive={isMeasureModeActive}
+                  measurements={measurements}
+                  onMeasurementsChange={handleMeasurementsChange}
+                  calibration={calibration}
+                  onCalibrationChange={setCalibration}
+                  containerRef={chartContainerRef}
+                  zoom={1}
+                  showCm={false}
+                  readOnly={activeTool !== 'measure'}
+                  zoomState={zoomState}
+                />
+                <ShapeTool
+                  isActive={isShapeModeActive}
+                  shapes={shapes}
+                  onShapesChange={handleShapesChange}
+                  selectedShapeId={selectedShapeId}
+                  onSelectionChange={setSelectedShapeId}
+                  readOnly={activeTool !== 'shape'}
+                  showToolbar={isShapeModeActive}
+                  zoomState={zoomState}
+                />
+                <CannulaPathTool
+                  isActive={isCannulaModeActive}
+                  cannulaPaths={cannulaPaths}
+                  onCannulaPathsChange={handleCannulaPathsChange}
+                  selectedPathId={selectedCannulaPathId}
+                  onSelectionChange={setSelectedCannulaPathId}
+                  readOnly={activeTool !== 'cannula'}
+                  productColor={cannulaProductColor}
+                  productId={cannulaProductId}
+                  showToolbar={isCannulaModeActive}
+                  zoom={1}
+                  zoomState={zoomState}
+                />
+                <VeinDrawingTool
+                  isActive={isVeinModeActive}
+                  veinPaths={veinPaths}
+                  onVeinPathsChange={handleVeinPathsChange}
+                  selectedVeinId={selectedVeinId}
+                  onSelectionChange={setSelectedVeinId}
+                  readOnly={activeTool !== 'vein'}
+                  showToolbar={isVeinModeActive}
+                  zoom={1}
+                  zoomState={zoomState}
+                />
+                {bodyPart === 'face' && showDangerZones && (
+                  <DangerZoneOverlay
+                    isVisible={showDangerZones}
+                    onToggle={toggleDangerZones}
+                    gender={gender}
+                    opacity={0.6}
+                    showLegend={true}
+                  />
+                )}
+              </FaceChartWithZoom>
             </div>
           </div>
         </div>
@@ -2136,6 +2228,7 @@ function ChartingPageContent() {
                 hasContent={hasChartContent}
                 // Lift zoom state to page level for bottom bar
                 onZoomStateChange={handleZoomStateChange}
+                zoomState={zoomState}
               />
             </div>
           </div>
@@ -2168,6 +2261,7 @@ function ChartingPageContent() {
               hasContent={hasChartContent}
               // Lift zoom state to page level for bottom bar
               onZoomStateChange={handleZoomStateChange}
+              zoomState={zoomState}
             />
           </div>
         </div>
@@ -2286,24 +2380,6 @@ function ChartingPageContent() {
         {/* Note: Loading states are handled by Suspense fallbacks in each 3D component */}
 
         {/* =========================================================== */}
-        {/* SMOOTH BRUSH TOOL OVERLAY - Active when brush tool selected */}
-        {/* Uses react-sketch-canvas for smoother drawing experience    */}
-        {/* =========================================================== */}
-        {viewMode === '2D' && (
-          <SmoothBrushTool
-            ref={smoothBrushRef}
-            isActive={isBrushModeActive}
-            treatmentType={brushTreatmentType}
-            brushSize={brushSize}
-            opacity={brushOpacity}
-            onCanUndoChange={setBrushCanUndo}
-            onPathsByTypeChange={handleBrushPathsByTypeChange}
-            hiddenTreatmentTypes={hiddenBrushTreatmentTypes}
-            readOnly={activeTool !== 'brush'}
-          />
-        )}
-
-        {/* =========================================================== */}
         {/* ZONE DETECTION SUMMARY - Shows detected zones after detect  */}
         {/* =========================================================== */}
         {viewMode === '2D' && (
@@ -2317,119 +2393,6 @@ function ChartingPageContent() {
           />
         )}
 
-        {/* =========================================================== */}
-        {/* ARROW TOOL OVERLAY - For thread lifts, cannula paths, flow  */}
-        {/* =========================================================== */}
-        {viewMode === '2D' && (
-          <ArrowTool
-            ref={arrowToolRef}
-            isActive={isArrowModeActive}
-            arrows={arrowsByView[currentView2DKey]}
-            onArrowsChange={handleArrowsChange}
-            onCanUndoChange={setArrowCanUndo}
-            onCanRedoChange={setArrowCanRedo}
-            readOnly={activeTool !== 'arrow'}
-            productId={selectedProduct?.id}
-            // Disable ArrowTool's internal undo - we use global history now
-            showColorPicker={true}
-          />
-        )}
-
-        {/* =========================================================== */}
-        {/* TEXT LABEL TOOL OVERLAY - For annotations (Avoid, Bruise)   */}
-        {/* =========================================================== */}
-        {viewMode === '2D' && (
-          <TextLabelTool
-            labels={currentTextLabels}
-            onLabelsChange={handleTextLabelsChange}
-            isActive={isTextModeActive}
-            zoom={1}
-            readOnly={activeTool !== 'text'}
-            containerRef={chartContainerRef}
-          />
-        )}
-
-        {/* =========================================================== */}
-        {/* MEASUREMENT TOOL OVERLAY - For distance measurements        */}
-        {/* =========================================================== */}
-        {viewMode === '2D' && (
-          <MeasurementTool
-            isActive={isMeasureModeActive}
-            measurements={measurements}
-            onMeasurementsChange={handleMeasurementsChange}
-            calibration={calibration}
-            onCalibrationChange={setCalibration}
-            containerRef={chartContainerRef}
-            zoom={1}
-            showCm={false}
-            readOnly={activeTool !== 'measure'}
-          />
-        )}
-
-        {/* =========================================================== */}
-        {/* SHAPE TOOL OVERLAY - For circles, rectangles, freeform      */}
-        {/* =========================================================== */}
-        {viewMode === '2D' && (
-          <ShapeTool
-            isActive={isShapeModeActive}
-            shapes={shapes}
-            onShapesChange={handleShapesChange}
-            selectedShapeId={selectedShapeId}
-            onSelectionChange={setSelectedShapeId}
-            readOnly={activeTool !== 'shape'}
-            showToolbar={isShapeModeActive}
-          />
-        )}
-
-        {/* =========================================================== */}
-        {/* CANNULA PATH TOOL OVERLAY - For documenting cannula paths   */}
-        {/* =========================================================== */}
-        {viewMode === '2D' && (
-          <CannulaPathTool
-            isActive={isCannulaModeActive}
-            cannulaPaths={cannulaPaths}
-            onCannulaPathsChange={handleCannulaPathsChange}
-            selectedPathId={selectedCannulaPathId}
-            onSelectionChange={setSelectedCannulaPathId}
-            readOnly={activeTool !== 'cannula'}
-            // Use cannula-specific product state (NOT selectedProduct from injection tools)
-            // This ensures FloatingProductPicker only affects pen/freehand injection points
-            productColor={cannulaProductColor}
-            productId={cannulaProductId}
-            showToolbar={isCannulaModeActive}
-            zoom={1}
-          />
-        )}
-
-        {/* =========================================================== */}
-        {/* VEIN DRAWING TOOL OVERLAY - For sclerotherapy documentation */}
-        {/* =========================================================== */}
-        {viewMode === '2D' && (
-          <VeinDrawingTool
-            isActive={isVeinModeActive}
-            veinPaths={veinPaths}
-            onVeinPathsChange={handleVeinPathsChange}
-            selectedVeinId={selectedVeinId}
-            onSelectionChange={setSelectedVeinId}
-            readOnly={activeTool !== 'vein'}
-            showToolbar={isVeinModeActive}
-            zoom={1}
-          />
-        )}
-
-        {/* =========================================================== */}
-        {/* DANGER ZONE OVERLAY - Safety overlay for face chart only    */}
-        {/* Shows arteries, nerves, and danger zones                    */}
-        {/* =========================================================== */}
-        {viewMode === '2D' && bodyPart === 'face' && showDangerZones && (
-          <DangerZoneOverlay
-            isVisible={showDangerZones}
-            onToggle={toggleDangerZones}
-            gender={gender}
-            opacity={0.6}
-            showLegend={true}
-          />
-        )}
       </div>
     );
   }, [

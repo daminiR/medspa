@@ -54,6 +54,15 @@ export interface TextLabel {
 
 export type TextLabelSize = 'small' | 'medium' | 'large';
 
+/**
+ * Zoom state for coordinating with parent zoom/pan container
+ */
+export interface ZoomState {
+  scale: number;
+  translateX: number;
+  translateY: number;
+}
+
 export interface TextLabelToolProps {
   /** Array of text labels to render */
   labels: TextLabel[];
@@ -69,6 +78,11 @@ export interface TextLabelToolProps {
   readOnly?: boolean;
   /** Container ref for positioning calculations */
   containerRef: React.RefObject<HTMLDivElement | null>;
+  /**
+   * Zoom state from parent (FaceChartWithZoom, etc.)
+   * When provided, labels will transform to stay attached to the zoomed/panned chart.
+   */
+  zoomState?: ZoomState;
 }
 
 // =============================================================================
@@ -129,6 +143,9 @@ interface TextLabelOverlayProps {
   containerRef: React.RefObject<HTMLDivElement | null>;
   isDark: boolean;
   isMultiTouchActive: boolean;
+  isActive: boolean;
+  /** Zoom state for following chart zoom/pan transforms */
+  zoomState?: ZoomState;
 }
 
 function TextLabelOverlay({
@@ -142,6 +159,8 @@ function TextLabelOverlay({
   containerRef,
   isDark,
   isMultiTouchActive,
+  isActive,
+  zoomState,
 }: TextLabelOverlayProps) {
   const [dragState, setDragState] = useState<{
     isDragging: boolean;
@@ -294,7 +313,9 @@ function TextLabelOverlay({
   }, []);
 
   return (
-    <div className="absolute inset-0 pointer-events-none">
+    <div
+      className="absolute inset-0 pointer-events-none"
+    >
       {labels.map((label) => {
         const isSelected = selectedLabelId === label.id;
         const isDraggingThis = dragState?.isDragging && dragState.labelId === label.id;
@@ -618,6 +639,7 @@ export function TextLabelTool({
   zoom = 1,
   readOnly = false,
   containerRef,
+  zoomState,
 }: TextLabelToolProps) {
   // Theme
   const { theme } = useChartingTheme();
@@ -832,6 +854,8 @@ export function TextLabelTool({
         containerRef={containerRef}
         isDark={isDark}
         isMultiTouchActive={isMultiTouchActive}
+        isActive={isActive}
+        zoomState={zoomState}
       />
 
       {/* Text Input Modal */}

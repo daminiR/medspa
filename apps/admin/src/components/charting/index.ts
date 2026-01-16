@@ -298,6 +298,7 @@ export type {
   ShapeToolbarProps,
   UseShapesStateOptions,
   UseShapesStateReturn,
+  ZoomState as ShapeToolZoomState,
 } from './ShapeTool'
 
 // Text Label Tool - Quick text annotations on charts (simplified)

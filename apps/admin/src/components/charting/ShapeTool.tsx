@@ -78,6 +78,15 @@ export interface ShapeToolRef {
 }
 
 /**
+ * Zoom state for coordinating with parent zoom/pan container
+ */
+export interface ZoomState {
+  scale: number;
+  translateX: number;
+  translateY: number;
+}
+
+/**
  * Props for ShapeTool component
  */
 export interface ShapeToolProps {
@@ -117,6 +126,12 @@ export interface ShapeToolProps {
   availableColors?: string[];
   /** Auto-close threshold for freeform shapes (pixels) */
   freeformCloseThreshold?: number;
+  /**
+   * Zoom state from parent (FaceChartWithZoom, etc.)
+   * When provided, shapes will transform to stay attached to the zoomed/panned chart.
+   * This ensures shapes move with the map when zooming/panning.
+   */
+  zoomState?: ZoomState;
 }
 
 /**
@@ -536,6 +551,7 @@ export const ShapeTool = forwardRef<ShapeToolRef, ShapeToolProps>(
       onShapeComplete,
       availableColors = DEFAULT_SHAPE_COLORS,
       freeformCloseThreshold = DEFAULT_CLOSE_THRESHOLD,
+      zoomState,
     },
     ref
   ) {
@@ -791,7 +807,14 @@ export const ShapeTool = forwardRef<ShapeToolRef, ShapeToolProps>(
     // ==========================================================================
 
     /**
-     * Get pointer position relative to canvas
+     * Get pointer position relative to canvas, accounting for zoom transform
+     *
+     * When the canvas has a CSS transform (scale + translate) applied for zoom/pan,
+     * we need to convert screen coordinates to canvas coordinates.
+     *
+     * The getBoundingClientRect() returns the transformed bounds, so we need to:
+     * 1. Get the position relative to the transformed rect (screen space)
+     * 2. Divide by the zoom scale to convert to canvas space
      */
     const getPointerPosition = useCallback(
       (e: React.PointerEvent<HTMLCanvasElement>): { x: number; y: number } => {
@@ -799,12 +822,23 @@ export const ShapeTool = forwardRef<ShapeToolRef, ShapeToolProps>(
         if (!canvas) return { x: 0, y: 0 };
 
         const rect = canvas.getBoundingClientRect();
-        return {
-          x: e.clientX - rect.left,
-          y: e.clientY - rect.top,
-        };
+
+        // Position relative to the transformed canvas rect (in screen pixels)
+        const screenX = e.clientX - rect.left;
+        const screenY = e.clientY - rect.top;
+
+        // If we have zoom state, convert from screen coordinates to canvas coordinates
+        // The canvas is scaled by zoomState.scale, so we divide to get canvas coords
+        if (zoomState && zoomState.scale !== 1) {
+          return {
+            x: screenX / zoomState.scale,
+            y: screenY / zoomState.scale,
+          };
+        }
+
+        return { x: screenX, y: screenY };
       },
-      []
+      [zoomState]
     );
 
     // Track active touch count for two-finger gesture detection
@@ -1318,7 +1352,7 @@ export const ShapeTool = forwardRef<ShapeToolRef, ShapeToolProps>(
         ref={containerRef}
         className={`absolute inset-0 overflow-hidden z-20 ${isActive ? '' : 'pointer-events-none'}`}
       >
-        {/* Canvas for shape drawing */}
+        {/* Canvas for shape drawing - transforms with zoom/pan to stay attached to the chart */}
         <canvas
           ref={canvasRef}
           className={`absolute inset-0 z-[15] ${isActive ? 'cursor-crosshair' : 'pointer-events-none'}`}

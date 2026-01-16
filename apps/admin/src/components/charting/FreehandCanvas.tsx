@@ -14,11 +14,25 @@ interface Stroke {
   width: number;
 }
 
+/**
+ * Zoom state for coordinating with parent zoom/pan container
+ */
+interface ZoomState {
+  scale: number;
+  translateX: number;
+  translateY: number;
+}
+
 interface FreehandCanvasProps {
   isActive: boolean;
   strokeColor?: string;
   strokeWidth?: number;
   onStrokesChange?: (strokes: Stroke[]) => void;
+  /**
+   * Zoom state from parent (FaceChartWithZoom, etc.)
+   * When provided, strokes will transform to stay attached to the zoomed/panned chart.
+   */
+  zoomState?: ZoomState;
 }
 
 export function FreehandCanvas({
@@ -26,6 +40,7 @@ export function FreehandCanvas({
   strokeColor = '#000000',
   strokeWidth = 2,
   onStrokesChange,
+  zoomState,
 }: FreehandCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -481,4 +496,4 @@ export function strokesToSVG(strokes: Stroke[], width: number, height: number): 
 </svg>`;
 }
 
-export type { Point, Stroke, FreehandCanvasProps };
+export type { Point, Stroke, FreehandCanvasProps, ZoomState };

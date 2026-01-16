@@ -63,6 +63,15 @@ export interface DepositZone {
 }
 
 /**
+ * Zoom state for coordinating with parent zoom/pan container
+ */
+export interface ZoomState {
+  scale: number;
+  translateX: number;
+  translateY: number;
+}
+
+/**
  * Props for the CannulaPathTool component
  */
 export interface CannulaPathToolProps {
@@ -90,6 +99,11 @@ export interface CannulaPathToolProps {
   showToolbar?: boolean;
   /** Container zoom level for scaling */
   zoom?: number;
+  /**
+   * Zoom state from parent (FaceChartWithZoom, etc.)
+   * When provided, cannula paths will transform to stay attached to the zoomed/panned chart.
+   */
+  zoomState?: ZoomState;
 }
 
 /**
@@ -367,6 +381,7 @@ export function CannulaPathTool({
   onPathComplete,
   showToolbar = true,
   zoom = 1,
+  zoomState,
 }: CannulaPathToolProps) {
   // Refs
   const svgRef = useRef<SVGSVGElement>(null);

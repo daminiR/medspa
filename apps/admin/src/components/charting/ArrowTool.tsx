@@ -51,6 +51,15 @@ export interface ArrowToolRef {
   getArrowCount: () => number;
 }
 
+/**
+ * Zoom state for coordinating with parent zoom/pan container
+ */
+export interface ZoomState {
+  scale: number;
+  translateX: number;
+  translateY: number;
+}
+
 export interface ArrowToolProps {
   /** Whether the arrow tool is currently active */
   isActive: boolean;
@@ -70,6 +79,11 @@ export interface ArrowToolProps {
   productId?: string;
   /** Show the minimal floating color picker (default: true when active) */
   showColorPicker?: boolean;
+  /**
+   * Zoom state from parent (FaceChartWithZoom, etc.)
+   * When provided, arrows will transform to stay attached to the zoomed/panned chart.
+   */
+  zoomState?: ZoomState;
 }
 
 // =============================================================================
@@ -139,6 +153,7 @@ export const ArrowTool = forwardRef<ArrowToolRef, ArrowToolProps>(
       readOnly = false,
       productId,
       showColorPicker = true,
+      zoomState,
     },
     ref
   ) {
